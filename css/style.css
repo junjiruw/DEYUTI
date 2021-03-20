@@ -1,6 +1,7 @@
 /*1emは一文字らしい*/
 body {
-    background: #053a24;
+    background-image:url("../images/site/junjiruw_pro.png"),linear-gradient(#053a24,80%,#000000);
+    background-size:25% auto;
 }
 header{
     position: sticky;
@@ -10,10 +11,14 @@ header{
 footer{
     background: #041d42;
 }
+a#totop{
+    color: #ffffff;
+}
 div#mannaka{
     width: 90%;
     margin: auto;
     background: #16151a;
+    border: 2px solid #ffffff;
 }
 h1{
     color: #ffffff;
