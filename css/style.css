@@ -1,6 +1,17 @@
 /*1emは一文字らしい*/
 body {
+    background: #053a24
+}
+div#mannaka{
+    width: 90%;
+    margin: auto;
     background: #16151a
+}
+h1{
+    color: #ffffff;
+}
+h2{
+    color: #ffffff;
 }
 img#junjiruw {
     float:right;
