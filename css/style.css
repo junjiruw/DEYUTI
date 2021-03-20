@@ -1,11 +1,19 @@
 /*1emは一文字らしい*/
 body {
-    background: #053a24
+    background: #053a24;
+}
+header{
+    position: sticky;
+    top: 0;
+    background: #053a24;
+}
+footer{
+    background: #041d42;
 }
 div#mannaka{
     width: 90%;
     margin: auto;
-    background: #16151a
+    background: #16151a;
 }
 h1{
     color: #ffffff;
@@ -15,6 +23,6 @@ h2{
 }
 img#junjiruw {
     float:right;
-    margin-right:0.5em; 
+    margin-right:0em; 
     margin-bottom:0em;
 }
