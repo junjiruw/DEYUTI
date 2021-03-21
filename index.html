@@ -5,7 +5,7 @@
         <title>JUN汁ｗおもちゃばこ。</title>
         <!--OGPとかいうの-->
         <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。">
-        <meta property="og:title" content="JUN汁ｗおもちゃばこ。/とっぷぺえじ"/>
+        <meta property="og:title" content="とっぷぺえじ"/>
         <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
         <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/"/>
         <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
@@ -16,6 +16,16 @@
             span#span1 {
                 color: #dfdf3e;
                 width: 100%;
+            }
+            span#span1::after{
+                content: '';/*何も入れない。背景画像として出力*/
+                display: inline-block;/*インライン要素のままだと大きさ決められないのでインラインブロックに*/
+                width: 7.5em;/*幅*/
+                height: 1.5em;/*高さ*/
+                background-image:url("images/site/new.gif");
+                background-repeat: no-repeat;
+                background-size: contain;/*幅いっぱいに表示*/
+                vertical-align: baseline;/*ちょい上に表示*/
             }
             dl#links{
                 padding: 0em;
@@ -106,7 +116,6 @@
                     </dt>
                     <dd>旧サイトです。ゎぉ</dd>
                 </div>
-            
             </dl>
             
             
