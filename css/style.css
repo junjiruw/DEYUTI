@@ -3,6 +3,9 @@ body {
     background-image:url("../images/site/junjiruw_pro.png"),linear-gradient(#053a24,80%,#000000);
     background-size:25% auto;
 }
+div#top{
+    height: 0em;
+}
 header{
     position: sticky;
     top: 0;
@@ -10,6 +13,8 @@ header{
 }
 footer{
     background: #041d42;
+    padding: 0.5em;
+    
 }
 a#totop{
     color: #ffffff;
