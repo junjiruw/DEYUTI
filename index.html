@@ -38,13 +38,16 @@
                 border-radius:1em
             }
             a#boti{
-                color: #bbbbbb;
+                color: #aaaaaa;
                 background: #000000;
                 border-radius:0.3em
             }
-            a#boti:hover{
-                color: #ffffff;
-            }
+            a#boti:hover{color: #ffffff;}
+            span#bikkuri{display: none;}
+            a#boti:hover span#bikkuri{display: inline;}
+            span#notbikkuri{display: inline;}
+            a#boti:hover span#notbikkuri{ display: none;}
+            
         </style>
     </head>
     <body>
@@ -100,26 +103,30 @@
                 </div>
             </dl>
             
-            
+            <a id="boti" href= "https://sites.google.com/view/junjiruw" >
+                旧サイト<span id="notbikkuri">（三⦿ω⦿三）</span><span id="bikkuri">（三❗ω❗三）</span>
+            </a>
             
             
 
             
-
+            
 
             <footer>
-                <a id="twitter" href="https://twitter.com/share" class="twitter-share-button" data-size="large">
-                    Tweet
-                </a> 
-                <script>
-                    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
-                </script>
-                <a href="#top" id="totop"> 
-                    ページトップに移動
-                </a>
-                <a id="boti" href= "https://sites.google.com/view/junjiruw" >
-                    旧サイト
-                </a>
+                <ul id="footul">
+                    <li id="twitter">
+                        <a  href="https://twitter.com/share" class="twitter-share-button">
+                        </a> <!--本文はtitleになるらしい-->
+                        <script>
+                            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+                        </script>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページトップに移動
+                        </a>
+                    </li>
+                </ul>
             </footer>
         </div>
     </body>
