@@ -17,7 +17,7 @@
                 color: #dfdf3e;
                 width: 100%;
             }
-            span#span1::after{
+            span#span1::before{
                 content: '';/*何も入れない。背景画像として出力*/
                 display: inline-block;/*インライン要素のままだと大きさ決められないのでインラインブロックに*/
                 width: 7.5em;/*幅*/
@@ -36,13 +36,6 @@
                 padding: 1em;
                 margin: 1em;
                 border-radius:1em
-            }
-            span#span2{
-                color: #50ff50;
-                font-size: 150%;
-                background: #063b16;
-                padding: 0.2em;
-                border-radius:0.5em
             }
             a#boti{
                 color: #bbbbbb;
@@ -105,17 +98,6 @@
                     </dt>
                     <dd>Twitterは💩みたいなことしか言ってないです。githubにはこのサイトがあります。</dd>
                 </div>
-                <div>
-                    <dt>
-                        <span id="span2">
-                            ゾンビ⇒
-                            <a id="boti" href= "https://sites.google.com/view/junjiruw" >
-                                ♰墓場♰
-                            </a>
-                        </span>
-                    </dt>
-                    <dd>旧サイトです。ゎぉ</dd>
-                </div>
             </dl>
             
             
@@ -126,7 +108,7 @@
 
 
             <footer>
-                <a id="twitter" href="https://twitter.com/share" class="twitter-share-button" data-url="https://junjiruw.github.io/DEYUTI/" data-text="JUN汁ｗおもちゃばこ。" data-size="large">
+                <a id="twitter" href="https://twitter.com/share" class="twitter-share-button" data-size="large">
                     Tweet
                 </a> 
                 <script>
@@ -134,6 +116,9 @@
                 </script>
                 <a href="#top" id="totop"> 
                     ページトップに移動
+                </a>
+                <a id="boti" href= "https://sites.google.com/view/junjiruw" >
+                    旧サイト
                 </a>
             </footer>
         </div>
