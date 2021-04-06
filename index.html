@@ -16,6 +16,7 @@
             span#span1 {
                 color: #dfdf3e;
                 width: 100%;
+                box-shadow:0px 0px 10px ;
             }
             span#span1::before{
                 content: '';/*何も入れない。背景画像として出力*/
@@ -26,6 +27,7 @@
                 background-repeat: no-repeat;
                 background-size: contain;/*幅いっぱいに表示*/
                 vertical-align: baseline;/*ちょい上に表示*/
+                box-shadow:0px 0px 10px;
             }
             dl#links{
                 padding: 0em;
@@ -35,19 +37,24 @@
                 background: #0f4936;
                 padding: 1em;
                 margin: 1em;
-                border-radius:1em
+                border-radius:1em;
+                box-shadow:0px 0px 0px 5px #0f4936 inset,0px 0px 0px 6px #ffffff inset;
             }
             a#boti{
                 color: #aaaaaa;
                 background: #000000;
-                border-radius:0.3em
+                border-radius:0.3em;
             }
-            a#boti:hover{color: #ffffff;}
+            a#boti:hover{color: #ffffff;
+                box-shadow:0px 0px 5px 5px ;
+            }
             span#bikkuri{display: none;}
             a#boti:hover span#bikkuri{display: inline;}
             span#notbikkuri{display: inline;}
             a#boti:hover span#notbikkuri{ display: none;}
-            
+            h2{
+                text-shadow:2px 2px 0px #0f4936,-1px -1px;
+            }
         </style>
     </head>
     <body>

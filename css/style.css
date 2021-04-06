@@ -1,15 +1,23 @@
 /*1emは一文字らしい*/
+html{
+    min-height:100%;
+}
 body {
-    background-image:url("../images/site/junjiruw_pro.png"),linear-gradient(#053a24,80%,#000000);
-    background-size:25% auto;
+    background-image:url("../images/site/junjiruw_pro.png"),
+                    linear-gradient(#053a24,80%,#000000);
+    background-size:12.5% auto;
+    height:auto;
+    width: auto;
+    box-shadow:0px 0px 10px inset;/*あとで消す*/
 }
 div#top{
     height: 0em;
 }
 header{
     position: sticky;
-    top: 0;
+    top: 0;/*ついてくるのに必要*/
     background: #053a24;
+    box-shadow:0px 0px 10px inset;/*あとで消す*/
 }
 footer{
     background: #041d42;
@@ -43,6 +51,7 @@ div#mannaka{
     margin: auto;
     background: #16151a;
     border: 2px solid #ffffff;
+    
 }
 h1{
     color: #ffffff;
