@@ -8,7 +8,7 @@ body {
     background-size:12.5% auto;
     height:auto;
     width: auto;
-    box-shadow:0px 0px 10px inset;/*あとで消す*/
+
 }
 div#top{
     height: 0em;
@@ -17,7 +17,10 @@ header{
     position: sticky;
     top: 0;/*ついてくるのに必要*/
     background: #053a24;
-    box-shadow:0px 0px 10px inset;/*あとで消す*/
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius:10px;
+    box-shadow:0px 0px 0px 2px #ffffff;
 }
 footer{
     background: #041d42;
@@ -51,7 +54,7 @@ div#mannaka{
     margin: auto;
     background: #16151a;
     border: 2px solid #ffffff;
-    
+    font-size: 15px;    
 }
 h1{
     color: #ffffff;

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="技術的なテストをしている">
+        <title>JUN汁ｗおもちゃばこ。/TEST</title>
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/TEST">
+        <meta property="og:title" content="gomibako_for_test"/>
+        <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/test/gomibako_for_test"/>
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiru"><!--フッターに表示されるらしい…どこ？-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="images/site/favicon32.png">
+        <style>
+            #parent_div{
+                text-align: center;
+                margin: 10px;
+            }
+            canvas{
+                background: #ffffff;
+            }
+        </style>
+        <script>
+                onload = function(){kihon();};//ロード時に
+                function kihon() {
+                    var cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
+                    var cnvs2d = cnvs.getContext('2d');//2Dでやる
+                    cnvs2d.strokeStyle="#FF0000";
+                    cnvs2d.strokeRect(10,10,100,100);//JSはまたの機会に勉強すべきだなと思うでゆっちであった。
+                }
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header>
+            <h1>
+                <a href="../index.html">
+                 <img id="junjiruw" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="48">
+                </a>
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+            <p>
+                ここどこじぇー！！！！
+            </p>
+            <div id="parent_div">
+                <canvas id="cnvs">
+                </canvas>
+            </div>
+            <footer>
+                <ul id="footul">
+                    <li id="twitter">
+                        <a  href="https://twitter.com/share" class="twitter-share-button">
+                        </a> <!--本文はtitleになるらしい-->
+                        <script>
+                            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+                        </script>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページトップに移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
