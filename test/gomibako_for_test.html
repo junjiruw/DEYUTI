@@ -34,13 +34,17 @@
             }
         </style>
         <script>
-                onload = function(){kihon();};//ロード時に
-                function kihon() {
-                    var cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
-                    var cnvs2d = cnvs.getContext('2d');//2Dでやる
-                    cnvs2d.strokeStyle="#FF0000";
-                    cnvs2d.strokeRect(10,10,100,100);//JSはまたの機会に勉強すべきだなと思うでゆっちであった。
+            
+            onload = function(){kihon();};//ロード時に
+            function kihon() {
+                var cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
+                var cnvs2d = cnvs.getContext('2d');//2Dでやる
+                cnvs2d.strokeStyle="#FF0000";
+                cnvs2d.strokeRect(10,10,100,100);//JSはまたの機会に勉強すべきだなと思うでゆっちであった。
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+                    var p = document.getElementById('mannaka').style.fontSize="3.5vw";
                 }
+            }
         </script>
     </head>
     <body>
