@@ -57,9 +57,12 @@ div#mannaka{
     color: #ffffff;   
     font-size: 16px;    
 }
-@media (max-width: 400px) {
+@media (max-width: 500px) {
     /* 横幅が400px以下の場合に適用するスタイル */
-    div#mannaka { font-size:4vw;/*全体を100vwとする。*/ }
+    /*でゆのスマホめっちゃ解像度高かった…2000かける1080?!?!!??!?!/*/
+    /*結局のところ解像度じゃなくてディスプレイのでかさが知りてぇんだよなぁ*/
+    /*スマホかどうかはJSで取得できるらしいのでいずれやる。そゆこと。*/
+    div#mannaka { font-size:3.5vw;/*全体を100vwとする。*/ }
  }
 h1{
     color: #ffffff;
