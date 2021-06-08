@@ -53,7 +53,8 @@ div#mannaka{
     width: 90%;
     margin: auto;
     background: #16151a;
-    border: 2px solid #ffffff;   
+    border: 2px solid #ffffff;
+    color: #ffffff;   
     font-size: 16px;    
 }
 @media (max-width: 400px) {
