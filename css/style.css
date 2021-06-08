@@ -53,9 +53,13 @@ div#mannaka{
     width: 90%;
     margin: auto;
     background: #16151a;
-    border: 2px solid #ffffff;
-    font-size: 15px;    
+    border: 2px solid #ffffff;   
+    font-size: 16px;    
 }
+@media (max-width: 400px) {
+    /* 横幅が400px以下の場合に適用するスタイル */
+    div#mannaka { font-size:4vw;/*全体を100vwとする。*/ }
+ }
 h1{
     color: #ffffff;
 }
