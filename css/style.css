@@ -6,6 +6,8 @@ body {
     background-image:url("../images/site/junjiruw_pro.png"),
                     linear-gradient(#053a24,80%,#000000);
     background-size:12.5% auto;
+    background-repeat:repeat, repeat;
+    background-attachment: scroll,fixed;
     height:auto;
     width: auto;
 

@@ -17,6 +17,17 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
+            body {
+                background-image:url("../images/site/junjiruw_pro.png"),
+                url("../images/site/junjiruw_pro_rev.png"),
+                linear-gradient(#053a24,80%,#000000);
+                
+                background-size:10% 120%,10% 120%,auto;
+                background-position: -2% 70%, 102% 0%;/*0%で画像の左が画面端。100%で右が画面端*/
+                background-repeat:no-repeat,no-repeat,repeat;
+                background-attachment: fixed,fixed,fixed;
+                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+            }
             div#mannaka{
                 border-image: linear-gradient(rgba(255,255,255,1), rgba(0,30,100,1));/*透明は黒になるっぽいね*/
                 border-image-slice: 1;
@@ -28,6 +39,21 @@
             div#parent_div{
                 text-align: center;
                 margin: 10px;
+            }
+            div#table{
+                display: table;
+                padding: 1px;
+                background:#0f4936;
+            }
+            div#table p{
+                display: table-row;
+                background:#0f4936;
+                padding: 1px;
+            }
+            div#table img{
+                margin: 1px;
+                display: table-cell;
+                display: inline;
             }
             canvas{
                 background: #ffffff;
@@ -41,8 +67,8 @@
                 var cnvs2d = cnvs.getContext('2d');//2Dでやる
                 cnvs2d.strokeStyle="#FF0000";
                 cnvs2d.strokeRect(10,10,100,100);//JSはまたの機会に勉強すべきだなと思うでゆっちであった。
-                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
-                    var p = document.getElementById('mannaka').style.fontSize="3.5vw";
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
+                    var p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
                 }
             }
         </script>
@@ -52,19 +78,35 @@
         <header>
             <h1>
                 <a href="../index.html">
-                 <img id="junjiruw" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="48">
+                    <img id="junjiruw" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="48">
                 </a>
                 JUN汁ｗおもちゃばこ。
             </h1>
         </header>
         <div id="mannaka">
-            <p>
-                ここどこじぇー！！！！
-            </p>
+            このページはテスト用です。
+            
+            <div id="table">
+                <p>
+                    <img src="../images/site/favicon32.png">
+                    <img src="../images/site/favicon32.png">
+                    <img src="../images/site/favicon32.png">
+                    俺たち
+                </p>
+                <p>
+                    <img src="../images/site/favicon32.png">
+                    <img src="../images/site/favicon32.png">
+                    <img src="../images/site/favicon32.png">
+                    でゆっち６兄弟
+                    <img src="../images/site/junjiruw_pro.png" height="32px">
+                </p>
+            </div>
+            Canvasは特になにも実装されてないのです
             <div id="parent_div">
                 <canvas id="cnvs">
                 </canvas>
             </div>
+
             <footer>
                 <ul id="footul">
                     <li id="twitter">
