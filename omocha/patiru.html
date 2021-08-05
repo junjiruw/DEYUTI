@@ -17,8 +17,18 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
+            div#patiru{
+                background: #ffffff;
+                display: inline-block;
+                height: 66px;/*なんでかしらないけど拡大前のに引きずられとる*/
+                padding:232px;
+
+            }
             canvas{
                 background: #fff7e6;
+                transform:scale(8,8);
+                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+
             }
         </style>
         <script>
@@ -30,25 +40,14 @@
                 cnvs2d = cnvs.getContext('2d');//2Dでやる
 
                 cnvs2d.fillStyle="#de4f4a";
-                cnvs2d.beginPath();
-                cnvs2d.arc(20, 5, 4, 0, Math.PI*2);
-                cnvs2d.fill();
-                cnvs2d.beginPath();
-                cnvs2d.arc(45, 5, 4, 0, Math.PI*2);
-                cnvs2d.fill();
-                cnvs2d.beginPath();
-                cnvs2d.arc(32, 30, 4, 0, Math.PI*2);
-                cnvs2d.fill();
-                cnvs2d.beginPath();
-                cnvs2d.arc(32, 17, 4, 0, Math.PI*2);
-                cnvs2d.fill();
-                
                 patiru= new Image();
                 patiru.src="../images/omocha/patiru/patiru64.png";
                 patiru.onload=function(){
                     cnvs2d.drawImage(patiru,0,0);
                 };
-                
+                pati();
+
+                cnvs2d.imageSmoothingEnabled = false;
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
                     const p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
                 }
@@ -60,7 +59,7 @@
                 for (let index = 0; index < 4; index++) {
                     x_rand=Math.random()*25+20;
                     y_rand=Math.random()*25+5;
-                    for (let i = 0; i < 100; i++) {//ごり押しアンチエイリアシング
+                    for (let i = 0; i < 100; i++) {//ごり押しアンチアンチエイリアシング
                         cnvs2d.beginPath();
                         cnvs2d.arc(x_rand, y_rand, 3, 0, Math.PI*2);
                         cnvs2d.fill();
@@ -81,12 +80,11 @@
             </h1>
         </header>
         <div id="mannaka">
-            No.327 パッチール。
-            <div>
+            No.327 パッチール。<input type="button" value="パチ～" onclick="pati();">
+            <div id="patiru">
                 <canvas id="cnvs" width="64" height="64">
                 </canvas>
-                <input type="button" value="パチ～" onclick="pati();">
-
+                
             </div>
             <br>実装がひどくても、動けばいいのです（天才でゆっち）
             <footer>
@@ -100,7 +98,7 @@
                     </li>
                     <li>
                         <a href="#top" id="totop"> 
-                            ページトップに移動
+                            ページのトップに移動
                         </a>
                     </li>
                 </ul>
