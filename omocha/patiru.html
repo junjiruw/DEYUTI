@@ -54,11 +54,17 @@
                 }
             }
             function pati(){
+                var x_rand=0;
+                var y_rand=0;
                 cnvs2d.clearRect(0,0,64,64);
                 for (let index = 0; index < 4; index++) {
-                    cnvs2d.beginPath();
-                    cnvs2d.arc(Math.random()*25+20, Math.random()*25+5, 4, 0, Math.PI*2);
-                    cnvs2d.fill();
+                    x_rand=Math.random()*25+20;
+                    y_rand=Math.random()*25+5;
+                    for (let i = 0; i < 100; i++) {//ごり押しアンチエイリアシング
+                        cnvs2d.beginPath();
+                        cnvs2d.arc(x_rand, y_rand, 3, 0, Math.PI*2);
+                        cnvs2d.fill();
+                    }
                 }
                 cnvs2d.drawImage(patiru,0,0);
             }
