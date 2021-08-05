@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="一日一ポケモンをやろう">
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/パッチール</title>
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/patiru">
+        <meta property="og:title" content="1day1poke_patiru"/>
+        <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/patiru.html"/>
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiru"><!--フッターに表示されるらしい…どこ？-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+            canvas{
+                background: #fff7e6;
+            }
+        </style>
+        <script>
+            var cnvs=null;
+            var cnvs2d=null;
+            var patiru=null;
+            window.onload = function(){
+                cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
+                cnvs2d = cnvs.getContext('2d');//2Dでやる
+
+                cnvs2d.fillStyle="#de4f4a";
+                cnvs2d.beginPath();
+                cnvs2d.arc(20, 5, 4, 0, Math.PI*2);
+                cnvs2d.fill();
+                cnvs2d.beginPath();
+                cnvs2d.arc(45, 5, 4, 0, Math.PI*2);
+                cnvs2d.fill();
+                cnvs2d.beginPath();
+                cnvs2d.arc(32, 30, 4, 0, Math.PI*2);
+                cnvs2d.fill();
+                cnvs2d.beginPath();
+                cnvs2d.arc(32, 17, 4, 0, Math.PI*2);
+                cnvs2d.fill();
+                
+                patiru= new Image();
+                patiru.src="../images/omocha/patiru/patiru64.png";
+                patiru.onload=function(){
+                    cnvs2d.drawImage(patiru,0,0);
+                };
+                
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
+                    const p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
+                }
+            }
+            function pati(){
+                cnvs2d.clearRect(0,0,64,64);
+                for (let index = 0; index < 4; index++) {
+                    cnvs2d.beginPath();
+                    cnvs2d.arc(Math.random()*25+20, Math.random()*25+5, 4, 0, Math.PI*2);
+                    cnvs2d.fill();
+                }
+                cnvs2d.drawImage(patiru,0,0);
+            }
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header>
+            <h1>
+                <a href="../index.html">
+                    <img id="junjiruw" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="48">
+                </a>
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+            No.327 パッチール。
+            <div>
+                <canvas id="cnvs" width="64" height="64">
+                </canvas>
+                <input type="button" value="パチ～" onclick="pati();">
+
+            </div>
+            <br>実装がひどくても、動けばいいのです（天才でゆっち）
+            <footer>
+                <ul id="footul">
+                    <li id="twitter">
+                        <a  href="https://twitter.com/share" class="twitter-share-button">
+                        </a> <!--本文はtitleになるらしい-->
+                        <script>
+                            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+                        </script>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページトップに移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
