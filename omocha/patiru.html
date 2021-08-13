@@ -20,53 +20,162 @@
             div#patiru{
                 background: #ffffff;
                 display: inline-block;
-                height: 66px;/*なんでかしらないけど拡大前のに引きずられとる*/
-                padding:232px;
+                width: 50%;
+                padding:5px;
 
             }
             canvas{
                 background: #fff7e6;
-                transform:scale(8,8);
+                width: 100%;
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-
+            }
+            canvas#big_cnvs{
+                width:30%;
+            }
+            div#migi{
+                display: inline-block;
+                width: 40%;
+                vertical-align: top;
+            }
+            div#param{
+                display: inline-block;
+                width: 100%;
+                
+                background-color: #444444;
+            }
+            div#param label{
+                display:block;
+                text-align: right;
+                width: 16em;
+            }
+            div#param label input{
+                width: 6em;
             }
         </style>
         <script>
             var cnvs=null;
             var cnvs2d=null;
+            var big_cnvs=null;
+            var big_cnvs2D=null;
             var patiru=null;
+            var imageData=null;
+            var iroti_flag=0;
             window.onload = function(){
                 cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
                 cnvs2d = cnvs.getContext('2d');//2Dでやる
-
-                cnvs2d.fillStyle="#de4f4a";
+                big_cnvs= document.getElementById('big_cnvs');//保存するときにでかくしたい
+                big_cnvs2d = big_cnvs.getContext('2d');
+                
                 patiru= new Image();
                 patiru.src="../images/omocha/patiru/patiru64.png";
                 patiru.onload=function(){
-                    cnvs2d.drawImage(patiru,0,0);
+                    pati();
                 };
-                pati();
-
                 cnvs2d.imageSmoothingEnabled = false;
+                big_cnvs2d.imageSmoothingEnabled = false;
+
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
                     const p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
                 }
             }
+
             function pati(){
                 var x_rand=0;
                 var y_rand=0;
-                cnvs2d.clearRect(0,0,64,64);
-                for (let index = 0; index < 4; index++) {
-                    x_rand=Math.random()*25+20;
+                cnvs2d.fillStyle="#fff7e6";
+                cnvs2d.fillRect(0,0,64,64);//肌色で塗りつぶし
+                cnvs2d.fillStyle="#de4f4a";
+                let moyou_hankei= document.getElementById('hankei');
+                let moyou_kazu= document.getElementById('kazu');
+                for (let index = 0; index < moyou_kazu.value; index++) {
+                    x_rand=Math.random()*41+10;
                     y_rand=Math.random()*25+5;
-                    for (let i = 0; i < 100; i++) {//ごり押しアンチアンチエイリアシング
-                        cnvs2d.beginPath();
-                        cnvs2d.arc(x_rand, y_rand, 3, 0, Math.PI*2);
-                        cnvs2d.fill();
+                    cnvs2d.beginPath();
+                    cnvs2d.arc(x_rand, y_rand, moyou_hankei.value, 0, Math.PI*2);
+                    cnvs2d.fill();
+                }
+                imageData= cnvs2d.getImageData(0,0,64,64);//キャンバスの色全部とる
+                for (let index_x = 10; index_x < 55; index_x++) {//これxとyの順番あってるの？笑
+                    for (let index_y = 0; index_y < 40; index_y++) {
+                        if(imageData.data[4*(index_y*64+index_x)]!==255){//ちょっとでも下地と違う色は
+                            imageData.data[4*(index_y*64+index_x)]=222;//アンチアンチエイリアシング
+                            imageData.data[4*(index_y*64+index_x)+1]=79;
+                            imageData.data[4*(index_y*64+index_x)+2]=74;
+                        }
                     }
                 }
-                cnvs2d.drawImage(patiru,0,0);
+                cnvs2d.putImageData(imageData, 0, 0);//アンチアンチエイリアシングを反映
+                cnvs2d.drawImage(patiru,0,0);//画像貼るね
+                
+                if(iroti_flag==1){//緑が好きな人には
+                    imageData= cnvs2d.getImageData(0,0,64,64);//キャンバスの色全部とる
+                    for (let index_x = 0; index_x < 64; index_x++) {//これxとyの順番あってるの？笑
+                        for (let index_y = 0; index_y < 64; index_y++) {
+                            if(imageData.data[4*(index_y*64+index_x)]==222){//赤色を#9add32に
+                                imageData.data[4*(index_y*64+index_x)]=154;
+                                imageData.data[4*(index_y*64+index_x)+1]=221;
+                                imageData.data[4*(index_y*64+index_x)+2]=32;
+                            }
+                        }
+                    }
+                    cnvs2d.putImageData(imageData, 0, 0);
+                }
             }
+
+            function iroti(){
+                imageData= cnvs2d.getImageData(0,0,64,64);//キャンバスの色全部とる
+                if(iroti_flag==0){
+                    for (let index_x = 0; index_x < 64; index_x++) {//これxとyの順番あってるの？笑
+                        for (let index_y = 0; index_y < 64; index_y++) {
+                            if(imageData.data[4*(index_y*64+index_x)]==222){//赤色を#9add32に
+                                imageData.data[4*(index_y*64+index_x)]=154;
+                                imageData.data[4*(index_y*64+index_x)+1]=221;
+                                imageData.data[4*(index_y*64+index_x)+2]=32;
+                            }
+                        }
+                        iroti_flag=1;
+                    }
+                }else{
+                    for (let index_x = 0; index_x < 64; index_x++) {//これxとyの順番あってるの？笑
+                        for (let index_y = 0; index_y < 64; index_y++) {
+                            if(imageData.data[4*(index_y*64+index_x)]==154){//緑色をもとに
+                                imageData.data[4*(index_y*64+index_x)]=222;
+                                imageData.data[4*(index_y*64+index_x)+1]=79;
+                                imageData.data[4*(index_y*64+index_x)+2]=74;
+                            }
+                        }
+                        iroti_flag=0;
+                    }
+                }
+                cnvs2d.putImageData(imageData, 0, 0);//反映
+            }
+
+            function hozon(){
+                big_cnvs2d.drawImage(cnvs,0,0,64,64,0,0,512,512);
+                
+                var DL_URL = document.createElement('a');
+                DL_URL.href=big_cnvs.toDataURL("image/png");
+                DL_URL.download = 'patiru_deyuti.png';//ファイル名決めてる
+                DL_URL.click();//強制クリック
+                
+            }
+            function shiea(){
+                if (navigator.share == undefined) {
+                    alert("ブラウザが対応してねぇんじゃねえかな");
+                }else{
+                    big_cnvs2d.drawImage(cnvs,0,0,64,64,0,0,512,512);
+                    big_cnvs.toBlob( (blob) => 
+                    {const shareImg = new File([blob], 'patiru_deyuti.png', {type: 'image/png'})//コピペしたのでよく知らない
+                        window.navigator.share({
+                        title: "パッチール作成",
+                        text: "Myパッチールを作ったよ！　#patiru_deyuti",
+                        url: "https://junjiruw.github.io/DEYUTI/omocha/patiru.html",
+                        files: [shareImg],
+                        });
+                    })
+                }
+            }
+        
         </script>
     </head>
     <body>
@@ -80,13 +189,34 @@
             </h1>
         </header>
         <div id="mannaka">
-            No.327 パッチール。<input type="button" value="パチ～" onclick="pati();">
+            <h1>一日一ポケモン：No.327 パッチール</h1>
+            <p>
+                個体ごとにランダムに模様が生成されるポケモンで、全種類そろえるには4294901760体捕まえる必要があるらしい。
+            </p>
+            <p id="patiru_cnvs">
             <div id="patiru">
-                <canvas id="cnvs" width="64" height="64">
-                </canvas>
-                
+                <canvas id="cnvs" width="64" height="64"></canvas>
             </div>
-            <br>実装がひどくても、動けばいいのです（天才でゆっち）
+            <div id="migi">
+                <div id="param" >
+                    最強のパッチールを作ろう！
+
+                    <label>模様の半径(小数もいけるぞ)：<input type="number" value="3" id="hankei" min="0"></label>
+                    <label>模様の数：<input type="number"  value="4" id="kazu" min="0"></label>
+                    
+                    <input type="button" value="生成！" onclick="pati();">
+                    <input type="button" value="色違い" onclick="iroti();">
+                    <input type="button" value="画像保存" onclick="hozon();">
+                </div>
+                保存されるよ：<canvas id="big_cnvs" width="512" height="512"></canvas>
+                <br>
+                <br>
+                これさ、ツイートしたいけどそういうのはないわけ？
+                <br>
+                あったよ！シェアボタン！<input type="button" value="画像シェア" onclick="shiea();">でかした！
+                <br><br>なんだこれ？！？！？！？！？！？
+            </div>
+            </p>
             <footer>
                 <ul id="footul">
                     <li id="twitter">
