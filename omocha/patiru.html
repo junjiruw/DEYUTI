@@ -47,7 +47,7 @@
             }
             div.param_div{
                 text-align: right;
-                width: 30vw;
+                width: 60vw;
             }
             input.param_input{
                 width: 5vw;
@@ -84,19 +84,17 @@
                     obj.style.width="100%";
                     obj = document.getElementById("migi");
                     obj.style.width="100%";
+
                     obj=document.getElementsByTagName("input");
                     for(var i in obj){
                             obj[i].style.fontSize ="3.5vw";
                     }
-                    obj=document.getElementsByClassName("param_div");
-                    for(var i in obj){
-                            obj[i].style.width ="60vw";
-                    }
-                    obj=document.getElementsByClassName("param_input");
-                    for(var i in obj){
-                            obj[i].style.width ="10vw";
-                    }
+
                 }else{
+                    var obj=document.getElementsByClassName("param_div");
+                    for(var i in obj){
+                            obj[i].style.width ="30vw";
+                    }
                 }
             }
 

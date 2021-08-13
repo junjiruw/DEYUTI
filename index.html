@@ -62,6 +62,11 @@
             onload = function(){
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
                     var p = document.getElementById('mannaka').style.fontSize="3.5vw";
+
+                    obj=document.getElementsByClassName("a_img");
+                    for(var i in obj){
+                            obj[i].style.width ="50vw";
+                    }
                 }
             }
         </script>
@@ -92,11 +97,11 @@
                 <div>
                     <dt>
                         <a href="https://pixiv.me/junjiruw">
-                            <img src="images/site/pixiv.png" alt="ぴくしぶ" width="240">
+                            <img src="images/site/pixiv.png" alt="ぴくしぶ" width="240" class="a_img">
                         </a>
                         　
                         <a href="https://drive.google.com/open?id=1-tLycg-VGA3n3xdHOq7dU8EvQ5WmNaRd">
-                            <img src="images/site/gifdl.gif" alt="gifのDL" width="240">
+                            <img src="images/site/gifdl.gif" alt="gifのDL" width="240" class="a_img">
                         </a>
                     </dt>
                     <dd>絵です。ｱﾆﾒｰｼｮﾝをダウンロードしたいときは緑のやつ。</dd>
@@ -104,7 +109,7 @@
                 <div>
                     <dt>
                         <a href="https://junjiruw.booth.pm/">
-                            <img src="images/site/booth.png" alt="booth" width="240">
+                            <img src="images/site/booth.png" alt="booth" width="240" class="a_img">
                         </a>
                     </dt>
                     <dd>JUN汁ｗ屋さんではグッズが買えます。買うより作ったほうが安いです。</dd>
@@ -112,11 +117,11 @@
                 <div>
                     <dt>
                         <a href="https://twitter.com/junjiruw">
-                            <img src="images/site/twitter.png" alt="ついった" width="240">
+                            <img src="images/site/twitter.png" alt="ついった" width="240" class="a_img">
                         </a>
                         　
                         <a href="https://github.com/junjiruw">
-                            <img src="images/site/github.png" alt="github" width="240">
+                            <img src="images/site/github.png" alt="github" width="240" class="a_img">
                         </a>
                     </dt>
                     <dd>Twitterは💩みたいなことしか言ってないです。githubにはこのサイトがあります。</dd>
