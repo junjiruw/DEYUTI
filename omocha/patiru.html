@@ -46,10 +46,10 @@
             div#param label{
                 display:block;
                 text-align: right;
-                width: 16em;
+                width: 15em;
             }
             div#param label input{
-                width: 6em;
+                width: 3em;
             }
         </style>
         <script>
@@ -80,8 +80,11 @@
                     obj.style.width="100%";
                     obj = document.getElementById("migi");
                     obj.style.width="100%";
+                    obj=document.getElementsByTagName("input");
+                    for(var i in obj){
+                            obj[i].style.fontSize ="3.5vw";
+                    }
                 }else{
-                    
                 }
             }
 
@@ -165,6 +168,13 @@
                 DL_URL.click();//強制クリック
                 
             }
+            function hozon2(){
+                var DL_URL = document.createElement('a');
+                DL_URL.href=big_cnvs.toDataURL("image/png");
+                DL_URL.download = 'patiru_deyuti.png';//ファイル名決めてる
+                DL_URL.click();//強制クリック
+            }
+
             function shiea(){
                 if (navigator.share == undefined) {
                     alert("ブラウザが対応してねぇんじゃねえかな");
@@ -214,11 +224,12 @@
                     <input type="button" value="色違い" onclick="iroti();">
                     <input type="button" value="画像保存" onclick="hozon();">
                 </div>
-                保存されるよ：<canvas id="big_cnvs" width="512" height="512"></canvas>
+                保存されるよ：<canvas id="big_cnvs" width="512" height="512"></canvas><input type="button" value="←を保存" onclick="hozon2();">
                 <br>
                 <br>
                 <input type="button" value="画像シェア" onclick="shiea();">
-                <br>PCからシェアボタンを押すとあなたの望まない挙動をする確率が99%です。
+                <br>iPhoneでシェアを押すと画像がシェアされまへん。保存して手動で添付してください。
+                <br>（パソコンからはそもそも意味不明なことになるか動かないです）
             </div>
             </p>
             <footer>
