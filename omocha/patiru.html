@@ -165,14 +165,14 @@
                 DL_URL.click();//強制クリック
                 
             }
-            function shiea(){
+            async function shiea(){
                 if (navigator.share == undefined) {
                     alert("ブラウザが対応してねぇんじゃねえかな");
                 }else{
                     big_cnvs2d.drawImage(cnvs,0,0,64,64,0,0,512,512);
                     big_cnvs.toBlob( (blob) => 
                     {const shareImg = new File([blob], 'patiru_deyuti.png', {type: 'image/png'})//コピペしたのでよく知らない
-                        window.navigator.share({
+                        await window.navigator.share({
                         title: "パッチール作成",
                         text: "Myパッチールを作ったよ！　#patiru_deyuti",
                         url: "https://junjiruw.github.io/DEYUTI/omocha/patiru.html",
