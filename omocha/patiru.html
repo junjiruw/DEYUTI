@@ -67,6 +67,7 @@
             var iroti_flag=0;
             
             window.onload = function(){
+                document.getElementById("not_muteki_btn").style.display="none";
                 cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
                 cnvs2d = cnvs.getContext('2d');//2Dでやる
                 big_cnvs= document.getElementById('big_cnvs');//保存するときにでかくしたい
@@ -88,13 +89,13 @@
                     obj.style.width="100%";
 
                     obj=document.getElementsByTagName("input");
-                    for(var i in obj){
+                    for(let i = 0; i < obj.length; i++){
                             obj[i].style.fontSize ="3.5vw";
                     }
 
                 }else{
                     var obj=document.getElementsByClassName("param_div");
-                    for(var i in obj){
+                    for(let i = 0; i < obj.length; i++){
                             obj[i].style.width ="30vw";
                     }
                 }
@@ -170,7 +171,9 @@
                 }
                 cnvs2d.putImageData(imageData, 0, 0);//反映
             }
-
+            function kopi(){
+                big_cnvs2d.drawImage(cnvs,0,0,64,64,0,0,512,512);
+            }
             function hozon(){
                 big_cnvs2d.drawImage(cnvs,0,0,64,64,0,0,512,512);
                 
@@ -192,6 +195,21 @@
                     alert("ブラウザが対応してねぇんじゃねえかな");
                 }else{
                     big_cnvs2d.drawImage(cnvs,0,0,64,64,0,0,512,512);
+                    big_cnvs.toBlob( (blob) => 
+                    {const shareImg = new File([blob], 'patiru_deyuti.png', {type: 'image/png'})//コピペしたのでよく知らない
+                        window.navigator.share({
+                        title: "パッチール作成",
+                        text: "Myパッチールを作ったよ！　#patiru_deyuti",
+                        url: "https://junjiruw.github.io/DEYUTI/omocha/patiru.html",
+                        files: [shareImg],
+                        });
+                    })
+                }
+            }
+            function shiea2(){
+                if (navigator.share == undefined) {
+                    alert("ブラウザが対応してねぇんじゃねえかな");
+                }else{
                     big_cnvs.toBlob( (blob) => 
                     {const shareImg = new File([blob], 'patiru_deyuti.png', {type: 'image/png'})//コピペしたのでよく知らない
                         window.navigator.share({
@@ -284,17 +302,25 @@
                     最強のパッチールを作ろう！
                     <div class="param_div">模様の半径(小数もいけるぞ)：<input type="number" value="3" id="hankei" min="0" class="param_input"></div>
                     <div class="param_div">模様の数：<input type="number"  value="4" id="kazu" min="0" class="param_input"></div>
+                    <br>
                     <input type="button" value="生成！" onclick="pati();">
                     <input type="button" value="色違い" onclick="irotigai();">
                     <input type="button" value="画像保存" onclick="hozon();">
+                    <input type="button" value="画像シェア" onclick="shiea();">
                 </div>
-                保存されるよ：<canvas id="big_cnvs" width="512" height="512"></canvas><input type="button" value="←を保存" onclick="hozon2();">
-                <br>
-                <br>
-                <input type="button" value="画像シェア" onclick="shiea();">
                 <br>iPhoneでシェアを押すと画像がシェアされまへん。保存して手動で添付してください。
                 <br>（パソコンからはそもそも意味不明なことになるか動かないです）
-                <br><br><input type="button" value="無敵" onclick="muteki();" id="muteki_btn" ><input type="button" value="無敵解除" onclick="not_muteki();" id="not_muteki_btn" disabled>
+                <br>
+                <input type="button" value="→コピー" onclick="kopi();">
+                <canvas id="big_cnvs" width="512" height="512"></canvas>
+                <input type="button" value="←を保存" onclick="hozon2();">
+                <input type="button" value="←をシェア" onclick="shiea2();">
+                <br>
+                <br>
+                
+                
+                <br><br><input type="button" value="無敵" onclick="muteki();" id="muteki_btn" >
+                <input type="button" value="無敵解除" onclick="not_muteki();" id="not_muteki_btn" disabled>
             </div>
             </p>
             <footer>
