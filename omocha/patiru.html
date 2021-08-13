@@ -76,6 +76,8 @@
 
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
                     const p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
+                    $("#patiru").width('100%'); 
+                    $("#migi").width('100%');
                 }
             }
 
@@ -211,10 +213,8 @@
                 保存されるよ：<canvas id="big_cnvs" width="512" height="512"></canvas>
                 <br>
                 <br>
-                これさ、ツイートしたいけどそういうのはないわけ？
-                <br>
-                あったよ！シェアボタン！<input type="button" value="画像シェア" onclick="shiea();">でかした！
-                <br><br>なんだこれ？！？！？！？！？！？
+                <input type="button" value="画像シェア" onclick="shiea();">
+                <br>PCからシェアボタンを押すとあなたの望まない挙動をする確率が99%です。
             </div>
             </p>
             <footer>
