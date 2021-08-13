@@ -17,6 +17,9 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
+            div#mannaka{
+                touch-action: manipulation;
+            }
             div#patiru{
                 background: #ffffff;
                 display: inline-block;
@@ -47,9 +50,13 @@
                 display:block;
                 text-align: right;
                 width: 15em;
+                pointer-events: none;
             }
             div#param label input{
                 width: 3em;
+            }
+            input{
+                margin: 0.2em;
             }
         </style>
         <script>
