@@ -203,13 +203,12 @@
                     })
                 }
             }
-            var countup;
-            const n_m_btn=document.getElementById("not_muteki_btn");
-            const m_btn=document.getElementById("muteki_btn");
-            
+            var countup;            
             function muteki(){
                 document.getElementById("not_muteki_btn").removeAttribute("disabled");
+                document.getElementById("not_muteki_btn").style.display="block";
                 document.getElementById("muteki_btn").setAttribute("disabled",true);
+                document.getElementById("muteki_btn").style.display="none";
                 var count_i=0;
                 countup =setInterval(
                     function(){
@@ -255,6 +254,8 @@
             function not_muteki(){
                 document.getElementById("muteki_btn").removeAttribute("disabled");
                 document.getElementById("not_muteki_btn").setAttribute("disabled",true);
+                document.getElementById("muteki_btn").style.display="block";
+                document.getElementById("not_muteki_btn").style.display="none";
                 clearInterval(countup);
             }
         </script>
