@@ -45,11 +45,11 @@
                 width: 100%;
                 background-color: #444444;
             }
-            div#param div div{
+            div.param_div{
                 text-align: right;
                 width: 30vw;
             }
-            div#param div div input{
+            input.param_input{
                 width: 5vw;
             }
             input{
@@ -87,6 +87,14 @@
                     obj=document.getElementsByTagName("input");
                     for(var i in obj){
                             obj[i].style.fontSize ="3.5vw";
+                    }
+                    obj=document.getElementsByClassName("param_div");
+                    for(var i in obj){
+                            obj[i].style.width ="60vw";
+                    }
+                    obj=document.getElementsByClassName("param_input");
+                    for(var i in obj){
+                            obj[i].style.width ="10vw";
                     }
                 }else{
                 }
@@ -220,10 +228,8 @@
             <div id="migi">
                 <div id="param" >
                     最強のパッチールを作ろう！
-                    <div>
-                        <div>模様の半径(小数もいけるぞ)：<input type="number" value="3" id="hankei" min="0"></div>
-                        <div>模様の数：<input type="number"  value="4" id="kazu" min="0"></div>
-                    </div>
+                    <div class="param_div">模様の半径(小数もいけるぞ)：<input type="number" value="3" id="hankei" min="0" class="param_input"></div>
+                    <div class="param_div">模様の数：<input type="number"  value="4" id="kazu" min="0" class="param_input"></div>
                     <input type="button" value="生成！" onclick="pati();">
                     <input type="button" value="色違い" onclick="iroti();">
                     <input type="button" value="画像保存" onclick="hozon();">
