@@ -43,17 +43,14 @@
             div#param{
                 display: inline-block;
                 width: 100%;
-                
                 background-color: #444444;
             }
-            div#param label{
-                display:block;
+            div#param div div{
                 text-align: right;
-                width: 15em;
-                pointer-events: none;
+                width: 30vw;
             }
-            div#param label input{
-                width: 3em;
+            div#param div div input{
+                width: 5vw;
             }
             input{
                 margin: 0.2em;
@@ -223,10 +220,10 @@
             <div id="migi">
                 <div id="param" >
                     最強のパッチールを作ろう！
-
-                    <label>模様の半径(小数もいけるぞ)：<input type="number" value="3" id="hankei" min="0"></label>
-                    <label>模様の数：<input type="number"  value="4" id="kazu" min="0"></label>
-                    
+                    <div>
+                        <div>模様の半径(小数もいけるぞ)：<input type="number" value="3" id="hankei" min="0"></div>
+                        <div>模様の数：<input type="number"  value="4" id="kazu" min="0"></div>
+                    </div>
                     <input type="button" value="生成！" onclick="pati();">
                     <input type="button" value="色違い" onclick="iroti();">
                     <input type="button" value="画像保存" onclick="hozon();">
