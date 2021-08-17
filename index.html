@@ -57,13 +57,14 @@
             h2{
                 text-shadow:2px 2px 0px #0f4936,-1px -1px;
             }
+
         </style>
         <script>
             onload = function(){
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
                     var p = document.getElementById('mannaka').style.fontSize="3.5vw";
 
-                    obj=document.getElementsByClassName("a_img");
+                    var obj=document.getElementsByClassName("a_img");
                     for(var i in obj){
                             obj[i].style.width ="50vw";
                     }
