@@ -21,7 +21,13 @@
                 color: #dfdf3e;
                 width: 100%;
             }
-            span#span1::before{
+            div#update_div{
+                background-color: #0f4936;
+            }
+            .new_class{
+                color: aqua;
+            }
+            .new_class::before{
                 content: '';/*何も入れない。背景画像として出力*/
                 display: inline-block;/*インライン要素のままだと大きさ決められないのでインラインブロックに*/
                 width: 7.5em;/*幅*/
@@ -30,6 +36,9 @@
                 background-repeat: no-repeat;
                 background-size: contain;/*幅いっぱいに表示*/
                 vertical-align: baseline;/*ちょい上に表示*/
+            }
+            .new_a{
+                color: aqua;
             }
             dl#links{
                 padding: 0em;
@@ -61,7 +70,7 @@
         </style>
         <script>
             onload = function(){
-                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
                     var p = document.getElementById('mannaka').style.fontSize="3.5vw";
 
                     var obj=document.getElementsByClassName("a_img");
@@ -69,6 +78,34 @@
                             obj[i].style.width ="50vw";
                     }
                 }
+
+                fetch("https://api.github.com/repos/junjiruw/DEYUTI/commits")//最新更新情報をgithubから持ってくる
+                .then(res =>{
+                    return res.json();
+                }).then(res =>{
+                    var update_date="更新日時："+res[0].commit.committer.date;
+                    var update_time = document.getElementById('update_time');
+                    update_time.textContent=update_date;
+                    fetch(res[0].url)
+                    .then(res =>{
+                        return res.json();
+                    }).then(res=>{
+                        
+                        var update_ul = document.getElementById('update_ul');
+
+                        for(let i=0;i<res.files.length;i++){
+                            var new_li = document.createElement("li");
+                            
+                            var new_a = document.createElement('a');
+                            new_a.textContent=res.files[i].filename;
+                            new_a.href="https://junjiruw.github.io/DEYUTI/" + res.files[i].filename;
+                            new_a.className="new_a";
+                            new_li.appendChild(new_a);
+
+                            update_ul.append(new_li);
+                        }
+                    });
+                });
             }
         </script>
     </head>
@@ -91,16 +128,28 @@
                     <ruby>JUN汁ｗ<rt>じゅんじる</rt></ruby>おもちゃばこ。<ruby><img src="images/site/favicon32.png" style="height: 1.5em;"><rt>コイツ</rt></ruby>のあかちゃんです。２さい
                 </span>
             </p>
-            <span id="span1">
-                <a href="./omocha/patiru.html">一日一ポケモン：パッチール</a>
-            </span>
+
+            <div id="update_div">
+                <p id="update_time" class="new_class">
+                </p>
+                <ul id="update_ul">
+                </ul>
+                リンク先のページ名表示したほうが親切だと思うな！←できんの？
+            </div>
+            
+            ここから下にページの一覧みたいなの欲しい…欲しくない？
+            <ul>
+                <li><a href="./omocha/patiru.html">一日一ポケモン：パッチール</a></li>
+            </ul>
+            
+            
             <dl id="links">
                 <div>
                     <dt>
                         <a href="https://pixiv.me/junjiruw">
                             <img src="images/site/pixiv.png" alt="ぴくしぶ" width="240" class="a_img">
                         </a>
-                        　
+                        
                         <a href="https://drive.google.com/open?id=1-tLycg-VGA3n3xdHOq7dU8EvQ5WmNaRd">
                             <img src="images/site/gifdl.gif" alt="gifのDL" width="240" class="a_img">
                         </a>
@@ -120,7 +169,7 @@
                         <a href="https://twitter.com/junjiruw">
                             <img src="images/site/twitter.png" alt="ついった" width="240" class="a_img">
                         </a>
-                        　
+                        
                         <a href="https://github.com/junjiruw">
                             <img src="images/site/github.png" alt="github" width="240" class="a_img">
                         </a>

@@ -20,7 +20,11 @@
 
         </style>
         <script>
-
+            onload = function(){
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
+                    var p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
+                }
+            }
         </script>
     </head>
     <body>

@@ -67,10 +67,38 @@
                 var cnvs2d = cnvs.getContext('2d');//2Dでやる
                 cnvs2d.strokeStyle="#FF0000";
                 cnvs2d.strokeRect(10,10,100,100);//JSはまたの機会に勉強すべきだなと思うでゆっちであった。
+
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
                     var p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
                 }
+
+                fetch("https://api.github.com/repos/junjiruw/DEYUTI/commits")
+                .then(res =>{
+                    return res.json();
+                }).then(res =>{
+                    var update_date=res[0].commit.committer.date;
+                    fetch(res[0].url)
+                    .then(res =>{
+                        return res.json();
+                    }).then(res=>{
+                        console.log(res.files.length);
+                        
+                        var update_div = document.getElementById('hoge');
+                        update_div.textContent=update_date;
+
+                        for(let i=0;i<res.files.length;i++){
+                            var new_a = document.createElement('a');
+                            new_a.textContent=res.files[i].filename;
+                            new_a.href="https://junjiruw.github.io/DEYUTI/" + res.files[i].filename;
+                            update_div.appendChild(new_a);
+                        }
+                    });
+                });
+
             }
+
+            
+
         </script>
     </head>
     <body>
@@ -106,6 +134,8 @@
                 <canvas id="cnvs">
                 </canvas>
             </div>
+
+            <div id="hoge">@</div>
 
             <footer>
                 <ul id="footul">
