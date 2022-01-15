@@ -24,10 +24,25 @@
             div#update_div{
                 background-color: #0f4936;
             }
-            .new_class{
-                color: aqua;
+            p#update_time{
+                margin: 0%;
             }
-            .new_class::before{
+            p#update_comment{
+                margin: 0%;
+            }
+            ul#update_ul{
+                border:10px solid #0f4936;
+                background-color: #ffffff;
+                padding: 10px;
+                margin: 0px;
+                list-style-type:none;	
+            }
+            .new_a{
+                
+                color: #0f4936;
+                
+            }
+            .new_a::before{
                 content: '';/*何も入れない。背景画像として出力*/
                 display: inline-block;/*インライン要素のままだと大きさ決められないのでインラインブロックに*/
                 width: 7.5em;/*幅*/
@@ -36,9 +51,6 @@
                 background-repeat: no-repeat;
                 background-size: contain;/*幅いっぱいに表示*/
                 vertical-align: baseline;/*ちょい上に表示*/
-            }
-            .new_a{
-                color: aqua;
             }
             dl#links{
                 padding: 0em;
@@ -83,9 +95,10 @@
                 .then(res =>{
                     return res.json();
                 }).then(res =>{
-                    var update_date="更新日時："+res[0].commit.committer.date;
-                    var update_time = document.getElementById('update_time');
-                    update_time.textContent=update_date;
+                    var update_time=new Date(res[0].commit.committer.date);
+                    document.getElementById('update_time').textContent="更新日時："+update_time.getUTCFullYear()+"年"+(Number(update_time.getMonth())+1)+"月"+update_time.getDate()+"日 "+update_time.getHours()+":"+update_time.getUTCMinutes();
+                    document.getElementById('update_comment').textContent="更新コメント："+res[0].commit.message;
+
                     fetch(res[0].url)
                     .then(res =>{
                         return res.json();
@@ -130,11 +143,10 @@
             </p>
 
             <div id="update_div">
-                <p id="update_time" class="new_class">
-                </p>
-                <ul id="update_ul">
-                </ul>
-                リンク先のページ名表示したほうが親切だと思うな！←できんの？
+                <p id="update_time" class="new_class"></p>
+                <p id="update_comment"></p>
+                <ul id="update_ul" ></ul>
+                
             </div>
             
             ここから下にページの一覧みたいなの欲しい…欲しくない？
