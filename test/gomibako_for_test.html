@@ -7,7 +7,7 @@
         <title>JUN汁ｗおもちゃばこ。/TEST</title>
         <!--OGPとかいうの-->
         <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/TEST">
-        <meta property="og:title" content="gomibako_for_test"/>
+        <meta property="og:title" content="テスト用ページ"/>
         <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
         <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/test/gomibako_for_test"/>
         <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
@@ -72,29 +72,32 @@
                     var p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
                 }
 
-                fetch("https://api.github.com/repos/junjiruw/DEYUTI/commits")
+                fetch("https://junjiruw.github.io/DEYUTI/test/gomibako_for_test.html")
+                .then(res =>{
+                    return res.text();
+                }).then(res=>{//<meta property="og:title" content="ページタイトル"/>って感じに描いてあるはず
+                    title_start=res.indexOf('<meta property="og:title" content="')+34;//<の位置+34が得られる
+                    title_end=res.indexOf('"',title_start+1);
+                    console.log(title_end-title_start);
+                    document.getElementById("hoge").textContent=res.substr(title_start+1,title_end-title_start-1);
+                });
+
+                fetch("https://api.github.com/repos/junjiruw/DEYUTI/contents/omocha")//おもちゃ階層のページをgithubから持ってくる
                 .then(res =>{
                     return res.json();
                 }).then(res =>{
-                    var update_date=res[0].commit.committer.date;
-                    fetch(res[0].url)
-                    .then(res =>{
-                        return res.json();
-                    }).then(res=>{
-                        console.log(res.files.length);
-                        
-                        var update_div = document.getElementById('hoge');
-                        update_div.textContent=update_date;
-
-                        for(let i=0;i<res.files.length;i++){
-                            var new_a = document.createElement('a');
-                            new_a.textContent=res.files[i].filename;
-                            new_a.href="https://junjiruw.github.io/DEYUTI/" + res.files[i].filename;
-                            update_div.appendChild(new_a);
-                        }
-                    });
+                    for(let i=0;i<res.length;i++){
+                        console.log(res[i].path);
+                        fetch("https://junjiruw.github.io/DEYUTI/"+res[i].path)
+                        .then(res2 =>{
+                            return res2.text();
+                        }).then(res2=>{//<meta property="og:title" content="ページタイトル"/>って感じに描いてあるはず
+                            title_start=res2.indexOf('<meta property="og:title" content="')+34;//<の位置+34が得られる
+                            title_end=res2.indexOf('"',title_start+1);
+                            document.getElementById("hoge").textContent=document.getElementById("hoge").textContent+res2.substr(title_start+1,title_end-title_start-1);
+                        });
+                    }
                 });
-
             }
 
             
