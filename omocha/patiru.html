@@ -57,6 +57,7 @@
                 margin: 0.2em;
             }
         </style>
+        <script src="../js/public.js"></script>
         <script>
             var cnvs=null;
             var cnvs2d=null;
@@ -67,6 +68,7 @@
             var iroti_flag=0;
             
             window.onload = function(){
+                onload_functions();
                 document.getElementById("not_muteki_btn").style.display="none";
                 cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
                 cnvs2d = cnvs.getContext('2d');//2Dでやる
@@ -82,7 +84,7 @@
                 big_cnvs2d.imageSmoothingEnabled = false;
 
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
-                    const p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
+                    document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
                     var obj = document.getElementById("patiru");
                     obj.style.width="100%";
                     obj = document.getElementById("migi");
@@ -280,11 +282,15 @@
     </head>
     <body>
         <div id="top"></div>
-        <header>
-            <h1>
-                <a href="../index.html">
-                    <img id="junjiruw" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="48">
-                </a>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
                 JUN汁ｗおもちゃばこ。
             </h1>
         </header>

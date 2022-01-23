@@ -3,13 +3,13 @@
     <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
         <meta charset="UTF-8">
         <!--文字コードは上のほうにないとすべておしまいになるらしい-->
-        <meta name="description" content="***">                                                                 <!--入力すること！-->
-        <title>JUN汁ｗおもちゃばこ。/おもちゃ/***</title>                                                         <!--入力すること！-->
+        <meta name="description" content="おもちゃページのトップです。">                                                                 <!--入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/TOP</title>                                                         <!--入力すること！-->
         <!--OGPとかいうの-->
-        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/***">                                <!--入力すること！-->
-        <meta property="og:title" content="***"/>                                                               <!--入力すること！-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/omocha_top">                                <!--入力すること！-->
+        <meta property="og:title" content="おもちゃページトップ"/>                                                               <!--入力すること！-->
         <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
-        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/***.html"/>                   <!--入力すること！-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/omocha_top.html"/>                   <!--入力すること！-->
         <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
         <meta name="twitter:card" content="summary"><!--なにを表示するか-->
         <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
@@ -23,6 +23,7 @@
         <script>
             onload = function(){
                 onload_functions();
+                ALL_page_show("omocha");//***_ulを探して表示するよ
             }
         </script>
     </head>
@@ -42,7 +43,7 @@
         </header>
         <div id="mannaka">
 
-            ここに本文
+            <ul id="omocha_ul" ></ul>
 
             <footer>
                 <ul id="footul">

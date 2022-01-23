@@ -19,10 +19,67 @@ header{
     position: sticky;
     top: 0;/*ついてくるのに必要*/
     background: #053a24;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
     border-radius:10px;
     box-shadow:0px 0px 0px 2px #ffffff;
+}
+h1#title_h1{/*public.jsでも見た目変更してるので参照すること。*/
+    /*padding-left*/
+    white-space: nowrap;/*改行の禁止*/
+}
+button#html_link_btn{/*public.jsでも見た目変更してるので参照すること。*/
+    position: absolute;
+    content: '';
+    display: inline-block;/*インライン要素のままだと大きさ決められないのでインラインブロックに*/
+    /*幅*/
+    /*高さ*/
+    box-sizing: border-box;/*これでborderの線込みで100%になる（はみでない）*/
+    background-color: #16151a;
+    border: 0;
+    color: #ffffff;
+}
+nav#html_link_nav{
+    color: #ffffff;
+    background: #16151a;
+    padding: 10px;
+    border-bottom-right-radius:0.7em;/*右下をまるっこく*/
+    border: white;
+
+    width: 50%;
+    height: 50vh;
+    display: none;
+
+    font-size: 3vw;
+
+    position: absolute;/*他の要素に影響を与えなくなる*/
+    overflow-y: auto;/* はみ出たときには縦方向にスクロール可能にする */
+}
+nav#html_link_nav::-webkit-scrollbar {/* スクロールのでかさ */
+    width: 1em;
+}
+nav#html_link_nav::-webkit-scrollbar-track {/* スクロールの背景の設定 */
+    background: #0f0e0f;
+    border-radius:0 0 1em 1em;
+}
+nav#html_link_nav::-webkit-scrollbar-thumb {/* スクロールのつまみ部分の設定 */
+    background: #ffffff;
+    border-radius:1em;
+}
+
+nav#html_link_nav ul{
+    padding-left: 1em;
+    padding-right: 0.5em;
+    margin: 0;
+}
+a.added_a{
+    color: #ffffff;
+}
+img#go_home {
+    float:right;
+    margin-right:0em; 
+    margin-bottom:0em;
+    height: 48px;
 }
 footer{
     background: #041d42;
@@ -65,8 +122,4 @@ h1{
 h2{
     color: #ffffff;
 }
-img#junjiruw {
-    float:right;
-    margin-right:0em; 
-    margin-bottom:0em;
-}
+

@@ -80,7 +80,7 @@
             }
 
         </style>
-        <script src="js/get_html_list.js"></script>
+        <script src="js/public.js"></script>
         <script>
             
             async function Update_show(){
@@ -108,33 +108,36 @@
                     update_ul.append(new_li);
                 }
             }
-            
             onload = function(){
-                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
-                    var p = document.getElementById('mannaka').style.fontSize="3.5vw";
+                onload_functions();
 
-                    var obj=document.getElementsByClassName("a_img");
-                    for(let i=0;i<obj.length;i++){
-                            obj[i].style.width ="50vw";
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                        var obj=document.getElementsByClassName("a_img");
+                        for(let i=0;i<obj.length;i++){
+                        obj[i].style.width ="50vw";
                     }
                 }
 
                 Update_show();
-                ALL_page_show();
-
+                
             }
         </script>
     </head>
     <body>
         <div id="top"></div>
-        <header>
-            <h1>
-                <a href="#top">
-                    <img id="junjiruw" src="images/site/omotyabako_deka.png" alt="上へ" height="48">
-                </a>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="#top">
+                <img id="go_home" src="images/site/omotyabako_deka.png" alt="上へ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
                 JUN汁ｗおもちゃばこ。
             </h1>
         </header>
+        
         <div id="mannaka">
             <h2 title="説明：今日でも元気であるということ">
                 <ruby>今日<rt>きょう</rt></ruby>も<ruby>元気<rt>げんき</rt></ruby>だでいんでい
@@ -151,9 +154,7 @@
                 <ul id="update_ul" ></ul>
                 
             </div>
-
-            <ul id="omocha_ul" ></ul>
-            
+  
             
             <dl id="links">
                 <div>

@@ -59,17 +59,19 @@
                 background: #ffffff;
             }
         </style>
+        <script src="../js/public.js"></script>
         <script>
             
             onload = function(){kihon();};//ロード時に
             function kihon() {
+                onload_functions();
                 var cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
                 var cnvs2d = cnvs.getContext('2d');//2Dでやる
                 cnvs2d.strokeStyle="#FF0000";
                 cnvs2d.strokeRect(10,10,100,100);//JSはまたの機会に勉強すべきだなと思うでゆっちであった。
 
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
-                    var p = document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
+                    document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
                 }
 
                 fetch("https://junjiruw.github.io/DEYUTI/test/gomibako_for_test.html")
@@ -105,15 +107,19 @@
         </script>
     </head>
     <body>
-        <div id="top"></div>
-        <header>
-            <h1>
-                <a href="../index.html">
-                    <img id="junjiruw" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="48">
-                </a>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
                 JUN汁ｗおもちゃばこ。
             </h1>
         </header>
+
         <div id="mannaka">
             このページはテスト用です。
             
