@@ -50,7 +50,7 @@ nav#html_link_nav{
     height: 50vh;
     display: none;
 
-    font-size: 3vw;
+    font-size: 2em;
 
     position: absolute;/*他の要素に影響を与えなくなる*/
     overflow-y: auto;/* はみ出たときには縦方向にスクロール可能にする */
