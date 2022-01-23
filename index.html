@@ -21,6 +21,16 @@
                 color: #dfdf3e;
                 width: 100%;
             }
+            span#icon_imitate{
+                display: inline-block;/*インライン要素のままだと大きさ決められないのでインラインブロックに*/
+                height: 2em;
+                width: 2em;
+                line-height:2em; 
+                text-align: center;
+                background-color: #16151a;
+                color: #ffffff;
+                border: 2px solid #ffffff ;
+            }
             div#update_div{
                 background-color: #0f4936;
             }
@@ -140,11 +150,13 @@
         
         <div id="mannaka">
             <h2 title="説明：今日でも元気であるということ">
-                <ruby>今日<rt>きょう</rt></ruby>も<ruby>元気<rt>げんき</rt></ruby>だでいんでい
+                <ruby>今日<rt>きょう</rt></ruby>も<ruby>元気<rt>げんき</rt></ruby>だでいんでい<ruby><img src="images/site/favicon32.png" style="height: 1.5em;"><rt>コイツ</rt></ruby>
             </h2>
             <p>
                 <span id="span1">
-                    <ruby>JUN汁ｗ<rt>じゅんじる</rt></ruby>おもちゃばこ。<ruby><img src="images/site/favicon32.png" style="height: 1.5em;"><rt>コイツ</rt></ruby>のあかちゃんです。２さい
+                    <ruby>JUN汁ｗ<rt>じゅんじる</rt></ruby>おもちゃばこ。へようこそ。各ページには左上にある
+                    <span id="icon_imitate">☛</span>
+                    からアクセスできるよ。
                 </span>
             </p>
 

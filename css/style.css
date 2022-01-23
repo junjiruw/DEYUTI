@@ -30,13 +30,11 @@ h1#title_h1{/*public.jsでも見た目変更してるので参照すること。
 }
 button#html_link_btn{/*public.jsでも見た目変更してるので参照すること。*/
     position: absolute;
-    content: '';
     display: inline-block;/*インライン要素のままだと大きさ決められないのでインラインブロックに*/
     /*幅*/
     /*高さ*/
-    box-sizing: border-box;/*これでborderの線込みで100%になる（はみでない）*/
     background-color: #16151a;
-    border: 0;
+    border: 2px solid #ffffff;
     color: #ffffff;
 }
 nav#html_link_nav{

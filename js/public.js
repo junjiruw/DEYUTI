@@ -27,8 +27,9 @@ async function ALL_page_show(directory){//***_ulを探して表示するよ
     var omocha_ul = document.getElementById(directory+"_ul");
 
     for(let i=0;i<res_json.length;i++){
-        if(res_json[i].path.slice(-18)=="html_template.html"){
+        if(res_json[i].path.slice(-18)=="html_template.html" || res_json[i].path.slice(-15)=="omocha_top.html"){
             //テンプレページ表示してもしょうがないので
+            //おもちゃとっぷもいらんやろ
         }else{
             var new_li = document.createElement("li");
             
@@ -88,9 +89,11 @@ function html_link_btn(){
 		// noneで非表示
 		list_nav.style.display ="none";
         list_btn.style.transform= "rotate(" + 0 + "deg)";
+        list_btn.style.border= "2px solid #ffffff";
 	}else{
 		// blockで表示
 		list_nav.style.display ="block";
         list_btn.style.transform= "rotate(" + 90 + "deg)";
+        list_btn.style.border= "none";
 	}
 }
