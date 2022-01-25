@@ -97,7 +97,7 @@
                 var res = await fetch("https://api.github.com/repos/junjiruw/DEYUTI/commits")//最新更新情報をgithubから持ってくる
                 var res_json = await res.json();
                     var update_time=new Date(res_json[0].commit.committer.date);
-                    document.getElementById('update_time').textContent="更新日時："+update_time.getUTCFullYear()+"年"+(Number(update_time.getMonth())+1)+"月"+update_time.getDate()+"日 "+update_time.getHours()+":"+update_time.getUTCMinutes();
+                    document.getElementById('update_time').textContent="更新日時："+update_time.getUTCFullYear()+"年"+("0"+(Number(update_time.getMonth())+1)).slice(-2)+"月"+("0"+update_time.getDate()).slice(-2)+"日 "+("0"+update_time.getHours()).slice(-2)+":"+("0"+update_time.getUTCMinutes()).slice(-2);
                     document.getElementById('update_comment').textContent="更新コメント："+res_json[0].commit.message;
 
                 res = await fetch(res_json[0].url)
