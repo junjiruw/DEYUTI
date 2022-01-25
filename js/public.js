@@ -78,13 +78,14 @@ function btn_looks_better(){//jsでボタンの見た目を改善しましょう
     document.getElementById("title_h1").style.paddingLeft=header_height+10+ 'px';//ボタン置くスペース確保
     document.getElementById("go_home").style.height=header_height+ 'px';
 
+    document.getElementById("top").style.height=header_height+20+ 'px';//header置くところ
     
 }
 
 function html_link_btn(){
 	var list_nav = document.getElementById("html_link_nav");
     var list_btn = document.getElementById("html_link_btn");
-
+    document.getElementById("header").style.top=10;
 	if(list_nav.style.display=="block"){
 		// noneで非表示
 		list_nav.style.display ="none";
@@ -97,3 +98,15 @@ function html_link_btn(){
         list_btn.style.border= "none";
 	}
 }
+
+
+setInterval(function(){//1秒に10回動くぞ！
+    var header=document.getElementById("header");
+    //window.pageYOffsetがスクロール位置
+    if(window.pageYOffset>=10){//下に向かって10pxスクロールしてたら
+        header.style.top=1+"px";   
+    }else{//してない。一番上に画面があるとき～5pxくらいスクロールしてるとき
+        header.style.top=10-window.pageYOffset+"px";
+
+    }
+}, 100);//100/1000[s]でくりかえすぞ！

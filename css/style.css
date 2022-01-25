@@ -13,11 +13,13 @@ body {
     margin: 8px;
 }
 div#top{
-    height: 0em;
+    height: 0px;/*実際のところはh1:font-size+20pxにしてheaderが入るようにしている。*/
+    top:0px;
 }
 header{
     position: fixed;
-    /*top: 0;/*ついてくるのに必要*/
+    margin: 0px;
+    top: 10px;/*jsでいい感じに動かします。*/
     background: #053a24;
     width: calc(100% - 36px);/*bodyのmargin 8px とheaderのpadding 10pxの合計を二倍*/
     padding-left: 10px;
@@ -27,6 +29,7 @@ header{
 }
 h1#title_h1{/*public.jsでも見た目変更してるので参照すること。*/
     /*padding-left…もjsで設定*/
+    margin: 0px;
     white-space: nowrap;/*改行の禁止*/
 }
 button#html_link_btn{/*public.jsでも見た目変更してるので参照すること。*/
@@ -80,6 +83,22 @@ img#go_home {
     margin-bottom:0em;
     height: 48px;
 }
+div#mannaka{
+    width: 90%;
+    margin: auto;
+    background: #16151a;
+    border: 2px solid #ffffff;
+    color: #ffffff;   
+    font-size: 16px;    
+}
+h1{
+    color: #ffffff;
+}
+h2{
+    color: #ffffff;
+}
+
+
 footer{
     background: #041d42;
     padding: 0.5em;
@@ -105,20 +124,6 @@ li#twitter{
     vertical-align: top;
 }
 a#totop{
-    color: #ffffff;
-}
-div#mannaka{
-    width: 90%;
-    margin: auto;
-    background: #16151a;
-    border: 2px solid #ffffff;
-    color: #ffffff;   
-    font-size: 16px;    
-}
-h1{
-    color: #ffffff;
-}
-h2{
     color: #ffffff;
 }
 
