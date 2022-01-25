@@ -17,7 +17,7 @@ div#top{
     top:0px;
 }
 header{
-    position: fixed;
+    position: fixed;/*なんかsticky使うと一部環境でバグるんだよね～*/
     margin: 0px;
     top: 10px;/*jsでいい感じに動かします。*/
     background: #053a24;

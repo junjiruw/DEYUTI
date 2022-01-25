@@ -1,3 +1,5 @@
+var header_height;//h1のfont-sizeに合わせてヘッダーの大きさが決まるので、いろんなデザインで使いまわしたいし、ここにおいておきます。
+
 function onload_functions(){
     is_this_sumaho();
     html_link_show();
@@ -67,7 +69,7 @@ function html_link_show(){//え？この程度ならhtmlに最初から書けっ
 
 }
 function btn_looks_better(){//jsでボタンの見た目を改善しましょう。　いや、ヘッダーは全部改善する。メインはボタン。
-    var header_height=document.getElementById("header").clientHeight;
+    header_height=document.getElementById("header").clientHeight;//ヘッダーの大きさがfont-sizeから決まっているのでここで取得。
     document.getElementById("html_link_btn").style.height=header_height+ 'px';//数字じゃなくて文字を入れる。cssをいじってるので。
     document.getElementById("html_link_btn").style.width=header_height+ 'px';
     document.getElementById('html_link_btn').style.fontSize=header_height*0.5+ 'px';
@@ -78,9 +80,19 @@ function btn_looks_better(){//jsでボタンの見た目を改善しましょう
     document.getElementById("title_h1").style.paddingLeft=header_height+10+ 'px';//ボタン置くスペース確保
     document.getElementById("go_home").style.height=header_height+ 'px';
 
-    document.getElementById("top").style.height=header_height+20+ 'px';//header置くところ
+    document.getElementById("top").style.height=header_height*1.6+ 'px';//header置くところを縦にスペース確保
     
 }
+
+setInterval(function(){//1秒に100回動くぞ！
+    var header=document.getElementById("header");
+    //window.pageYOffsetがスクロール位置
+    if(window.pageYOffset>=header_height*0.3){//下に向かってheader_height*0.3pxスクロールしてたら
+        header.style.top=2+"px";   
+    }else{//してない。一番上に画面があるとき～npxくらいスクロールしてるとき
+        header.style.top=header_height*0.3-window.pageYOffset+"px";
+    }
+}, 10);//10/1000[s]でくりかえすぞ！
 
 function html_link_btn(){
 	var list_nav = document.getElementById("html_link_nav");
@@ -100,13 +112,3 @@ function html_link_btn(){
 }
 
 
-setInterval(function(){//1秒に10回動くぞ！
-    var header=document.getElementById("header");
-    //window.pageYOffsetがスクロール位置
-    if(window.pageYOffset>=10){//下に向かって10pxスクロールしてたら
-        header.style.top=1+"px";   
-    }else{//してない。一番上に画面があるとき～5pxくらいスクロールしてるとき
-        header.style.top=10-window.pageYOffset+"px";
-
-    }
-}, 100);//100/1000[s]でくりかえすぞ！
