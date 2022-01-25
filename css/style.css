@@ -10,7 +10,7 @@ body {
     background-attachment: scroll,fixed;
     height:auto;
     width: auto;
-    margin: 8px;
+    margin: 0px 8px 0px 8px;
 }
 div#top{
     height: 0px;/*実際のところはh1:font-size+20pxにしてheaderが入るようにしている。*/
