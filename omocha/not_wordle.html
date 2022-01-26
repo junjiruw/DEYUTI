@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="Wordleというゲームのパクリです。">                                                                 <!--入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/Not_Wordle</title>                                                         <!--入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/not_wordle">                                <!--入力すること！-->
+        <meta property="og:title" content="Not Wordle"/>                                                               <!--入力すること！-->
+        <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/not_wordle.html"/>                   <!--入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+            div.answer_list_div{
+                display:block;
+                text-align: center; 
+                font-size: 0px;
+                margin: 10px;
+                
+            }
+            div.answer_div{
+                display: inline-block;
+                width: 10%;
+                border: 3px solid #4c6cb1;
+                background-color: #ffffff;
+                font-size: 5vw;
+                font-weight: bold;
+                color: #000000;
+                vertical-align:middle;
+            }
+            div.key_div{
+                display:block;
+                text-align: center; 
+                font-size: 0px;
+            }
+            input.key_class{
+                width: 7%;
+                margin: 3px;
+                font-size: 3vw;
+            }
+            input.key_class_long{
+                width: 13%;
+                background-color: #80a1e9;
+            }
+            .inputted_movie{
+                animation-name: big_to_normal;
+                animation-duration: 0.1s;
+            }
+            @keyframes big_to_normal {
+                0%{/*start*/
+                    transform: scale(1.2,1.2);
+                    border: 3px solid #ff0030;
+                }
+                100%{/*end*/
+                    transform: scale(1,1);
+                    border: 3px solid #4c6cb1;
+                }
+                
+            }
+
+        </style>
+        <script src="../js/public.js"></script>
+        <script>
+            var answer_row=1;
+            var answer_column=1;
+            onload = function(){
+                onload_functions();
+
+                var keyboard_key=document.getElementsByClassName("key_class");
+                var key_height=keyboard_key[0].clientWidth;
+                for(let i=0;i<keyboard_key.length;i++){
+                    keyboard_key[i].style.height = key_height+5+"px";
+                }
+
+                var answer_div=document.getElementsByClassName("answer_div");
+                var answer_height=answer_div[0].clientWidth;
+                for(let i=0;i<answer_div.length;i++){
+                    answer_div[i].style.height = answer_height+"px";
+                }
+
+                var answer_number=document.getElementById("answer_div_1_1");
+                answer_number.style.border="3px solid #ff0030";
+            }    
+            async function push_keyboard(key){
+                var answer_number=document.getElementById("answer_div_"+answer_row+"_"+answer_column);
+                
+                answer_number.style.border="3px solid #4c6cb1";
+                if(key=="Enter"){
+                    var Enter_OK=document.getElementById("answer_div_"+answer_row+"_5");
+                    if(Enter_OK.innerText!=""){
+                        if(answer_row!=6){
+                            answer_row=answer_row+1;
+                            answer_column=1;
+                        }else{
+                            //Gameover?
+                        }
+                        
+                    }
+                }else{
+                    if(key=="DEL"){
+                        if(answer_number.innerText=="" && answer_column!=1){
+                            answer_column=answer_column-1;
+                            answer_number=document.getElementById("answer_div_"+answer_row+"_"+answer_column);
+                        }
+                        answer_number.innerText="";
+                        answer_number.classList.remove('inputted_movie');
+                    }else{
+                        answer_number.classList.add('inputted_movie');
+                        answer_number.innerText=key;
+                        if(answer_column!=5){
+                            answer_column=answer_column+1;
+                        }else{
+                            //ちょっとアニメーションがおわるまで待ってね
+                            setTimeout(function(ID){ID.classList.remove('inputted_movie');},100,answer_number);
+                        }
+                    }
+                }
+
+                
+                answer_number=document.getElementById("answer_div_"+answer_row+"_"+answer_column);
+                answer_number.style.border="3px solid #ff0030";
+            }
+
+            var keyboard_key=document.getElementsByClassName("key_class");
+            for(let i=0;i<keyboard_key.length;i++){
+                if(keyboard_key[i].value=="A"){
+                    console.log("OK");
+                    keyboard_key[i].style.backgroundColor="#0000FF";
+                }
+            }
+            
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+            <div class="answer_list_div">
+                <div id="answer_div_1_1" class="answer_div"> </div>
+                <div id="answer_div_1_2" class="answer_div"> </div>
+                <div id="answer_div_1_3" class="answer_div"> </div>
+                <div id="answer_div_1_4" class="answer_div"> </div>
+                <div id="answer_div_1_5" class="answer_div"> </div>
+            </div>
+            <div class="answer_list_div">
+                <div id="answer_div_2_1" class="answer_div"></div>
+                <div id="answer_div_2_2" class="answer_div"></div>
+                <div id="answer_div_2_3" class="answer_div"></div>
+                <div id="answer_div_2_4" class="answer_div"></div>
+                <div id="answer_div_2_5" class="answer_div"></div>
+            </div>
+            <div class="answer_list_div">
+                <div id="answer_div_3_1" class="answer_div"></div>
+                <div id="answer_div_3_2" class="answer_div"></div>
+                <div id="answer_div_3_3" class="answer_div"></div>
+                <div id="answer_div_3_4" class="answer_div"></div>
+                <div id="answer_div_3_5" class="answer_div"></div>
+            </div>
+            <div class="answer_list_div">
+                <div id="answer_div_4_1" class="answer_div"></div>
+                <div id="answer_div_4_2" class="answer_div"></div>
+                <div id="answer_div_4_3" class="answer_div"></div>
+                <div id="answer_div_4_4" class="answer_div"></div>
+                <div id="answer_div_4_5" class="answer_div"></div>
+            </div>
+            <div class="answer_list_div">
+                <div id="answer_div_5_1" class="answer_div"></div>
+                <div id="answer_div_5_2" class="answer_div"></div>
+                <div id="answer_div_5_3" class="answer_div"></div>
+                <div id="answer_div_5_4" class="answer_div"></div>
+                <div id="answer_div_5_5" class="answer_div"></div>
+            </div>
+            <div class="answer_list_div">
+                <div id="answer_div_6_1" class="answer_div"></div>
+                <div id="answer_div_6_2" class="answer_div"></div>
+                <div id="answer_div_6_3" class="answer_div"></div>
+                <div id="answer_div_6_4" class="answer_div"></div>
+                <div id="answer_div_6_5" class="answer_div"></div>
+            </div>
+
+
+            <div id="keyboard">
+                <div class="key_div">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="Q">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="W">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="E">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="R">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="T">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="Y">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="U">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="I">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="O">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="P">
+                </div>
+                <div class="key_div">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="A">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="S">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="D">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="F">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="G">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="H">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="J">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="K">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="L">
+                </div>
+                <div class="key_div">
+                    <input type="button" class="key_class key_class_long" onclick="push_keyboard(this.value)" value="Enter">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="Z">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="X">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="C">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="V">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="B">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="N">
+                    <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="M">
+                    <input type="button" class="key_class key_class_long" onclick="push_keyboard(this.value)" value="DEL">
+                </div>
+
+            </div>
+
+            <footer>
+                <ul id="footul">
+                    <li id="twitter">
+                        <a  href="https://twitter.com/share" class="twitter-share-button">
+                        </a> <!--本文はtitleになるらしい-->
+                        <script>
+                            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+                        </script>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
