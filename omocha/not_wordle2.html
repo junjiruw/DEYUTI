@@ -27,7 +27,7 @@
                 url("../images/omocha/Not_Wordle2/greentree.png"),
                 linear-gradient(#053a24,80%,#000000);
                 
-                background-size:10% 80%,10% 80%,auto;
+                background-size:10% 200px,10% 200px,auto;
                 background-position: 10% 100%, 90% 100%;/*0%で画像の左が画面端。100%で右が画面端*/
                 background-repeat:no-repeat,no-repeat,repeat;
                 background-attachment: fixed,fixed,fixed;
@@ -102,7 +102,7 @@
                 vertical-align: middle;
                 text-align: center; 
                 width: 7%;
-                margin: 0px;
+                margin: 3px;
                 font-weight: bold;
                 background-color: #00FF00;
                 color: #ffffff;
@@ -153,10 +153,13 @@
 
                 var keyboard_key=document.getElementsByClassName("key_class");
                 var key_height=keyboard_key[0].clientWidth;
-                console.log(key_height);
-                if(key_height>document.documentElement.clientHeight*0.06){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
-                    key_height=document.documentElement.clientHeight*0.06;
-                    console.log(key_height);
+                if(key_height>document.documentElement.clientHeight*0.06 || key_height>document.documentElement.clientWidth*0.06){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
+                    if(document.documentElement.clientHeight>document.documentElement.clientWidth){
+                        key_height=document.documentElement.clientWidth*0.06;
+                    }else{
+                        key_height=document.documentElement.clientHeight*0.06;
+                    }
+
                     for(let i=0;i<keyboard_key.length;i++){
                         keyboard_key[i].style.width =key_height+"px";//小さくする
                     }

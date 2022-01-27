@@ -135,10 +135,12 @@
 
                 var keyboard_key=document.getElementsByClassName("key_class");
                 var key_height=keyboard_key[0].clientWidth;
-                console.log(key_height);
-                if(key_height>document.documentElement.clientHeight*0.06){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
-                    key_height=document.documentElement.clientHeight*0.06;
-                    console.log(key_height);
+                if(key_height>document.documentElement.clientHeight*0.06 || key_height>document.documentElement.clientWidth*0.06){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
+                    if(document.documentElement.clientHeight>document.documentElement.clientWidth){
+                        key_height=document.documentElement.clientWidth*0.06;
+                    }else{
+                        key_height=document.documentElement.clientHeight*0.06;
+                    }
                     for(let i=0;i<keyboard_key.length;i++){
                         keyboard_key[i].style.width =key_height+"px";//小さくする
                     }
