@@ -1,6 +1,8 @@
 /*1emは一文字らしい*/
 html{
     min-height:100%;
+    touch-action: manipulation;/*スマホでダブルタップしても拡大しなくなるようです！*/
+    
 }
 body {
     background-image:url("../images/site/junjiruw_pro.png"),
