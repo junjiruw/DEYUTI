@@ -105,17 +105,22 @@
                 var update_ul = document.getElementById('update_ul');
 
                 for(let i=0;i<res_json.files.length;i++){
-                    var new_li = document.createElement("li");
-                    
-                    var new_a = document.createElement('a');
-                    
-                    new_a.href="https://junjiruw.github.io/DEYUTI/" + res_json.files[i].filename;
-                    new_a.textContent= await URL_name_get(new_a.href);
+                    if(res_json[i].path.slice(-18)=="html_template.html" || res_json[i].path.slice(-15)=="omocha_top.html"){
+                        //テンプレページ表示してもしょうがないので
+                        //おもちゃとっぷもいらんやろ
+                    }else{
+                        var new_li = document.createElement("li");
+                        
+                        var new_a = document.createElement('a');
+                        
+                        new_a.href="https://junjiruw.github.io/DEYUTI/" + res_json.files[i].filename;
+                        new_a.textContent= await URL_name_get(new_a.href);
 
-                    new_a.className="new_a";
-                    new_li.appendChild(new_a);
+                        new_a.className="new_a";
+                        new_li.appendChild(new_a);
 
-                    update_ul.append(new_li);
+                        update_ul.append(new_li);
+                    }
                 }
             }
             onload = function(){
