@@ -105,7 +105,7 @@
                 var update_ul = document.getElementById('update_ul');
 
                 for(let i=0;i<res_json.files.length;i++){
-                    if(res_json[i].path.slice(-18)=="html_template.html" || res_json[i].path.slice(-15)=="omocha_top.html"){
+                    if(res_json[i].filename.slice(-18)=="html_template.html" || res_json[i].filename.slice(-15)=="omocha_top.html"){
                         //テンプレページ表示してもしょうがないので
                         //おもちゃとっぷもいらんやろ
                     }else{
