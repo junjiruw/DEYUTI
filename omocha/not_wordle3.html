@@ -78,6 +78,21 @@
                 vertical-align:middle;
                 text-align: center; 
             }
+            input.answer_input{
+                display: inline-block;
+                width: 10%;
+                border: 3px solid #4c6cb1;
+                background-color: #999999;
+                font-weight: bold;
+                color: #FFFFFF;
+                vertical-align:middle;
+                text-align: center; 
+            }
+            div.iro_count_div{
+                display:inline;
+                position:absolute;
+                top: 0em;
+            }
             div.key_div{
                 text-align: center; 
                 font-size: 0px;
@@ -86,13 +101,16 @@
                 display:inline-block;
                 vertical-align: middle;
                 text-align: center; 
-                width: 7%;
+                width: 14%;
                 margin: 3px;
                 font-weight: bold;
+                background-color: #00FF00;
+                color: #ffffff;
             }
             input.key_class_long{
-                width: 13%;
+                width: 14%;
                 background-color: #80a1e9;
+                color: #000000;
             }
 
             .inputted_movie{
@@ -130,36 +148,48 @@
             var hanteityuu=0;
             var answer_row=1;
             var answer_column=1;
+            var answer_key;
+            var midori=0;
+            var kiiro=0;
+            var hai=25;
             onload = function(){
                 onload_functions();
 
                 var keyboard_key=document.getElementsByClassName("key_class");
                 var key_height=keyboard_key[0].clientWidth;
-                if(key_height>document.documentElement.clientHeight*0.06 || key_height>document.documentElement.clientWidth*0.06){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
+                if(key_height>document.documentElement.clientHeight*0.1 || key_height>document.documentElement.clientWidth*0.1){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
                     if(document.documentElement.clientHeight>document.documentElement.clientWidth){
-                        key_height=document.documentElement.clientWidth*0.06;
+                        key_height=document.documentElement.clientWidth*0.1;
                     }else{
-                        key_height=document.documentElement.clientHeight*0.06;
-                    }
-                    for(let i=0;i<keyboard_key.length;i++){
-                        keyboard_key[i].style.width =key_height+"px";//小さくする
-                    }
-                    var keyboard_key_long=document.getElementsByClassName("key_class_long");
-                    for(let i=0;i<keyboard_key_long.length;i++){
-                        keyboard_key_long[i].style.width =key_height*2+"px";//小さくする
+                        key_height=document.documentElement.clientHeight*0.1;
                     }
                 }
                 for(let i=0;i<keyboard_key.length;i++){
-                    keyboard_key[i].style.height = key_height+5+"px";
-                    keyboard_key[i].style.fontSize=key_height*0.7+"px";
+                        keyboard_key[i].style.width =key_height+"px";//小さくする
                 }
+                var keyboard_key_long=document.getElementsByClassName("key_class_long");
+                for(let i=0;i<keyboard_key_long.length;i++){
+                    keyboard_key_long[i].style.width =key_height*1.5+"px";//小さくする
+                }
+                for(let i=0;i<keyboard_key.length;i++){
+                    keyboard_key[i].style.height = key_height+"px";
+                    keyboard_key[i].style.fontSize=key_height*0.3+"px";
+                }
+                var iro_count_div=document.getElementsByClassName("iro_count_div");
+                for(let i=0;i<iro_count_div.length;i++){
+                    iro_count_div[i].style.top = "-"+(key_height/2+10)+"px";
+                }
+
 
                 var answer_div=document.getElementsByClassName("answer_div");
                 var answer_height=answer_div[0].clientWidth;
                 console.log(answer_height);
-                if(answer_height>document.documentElement.clientHeight*0.06){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
-                    answer_height=document.documentElement.clientHeight*0.06;
-                    console.log(answer_height);
+                if(answer_height>document.documentElement.clientHeight*0.06 || answer_height>document.documentElement.clientWidth*0.06){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
+                    if(document.documentElement.clientHeight>document.documentElement.clientWidth){
+                        answer_height=document.documentElement.clientWidth*0.06;
+                    }else{
+                        answer_height=document.documentElement.clientHeight*0.06;
+                    }
                     for(let i=0;i<answer_div.length;i++){
                         answer_div[i].style.width =answer_height+"px";//小さくする
                     }
@@ -169,8 +199,26 @@
                     answer_div[i].style.fontSize = answer_height*0.8+"px";
                 }
 
-                var answer_number=document.getElementById("answer_div_1_1");
-                answer_number.style.border="3px solid #ff0030";
+                answer_input=document.getElementsByClassName("answer_input");
+                answer_height=answer_input[0].clientWidth;
+                console.log(answer_height);
+                if(answer_height>document.documentElement.clientHeight*0.06 || answer_height>document.documentElement.clientWidth*0.06){//ブラウザ内の表示域(スクロールバーを除く)のn倍の大きさよりも大きいとき
+                    if(document.documentElement.clientHeight>document.documentElement.clientWidth){
+                        answer_height=document.documentElement.clientWidth*0.06;
+                    }else{
+                        answer_height=document.documentElement.clientHeight*0.06;
+                    }
+                    for(let i=0;i<answer_input.length;i++){
+                        answer_input[i].style.width =answer_height+6+"px";//小さくする
+                    }
+                }
+                for(let i=0;i<answer_input.length;i++){
+                    answer_input[i].style.height = answer_height+6+"px";
+                    answer_input[i].style.fontSize = answer_height*0.8+"px";
+                }
+
+                answer_key=document.getElementById("answer_input_1_1");
+                answer_key.style.border="3px solid #ff0030";
 
                 
                 random_number=Math.floor(Math.random() *25);//答えを生成する乱数をつくるよん。
@@ -178,154 +226,105 @@
 
             async function push_keyboard(key){
                 if(hanteityuu==0){
-                    var answer_number=document.getElementById("answer_div_"+answer_row+"_"+answer_column);
-                    answer_number.style.border="3px solid #4c6cb1";
                     if(key=="Enter"){
-                        var Enter_OK=document.getElementById("answer_div_"+answer_row+"_5");
-                        if(Enter_OK.innerText!=""){
-                            hanteityuu=1;//判定中です！判定終わりはpushed_Enter()のケツで書いてる
-                            if(await pushed_Enter()==5){//大正解！ :D
-                                CLEAR();
-                            }else{//不正解
-                                if(answer_row!=6){//Nextチャンス！
-                                    answer_row=answer_row+1;
-                                    answer_column=1;
-                                }else{
-                                    GAMEOVER();
-                                    //Gameover XD
-                                }
-                            }
-                        }
+                        hanteityuu=1;//判定中です！判定終わりはpushed_Enter()のケツで書いてる
+                        await hantei();
+                        hanteityuu=0;
                     }else{
-                        if(key=="DEL"){
-                            if(answer_number.innerText=="" && answer_column!=1){
-                                answer_column=answer_column-1;
-                                answer_number=document.getElementById("answer_div_"+answer_row+"_"+answer_column);
-                            }
-                            answer_number.innerText="";
-                            answer_number.classList.remove('inputted_movie');
-                        }else{
-                            answer_number.classList.add('inputted_movie');
-                            answer_number.innerText=key;
-                            if(answer_column!=5){
-                                answer_column=answer_column+1;
-                            }else{
-                                setTimeout(function(ID){ID.classList.remove('inputted_movie');},100,answer_number);//ちょっとアニメーションがおわるまではぎとるのだけ待ってね
-                            }
+                        var keyboard_key=document.getElementsByClassName("answer_input");
+                        for(let i=0;i<keyboard_key.length;i++){
+                            keyboard_key[i].style.border="3px solid #4c6cb1";
                         }
+                        answer_key=document.getElementById(key);
+                        answer_key.style.border="3px solid #ff0030";
+                        setTimeout(function(ID){ID.classList.remove('inputted_movie');},100,answer_key);//ちょっとアニメーションがおわるまではぎとるのだけ待ってね
+                        answer_key.classList.add('inputted_movie');
+                            
                     }
-                    answer_number=document.getElementById("answer_div_"+answer_row+"_"+answer_column);
-                    answer_number.style.border="3px solid #ff0030";
                 }else{
                     //結果判定中なのでキーボード入力を無効にしています。ごめんね💦
                 }
                 
             }
+            async function nurinuri(iro){//rgb(0, 255, 0)
+                if(answer_key.style.backgroundColor=="rgb(0, 255, 0)"){
+                    midori=midori-1;
+                    document.getElementById("midori").innerText=midori+"/3";
+                }else if(answer_key.style.backgroundColor=="rgb(255, 224, 0)"){
+                    kiiro=kiiro-1;
+                    document.getElementById("kiiro").innerText=kiiro+"/5";
+                }else{
+                    hai=hai-1;
+                    document.getElementById("hai").innerText=hai+"/17";
+                }
 
-            async function pushed_Enter(){
-                var answer;
-                var answer_count=0;
-                var true_answer=make_ture_answer();//コイツに答えがはいっているぜ！！！！！！！！！！！！！！！！！！！！！！！！１
+                answer_key.style.backgroundColor=iro;
+                if(iro=="rgb(0, 255, 0)"){
+                    midori=midori+1;
+                    document.getElementById("midori").innerText=midori+"/3";
+                }else if(iro=="rgb(255, 224, 0)"){
+                    kiiro=kiiro+1;
+                    document.getElementById("kiiro").innerText=kiiro+"/5";
+                }else{
+                    hai=hai+1;
+                    document.getElementById("hai").innerText=hai+"/17";
+                }
+                setTimeout(function(ID){ID.classList.remove('rolling_div');},100,answer_key);//ちょっとアニメーションがおわるまではぎとるのだけ待ってね
+                answer_key.classList.add('rolling_div');
+            }
+
+            async function CLEAR(){
+                var answer_color;
+                var tweet_text="https://twitter.com/intent/tweet?text=Not_Wordle3 1/1%0A";//%0Aで改行
+                var text=["F","R","O","N","T"];
+                tweet_text=tweet_text+"🟩🟩🟩🟩🟩";
+                tweet_text=tweet_text+"%0AJUN汁ｗおもちゃばこ。/おもちゃ/Not_Wordle3&hashtags=Not_Wordle_w&url=https://junjiruw.github.io/DEYUTI/omocha/not_wordle3.html"
+                document.getElementById("tweet_a").href=tweet_text;
                 for(let i=1;i<6;i++){
-                    answer=document.getElementById("answer_div_"+answer_row+"_"+i);
-                    answer.style.color="#FFFFFF";//文字白くするね
-                    if(answer.innerText==true_answer[i-1]){//HIT!
-                        answer.style.backgroundColor="#00FF00";
-                        answer_count=answer_count+1;
-                    }else{//黄色or灰色
-                        answer.style.backgroundColor="#999999";//灰色か？
-                        for(let j=0;j<5;j++){
-                            if(answer.innerText==true_answer[j]){//黄色だ！
-                                answer.style.backgroundColor="#FFE000";
-                            }
-                        }
-                    }
+                    var answer=document.getElementById("answer_div_"+i);
+                    answer.style.backgroundColor="#00FF00";
+                    answer.style.color="#FFFFFF";
+                    answer.innerText=text[i-1];
                     //回すぜー！
                     answer.classList.add('rolling_div');
                     await new Promise(function(resolve){
                         setTimeout(resolve,100);//ちょっとアニメーションがおわるまで全部待ってね
                     });
-                    
+                    answer.classList.remove('rolling_div');
                 }
-
-                for(let i=1;i<6;i++){//キーボードの色も変えよう
-                    answer=document.getElementById("answer_div_"+answer_row+"_"+i);
-                    var yappa_green_flag=0;//黄色に塗ろうとしたけどやっぱ緑色にするわっていうフラグ
-                    if(answer.style.backgroundColor=="rgb(0, 255, 0)"){//緑色だ～
-                        key_nurinuri("#00FF00",answer.innerText);
-                    }else if(answer.style.backgroundColor=="rgb(255, 224, 0)"){//黄色だ～
-                        for(let j=1;j<6;j++){//待って！黄色だとしても他の箇所で緑色ならキーボードは緑色で塗るべきだわ！
-                            if(i!=j && answer.innerText==document.getElementById("answer_div_"+answer_row+"_"+j).innerText){//同じ文字発見！
-                                if(document.getElementById("answer_div_"+answer_row+"_"+j).style.backgroundColor=="rgb(0, 255, 0)"){//別の入力欄で緑色だった！
-                                    yappa_green_flag=1;//やっぱ緑！
-                                }
-                            }
-                        }
-                        if(yappa_green_flag==0){//やっぱ緑！ってならなかった！
-                            key_nurinuri("#FFE000",answer.innerText);
-                        }
-                        yappa_green_flag=0;//初期化
-                    }else{//灰色だ～
-                        key_nurinuri("#999999",answer.innerText);
-                    }
-                }            
-                hanteityuu=0;//判定終わり！
-                return answer_count;
-            }
-
-            function key_nurinuri(iro,key){
-                var keyboard_key=document.getElementsByClassName("key_class");
-                for(let i=0;i<keyboard_key.length;i++){
-                    if(keyboard_key[i].value==key){
-                        keyboard_key[i].style.backgroundColor=iro;
-                        keyboard_key[i].style.color="#FFFFFF";//文字白くするね
-                    }
-                }
-            }
-
-            function CLEAR(){
-                var answer_color;
-                var tweet_text="https://twitter.com/intent/tweet?text=Not_Wordle "+answer_row+"/6%0A";//%0Aで改行
-                for(let i=1;i<answer_row+1;i++){
-                    for(let j=1;j<6;j++){
-                        answer_color=document.getElementById("answer_div_"+i+"_"+j).style.backgroundColor;
-                        if(answer_color=="rgb(0, 255, 0)"){
-                            tweet_text=tweet_text+"🟩";
-                        }else if(answer_color=="rgb(255, 224, 0)"){
-                            tweet_text=tweet_text+"🟨";
-                        }else{
-                            tweet_text=tweet_text+"⬜";
-                        }
-                    }
-                    tweet_text=tweet_text+"%0A";//%0Aで改行
-                }
-                tweet_text=tweet_text+"JUN汁ｗおもちゃばこ。/おもちゃ/Not_Wordle&hashtags=Not_Wordle_w&url=https://junjiruw.github.io/DEYUTI/omocha/not_wordle3.html"
-                document.getElementById("tweet_a").href=tweet_text;
+                await new Promise(function(resolve){
+                        setTimeout(resolve,500);//0.5秒くらい表示しよう
+                });
                 var END_div=document.getElementById("END");
                 END_div.style.display="inline-block";
                 END_div.style.width=document.getElementById("game").clientWidth+"px";
                 END_div.style.height=document.getElementById("game").clientHeight+"px";
                 document.getElementById("END_h2").innerText="大正解！";
+                document.getElementById("END_h2").style.color="#00FF00";
 
             }
-            function GAMEOVER(){
+            async function GAMEOVER(){
                 var answer_color;
-                var tweet_text="https://twitter.com/intent/tweet?text=Not_Wordle "+answer_row+"/6%0A";//%0Aで改行
-                for(let i=1;i<answer_row+1;i++){
-                    for(let j=1;j<6;j++){
-                        answer_color=document.getElementById("answer_div_"+i+"_"+j).style.backgroundColor;
-                        if(answer_color=="rgb(0, 255, 0)"){
-                            tweet_text=tweet_text+"🟩";
-                        }else if(answer_color=="rgb(255, 224, 0)"){
-                            tweet_text=tweet_text+"🟨";
-                        }else{
-                            tweet_text=tweet_text+"⬜";
-                        }
-                    }
-                    tweet_text=tweet_text+"%0A";//%0Aで改行
-                }
-                tweet_text=tweet_text+"JUN汁ｗおもちゃばこ。/おもちゃ/Not_Wordle&hashtags=Not_Wordle_w&url=https://junjiruw.github.io/DEYUTI/omocha/not_wordle3.html"
+                var tweet_text="https://twitter.com/intent/tweet?text=Not_Wordle3 1/1%0A";//%0Aで改行
+                var text=["😨","😨","😨","😨","😨"];
+                tweet_text=tweet_text+"🟥🟥🟥🟥🟥";
+                tweet_text=tweet_text+"%0AJUN汁ｗおもちゃばこ。/おもちゃ/Not_Wordle3&hashtags=Not_Wordle_w&url=https://junjiruw.github.io/DEYUTI/omocha/not_wordle3.html"
                 document.getElementById("tweet_a").href=tweet_text;
+                for(let i=1;i<6;i++){
+                    var answer=document.getElementById("answer_div_"+i);
+                    answer.style.backgroundColor="#FF0030";
+                    answer.style.color="#FFFFFF";
+                    answer.innerText=text[i-1];
+                    //回すぜー！
+                    answer.classList.add('rolling_div');
+                    await new Promise(function(resolve){
+                        setTimeout(resolve,100);//ちょっとアニメーションがおわるまで全部待ってね
+                    });
+                    answer.classList.remove('rolling_div');
+                }
+                await new Promise(function(resolve){
+                        setTimeout(resolve,500);//0.5秒くらい表示しよう
+                });
                 var END_div=document.getElementById("END");
                 END_div.style.display="inline-block";
                 END_div.style.width=document.getElementById("game").clientWidth+"px";
@@ -333,19 +332,39 @@
                 document.getElementById("END_h2").innerText="😨";
                 document.getElementById("END_h2").style.color="#FF0000";
             }
+            function zokkou(){
+                document.getElementById("END").style.display="none";
+            }
             function reset(){
                 location.reload();
             }
 
-            //ー－－－－－－－－－－－注意！以下ネタバレです！ー－－－－－－－－－－－－－－－－－－－
-            var random_number=0;
-            function make_ture_answer(){
-                var ture_str;
-                var long_str="ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                ture_str=long_str.substr(random_number+(answer_row-1)*5,5);
-                return ture_str;
+            // ネタバレ注意！！！！！！！！！！！！！！！！
+            async function hantei(){
+                var seikai="2331331332133333232332333";
+                var is_seikai_str="";
+                var is_seikai_flag=1;
+                for(let i=1;i<6;i++){
+                    for(let j=1;j<6;j++){
+                        var answer_color=document.getElementById("answer_input_"+i+"_"+j).style.backgroundColor;
+                        if(answer_color=="rgb(0, 255, 0)"){
+                            is_seikai_str=is_seikai_str+"1";
+                        }else if(answer_color=="rgb(255, 224, 0)"){
+                            is_seikai_str=is_seikai_str+"2";
+                        }else{
+                            is_seikai_str=is_seikai_str+"3";
+                        }
+                    }
+                }
+                console.log(seikai);
+                console.log(is_seikai_str);
+                if(seikai==is_seikai_str){
+                await CLEAR();
+                }else{
+                await GAMEOVER();
+                }
             }
-            //ー－－－－－－－－－－－注意！以上！ネタバレでした！ー－－－－－－－－－－－－－－－－－
+            // ネタバレ注意！！！！！！！！！！！！！！！！
             
         </script>
     </head>
@@ -370,98 +389,82 @@
                 <h2>Not Wordle3</h2>
                 <p>1ステージ目：<a href="not_wordle.html">Not_Wordle</a>　2ステージ目:<a href="not_wordle2.html">Not_Wordle2</a></p>
                 <p><span style="color:#00FF00">緑:正解</span>　<span style="color:#FFE000">黄色:位置ズレ</span>　<span style="color:#999999">灰色:ハズレ</span></p>
+                <p>1.塗る場所を選ぶ　2.色を選ぶ　3.満足したらEnter</p>
             </div>
             <div id="game">
                 <div id="END">
                     <h2 id="END_h2">ここにテキスト</h2>
                     <a id="tweet_a">ツイートでシェアしよう！</a>
-                    <p class="reset_p">リセット☟</p>
-                    <button class="reset_button" id="reset" onclick="reset()">↻</button>
+                    <p class="reset_p">そのまま続行☟</p>
+                    <button class="reset_button" id="reset" onclick="zokkou()">↵</button>
                 </div>
                 <div class="answer_list_div">
-                    <div id="answer_div_1_1" class="answer_div">T</div>
-                    <div id="answer_div_1_2" class="answer_div">H</div>
-                    <div id="answer_div_1_3" class="answer_div">I</div>
-                    <div id="answer_div_1_4" class="answer_div">N</div>
-                    <div id="answer_div_1_5" class="answer_div">K</div>
+                    <input id="answer_input_1_1" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="T">
+                    <input id="answer_input_1_2" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="H">
+                    <input id="answer_input_1_3" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="I">
+                    <input id="answer_input_1_4" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="N">
+                    <input id="answer_input_1_5" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="K">
                 </div>
                 <div class="answer_list_div">
-                    <div id="answer_div_2_1" class="answer_div">B</div>
-                    <div id="answer_div_2_2" class="answer_div">R</div>
-                    <div id="answer_div_2_3" class="answer_div">A</div>
-                    <div id="answer_div_2_4" class="answer_div">I</div>
-                    <div id="answer_div_2_5" class="answer_div">N</div>
+                    <input id="answer_input_2_1" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="B">
+                    <input id="answer_input_2_2" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="R">
+                    <input id="answer_input_2_3" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="A">
+                    <input id="answer_input_2_4" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="I">
+                    <input id="answer_input_2_5" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="N">
                 </div>
                 <div class="answer_list_div">
-                    <div id="answer_div_3_1" class="answer_div">F</div>
-                    <div id="answer_div_3_2" class="answer_div">L</div>
-                    <div id="answer_div_3_3" class="answer_div">A</div>
-                    <div id="answer_div_3_4" class="answer_div">S</div>
-                    <div id="answer_div_3_5" class="answer_div">H</div>
+                    <input id="answer_input_3_1" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="F">
+                    <input id="answer_input_3_2" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="L">
+                    <input id="answer_input_3_3" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="A">
+                    <input id="answer_input_3_4" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="S">
+                    <input id="answer_input_3_5" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="H">
                 </div>
                 <div class="answer_list_div">
-                    <div id="answer_div_4_1" class="answer_div">E</div>
-                    <div id="answer_div_4_2" class="answer_div">N</div>
-                    <div id="answer_div_4_3" class="answer_div">J</div>
-                    <div id="answer_div_4_4" class="answer_div">O</div>
-                    <div id="answer_div_4_5" class="answer_div">Y</div>
+                    <input id="answer_input_4_1" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="E">
+                    <input id="answer_input_4_2" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="N">
+                    <input id="answer_input_4_3" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="J">
+                    <input id="answer_input_4_4" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="O">
+                    <input id="answer_input_4_5" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="Y">
                 </div>
                 <div class="answer_list_div">
-                    <div id="answer_div_5_1" class="answer_div">S</div>
-                    <div id="answer_div_5_2" class="answer_div">O</div>
-                    <div id="answer_div_5_3" class="answer_div">L</div>
-                    <div id="answer_div_5_4" class="answer_div">V</div>
-                    <div id="answer_div_5_5" class="answer_div">E</div>
+                    <input id="answer_input_5_1" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="S">
+                    <input id="answer_input_5_2" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="O">
+                    <input id="answer_input_5_3" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="L">
+                    <input id="answer_input_5_4" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="V">
+                    <input id="answer_input_5_5" onclick="push_keyboard(this.id)" class="answer_input" type="button" value="E">
                 </div>
                 <div class="answer_list_div">
-                    <div id="answer_div_6_1" class="answer_div"></div>
-                    <div id="answer_div_6_2" class="answer_div"></div>
-                    <div id="answer_div_6_3" class="answer_div"></div>
-                    <div id="answer_div_6_4" class="answer_div"></div>
-                    <div id="answer_div_6_5" class="answer_div"></div>
+                    <div id="answer_div_1" class="answer_div"></div>
+                    <div id="answer_div_2" class="answer_div"></div>
+                    <div id="answer_div_3" class="answer_div"></div>
+                    <div id="answer_div_4" class="answer_div"></div>
+                    <div id="answer_div_5" class="answer_div"></div>
                 </div>
     
     
-                <div id="keyboard">
-                    <div class="key_div">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="Q">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="W">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="E">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="R">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="T">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="Y">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="U">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="I">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="O">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="P">
+                <div id="keyboard" style="display:flexbox;text-align: center;margin-top: 1.5em;">    
+                    
+                    <div  style="display:inline;position: relative;">
+                        <div id="midori" class="iro_count_div">0/3</div>
+                        <input type="button" class="key_class" style="background-color: #00FF00;" onclick="nurinuri(this.style.backgroundColor)">
+                        
                     </div>
-                    <div class="key_div">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="A">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="S">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="D">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="F">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="G">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="H">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="J">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="K">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="L">
+                    <div  style="display:inline;position: relative;">
+                        <div id="kiiro" class="iro_count_div">0/5</div>
+                        <input type="button" class="key_class" style="background-color: #FFE000;"  onclick="nurinuri(this.style.backgroundColor)">
+                        
                     </div>
-                    <div class="key_div">
-                        <input type="button" class="key_class key_class_long" onclick="push_keyboard(this.value)" value="Enter">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="Z">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="X">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="C">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="V">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="B">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="N">
-                        <input type="button" class="key_class" onclick="push_keyboard(this.value)" value="M">
-                        <input type="button" class="key_class key_class_long" onclick="push_keyboard(this.value)" value="DEL">
+                    <div  style="display:inline;position: relative;">
+                        <div id="hai" class="iro_count_div">25/17</div>
+                        <input type="button" class="key_class" style="background-color: #999999;"  onclick="nurinuri(this.style.backgroundColor)">
                     </div>
+                    <input type="button" class="key_class key_class_long" onclick="push_keyboard(this.value)" value="Enter">
+
                 </div>
             </div>
             <p class="reset_p">☟リセット</p>
             <button class="reset_button" id="reset" onclick="reset()">↻</button>
-            <a href="not_wordle2.html">Not_Wordle2</a>←2ステージ目
+            別解があるかもしれません。そのときは単語とか教えてくれたら対応します。というかそもそも解けるのか？
             <footer>
                 <ul id="footul">
                     <li id="twitter">
