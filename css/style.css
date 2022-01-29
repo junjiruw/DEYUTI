@@ -85,6 +85,7 @@ img#go_home {
     margin-bottom:0em;
     height: 48px;
 }
+
 div#mannaka{
     width: 90%;
     margin: auto;
@@ -99,7 +100,16 @@ h1{
 h2{
     color: #ffffff;
 }
-
+a:link { /*アクセスしたことのないリンク*/
+    color:#5dccff;
+}
+a:visited { /*アクセスしたことのあるリンク*/
+    color:#1722b8;
+}
+a:hover {/*マウスが上に乗っている状態*/
+    color:#88ff00;
+    text-decoration:underline;
+}
 
 footer{
     background: #041d42;
