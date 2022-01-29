@@ -152,6 +152,7 @@
             var midori=0;
             var kiiro=0;
             var hai=25;
+            var is_seikai_flag=0;
             onload = function(){
                 onload_functions();
 
@@ -276,7 +277,7 @@
             async function CLEAR(){
                 var answer_color;
                 var tweet_text="https://twitter.com/intent/tweet?text=Not_Wordle3 1/1%0A";//%0Aで改行
-                var text=["F","R","O","N","T"];
+                var text=["F","R","O","N","T","S","M","I","L","E"];
                 tweet_text=tweet_text+"🟩🟩🟩🟩🟩";
                 tweet_text=tweet_text+"%0AJUN汁ｗおもちゃばこ。/おもちゃ/Not_Wordle3&hashtags=Not_Wordle_w&url=https://junjiruw.github.io/DEYUTI/omocha/not_wordle3.html"
                 document.getElementById("tweet_a").href=tweet_text;
@@ -284,7 +285,7 @@
                     var answer=document.getElementById("answer_div_"+i);
                     answer.style.backgroundColor="#00FF00";
                     answer.style.color="#FFFFFF";
-                    answer.innerText=text[i-1];
+                    answer.innerText=text[(is_seikai_flag-1)*5+i-1];
                     //回すぜー！
                     answer.classList.add('rolling_div');
                     await new Promise(function(resolve){
@@ -341,9 +342,9 @@
 
             // ネタバレ注意！！！！！！！！！！！！！！！！
             async function hantei(){
-                var seikai="2331331332133333232332333";
+                var seikai=["2331331332133333232332333","3313333323323232333313231"];
                 var is_seikai_str="";
-                var is_seikai_flag=1;
+                is_seikai_flag=0;
                 for(let i=1;i<6;i++){
                     for(let j=1;j<6;j++){
                         var answer_color=document.getElementById("answer_input_"+i+"_"+j).style.backgroundColor;
@@ -357,8 +358,15 @@
                     }
                 }
                 console.log(seikai);
-                console.log(is_seikai_str);
-                if(seikai==is_seikai_str){
+                
+                for(let i=0;i<seikai.length;i++){
+                    console.log(seikai[i]);
+                    if(seikai[i]==is_seikai_str){
+                        console.log(seikai[i]);
+                        is_seikai_flag=i+1;
+                    }
+                }
+                if(is_seikai_flag!=0){
                 await CLEAR();
                 }else{
                 await GAMEOVER();
@@ -465,6 +473,7 @@
             <p class="reset_p">☟リセット</p>
             <button class="reset_button" id="reset" onclick="reset()">↻</button>
             別解があるかもしれません。そのときは単語とか教えてくれたら対応します。というかそもそも解けるのか？
+            <p>公開から10分で別解が見つかりました。（対応済み）</p>
             <footer>
                 <ul id="footul">
                     <li id="twitter">
