@@ -57,27 +57,124 @@
             }
             canvas{
                 background: #ffffff;
-                width: 80%;
+                width: 50%;
+            }
+            div#buttons{
+                display: flex;
+            }
+            input.key_button{
+                width: 1.5em;
+                height: 1.5em;
+                font-size: 2em;
+                margin: 0.25em;
+            }
+            input.key_button:active{
+                background-color: #656965;
+                color: #FFFFFF;
+            }
+            div#button_left{
+                text-align: left;
+                width: 50%;
+            }
+            div#button_left div{
+                text-align: center;
+            }
+            div#button_right{
+                text-align: center;
+                width: 50%;
             }
 
         </style>
         <script src="../js/public.js"></script>
         <script>
-            
+        var ctx; 
+        var img;
+        var deyu_x=0;
+        var deyu_y=0;
+        var key_input="";
+        var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
+
             onload = function(){
                 onload_functions();
                 const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
-                const ctx= cnvs.getContext("2d");
+                
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                    cnvs.style.width=90+"%";
+                    console.log(cnvs.clientWidth);
+                    cnvs.style.height=cnvs.clientWidth+"px";
+                    console.log(cnvs.clientHeight);
+                }
+
+                ctx = cnvs.getContext("2d");
                 // 画像読み込み
-                const img= new Image();
-                img.src = "../images/test/.png";  // 画像のURLを指定
-                img.onload = () => {
-                    ctx.drawImage(img, 0, 0);
-                };
+                img= new Image();
+                img.src = "../images/site/favicon32.png";  // 画像のURLを指定
+
+
+                var buttons = document.getElementsByClassName("key_button");//ボタン操作
+                for(let i=0;i<buttons.length;i++){
+                    buttons[i].addEventListener("mousedown",function(){//押すと動く
+                        key_input=this.value;
+                    });
+                    buttons[i].addEventListener("mouseup",function(){//離すと動く
+                        key_input="";
+                        key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                    });
+                }
+                
+                document.addEventListener('keydown', function(key){//キーボード操作
+                    if(key.key=="w" || key.key=="ArrowUp"){
+                        key_input="↑";
+                    }else if(key.key=="a" || key.key=="ArrowLeft"){
+                        key_input="←";
+                    }else if(key.key=="d" || key.key=="ArrowRight"){
+                        key_input="→";
+                    }else if(key.key=="s" || key.key=="ArrowDown"){
+                        key_input="↓";
+                    }else if(key.key=="Enter"){//AがAで入力できない！？←だってWASDに使ってるんだもん…
+                        key_input="〇";
+                    }else if(key.key=="Shift"){
+                        key_input="×";dawds
+                    }
+                });
+                document.addEventListener('keyup', function(key){//キーボード操作
+                    key_input="";//二つのキーを押していると…
+                    //1キーを押す→2キーを押す（この時点で1キーの情報消滅）
+                    //つまり配列で持っておいて、自分のが終わったら消す（天才）
+                    key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                    //じゃあこっちも配列でもつべきなんか…？
+                });
+            }
+
+            setInterval(function(){//1秒に100回動くぞ！
+                if(key_interval==0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                    key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
+                    if(key_input=="↑"){
+                        deyu_y=deyu_y-16;
+                    }else if(key_input=="←"){
+                        deyu_x=deyu_x-16;
+                    }else if(key_input=="→"){
+                        deyu_x=deyu_x+16;
+                    }else if(key_input=="↓"){
+                        deyu_y=deyu_y+16;
+                    }else if(key_input=="〇"){
+                        deyu_x=0;
+                    }else if(key_input=="×"){
+                        deyu_y=0;
+                    }
+                }else if(key_interval>0){
+                    key_interval=key_interval-1;//カウントダウン
+                }
+                CLEAR_cnvs();
+                ctx.drawImage(img,deyu_x,deyu_y);
+            }, 10);//10/1000[s]でくりかえすぞ！
+
+            function CLEAR_cnvs(){//キャンバスを白く塗るだけの精霊
+                ctx.fillStyle="#FFFFFF";
+                ctx.fillRect(0,0,320,320);
             }
 
             
-
         </script>
     </head>
     <body>
@@ -99,15 +196,32 @@
             このページはテスト用です。
 
             <div id="parent_div">
-                <div>
-                    <button>
-                        
-                    </button>
-                </div>
-                <canvas id="cnvs">
+                <canvas id="cnvs" height="320px" width="320px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                 </canvas>
             </div>
-
+            <div id="buttons">
+                <div id="button_left">
+                    <div>
+                        <input type="button" class="key_button" value="↑">
+                    </div>
+                    <div>
+                        <input type="button" class="key_button" value="←">
+                        <input type="button" class="key_button" value="→">
+                    </div>
+                    <div>
+                        <input type="button" class="key_button" value="↓">
+                    </div>
+                    
+                </div>
+                <div id="button_right">
+                    <input type="button" class="key_button" value="〇">
+                    <input type="button" class="key_button" value="×">
+                </div>
+            </div>
+            <p>
+                キーボード<br>移動:WASD,↑←→↓ <br>〇:Enter, ×:Shift
+            </p>            
+            
 
             <footer>
                 <ul id="footul">
