@@ -36,10 +36,6 @@
             footer{
                 background:linear-gradient(rgba(4,29,66,0.6), rgba(4,29,66,0));
             }
-            div#parent_div{
-                text-align: center;
-                margin: 10px;
-            }
             div#table{
                 display: table;
                 padding: 1px;
@@ -55,51 +51,32 @@
                 display: table-cell;
                 display: inline;
             }
+            div#parent_div{
+                text-align: center;
+                margin: 10px;
+            }
             canvas{
                 background: #ffffff;
+                width: 80%;
             }
+
         </style>
         <script src="../js/public.js"></script>
         <script>
             
-            onload = function(){kihon();};//ロード時に
-            function kihon() {
+            onload = function(){
                 onload_functions();
-                var cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
-                var cnvs2d = cnvs.getContext('2d');//2Dでやる
-                cnvs2d.strokeStyle="#FF0000";
-                cnvs2d.strokeRect(10,10,100,100);//JSはまたの機会に勉強すべきだなと思うでゆっちであった。
+                const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
+                const ctx= cnvs.getContext("2d");
+                // 画像読み込み
+                const img= new Image();
+                img.src = "../images/test/.png";  // 画像のURLを指定
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0);
+                };
 
-                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//ロード時にスマホ判定
-                    document.getElementById('mannaka').style.fontSize="3.5vw";//100vwが画面横幅
-                }
-
-                fetch("https://junjiruw.github.io/DEYUTI/test/gomibako_for_test.html")
-                .then(res =>{
-                    return res.text();
-                }).then(res=>{//<meta property="og:title" content="ページタイトル"/>って感じに描いてあるはず
-                    title_start=res.indexOf('<meta property="og:title" content="')+34;//<の位置+34が得られる
-                    title_end=res.indexOf('"',title_start+1);
-                    console.log(title_end-title_start);
-                    document.getElementById("hoge").textContent=res.substr(title_start+1,title_end-title_start-1);
-                });
-
-                fetch("https://api.github.com/repos/junjiruw/DEYUTI/contents/omocha")//おもちゃ階層のページをgithubから持ってくる
-                .then(res =>{
-                    return res.json();
-                }).then(res =>{
-                    for(let i=0;i<res.length;i++){
-                        console.log(res[i].path);
-                        fetch("https://junjiruw.github.io/DEYUTI/"+res[i].path)
-                        .then(res2 =>{
-                            return res2.text();
-                        }).then(res2=>{//<meta property="og:title" content="ページタイトル"/>って感じに描いてあるはず
-                            title_start=res2.indexOf('<meta property="og:title" content="')+34;//<の位置+34が得られる
-                            title_end=res2.indexOf('"',title_start+1);
-                            document.getElementById("hoge").textContent=document.getElementById("hoge").textContent+res2.substr(title_start+1,title_end-title_start-1);
-                        });
-                    }
-                });
+                var URL_tweet_text="https://twitter.com/intent/tweet?text="+document.title+"%0A"+document.URL;;//%0Aで改行
+                document.getElementById("foot_tweet_a").href=URL_tweet_text;
             }
 
             
@@ -107,6 +84,7 @@
         </script>
     </head>
     <body>
+        <div id="top"></div>
         <header id="header">
             <button onclick="html_link_btn()" id="html_link_btn"></button>
             <nav id="html_link_nav">
@@ -122,38 +100,24 @@
 
         <div id="mannaka">
             このページはテスト用です。
-            
-            <div id="table">
-                <p>
-                    <img src="../images/site/favicon32.png">
-                    <img src="../images/site/favicon32.png">
-                    <img src="../images/site/favicon32.png">
-                    俺たち
-                </p>
-                <p>
-                    <img src="../images/site/favicon32.png">
-                    <img src="../images/site/favicon32.png">
-                    <img src="../images/site/favicon32.png">
-                    でゆっち６兄弟
-                    <img src="../images/site/junjiruw_pro.png" height="32px">
-                </p>
-            </div>
-            Canvasは特になにも実装されてないのです
+
             <div id="parent_div">
+                <div>
+                    <button>
+                        
+                    </button>
+                </div>
                 <canvas id="cnvs">
                 </canvas>
             </div>
 
-            <div id="hoge">@</div>
 
             <footer>
                 <ul id="footul">
-                    <li id="twitter">
-                        <a  href="https://twitter.com/share" class="twitter-share-button">
-                        </a> <!--本文はtitleになるらしい-->
-                        <script>
-                            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
-                        </script>
+                    <li id="foot_tweet_li">
+                        <a href="" id="foot_tweet_a">
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
                     </li>
                     <li>
                         <a href="#top" id="totop"> 

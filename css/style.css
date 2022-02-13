@@ -132,6 +132,14 @@ ul#footul li a{
 ul#footul li a:hover{
     color: #ffffff;
 }
+li#foot_tweet_li{
+    height: 0;
+    width: auto;
+    vertical-align: top;
+}
+img#tweet_img{
+    height: 1.5em;
+}
 li#twitter{
     vertical-align: top;
 }
