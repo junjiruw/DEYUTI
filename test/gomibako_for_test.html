@@ -112,16 +112,31 @@
 
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
-                for(let i=0;i<buttons.length;i++){
-                    buttons[i].addEventListener("mousedown",function(){//押すと動く
-                        key_input=this.value;
-                    });
-                    buttons[i].addEventListener("mouseup",function(){//離すと動く
-                        key_input="";
-                        key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
-                    });
+                if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
+                    //ようするにタッチ機能がある端末なら
+                    for(let i=0;i<buttons.length;i++){
+                        buttons[i].addEventListener("touchstart",function(){//押すと動く
+                            key_input=this.value;
+                        });
+                        buttons[i].addEventListener("touchend",function(){//離すと動く
+                            key_input="";
+                            key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                        });
+                    }
+                }else{
+                    //一般的なPCなら
+                    for(let i=0;i<buttons.length;i++){
+                        buttons[i].addEventListener("mousedown",function(){//押すと動く
+                            key_input=this.value;
+                        });
+                        buttons[i].addEventListener("mouseup",function(){//離すと動く
+                            key_input="";
+                            key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                        });
+
+                    }
                 }
-                
+
                 document.addEventListener('keydown', function(key){//キーボード操作
                     if(key.key=="w" || key.key=="ArrowUp"){
                         key_input="↑";
