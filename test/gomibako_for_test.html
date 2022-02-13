@@ -74,9 +74,6 @@
                 img.onload = () => {
                     ctx.drawImage(img, 0, 0);
                 };
-
-                var URL_tweet_text="https://twitter.com/intent/tweet?text="+document.title+"%0A"+document.URL;;//%0Aで改行
-                document.getElementById("foot_tweet_a").href=URL_tweet_text;
             }
 
             
@@ -115,7 +112,7 @@
             <footer>
                 <ul id="footul">
                     <li id="foot_tweet_li">
-                        <a href="" id="foot_tweet_a">
+                        <a href="" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
                             <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
                         </a>
                     </li>

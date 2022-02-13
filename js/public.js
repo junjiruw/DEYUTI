@@ -1,10 +1,15 @@
 var header_height;//h1のfont-sizeに合わせてヘッダーの大きさが決まるので、いろんなデザインで使いまわしたいし、ここにおいておきます。
 
 function onload_functions(){
-    is_this_sumaho();
-    html_link_show();
-    btn_looks_better();
+    is_this_sumaho();//スマホの文字でかくする
+    html_link_show();//☝でページリンクが出る
+    btn_looks_better();//☝の改善
+    //ツイートリンク取得
+    var URL_tweet_text="https://twitter.com/intent/tweet?text="+document.title+"%0A"+document.URL;;//%0Aで改行
+    document.getElementById("foot_tweet_a").href=URL_tweet_text;
 }
+
+
 function is_this_sumaho() {
     if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
         document.getElementById('mannaka').style.fontSize="3.5vw";
