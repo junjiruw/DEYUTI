@@ -92,6 +92,7 @@
         var deyu_x=0;
         var deyu_y=0;
         var key_input="";
+        var what_input="";//キーボード同時おしに使う
         var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
         var key_owarasete=0;
 
@@ -149,47 +150,69 @@
 
                     }
                 }
-
+                
                 document.addEventListener('keydown', function(key){//キーボード操作
+
+                    what_input="";
                     if(key.key=="w" || key.key=="ArrowUp"){
-                        key_input="↑";
+                        what_input="↑";
                     }else if(key.key=="a" || key.key=="ArrowLeft"){
-                        key_input="←";
+                        what_input="←";
                     }else if(key.key=="d" || key.key=="ArrowRight"){
-                        key_input="→";
+                        what_input="→";
                     }else if(key.key=="s" || key.key=="ArrowDown"){
-                        key_input="↓";
+                        what_input="↓";
                     }else if(key.key=="Enter"){//AがAで入力できない！？←だってWASDに使ってるんだもん…
-                        key_input="〇";
+                        what_input="〇";
                     }else if(key.key=="Shift"){
-                        key_input="×";dawds
+                        what_input="×";
                     }
+                    if(key_input.indexOf(what_input)==-1){//すでに押されていたら、文字列検索でひっかかる。ひっかからないなら-1が帰ってくる
+                        key_input=key_input+what_input;//キーボードは同時押しが可能なので書き換えではなく、追加にします。え？キーボードとボタン同時押しされたら？バ～カ
+                    }
+                    
                 });
                 document.addEventListener('keyup', function(key){//キーボード操作
-                    key_input="";//二つのキーを押していると…
-                    //1キーを押す→2キーを押す（この時点で1キーの情報消滅）
-                    //つまり配列で持っておいて、自分のが終わったら消す（天才）
-                    key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
-                    //じゃあこっちも配列でもつべきなんか…？
+                    what_input="";
+                    if(key.key=="w" || key.key=="ArrowUp"){
+                        what_input="↑";
+                    }else if(key.key=="a" || key.key=="ArrowLeft"){
+                        what_input="←";
+                    }else if(key.key=="d" || key.key=="ArrowRight"){
+                        what_input="→";
+                    }else if(key.key=="s" || key.key=="ArrowDown"){
+                        what_input="↓";
+                    }else if(key.key=="Enter"){//AがAで入力できない！？←だってWASDに使ってるんだもん…
+                        what_input="〇";
+                    }else if(key.key=="Shift"){
+                        what_input="×";
+                    }
+                    
+                    key_input=key_input.slice(0,key_input.indexOf(what_input))+key_input.slice(key_input.indexOf(what_input)+1);//該当文字を消去
+                    if(key_input==""){
+                        key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                    }
                 });
             }
 
             setInterval(function(){//1秒に100回動くぞ！
                 if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                     key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
-                    if(key_input=="↑"){
-                        deyu_y=deyu_y-16;
-                    }else if(key_input=="←"){
-                        deyu_x=deyu_x-16;
-                    }else if(key_input=="→"){
-                        deyu_x=deyu_x+16;
-                    }else if(key_input=="↓"){
-                        deyu_y=deyu_y+16;
-                    }else if(key_input=="〇"){
-                        deyu_x=0;
-                    }else if(key_input=="×"){
-                        deyu_y=0;
-                    }
+                    for(let i=0;i<key_input.length;i++){
+                        if(key_input.charAt(i)=="↑"){
+                            idou(0,-16);
+                        }else if(key_input.charAt(i)=="←"){
+                            idou(-16,0);
+                        }else if(key_input.charAt(i)=="→"){
+                            idou(16,0);
+                        }else if(key_input.charAt(i)=="↓"){
+                            idou(0,16);
+                        }else if(key_input.charAt(i)=="〇"){
+                            deyu_x=0;
+                        }else if(key_input.charAt(i)=="×"){
+                            deyu_y=0;
+                        }
+                }
                     if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
                         key_input="";
                         key_interval=0;
@@ -200,6 +223,11 @@
                 CLEAR_cnvs();
                 ctx.drawImage(img,deyu_x,deyu_y);
             }, 10);//10/1000[s]でくりかえすぞ！
+
+            function idou(dx,dy){
+                deyu_x=deyu_x+dx;
+                deyu_y=deyu_y+dy;
+            }
 
             function CLEAR_cnvs(){//キャンバスを白く塗るだけの精霊
                 ctx.fillStyle="#FFFFFF";
@@ -251,7 +279,7 @@
                 </div>
             </div>
             <p>
-                キーボード<br>移動:WASD,↑←→↓ <br>〇:Enter, ×:Shift
+                キーボード    移動:WASD,↑←→↓    〇:Enter, ×:Shift
             </p>            
             
 
