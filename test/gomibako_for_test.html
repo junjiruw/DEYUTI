@@ -57,7 +57,7 @@
             }
             canvas{
                 background: #ffffff;
-                width: 50%;
+                height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ*/
             }
             div#buttons{
                 display: flex;
@@ -93,6 +93,7 @@
         var deyu_y=0;
         var key_input="";
         var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
+        var key_owarasete=0;
 
             onload = function(){
                 onload_functions();
@@ -117,10 +118,16 @@
                     for(let i=0;i<buttons.length;i++){
                         buttons[i].addEventListener("touchstart",function(){//押すと動く
                             key_input=this.value;
+                            key_interval=-1;//初回限定モード（1回は動作させたいので。）
+                            key_owarasete=0;
                         });
                         buttons[i].addEventListener("touchend",function(){//離すと動く
-                            key_input="";
-                            key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                            if(key_interval!=-1){//一回も実行されてないのに終了するのはボタンとしておかしいので、はじく
+                                key_input="";
+                                key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                            }else{
+                                key_owarasete=1;//一度も実行されてないけど、ボタンはもう押してないのよ。
+                            }
                         });
                     }
                 }else{
@@ -128,10 +135,16 @@
                     for(let i=0;i<buttons.length;i++){
                         buttons[i].addEventListener("mousedown",function(){//押すと動く
                             key_input=this.value;
+                            key_interval=-1;//初回限定モード（1回は動作させたいので。）
+                            key_owarasete=0;
                         });
                         buttons[i].addEventListener("mouseup",function(){//離すと動く
-                            key_input="";
-                            key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                            if(key_interval!=-1){//一回も実行されてないのに終了するのはボタンとしておかしいので、はじく
+                                key_input="";
+                                key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                            }else{
+                                key_owarasete=1;//一度も実行されてないけど、ボタンはもう押してないのよ。
+                            }
                         });
 
                     }
@@ -162,7 +175,7 @@
             }
 
             setInterval(function(){//1秒に100回動くぞ！
-                if(key_interval==0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                     key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
                     if(key_input=="↑"){
                         deyu_y=deyu_y-16;
@@ -176,6 +189,10 @@
                         deyu_x=0;
                     }else if(key_input=="×"){
                         deyu_y=0;
+                    }
+                    if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                        key_input="";
+                        key_interval=0;
                     }
                 }else if(key_interval>0){
                     key_interval=key_interval-1;//カウントダウン

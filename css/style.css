@@ -85,7 +85,9 @@ img#go_home {
     margin-bottom:0em;
     height: 48px;
 }
-
+/*－－－－－－－－－－－－－ー－－－－－－－－－－－－－－*/
+/*－－－－－－－－－－真ん中ー－－－－－－－－－－－－－－*/
+/*－－－－－－－－－－－－－ー－－－－－－－－－－－－－－*/
 div#mannaka{
     width: 90%;
     margin: auto;
@@ -110,7 +112,12 @@ a:hover {/*マウスが上に乗っている状態*/
     color:#88ff00;
     text-decoration:underline;
 }
-
+input,button{
+    -webkit-appearance: none;/*ブラウザが変なデザインをデフォルト設定してくるので消す*/
+}
+/*－－－－－－－－－－－－－ー－－－－－－－－－－－－－－*/
+/*－－－－－－－－－－フッター－－－－－－－－－－－－－－*/
+/*－－－－－－－－－－－－－ー－－－－－－－－－－－－－－*/
 footer{
     background: #041d42;
     padding: 0.5em;
