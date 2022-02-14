@@ -117,7 +117,8 @@
                 if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
                     //ようするにタッチ機能がある端末なら
                     for(let i=0;i<buttons.length;i++){
-                        buttons[i].addEventListener("touchstart",function(){//押すと動く
+                        buttons[i].addEventListener("touchstart",function(e){//押すと動く
+                            e.preventDefault();//ボタンをもとの状態に戻してください（血涙）
                             key_input=this.value;
                             key_interval=-1;//初回限定モード（1回は動作させたいので。）
                             key_owarasete=0;
