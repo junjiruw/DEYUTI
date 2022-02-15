@@ -84,20 +84,22 @@ function btn_looks_better(){//jsでボタンの見た目を改善しましょう
 
     document.getElementById("title_h1").style.paddingLeft=header_height+10+ 'px';//ボタン置くスペース確保
     document.getElementById("go_home").style.height=header_height+ 'px';
+    if(document.getElementById("header").style.position=="fixed"){  //fixedじゃないとき…つまりheaderについてきて欲しくないとき
+        document.getElementById("top").style.height=header_height*1.6+ 'px';//header置くところを縦にスペース確保
 
-    document.getElementById("top").style.height=header_height*1.6+ 'px';//header置くところを縦にスペース確保
-    
+        setInterval(function(){//1秒に100回動くぞ！
+            var header=document.getElementById("header");
+            //window.pageYOffsetがスクロール位置
+            if(window.pageYOffset>=header_height*0.3){//下に向かってheader_height*0.3pxスクロールしてたら
+                header.style.top=2+"px";   
+            }else{//してない。一番上に画面があるとき～npxくらいスクロールしてるとき
+                header.style.top=header_height*0.3-window.pageYOffset+"px";
+            }
+        }, 10);//10/1000[s]でくりかえすぞ！
+    }
 }
 
-setInterval(function(){//1秒に100回動くぞ！
-    var header=document.getElementById("header");
-    //window.pageYOffsetがスクロール位置
-    if(window.pageYOffset>=header_height*0.3){//下に向かってheader_height*0.3pxスクロールしてたら
-        header.style.top=2+"px";   
-    }else{//してない。一番上に画面があるとき～npxくらいスクロールしてるとき
-        header.style.top=header_height*0.3-window.pageYOffset+"px";
-    }
-}, 10);//10/1000[s]でくりかえすぞ！
+
 
 function html_link_btn(){
 	var list_nav = document.getElementById("html_link_nav");

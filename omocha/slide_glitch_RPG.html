@@ -3,13 +3,13 @@
     <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
         <meta charset="UTF-8">
         <!--文字コードは上のほうにないとすべておしまいになるらしい-->
-        <meta name="description" content="技術的なテストをしている">
-        <title>JUN汁ｗおもちゃばこ。/TEST</title>
+        <meta name="description" content="バグゲーを作ろうと思った">                                                                 <!--入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/すらいどぐりっちしゅうくんRPG</title>                                                         <!--入力すること！-->
         <!--OGPとかいうの-->
-        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/TEST">
-        <meta property="og:title" content="テスト用ページ"/>
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/slide_glitch_RPG">                                <!--入力すること！-->
+        <meta property="og:title" content="***"/>                                                               <!--入力すること！-->
         <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
-        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/test/gomibako_for_test"/>
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/slide_glitch_RPG.html"/>                   <!--入力すること！-->
         <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
         <meta name="twitter:card" content="summary"><!--なにを表示するか-->
         <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
@@ -17,39 +17,10 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
-            body {
-                background-image:url("../images/site/junjiruw_pro.png"),
-                url("../images/site/junjiruw_pro_rev.png"),
-                linear-gradient(#053a24,80%,#000000);
-                
-                background-size:10% 120%,10% 120%,auto;
-                background-position: -2% 70%, 102% 0%;/*0%で画像の左が画面端。100%で右が画面端*/
-                background-repeat:no-repeat,no-repeat,repeat;
-                background-attachment: fixed,fixed,fixed;
-                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-            }
-            div#mannaka{
-                border-image: linear-gradient(rgba(255,255,255,1), rgba(0,30,100,1));/*透明は黒になるっぽいね*/
-                border-image-slice: 1;
-                background:linear-gradient(rgba(22,21,26,1), rgba(22,21,26,0.6));
-            }
-            footer{
-                background:linear-gradient(rgba(4,29,66,0.6), rgba(4,29,66,0));
-            }
-            div#table{
-                display: table;
-                padding: 1px;
-                background:#0f4936;
-            }
-            div#table p{
-                display: table-row;
-                background:#0f4936;
-                padding: 1px;
-            }
-            div#table img{
-                margin: 1px;
-                display: table-cell;
-                display: inline;
+            header{
+                position: static;/*ついてくるな*/
+                top: 0px;
+                margin: 10px;
             }
             div#parent_div{
                 text-align: center;
@@ -68,6 +39,7 @@
                 height: 1.5em;
                 font-size: 2em;
                 margin: 0.25em;
+                margin-left: 1em;
             }
             input.key_button:active{
                 background-color: #656965;
@@ -84,18 +56,19 @@
                 text-align: center;
                 width: 50%;
             }
-
         </style>
         <script src="../js/public.js"></script>
         <script>
-        var ctx; 
-        var img;
-        var deyu_x=0;
-        var deyu_y=0;
-        var key_input="";
-        var what_input="";//キーボード同時おしに使う
-        var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
-        var key_owarasete=0;
+            var ctx; 
+            var syuukun;
+            var map;
+            var deyu_x=5;//周囲に壁を置くのでずらします。
+            var deyu_y=5;
+            var key_input="";
+            var what_input="";//キーボード同時おしに使う
+            var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
+            var key_owarasete=0;
+            var loop_count=-1;//あれです、1秒で100数えます。
 
             onload = function(){
                 onload_functions();
@@ -110,8 +83,10 @@
 
                 ctx = cnvs.getContext("2d");
                 // 画像読み込み
-                img= new Image();
-                img.src = "../images/site/favicon32.png";  // 画像のURLを指定
+                syuukun= new Image();
+                syuukun.src = "../images/omocha/slide_glitch_RPG/syuukun32_1.png";  // 画像のURLを指定
+                map = new Image
+                map.src="../images/omocha/slide_glitch_RPG/32map.png"
 
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
@@ -198,17 +173,19 @@
             }
 
             setInterval(function(){//1秒に100回動くぞ！
+                loop_count=loop_count+1;
+                if(loop_count>99){loop_count=0;}//0-99
                 if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                     key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
                     for(let i=0;i<key_input.length;i++){
                         if(key_input.charAt(i)=="↑"){
-                            idou(0,-16);
+                            idou(0,-32);
                         }else if(key_input.charAt(i)=="←"){
-                            idou(-16,0);
+                            idou(-32,0);
                         }else if(key_input.charAt(i)=="→"){
-                            idou(16,0);
+                            idou(32,0);
                         }else if(key_input.charAt(i)=="↓"){
-                            idou(0,16);
+                            idou(0,32);
                         }else if(key_input.charAt(i)=="〇"){
                             deyu_x=0;
                         }else if(key_input.charAt(i)=="×"){
@@ -222,20 +199,40 @@
                 }else if(key_interval>0){
                     key_interval=key_interval-1;//カウントダウン
                 }
-                CLEAR_cnvs();
-                ctx.drawImage(img,deyu_x,deyu_y);
+
+                syuukun.src = "../images/omocha/slide_glitch_RPG/syuukun32_"+Math.floor(loop_count/50)+".png";  // 画像のURLを指定
+
+                ctx.drawImage(map,0,0);
+                ctx.drawImage(syuukun,deyu_x,deyu_y);
             }, 10);//10/1000[s]でくりかえすぞ！
 
             function idou(dx,dy){
+                var idou_iro;
+                if(dx>0){
+                    idou_iro=ctx.getImageData(deyu_x+dx,deyu_y,1,1);//移動先の画像を1ピクセル取得
+                }else{
+                    idou_iro=ctx.getImageData(deyu_x-1,deyu_y,1,1);//移動先の画像を1ピクセル取得
+                }
+                dx=dx*idou_OK(idou_iro.data);//移動不可なら0にする
+                if(dy>0){
+                    idou_iro=ctx.getImageData(deyu_x,deyu_y+dy,1,1);//移動先の画像を1ピクセル取得
+                }else{
+                    idou_iro=ctx.getImageData(deyu_x,deyu_y-1,1,1);//移動先の画像を1ピクセル取得
+                }
+                dy=dy*idou_OK(idou_iro.data);//移動不可なら0にする
+                
+                
                 deyu_x=deyu_x+dx;
                 deyu_y=deyu_y+dy;
             }
 
-            function CLEAR_cnvs(){//キャンバスを白く塗るだけの精霊
-                ctx.fillStyle="#FFFFFF";
-                ctx.fillRect(0,0,320,320);
+            function idou_OK(iro_data){
+                if(iro_data[0]==78 && iro_data[1]==168 && iro_data[2]== 0){//濃い緑
+                    return 0;
+                }else{
+                    return 1;
+                }
             }
-
             
         </script>
     </head>
@@ -255,10 +252,12 @@
         </header>
 
         <div id="mannaka">
-            このページはテスト用です。
-
+            <h2>すらいどぐりっちしゅうくんRPG</h2>
+            <p>
+                キーボード    移動:WASD,↑←→↓    〇:Enter, ×:Shift
+            </p> 
             <div id="parent_div">
-                <canvas id="cnvs" height="320px" width="320px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                <canvas id="cnvs" height="170px" width="170px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                 </canvas>
             </div>
             <div id="buttons">
@@ -280,10 +279,7 @@
                     <input type="button" class="key_button" value="×">
                 </div>
             </div>
-            <p>
-                キーボード    移動:WASD,↑←→↓    〇:Enter, ×:Shift
-            </p>            
-            
+             
 
             <footer>
                 <ul id="footul">
