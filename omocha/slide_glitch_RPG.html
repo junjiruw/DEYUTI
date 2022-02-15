@@ -176,45 +176,46 @@
                         key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
                     }
                 });
-            }
-
-            setInterval(function(){//1秒に100回動くぞ！
-                loop_count=loop_count+1;
-                if(loop_count>99){loop_count=0;}//0-99
-                if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                    key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
-                    for(let i=0;i<key_input.length;i++){
-                        if(key_input.charAt(i)=="↑"){
-                            idou(0,-32);
-                        }else if(key_input.charAt(i)=="←"){
-                            idou(-32,0);
-                        }else if(key_input.charAt(i)=="→"){
-                            idou(32,0);
-                        }else if(key_input.charAt(i)=="↓"){
-                            idou(0,32);
-                        }else if(key_input.charAt(i)=="〇"){
-                            deyu_x=5;
-                        }else if(key_input.charAt(i)=="×"){
-                            deyu_y=5;
-                        }
-                }
-                    if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
-                        key_input="";
-                        key_interval=0;
+                setInterval(function(){//1秒に100回動くぞ！
+                    loop_count=loop_count+1;
+                    if(loop_count>99){loop_count=0;}//0-99
+                    if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                        key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
+                        for(let i=0;i<key_input.length;i++){
+                            if(key_input.charAt(i)=="↑"){
+                                idou(0,-32);
+                            }else if(key_input.charAt(i)=="←"){
+                                idou(-32,0);
+                            }else if(key_input.charAt(i)=="→"){
+                                idou(32,0);
+                            }else if(key_input.charAt(i)=="↓"){
+                                idou(0,32);
+                            }else if(key_input.charAt(i)=="〇"){
+                                deyu_x=5;
+                            }else if(key_input.charAt(i)=="×"){
+                                deyu_y=5;
+                            }
                     }
-                }else if(key_interval>0){
-                    key_interval=key_interval-1;//カウントダウン
-                }
+                        if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                            key_input="";
+                            key_interval=0;
+                        }
+                    }else if(key_interval>0){
+                        key_interval=key_interval-1;//カウントダウン
+                    }
 
 
-                ctx.drawImage(map,-world_x,-world_y);
-                if(Math.floor(loop_count/50)==0){//しゅうくんがあるくよ！
-                    ctx.drawImage(syuukun_0,deyu_x,deyu_y);
-                }else{
-                    ctx.drawImage(syuukun_1,deyu_x,deyu_y);
-                }
-                
-            }, 10);//10/1000[s]でくりかえすぞ！
+                    ctx.drawImage(map,-world_x,-world_y);
+                    if(Math.floor(loop_count/50)==0){//しゅうくんがあるくよ！
+                        ctx.drawImage(syuukun_0,deyu_x,deyu_y);
+                    }else{
+                        ctx.drawImage(syuukun_1,deyu_x,deyu_y);
+                    }
+                    
+                }, 10);//10/1000[s]でくりかえすぞ！
+            }//ー－－－－－－－－－－－－－－－－－－－－－－－－－－－－－ここまでonloadー－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
+
+            
 
             function idou(dx,dy){
                 var idou_iro;
