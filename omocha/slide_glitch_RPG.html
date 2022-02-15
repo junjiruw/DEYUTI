@@ -7,7 +7,7 @@
         <title>JUN汁ｗおもちゃばこ。/おもちゃ/すらいどぐりっちしゅうくんRPG</title>                                                         <!--入力すること！-->
         <!--OGPとかいうの-->
         <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/slide_glitch_RPG">                                <!--入力すること！-->
-        <meta property="og:title" content="***"/>                                                               <!--入力すること！-->
+        <meta property="og:title" content="すらいどぐりっちしゅうくんRPG"/>                                                               <!--入力すること！-->
         <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
         <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/slide_glitch_RPG.html"/>                   <!--入力すること！-->
         <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
@@ -63,8 +63,10 @@
             var syuukun_0;
             var syuukun_1;
             var map;
-            var deyu_x=5;//周囲に壁を置くのでずらします。
+            var deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
             var deyu_y=5;
+            var world_x=0*170;
+            var world_y=0*170;
             var key_input="";
             var what_input="";//キーボード同時おしに使う
             var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
@@ -205,7 +207,7 @@
                 }
 
 
-                ctx.drawImage(map,0,0);
+                ctx.drawImage(map,-world_x,-world_y);
                 if(Math.floor(loop_count/50)==0){//しゅうくんがあるくよ！
                     ctx.drawImage(syuukun_0,deyu_x,deyu_y);
                 }else{
@@ -232,6 +234,21 @@
                 
                 deyu_x=deyu_x+dx;
                 deyu_y=deyu_y+dy;
+
+                if(deyu_x>=165){//右端 5 6 7 8 9
+                    deyu_x=5;
+                    world_x=world_x+170;
+                }else if(deyu_x<=4){//左端 0 1 2 3 4
+                    deyu_x=133;
+                    world_x=world_x-170;
+                }
+                if(deyu_y>=165){//下端 5 6 7 8 9
+                    deyu_y=5;
+                    world_y=world_y+170;
+                }else if(deyu_y<=4){//上端 0 1 2 3 4
+                    deyu_y=133;
+                    world_y=world_y-170;
+                }
             }
 
             function idou_OK(iro_data){
