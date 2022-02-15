@@ -60,7 +60,8 @@
         <script src="../js/public.js"></script>
         <script>
             var ctx; 
-            var syuukun;
+            var syuukun_0;
+            var syuukun_1;
             var map;
             var deyu_x=5;//周囲に壁を置くのでずらします。
             var deyu_y=5;
@@ -83,8 +84,10 @@
 
                 ctx = cnvs.getContext("2d");
                 // 画像読み込み
-                syuukun= new Image();
-                syuukun.src = "../images/omocha/slide_glitch_RPG/syuukun32_1.png";  // 画像のURLを指定
+                syuukun_0= new Image();
+                syuukun_0.src = "../images/omocha/slide_glitch_RPG/syuukun32_0.png";  // 画像のURLを指定
+                syuukun_1= new Image();
+                syuukun_1.src = "../images/omocha/slide_glitch_RPG/syuukun32_1.png";  // 画像のURLを指定
                 map = new Image
                 map.src="../images/omocha/slide_glitch_RPG/32map.png"
 
@@ -200,10 +203,14 @@
                     key_interval=key_interval-1;//カウントダウン
                 }
 
-                syuukun.src = "../images/omocha/slide_glitch_RPG/syuukun32_"+Math.floor(loop_count/50)+".png";  // 画像のURLを指定
 
                 ctx.drawImage(map,0,0);
-                ctx.drawImage(syuukun,deyu_x,deyu_y);
+                if(Math.floor(loop_count/50)==0){//しゅうくんがあるくよ！
+                    ctx.drawImage(syuukun_0,deyu_x,deyu_y);
+                }else{
+                    ctx.drawImage(syuukun_1,deyu_x,deyu_y);
+                }
+                
             }, 10);//10/1000[s]でくりかえすぞ！
 
             function idou(dx,dy){
@@ -280,7 +287,9 @@
                 </div>
             </div>
              
-
+            <p>
+                ⚠製作途中です！⚠
+            </p>
             <footer>
                 <ul id="footul">
                     <li id="foot_tweet_li">
