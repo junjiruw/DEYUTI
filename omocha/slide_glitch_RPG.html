@@ -102,7 +102,8 @@
                             key_interval=-1;//初回限定モード（1回は動作させたいので。）
                             key_owarasete=0;
                         });
-                        buttons[i].addEventListener("touchend",function(){//離すと動く
+                        buttons[i].addEventListener("touchend",function(e){//離すと動く
+                            e.preventDefault();//ボタンをもとの状態に戻してください（血涙）
                             if(key_interval!=-1){//一回も実行されてないのに終了するのはボタンとしておかしいので、はじく
                                 key_input="";
                                 key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
