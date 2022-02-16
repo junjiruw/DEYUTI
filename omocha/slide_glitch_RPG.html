@@ -60,18 +60,31 @@
         <script src="../js/public.js"></script>
         <script>
             var ctx; 
+            //画像
             var syuukun_0;
             var syuukun_1;
+            var pon_0;
+            var pon_1;
             var map;
+            var kanbansan_1;
+            //座標
             var deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
             var deyu_y=5;
+            var pon_x =5+3*32+0*170;
+            var pon_y =5+2*32+0*170;
             var world_x=0*170;
             var world_y=0*170;
+            var kanbansan_1_x=5+1*32+0*170;
+            var kanbansan_1_y=5+1*32+0*170;
+            //キーボードなど、システムの、あの、アレ、アレさ！
             var key_input="";
             var what_input="";//キーボード同時おしに使う
             var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
             var key_owarasete=0;
             var loop_count=-1;//あれです、1秒で100数えます。
+
+            //一番大事なところだッピ！
+            var serihu=[];
 
             onload = function(){
                 onload_functions();
@@ -85,6 +98,7 @@
                 }
 
                 ctx = cnvs.getContext("2d");
+                ctx.font = "10px 'MS PMincho'";//font size
                 // 画像読み込み
                 syuukun_0= new Image();
                 syuukun_0.src = "../images/omocha/slide_glitch_RPG/syuukun32_0.png";  // 画像のURLを指定
@@ -92,6 +106,12 @@
                 syuukun_1.src = "../images/omocha/slide_glitch_RPG/syuukun32_1.png";  // 画像のURLを指定
                 map = new Image
                 map.src="../images/omocha/slide_glitch_RPG/32map.png"
+                pon_0 = new Image();
+                pon_1 = new Image();
+                pon_0.src = "../images/omocha/slide_glitch_RPG/mikupon32_0.png";
+                pon_1.src = "../images/omocha/slide_glitch_RPG/mikupon32_1.png";
+                kanbansan_1 = new Image();
+                kanbansan_1.src="../images/omocha/slide_glitch_RPG/kanbansan.png";
 
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
@@ -191,11 +211,20 @@
                             }else if(key_input.charAt(i)=="↓"){
                                 idou(0,32);
                             }else if(key_input.charAt(i)=="〇"){
-                                deyu_x=5;
+                                var sakujo_yotei=[];
+                                for(let i=0;i<serihu.length;i++){
+                                    serihu[i].OK=serihu[i].OK+1;
+                                    if((serihu[i].OK)*28>=serihu[i].hyouji_i){//OKしてももう文章ないよ
+                                        sakujo_yotei[sakujo_yotei.length]=i;//消すね
+                                    }
+                                }
+                                for(let i=0;i<sakujo_yotei.length;i++){
+                                    serihu.splice(sakujo_yotei[sakujo_yotei.length-i-1],1);//読み終わったセリフを後ろから除去していくね
+                                }
                             }else if(key_input.charAt(i)=="×"){
-                                deyu_y=5;
+                                
                             }
-                    }
+                        }
                         if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
                             key_input="";
                             key_interval=0;
@@ -203,15 +232,45 @@
                     }else if(key_interval>0){
                         key_interval=key_interval-1;//カウントダウン
                     }
+                    
 
+                    ctx.drawImage(map,-world_x,-world_y);//世界表示
 
-                    ctx.drawImage(map,-world_x,-world_y);
-                    if(Math.floor(loop_count/50)==0){//しゅうくんがあるくよ！
+                    //キャラ表示
+                    ctx.drawImage(kanbansan_1,kanbansan_1_x,kanbansan_1_y);
+
+                    var tekuteku;//しゅうくんを歩かせるのに使うよ！
+                    if(Math.floor(loop_count/50)==0){//しゅうくん以外が歩くよ
+                        if(serihu.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
+                            tekuteku=0;
+                        }
+                        
+                        ctx.drawImage(pon_0,pon_x,pon_y);
+
+                    }else{
+                        if(serihu.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
+                            tekuteku=1;
+                        }
+                        ctx.drawImage(pon_1,pon_x,pon_y);
+                        
+                    }
+                    
+                    if(tekuteku==0){//しゅうくんがあるくよ！ 
                         ctx.drawImage(syuukun_0,deyu_x,deyu_y);
                     }else{
                         ctx.drawImage(syuukun_1,deyu_x,deyu_y);
                     }
+
+                    //ウィンドウ表示
+                    for(let i=0;i<serihu.length;i++){
+                        serihu_window();
+                        serihu_dadada(serihu[i]);
+                    }
                     
+                    
+                    
+                    
+
                 }, 10);//10/1000[s]でくりかえすぞ！
             }//ー－－－－－－－－－－－－－－－－－－－－－－－－－－－－－ここまでonloadー－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
 
@@ -236,20 +295,32 @@
                 deyu_x=deyu_x+dx;
                 deyu_y=deyu_y+dy;
 
+                var world_dx=0;
+                var world_dy=0;
                 if(deyu_x>=165){//右端 5 6 7 8 9
                     deyu_x=5;
-                    world_x=world_x+170;
+                    world_dx=170;
+
                 }else if(deyu_x<=4){//左端 0 1 2 3 4
                     deyu_x=133;
-                    world_x=world_x-170;
+                    world_dx=-170;
                 }
                 if(deyu_y>=165){//下端 5 6 7 8 9
                     deyu_y=5;
-                    world_y=world_y+170;
+                    world_dy=170;
                 }else if(deyu_y<=4){//上端 0 1 2 3 4
                     deyu_y=133;
-                    world_y=world_y-170;
+                    world_dy=-170;
                 }
+                if(world_dx!=0 || world_dy!=0){
+                    world_x=world_x+world_dx;
+                    world_y=world_y+world_dy;
+                    pon_x=pon_x+world_dx;
+                    pon_y=pon_y+world_dy;
+                    kanbansan_1_x=kanbansan_1_x+world_dx;
+                    kanbansan_1_y=kanbansan_1_y+world_dy;
+                }
+                serihu_tuika();
             }
 
             function idou_OK(iro_data){
@@ -260,6 +331,39 @@
                 }
             }
             
+            function serihu_window(){
+                ctx.fillStyle="rgb(200,0,255,0.1)";
+                ctx.fillRect(10,124,150,36);
+                ctx.fillStyle="#FFFFFF";
+                ctx.fillRect(11,125,1,34);
+                ctx.fillRect(158,125,1,34);
+                ctx.fillRect(11,125,148,1);
+                ctx.fillRect(11,158,148,1);
+            }
+            function serihu_dadada(serihu){
+                if(serihu.hyouji_i<14+28*serihu.OK){//一行目表示（1文字ずつ増える）
+                    ctx.fillText(serihu.text.slice(0+28*serihu.OK,serihu.hyouji_i), 15, 138);
+                }else{//一行目をいっぱい表示した
+                    ctx.fillText(serihu.text.slice(0+28*serihu.OK,14+28*serihu.OK), 15, 138);
+                }
+                if(serihu.hyouji_i<28+28*serihu.OK){//二行目表示（1文字ずつ増える）
+                    ctx.fillText(serihu.text.slice(14+28*serihu.OK,serihu.hyouji_i), 15, 150);
+                }else{//二行目をいっぱい表示した
+                    ctx.fillText(serihu.text.slice(14+28*serihu.OK,28+28*serihu.OK), 15, 150);
+                }
+
+                if(serihu.hyouji_i<(serihu.OK+1)*28 || serihu.hyouji_i<serihu.text.length){//文字がウィンドウいっぱい表示されてない or セリフが全部表示されてない
+                    serihu.hyouji_i=serihu.hyouji_i+1;//表示文字増やす
+                }//OKボタン押したら+1して続きの文字を押す、というのがいい感じだよね。そう思うよ。俺は
+            }
+            function serihu_tuika(){
+                if(deyu_x==pon_x && deyu_y==pon_y){
+                    serihu[serihu.length]={text:"話してても戦ってても動けるバグがあるみたいです。その状態でさらに会話を始めるとこの世の終わりみたいになるようですよ。",hyouji_i:0,OK:0};
+                }
+                if(deyu_x==kanbansan_1_x && deyu_y==kanbansan_1_y){
+                    serihu[serihu.length]={text:"〇ボタンかEnterで会話ができるぜ！",hyouji_i:0,OK:0};
+                }
+            }
         </script>
     </head>
     <body>
