@@ -353,16 +353,19 @@
                 ctx.fillRect(11,158,148,1);
             }
             function serihu_dadada(serihu){
-                if(serihu.hyouji_i<14+28*serihu.OK){//一行目表示（1文字ずつ増える）
-                    ctx.fillText(serihu.text.slice(0+28*serihu.OK,serihu.hyouji_i), 15, 138);
-                }else{//一行目をいっぱい表示した
-                    ctx.fillText(serihu.text.slice(0+28*serihu.OK,14+28*serihu.OK), 15, 138);
+                for(let i=0;i<2;i++){//何回か書いて濃くします…
+                    if(serihu.hyouji_i<14+28*serihu.OK){//一行目表示（1文字ずつ増える）
+                        ctx.fillText(serihu.text.slice(0+28*serihu.OK,serihu.hyouji_i), 15, 138);
+                    }else{//一行目をいっぱい表示した
+                        ctx.fillText(serihu.text.slice(0+28*serihu.OK,14+28*serihu.OK), 15, 138);
+                    }
+                    if(serihu.hyouji_i<28+28*serihu.OK){//二行目表示（1文字ずつ増える）
+                        ctx.fillText(serihu.text.slice(14+28*serihu.OK,serihu.hyouji_i), 15, 150);
+                    }else{//二行目をいっぱい表示した
+                        ctx.fillText(serihu.text.slice(14+28*serihu.OK,28+28*serihu.OK), 15, 150);
                 }
-                if(serihu.hyouji_i<28+28*serihu.OK){//二行目表示（1文字ずつ増える）
-                    ctx.fillText(serihu.text.slice(14+28*serihu.OK,serihu.hyouji_i), 15, 150);
-                }else{//二行目をいっぱい表示した
-                    ctx.fillText(serihu.text.slice(14+28*serihu.OK,28+28*serihu.OK), 15, 150);
                 }
+                
 
                 if(serihu.hyouji_i<(serihu.OK+1)*28 || serihu.hyouji_i<serihu.text.length){//文字がウィンドウいっぱい表示されてない or セリフが全部表示されてない
                     serihu.hyouji_i=serihu.hyouji_i+1;//表示文字増やす
