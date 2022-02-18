@@ -20,6 +20,13 @@
         <link rel="stylesheet" href="../css/style.css">
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
+            @font-face {
+                font-family: "misaki_gothic";
+                src: url("../font/misaki_gothic_2nd.ttf") format('truetype');
+            }
+            html{
+                font-family: "misaki_gothic";
+            }
             header{
                 position: static;/*ついてくるな*/
                 top: 0px;
@@ -33,6 +40,7 @@
                 background: #ffffff;
                 height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ*/
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+                -webkit-font-smoothing: never;
             }
             div#buttons{
                 display: flex;
@@ -41,6 +49,7 @@
                 width: 1.5em;
                 height: 1.5em;
                 font-size: 2em;
+                font-family: "misaki_gothic";
                 margin: 0.25em;
                 margin-left: 1em;
             }
