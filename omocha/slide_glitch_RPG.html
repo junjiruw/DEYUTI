@@ -71,6 +71,13 @@
         </style>
         <script src="../js/public.js"></script>
         <script>
+            //オブジェクトを追加するときは
+            //変数宣言　：画像、位置　および初期化
+            //表示設定　：アニメ部
+            //ワールド移動設定
+            //当たり判定設定
+
+
             var ctx; 
             //画像
             var syuukun_0;
@@ -83,6 +90,8 @@
             var zakozakosan_1;
             var DEATH;
             var damage;
+            var moetti_0;
+            var moetti_1;
             //座標
             var deyu_x;
             var deyu_y;
@@ -94,6 +103,8 @@
             var kanbansan_1_y;
             var zakozakosan_x;
             var zakozakosan_y;
+            var moetti_x;
+            var moetti_y;
             function set_iti(){//ゲームオーバーで初期位置にずらしたいので初期化を関数にしておきます。
                 deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
                 deyu_y=5;
@@ -105,6 +116,8 @@
                 kanbansan_1_y=5+1*32+0*170;
                 zakozakosan_x=5+2*32+0*170;
                 zakozakosan_y=5+2*32+1*170;
+                moetti_x=5+2*32+0*170;
+                moetti_y=5+3*32+2*170;
             }
             set_iti();
             //キーボードなど、システムの、あの、アレ、アレさ！
@@ -160,6 +173,10 @@
                 DEATH.src= image_url+"DEATH_32.png";
                 damage=new Image();
                 damage.src=image_url+"damage32.png";
+                moetti_0=new Image();
+                moetti_0.src=image_url+"moetti32_0.png";
+                moetti_1=new Image();
+                moetti_1.src=image_url+"moetti32_1.png";
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
                 if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
@@ -335,6 +352,8 @@
                         
                         ctx.drawImage(pon_0,pon_x,pon_y);
                         ctx.drawImage(zakozakosan_0,zakozakosan_x,zakozakosan_y);
+                        ctx.drawImage(moetti_0,moetti_x,moetti_y);
+                        
 
                     }else{
                         if(serihu.length==0 &&  battle.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
@@ -342,6 +361,7 @@
                         }
                         ctx.drawImage(pon_1,pon_x,pon_y);
                         ctx.drawImage(zakozakosan_1,zakozakosan_x,zakozakosan_y);
+                        ctx.drawImage(moetti_1,moetti_x,moetti_y);
                     }
                     
                     if(tekuteku==0){//しゅうくんがあるくよ！ 
@@ -359,8 +379,28 @@
                             }
                             
                         }
-                    }
 
+                        var rand_x = (Math.floor(Math.random()*3)-1)*32;//ランダムウォーク
+                        var rand_y = (Math.floor(Math.random()*3)-1)*32;
+                        var moved=0;
+                        if(!((moetti_x+rand_x)%170==165 ||(moetti_x+rand_x)%170==143 || moetti_x+rand_x<5)&& loop_count==0){
+                            moetti_x=moetti_x+rand_x;
+                            if(rand_x!=0){
+                                moved=1;
+                            }
+                        }
+                        if(!((moetti_y+rand_y)%170==165 ||(moetti_y+rand_y)%170==143 || moetti_y+rand_y<5)&& loop_count==50){
+                            moetti_y=moetti_y+rand_y;
+                            if(rand_y!=0){
+                                moved=1;
+                            }
+                        }
+                        if(moved==1 && deyu_x==moetti_x && deyu_y==moetti_y){
+                            moved=0;
+                            battle[battle.length]={image:[moetti_0,moetti_1],HP_MAX:2,HP:2,Attack:2,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:2,damaging:0};
+                        }
+                    }
+                    
                     if(damaging>0){
                         ctx.drawImage(damage,deyu_x,deyu_y);
                         damaging=damaging+1;
@@ -481,6 +521,8 @@
                     kanbansan_1_y=kanbansan_1_y-world_dy;
                     zakozakosan_x=zakozakosan_x-world_dx;
                     zakozakosan_y=zakozakosan_y-world_dy;
+                    moetti_x=moetti_x-world_dx;
+                    moetti_y=moetti_y-world_dy;
                 }
                 
                 serihu_tuika();
@@ -490,10 +532,13 @@
 
             function idou_OK(iro_data){
                 if(iro_data[0]==78 && iro_data[1]==168 && iro_data[2]== 0){//濃い緑
-                    return 0;
-                }else{
+                }else if(iro_data[0]==87 && iro_data[1]==158 && iro_data[2]== 25){//灰濃い緑
+                }else if(iro_data[0]==105 && iro_data[1]==76 && iro_data[2]== 47){//茶色
+                }else if(iro_data[0]==108 && iro_data[1]==85 && iro_data[2]== 62){//灰茶色
+                }else{//ヨシ！
                     return 1;
                 }
+                return 0;
             }
             
             function serihu_window(){
@@ -579,6 +624,9 @@
             function teki_tuika(){
                 if(deyu_x==zakozakosan_x && deyu_y==zakozakosan_y){
                     battle[battle.length]={image:[zakozakosan_0,zakozakosan_1],HP_MAX:3,HP:3,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:1,damaging:0};
+                }
+                if(deyu_x==moetti_x && deyu_y==moetti_y){
+                    battle[battle.length]={image:[moetti_0,moetti_1],HP_MAX:2,HP:2,Attack:2,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:2,damaging:0};
                 }
             }
         </script>
