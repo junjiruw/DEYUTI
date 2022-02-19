@@ -79,24 +79,53 @@
             var pon_1;
             var map;
             var kanbansan_1;
+            var zakozakosan_0;
+            var zakozakosan_1;
+            var DEATH;
+            var damage;
             //座標
-            var deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
-            var deyu_y=5;
-            var pon_x =5+3*32+0*170;
-            var pon_y =5+2*32+0*170;
-            var world_x=0*170;
-            var world_y=0*170;
-            var kanbansan_1_x=5+1*32+0*170;
-            var kanbansan_1_y=5+1*32+0*170;
+            var deyu_x;
+            var deyu_y;
+            var pon_x ;
+            var pon_y ;
+            var world_x;
+            var world_y;
+            var kanbansan_1_x;
+            var kanbansan_1_y;
+            var zakozakosan_x;
+            var zakozakosan_y;
+            function set_iti(){//ゲームオーバーで初期位置にずらしたいので初期化を関数にしておきます。
+                deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
+                deyu_y=5;
+                pon_x =5+3*32+0*170;
+                pon_y =5+2*32+0*170;
+                world_x=0*170;
+                world_y=0*170;
+                kanbansan_1_x=5+1*32+0*170;
+                kanbansan_1_y=5+1*32+0*170;
+                zakozakosan_x=5+2*32+0*170;
+                zakozakosan_y=5+2*32+1*170;
+            }
+            set_iti();
             //キーボードなど、システムの、あの、アレ、アレさ！
             var key_input="";
             var what_input="";//キーボード同時おしに使う
             var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
             var key_owarasete=0;
             var loop_count=-1;//あれです、1秒で100数えます。
-
+            var GAMEOVER=0;//死にやがった！
+            //しゅうくんのステータスだよ！
+            var HP_MAX=10;
+            var HP=10;
+            var Attack=1;
+            var EXP=0;
+            var Level=1;
+            var damaging=0;
             //一番大事なところだッピ！
             var serihu=[];
+             //serihu[serihu.length]={text:"スライドグリッチという、話してても戦ってても動けるバグがあるみたいです。",hyouji_i:0,OK:0};
+            var battle=[];//画像2枚,最大HP,現在HP,攻撃,位置x,表示,カーソル位置,経験値,ダメージ描写
+            // battle[battle.length]={image:[zakozakosan_0,zakozakosan_1],HP_MAX:3,HP:3,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:1,damaging:0};
 
             onload = function(){
                 onload_functions();
@@ -104,27 +133,33 @@
                 
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
                     cnvs.style.width=90+"%";
-                    console.log(cnvs.clientWidth);
                     cnvs.style.height=cnvs.clientWidth+"px";
-                    console.log(cnvs.clientHeight);
                 }
 
                 ctx = cnvs.getContext("2d");
                 ctx.font = "10px 'ＭＳ Ｐゴシック'";//font size
                 // 画像読み込み
+                var image_url="../images/omocha/slide_glitch_RPG/";
                 syuukun_0= new Image();
-                syuukun_0.src = "../images/omocha/slide_glitch_RPG/syuukun32_0.png";  // 画像のURLを指定
+                syuukun_0.src = image_url+"syuukun32_0.png";  // 画像のURLを指定
                 syuukun_1= new Image();
-                syuukun_1.src = "../images/omocha/slide_glitch_RPG/syuukun32_1.png";  // 画像のURLを指定
+                syuukun_1.src = image_url+"syuukun32_1.png";  // 画像のURLを指定
                 map = new Image
-                map.src="../images/omocha/slide_glitch_RPG/32map.png"
+                map.src=image_url+"32map.png"
                 pon_0 = new Image();
                 pon_1 = new Image();
-                pon_0.src = "../images/omocha/slide_glitch_RPG/mikupon32_0.png";
-                pon_1.src = "../images/omocha/slide_glitch_RPG/mikupon32_1.png";
+                pon_0.src = image_url+"mikupon32_0.png";
+                pon_1.src = image_url+"mikupon32_1.png";
                 kanbansan_1 = new Image();
-                kanbansan_1.src="../images/omocha/slide_glitch_RPG/kanbansan.png";
-
+                kanbansan_1.src=image_url+"kanbansan.png";
+                zakozakosan_0 =new Image();
+                zakozakosan_0.src = image_url+"zakozakosan32_0.png";
+                zakozakosan_1 =new Image();
+                zakozakosan_1.src = image_url+"zakozakosan32_1.png";
+                DEATH=new Image();
+                DEATH.src= image_url+"DEATH_32.png";
+                damage=new Image();
+                damage.src=image_url+"damage32.png";
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
                 if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
@@ -211,6 +246,10 @@
                 setInterval(function(){//1秒に100回動くぞ！
                     loop_count=loop_count+1;
                     if(loop_count>99){loop_count=0;}//0-99
+
+                    ctx.drawImage(map,-world_x,-world_y);//世界表示
+
+                    //しゅうくん移動。壁は世界の色を参照するため、先に世界を表示しときます。
                     if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                         key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
                         for(let i=0;i<key_input.length;i++){
@@ -223,16 +262,53 @@
                             }else if(key_input.charAt(i)=="↓"){
                                 idou(0,32);
                             }else if(key_input.charAt(i)=="〇"){
-                                var sakujo_yotei=[];
-                                for(let i=0;i<serihu.length;i++){
+                                var serihu_sakujo_yotei=[];
+                                for(let i=0;i<serihu.length;i++){//文章送り
                                     serihu[i].OK=serihu[i].OK+1;
                                     if((serihu[i].OK)*28>=serihu[i].hyouji_i){//OKしてももう文章ないよ
-                                        sakujo_yotei[sakujo_yotei.length]=i;//消すね
+                                        serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i;//消すね
                                     }
                                 }
-                                for(let i=0;i<sakujo_yotei.length;i++){
-                                    serihu.splice(sakujo_yotei[sakujo_yotei.length-i-1],1);//読み終わったセリフを後ろから除去していくね
+                                for(let i=0;i<serihu_sakujo_yotei.length;i++){
+                                    serihu.splice(serihu_sakujo_yotei[serihu_sakujo_yotei.length-i-1],1);//読み終わったセリフを後ろから除去していくね
                                 }
+
+                                if(GAMEOVER==0){//ゲームオーバーなのに戦闘するな
+                                    for(let i=0;i<battle.length;i++){//自分のターン
+                                        if(battle[i].hyouji<2){//死体蹴り禁止機能
+                                            if(battle[i].cursor==0){
+                                                battle[i].HP=battle[i].HP-Attack;//攻撃！
+                                                battle[i].damaging=1;
+                                            }else{
+                                                HP=HP+Math.floor(HP_MAX/3);//回復！
+                                                if(HP>HP_MAX){
+                                                    HP=HP_MAX;//しすぎ！
+                                                }
+                                            }
+                                        }
+                                    }
+                                    for(let i=0;i<battle.length;i++){//相手のターン
+                                        if(battle[i].hyouji<2){//死体を動かさない
+                                            if(battle[i].HP<=0){
+                                                battle[i].hyouji=3;//死んでた
+                                                battle[i].HP=0;
+                                                EXP=EXP+battle[i].EXP;//経験値プレゼント！よろこべ
+                                                
+                                                Level=Math.floor(EXP/10)+1;//クソ雑なレベルアップに喜べ！
+                                                Attack=Level;
+                                                HP_MAX=10+Level*3;
+                                            }else{
+                                                HP=HP-battle[i].Attack;//生きてる！痛い！
+                                                damaging=1;
+                                            }
+                                        }
+                                    }
+                                    if(HP<=0){//死んでしまうとは何事だ！
+                                        HP=0;
+                                        GAMEOVER=1;
+                                    }
+                                }
+                                
                             }else if(key_input.charAt(i)=="×"){
                                 
                             }
@@ -246,7 +322,7 @@
                     }
                     
 
-                    ctx.drawImage(map,-world_x,-world_y);//世界表示
+                    
 
                     //キャラ表示
                     ctx.drawImage(kanbansan_1,kanbansan_1_x,kanbansan_1_y);
@@ -258,13 +334,14 @@
                         }
                         
                         ctx.drawImage(pon_0,pon_x,pon_y);
+                        ctx.drawImage(zakozakosan_0,zakozakosan_x,zakozakosan_y);
 
                     }else{
                         if(serihu.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
                             tekuteku=1;
                         }
                         ctx.drawImage(pon_1,pon_x,pon_y);
-                        
+                        ctx.drawImage(zakozakosan_1,zakozakosan_x,zakozakosan_y);
                     }
                     
                     if(tekuteku==0){//しゅうくんがあるくよ！ 
@@ -273,14 +350,73 @@
                         ctx.drawImage(syuukun_1,deyu_x,deyu_y);
                     }
 
+                    if(loop_count==0 ||loop_count ==50){
+                        for(let i=0;i<battle.length;i++){//バトルウィンドウの敵を歩かせたい
+                            if(battle[i].hyouji==0){
+                                battle[i].hyouji=1;
+                            }else if(battle[i].hyouji==1){
+                                battle[i].hyouji=0;
+                            }
+                            
+                        }
+                    }
+
+                    if(damaging>0){
+                        ctx.drawImage(damage,deyu_x,deyu_y);
+                        damaging=damaging+1;
+                        if(damaging==10){
+                            damaging=0;
+                        }
+                    }
+
                     //ウィンドウ表示
                     for(let i=0;i<serihu.length;i++){
                         serihu_window();
                         serihu_dadada(serihu[i]);
                     }
+                    for(let i=0;i<battle.length;i++){
+                        battle_window();
+                        battle_show(battle[i]);
+
+                        var teki_sakujo_yotei=[];
+                        for(let i=0;i<battle.length;i++){//死亡判定
+                            if(battle[i].hyouji==100){//死亡演出終わった？
+                                teki_sakujo_yotei[teki_sakujo_yotei.length]=i;//消すね
+                            }
+                        }
+                        for(let i=0;i<teki_sakujo_yotei.length;i++){
+                            battle.splice(teki_sakujo_yotei[teki_sakujo_yotei.length-i-1],1);//死亡した敵を後ろから除去していくね
+                        }
+                    }
+                        
+                    if(GAMEOVER>0 && GAMEOVER<100){
+                        GAMEOVER=GAMEOVER+1;
+                        ctx.fillStyle="rgb(255,0,0,0.5)";
+                        ctx.fillRect(0,0,170,170);
+                        ctx.font = "20px 'ＭＳ Ｐゴシック'";//font size
+                        ctx.fillStyle="#FFFFFF";
+                        ctx.fillText("GAMEOVER", 35, 120);
+                        ctx.font = "10px 'ＭＳ Ｐゴシック'";//font size
+                        
+                    }else if(GAMEOVER>=100){
+                        HP=HP_MAX;
+                        GAMEOVER=0;
+                        battle=[];
+                        set_iti();
+                    }
                     
-                    
-                    
+                    //しゅうくんステータス
+                    ctx.fillStyle="rgb(255,255,255)";
+                    ctx.fillRect(135,1,34,7);
+                    ctx.fillRect(118,0,16,9);
+                    ctx.fillRect(0,0,26,9);
+                    ctx.fillStyle="rgb(255,0,0)";
+                    ctx.fillRect(136,2,32,5);
+                    ctx.fillStyle="rgb(0,255,0)";
+                    ctx.fillRect(136,2,Math.floor(32*HP/HP_MAX),5);
+                    ctx.fillText("HP", 136-16, 8);
+                    ctx.fillStyle="rgb(0,0,0)";
+                    ctx.fillText("Lv: "+Level, 1, 8);
                     
 
                 }, 10);//10/1000[s]でくりかえすぞ！
@@ -289,6 +425,18 @@
             
 
             function idou(dx,dy){
+                if(dy!=0){
+                    for(let i=0;i<battle.length;i++){//戦闘コマンド選択
+                        if(battle[i].cursor==0){
+                            battle[i].cursor=1;
+                        }else if(battle[i].cursor==1){
+                            battle[i].cursor=0;
+                        }  
+                    }
+                }
+                
+
+                //移動可能かを調べる
                 var idou_iro;
                 if(dx>0){
                     idou_iro=ctx.getImageData(deyu_x+dx,deyu_y,1,1);//移動先の画像を1ピクセル取得
@@ -327,12 +475,17 @@
                 if(world_dx!=0 || world_dy!=0){
                     world_x=world_x+world_dx;
                     world_y=world_y+world_dy;
-                    pon_x=pon_x+world_dx;
-                    pon_y=pon_y+world_dy;
-                    kanbansan_1_x=kanbansan_1_x+world_dx;
-                    kanbansan_1_y=kanbansan_1_y+world_dy;
+                    pon_x=pon_x-world_dx;
+                    pon_y=pon_y-world_dy;
+                    kanbansan_1_x=kanbansan_1_x-world_dx;
+                    kanbansan_1_y=kanbansan_1_y-world_dy;
+                    zakozakosan_x=zakozakosan_x-world_dx;
+                    zakozakosan_y=zakozakosan_y-world_dy;
                 }
+                
                 serihu_tuika();
+                teki_tuika();
+
             }
 
             function idou_OK(iro_data){
@@ -373,10 +526,59 @@
             }
             function serihu_tuika(){
                 if(deyu_x==pon_x && deyu_y==pon_y){
-                    serihu[serihu.length]={text:"話してても戦ってても動けるバグがあるみたいです。その状態でさらに会話を始めるとこの世の終わりみたいになるようですよ。",hyouji_i:0,OK:0};
+                    serihu[serihu.length]={text:"スライドグリッチという、話してても戦ってても動けるバグがあるみたいです。",hyouji_i:0,OK:0};
                 }
                 if(deyu_x==kanbansan_1_x && deyu_y==kanbansan_1_y){
                     serihu[serihu.length]={text:"〇ボタンかEnterで会話ができるぜ！",hyouji_i:0,OK:0};
+                }
+            }
+
+            function battle_window(){
+                ctx.fillStyle="rgb(200,0,255,0.1)";
+                ctx.fillRect(10,19,150,100);
+                ctx.fillStyle="#FFFFFF";
+                ctx.fillRect(11,20,1,40);
+                ctx.fillRect(59,20,1,40);
+                ctx.fillRect(11,20,49,1);
+                ctx.fillRect(11,60,49,1);
+                ctx.fillText("たたかう", 20, 35);
+                ctx.fillText("1/3 回復", 21, 55);
+
+                ctx.fillRect(61,20,1,43);
+                ctx.fillRect(158,20,1,98);
+                ctx.fillRect(61,20,97,1);
+                ctx.fillRect(11,117,148,1);
+                ctx.fillRect(11,62,50,1);
+                ctx.fillRect(11,62,1,56);
+            }
+            
+            function battle_show(battle){
+                ctx.fillText("▶", 14, 35+battle.cursor*20);
+                if(battle.hyouji<2){
+                    ctx.drawImage(battle.image[battle.hyouji],battle.x,80);
+                }else if(battle.hyouji<100){
+                    ctx.drawImage(battle.image[0],battle.x,80+0.1*(battle.hyouji*battle.hyouji-50*battle.hyouji+98));
+                    ctx.drawImage(DEATH,battle.x,80);
+                    battle.hyouji=battle.hyouji+1;
+                }else{
+                    //死、完了！
+                }
+                if(battle.damaging>0){
+                    battle.damaging=battle.damaging+1;
+                    ctx.drawImage(damage,battle.x,80);
+                    if(battle.damaging==10){
+                        battle.damaging=0;
+                    }
+                }
+                
+                ctx.fillStyle="rgb(255,0,0)";
+                ctx.fillRect(battle.x,74,32,5);
+                ctx.fillStyle="rgb(0,255,0)";
+                ctx.fillRect(battle.x,74,Math.floor(32*battle.HP/battle.HP_MAX),5);
+            }
+            function teki_tuika(){
+                if(deyu_x==zakozakosan_x && deyu_y==zakozakosan_y){
+                    battle[battle.length]={image:[zakozakosan_0,zakozakosan_1],HP_MAX:3,HP:3,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:1,damaging:0};
                 }
             }
         </script>
