@@ -329,7 +329,7 @@
 
                     var tekuteku;//しゅうくんを歩かせるのに使うよ！
                     if(Math.floor(loop_count/50)==0){//しゅうくん以外が歩くよ
-                        if(serihu.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
+                        if(serihu.length==0 && battle.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
                             tekuteku=0;
                         }
                         
@@ -337,7 +337,7 @@
                         ctx.drawImage(zakozakosan_0,zakozakosan_x,zakozakosan_y);
 
                     }else{
-                        if(serihu.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
+                        if(serihu.length==0 &&  battle.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
                             tekuteku=1;
                         }
                         ctx.drawImage(pon_1,pon_x,pon_y);
