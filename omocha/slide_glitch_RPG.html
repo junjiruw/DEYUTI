@@ -68,6 +68,9 @@
                 text-align: center;
                 width: 50%;
             }
+            p#memo{
+                text-align: right;
+            }
         </style>
         <script src="../js/public.js"></script>
         <script>
@@ -85,6 +88,7 @@
             var pon_0;
             var pon_1;
             var map;
+            var map_2;
             var kanbansan;
             var zakozakosan_0;
             var zakozakosan_1;
@@ -93,11 +97,15 @@
             var moetti_0;
             var moetti_1;
             var jirai;
+            var save_0;
+            var save_1;
             //座標
             var deyu_x;
             var deyu_y;
             var pon_x ;
             var pon_y ;
+            var mori_pon_x ;
+            var mori_pon_y ;
             var world_x;
             var world_y;
             var kanbansan_1_x;
@@ -114,11 +122,15 @@
             var yadoya_y;
             var jirai_x;
             var jirai_y;
+            var save_1_x;
+            var save_1_y;
             function set_iti(){//ゲームオーバーで初期位置にずらしたいので初期化を関数にしておきます。
                 deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
                 deyu_y=5;
                 pon_x =5+3*32+0*170;
                 pon_y =5+2*32+0*170;
+                mori_pon_x =5+3*32+2*170;
+                mori_pon_y =5+3*32+4*170;
                 world_x=0*170;
                 world_y=0*170;
                 kanbansan_1_x=5+1*32+0*170;
@@ -135,13 +147,19 @@
                 yadoya_y=5+1*32+3*170;
                 jirai_x=5+0*32+1*170;//左上だけ決めとくわ
                 jirai_y=5+1*32+4*170;
+                save_1_x=5+2*32+1*170;
+                save_1_y=5+4*32+3*170;
             }
             set_iti();
+            var world_doko_x=0;
+            var world_doko_y=0;
             function world_slide(world_dx,world_dy){
                 world_x=world_x+world_dx;
                 world_y=world_y+world_dy;
                 pon_x=pon_x-world_dx;
                 pon_y=pon_y-world_dy;
+                mori_pon_x=mori_pon_x-world_dx;
+                mori_pon_y=mori_pon_y-world_dy;
                 kanbansan_1_x=kanbansan_1_x-world_dx;
                 kanbansan_1_y=kanbansan_1_y-world_dy;
                 kanbansan_2_x=kanbansan_2_x-world_dx;
@@ -156,7 +174,13 @@
                 yadoya_y=yadoya_y-world_dy;
                 jirai_x=jirai_x-world_dx;
                 jirai_y=jirai_y-world_dy;
+                save_1_x=save_1_x-world_dx;
+                save_1_y=save_1_y-world_dy;
+                world_doko_x=world_doko_x+world_dx;
+                world_doko_y=world_doko_y+world_dy;
+                console.log(world_doko_y);
             }
+            //world_slide(1*170,3*170);//開始地点変更ワープ！
             //キーボードなど、システムの、あの、アレ、アレさ！
             var key_input="";
             var what_input="";//キーボード同時おしに使う
@@ -164,6 +188,7 @@
             var key_owarasete=0;
             var loop_count=-1;//あれです、1秒で100数えます。
             var GAMEOVER=0;//死にやがった！
+            var save_point=0;//復活地点に関するアレさ！
             //しゅうくんのステータスだよ！
             var HP_MAX=10;
             var HP=10;
@@ -196,6 +221,8 @@
                 syuukun_1.src = image_url+"syuukun32_1.png";  // 画像のURLを指定
                 map = new Image
                 map.src=image_url+"32map.png"
+                map_2 = new Image
+                map_2.src=image_url+"32map_2.png"
                 pon_0 = new Image();
                 pon_1 = new Image();
                 pon_0.src = image_url+"mikupon32_0.png";
@@ -216,6 +243,10 @@
                 moetti_1.src=image_url+"moetti32_1.png";
                 jirai=new Image();
                 jirai.src=image_url+"jirai.png";
+                save_0=new Image();
+                save_0.src=image_url+"save32_0.png"
+                save_1=new Image();
+                save_1.src=image_url+"save32_1.png"
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
                 if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
@@ -409,9 +440,10 @@
                         
                         ctx.drawImage(pon_0,pon_x,pon_y);
                         ctx.drawImage(pon_0,yadoya_x,yadoya_y);
+                        ctx.drawImage(pon_0,mori_pon_x,mori_pon_y);
                         ctx.drawImage(zakozakosan_0,zakozakosan_x,zakozakosan_y);
                         ctx.drawImage(moetti_0,moetti_x,moetti_y);
-                        
+                        ctx.drawImage(save_0,save_1_x,save_1_y);
 
                     }else{
                         if(serihu.length==0 &&  battle.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
@@ -419,8 +451,11 @@
                         }
                         ctx.drawImage(pon_1,pon_x,pon_y);
                         ctx.drawImage(pon_1,yadoya_x,yadoya_y);
+                        ctx.drawImage(pon_1,mori_pon_x,mori_pon_y);
                         ctx.drawImage(zakozakosan_1,zakozakosan_x,zakozakosan_y);
                         ctx.drawImage(moetti_1,moetti_x,moetti_y);
+                        ctx.drawImage(save_1,save_1_x,save_1_y);
+
                     }
                     
                     if(tekuteku==0){//しゅうくんがあるくよ！ 
@@ -459,7 +494,12 @@
                             battle[battle.length]={image:[moetti_0,moetti_1],HP_MAX:2,HP:2,Attack:2,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:2,damaging:0};
                         }
                     }
+
+                    if(world_doko_x==1*170 && world_doko_y==3*170){
+                        kirakira_save_point();//虹色に光輝くセーブポイントに震えろ
+                    }
                     
+
                     if(damaging>0){
                         ctx.drawImage(damage,deyu_x,deyu_y);
                         damaging=damaging+1;
@@ -487,7 +527,8 @@
                             battle.splice(teki_sakujo_yotei[teki_sakujo_yotei.length-i-1],1);//死亡した敵を後ろから除去していくね
                         }
                     }
-                        
+                    ctx.drawImage(map_2,-world_x,-world_y);//世界表示2
+
                     if(GAMEOVER>0 && GAMEOVER<100){
                         GAMEOVER=GAMEOVER+1;
                         ctx.fillStyle="rgb(255,0,0,0.5)";
@@ -501,7 +542,14 @@
                         HP=HP_MAX;
                         GAMEOVER=0;
                         battle=[];
+                        world_doko_x=0;
+                        world_doko_y=0;
                         set_iti();
+                        if(save_point==1){
+                            world_slide(1*170,3*170);
+                            deyu_x=5+2*32;
+                            deyu_y=5+3*32;
+                        }
                     }
                     
                     //しゅうくんステータス
@@ -591,9 +639,9 @@
 
             function idou_OK(iro_data){
                 if(iro_data[0]==78 && iro_data[1]==168 && iro_data[2]== 0){//濃い緑
-                }else if(iro_data[0]==87 && iro_data[1]==158 && iro_data[2]== 25){//灰濃い緑
+                }else if(iro_data[0]==86 && iro_data[1]==159 && iro_data[2]== 24){//灰濃い緑
                 }else if(iro_data[0]==105 && iro_data[1]==76 && iro_data[2]== 47){//茶色
-                }else if(iro_data[0]==108 && iro_data[1]==85 && iro_data[2]== 62){//灰茶色
+                }else if(iro_data[0]==108 && iro_data[1]==85 && iro_data[2]== 61){//灰茶色
                 }else{//ヨシ！
                     return 1;
                 }
@@ -658,6 +706,9 @@
                 if(deyu_x==(yadoya_x-32) && deyu_y==yadoya_y){
                     serihu[serihu.length]={text:"泊まります？",hyouji_i:0,OK:0,cursor:1};
                 }
+                if(deyu_x==mori_pon_x && deyu_y==mori_pon_y){
+                    serihu[serihu.length]={text:"こういうなんもないエリアがあってもいいのです。",hyouji_i:0,OK:0,cursor:0};
+                }
                 for (let i=0;i<5;i++){
                     if(deyu_x==jirai_x+32*i && (deyu_y==jirai_y || deyu_y== jirai_y+2*32)){//地雷が10個もあるのでループで判定
                         serihu[serihu.length]={text:"地雷！？50%ダメージを受けた！",hyouji_i:0,OK:0,cursor:0};
@@ -667,6 +718,13 @@
                             HP=0;
                             GAMEOVER=1;
                         }
+                    }
+                }
+                if(deyu_x==save_1_x&&deyu_y==save_1_y){
+                    serihu[serihu.length]={text:"回復しちゃうよ！",hyouji_i:0,OK:0,cursor:0};
+                    HP=HP_MAX;
+                    if(GAMEOVER==0){
+                        save_point=1;
                     }
                 }
             }
@@ -722,6 +780,49 @@
                     battle[battle.length]={image:[moetti_0,moetti_1],HP_MAX:2,HP:2,Attack:2,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:2,damaging:0};
                 }
             }
+
+            function kirakira_save_point(){
+                var rgb=[];
+                var color_loop_time=0;
+                var color_loop_y=0;
+                kirakira_save_point=function(){//初期化処理をしたあとに関数を再定義することで初期化を一度だけ行うらしいっす！
+                    color_loop_time=color_loop_time+1;
+                    if(color_loop_time>200){color_loop_time=0;}
+                    imageData= ctx.getImageData(0,0,170,170);//キャンバスの色全部とる
+                    for (let index_x = 0; index_x < 170; index_x++) {//これxとyの順番あってるの？笑
+                        color_loop_y=0;//強引に横の色を合わせる
+                        for (let index_y = 0; index_y < 170; index_y++) {
+                            color_loop_y=color_loop_y-1;
+                            if(color_loop_y<1){color_loop_y=60}
+                            if(imageData.data[4*(index_y*170+index_x)]==255 && imageData.data[4*(index_y*170+index_x)+1]==0 && imageData.data[4*(index_y*170+index_x)+2]==0){
+                                //#FF0000
+                                var h=(color_loop_y/60*(Math.cos(Math.PI*(index_x-85)/85*2)/2+0.5)-color_loop_time/200)*6*2;//HSV空間のH、みたいな。6個に分けやすくする
+                                if(h>6){h=h-6;}
+                                if(h<0){h=h+6;}
+                                if(h<0){h=h+6;}
+                                var i= parseInt(h);//6等分した段階で整数に
+                                var hi=(h-i)%6;
+                                var v1 = 255 * (hi);
+                                var v2 = 255 * (1-hi);
+                                switch(i){
+                                    case 0: rgb = [ 255, v1, 0 ]; break;
+                                    case 6: rgb = [ 255, v1, 0 ]; break;
+                                    case 1: rgb = [ v2, 255, 0 ]; break;
+                                    case 2: rgb = [ 0, 255, v1 ]; break;
+                                    case 3: rgb = [ 0, v2, 255 ]; break;
+                                    case 4: rgb = [ v1, 0, 255 ]; break;
+                                    case 5: rgb = [ 255, 0, v2 ]; break;
+                                }
+                                imageData.data[4*(index_y*170+index_x)]=rgb[0];
+                                imageData.data[4*(index_y*170+index_x)+1]=rgb[1];
+                                imageData.data[4*(index_y*170+index_x)+2]=rgb[2];
+                                    
+                            }
+                        }
+                    }
+                    ctx.putImageData(imageData, 0, 0);
+                }
+            }
         </script>
     </head>
     <body>
@@ -768,7 +869,7 @@
                 </div>
             </div>
              
-            <p>
+            <p id="memo">
                 ⚠製作途中です！⚠
             </p>
             <footer>
