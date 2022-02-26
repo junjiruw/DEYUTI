@@ -40,7 +40,7 @@
                 background: #ffffff;
                 height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ*/
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-                -webkit-font-smoothing: never;
+                -webkit-font-smoothing: never;/*アンチアンチエイリアシング。Windowsでは利用不可だけど、MSゴシックが使えるので問題ナシ。*/
             }
             div#buttons{
                 display: flex;
@@ -105,6 +105,8 @@
             var save_1=new Image();
             var habanero_0=new Image();
             var habanero_1=new Image();
+            var kusokinoko_0=new Image();
+            var kusokinoko_1=new Image();
             // 画像読み込み
             var image_url="../images/omocha/slide_glitch_RPG/";
             taitoru.src=image_url+"suraidosyuukuntitle.png";
@@ -129,6 +131,8 @@
             save_1.src=image_url+"save32_1.png";
             habanero_0.src=image_url+"nagekihabanero_0.png";
             habanero_1.src=image_url+"nagekihabanero_1.png";
+            kusokinoko_0.src=image_url+"kusokinoko32_0.png";
+            kusokinoko_1.src=image_url+"kusokinoko32_1.png";
             //座標
             var deyu_x;
             var deyu_y;
@@ -144,6 +148,8 @@
             var kanbansan_2_y;
             var kanbansan_3_x;
             var kanbansan_3_y;
+            var kanbansan_4_x;
+            var kanbansan_4_y;
             var zakozakosan_x;
             var zakozakosan_y;
             var moetti_x;
@@ -158,6 +164,10 @@
             var habanero_1_y;
             var habanero_2_x;
             var habanero_2_y;
+            var kusokinoko_1_x;
+            var kusokinoko_1_y;
+            var kusokinoko_2_x;
+            var kusokinoko_2_y;
 
             function set_iti(){//ゲームオーバーで初期位置にずらしたいので初期化を関数にしておきます。
                 deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
@@ -174,6 +184,8 @@
                 kanbansan_2_y=5+2*32+4*170;
                 kanbansan_3_x=5+4*32+1*170;
                 kanbansan_3_y=5+4*32+4*170;
+                kanbansan_4_x=5+1*32+1*170;
+                kanbansan_4_y=5+2*32+2*170;
                 zakozakosan_x=5+2*32+0*170;
                 zakozakosan_y=5+2*32+1*170;
                 moetti_x=5+2*32+0*170;
@@ -188,40 +200,50 @@
                 habanero_1_y=5+1*32+3*170;
                 habanero_2_x=5+2*32+2*170;
                 habanero_2_y=5+3*32+2*170;
+                kusokinoko_1_x=5+3*32+2*170;
+                kusokinoko_1_y=5+2*32+3*170;
+                kusokinoko_2_x=5+3*32+2*170;
+                kusokinoko_2_y=5+3*32+2*170;
             }
             set_iti();
             var world_doko_x=0;
             var world_doko_y=0;
             function world_slide(world_dx,world_dy){
-                world_x=world_x+world_dx;
-                world_y=world_y+world_dy;
-                pon_x=pon_x-world_dx;
-                pon_y=pon_y-world_dy;
-                mori_pon_x=mori_pon_x-world_dx;
-                mori_pon_y=mori_pon_y-world_dy;
-                kanbansan_1_x=kanbansan_1_x-world_dx;
-                kanbansan_1_y=kanbansan_1_y-world_dy;
-                kanbansan_2_x=kanbansan_2_x-world_dx;
-                kanbansan_2_y=kanbansan_2_y-world_dy;
-                kanbansan_3_x=kanbansan_3_x-world_dx;
-                kanbansan_3_y=kanbansan_3_y-world_dy;
-                zakozakosan_x=zakozakosan_x-world_dx;
-                zakozakosan_y=zakozakosan_y-world_dy;
-                moetti_x=moetti_x-world_dx;
-                moetti_y=moetti_y-world_dy;
-                yadoya_x=yadoya_x-world_dx;
-                yadoya_y=yadoya_y-world_dy;
-                jirai_x=jirai_x-world_dx;
-                jirai_y=jirai_y-world_dy;
-                save_1_x=save_1_x-world_dx;
-                save_1_y=save_1_y-world_dy;
-                habanero_1_x=habanero_1_x-world_dx;
-                habanero_1_y=habanero_1_y-world_dy;
-                habanero_2_x=habanero_2_x-world_dx;
-                habanero_2_y=habanero_2_y-world_dy;
+                world_x+=world_dx;
+                world_y+=world_dy;
+                pon_x-=world_dx;
+                pon_y-=world_dy;
+                mori_pon_x-=world_dx;
+                mori_pon_y-=world_dy;
+                kanbansan_1_x-=world_dx;
+                kanbansan_1_y-=world_dy;
+                kanbansan_2_x-=world_dx;
+                kanbansan_2_y-=world_dy;
+                kanbansan_3_x-=world_dx;
+                kanbansan_3_y-=world_dy;
+                kanbansan_4_x-=world_dx;
+                kanbansan_4_y-=world_dy;
+                zakozakosan_x-=world_dx;
+                zakozakosan_y-=world_dy;
+                moetti_x-=world_dx;
+                moetti_y-=world_dy;
+                yadoya_x-=world_dx;
+                yadoya_y-=world_dy;
+                jirai_x-=world_dx;
+                jirai_y-=world_dy;
+                save_1_x-=world_dx;
+                save_1_y-=world_dy;
+                habanero_1_x-=world_dx;
+                habanero_1_y-=world_dy;
+                habanero_2_x-=world_dx;
+                habanero_2_y-=world_dy;
+                kusokinoko_1_x-=world_dx;
+                kusokinoko_1_y-=world_dy;
+                kusokinoko_2_x-=world_dx;
+                kusokinoko_2_y-=world_dy;
                 
-                world_doko_x=world_doko_x+world_dx;
-                world_doko_y=world_doko_y+world_dy;
+                world_doko_x+=world_dx;
+                world_doko_y+=world_dy;
                 
             }
             //world_slide(1*170,3*170);//開始地点変更ワープ！
@@ -256,7 +278,7 @@
                 }
 
                 ctx = cnvs.getContext("2d");
-                ctx.font = "10px 'ＭＳ Ｐゴシック'";//font size
+                ctx.font = "10px 'ＭＳ Ｐゴシック','misaki_gothic' ";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
                 if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
@@ -531,6 +553,7 @@
                         ctx.drawImage(kanbansan,kanbansan_1_x,kanbansan_1_y);
                         ctx.drawImage(kanbansan,kanbansan_2_x,kanbansan_2_y);
                         ctx.drawImage(kanbansan,kanbansan_3_x,kanbansan_3_y);
+                        ctx.drawImage(kanbansan,kanbansan_4_x,kanbansan_4_y);
                         for (let i=0;i<5;i++){
                             ctx.drawImage(jirai,jirai_x+32*i,jirai_y);
                             ctx.drawImage(jirai,jirai_x+32*i,jirai_y+2*32);
@@ -551,6 +574,8 @@
                             ctx.drawImage(save_0,save_1_x,save_1_y);
                             ctx.drawImage(habanero_0,habanero_1_x,habanero_1_y);
                             ctx.drawImage(habanero_0,habanero_2_x,habanero_2_y);
+                            ctx.drawImage(kusokinoko_0,kusokinoko_1_x,kusokinoko_1_y);
+                            ctx.drawImage(kusokinoko_0,kusokinoko_2_x,kusokinoko_2_y);
 
                         }else{
                             if(serihu.length==0 &&  battle.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
@@ -564,6 +589,8 @@
                             ctx.drawImage(save_1,save_1_x,save_1_y);
                             ctx.drawImage(habanero_1,habanero_1_x,habanero_1_y);
                             ctx.drawImage(habanero_1,habanero_2_x,habanero_2_y);
+                            ctx.drawImage(kusokinoko_1,kusokinoko_1_x,kusokinoko_1_y);
+                            ctx.drawImage(kusokinoko_1,kusokinoko_2_x,kusokinoko_2_y);
                         }
                         
                         if(tekuteku==0){//しゅうくんがあるくよ！ 
@@ -822,6 +849,9 @@
                 if(deyu_x==kanbansan_3_x && deyu_y==kanbansan_3_y){
                     serihu[serihu.length]={text:"地雷は体力の50%+1のダメージだ！無理ゲーだな！",hyouji_i:0,OK:0,cursor:0};
                 }
+                if(deyu_x==kanbansan_4_x && deyu_y==kanbansan_4_y){
+                    serihu[serihu.length]={text:"しゅうくんの攻撃力はレベルと同じなんだ！だから一撃で倒すにはそれだけレベルが必要なんだ！",hyouji_i:0,OK:0,cursor:0};
+                }
                 if(deyu_x==(yadoya_x-32) && deyu_y==yadoya_y){
                     serihu[serihu.length]={text:"泊まります？",hyouji_i:0,OK:0,cursor:1};
                 }
@@ -894,15 +924,27 @@
             function teki_tuika(){
                 if(deyu_x==zakozakosan_x && deyu_y==zakozakosan_y){
                     battle[battle.length]={image:[zakozakosan_0,zakozakosan_1],HP_MAX:3,HP:3,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:1,damaging:0};
+                    serihu[serihu.length]={text:"ざこざこさんだ！HP:3 AT:1 EXP:1",hyouji_i:0,OK:0,cursor:0};
                 }
                 if(deyu_x==moetti_x && deyu_y==moetti_y){
                     battle[battle.length]={image:[moetti_0,moetti_1],HP_MAX:2,HP:2,Attack:2,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:2,damaging:0};
+                    serihu[serihu.length]={text:"もえっちだ！HP:2 AT:2 EXP:2",hyouji_i:0,OK:0,cursor:0};
                 }
                 if(deyu_x==habanero_1_x && deyu_y==habanero_1_y){
                     battle[battle.length]={image:[habanero_0,habanero_1],HP_MAX:5,HP:5,Attack:9,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:5,damaging:0};
+                    serihu[serihu.length]={text:"なげきハバネロだ！HP:5 AT:9 EXP:5",hyouji_i:0,OK:0,cursor:0};
                 }
                 if(deyu_x==habanero_2_x && deyu_y==habanero_2_y){
                     battle[battle.length]={image:[habanero_0,habanero_1],HP_MAX:5,HP:5,Attack:9,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:5,damaging:0};
+                    serihu[serihu.length]={text:"なげきハバネロだ！HP:5 AT:9 EXP:5",hyouji_i:0,OK:0,cursor:0};
+                }
+                if(deyu_x==kusokinoko_1_x && deyu_y==kusokinoko_1_y){
+                    battle[battle.length]={image:[kusokinoko_0,kusokinoko_1],HP_MAX:30,HP:30,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:10,damaging:0};
+                    serihu[serihu.length]={text:"耐久キノコだ！HP:30 AT:1 EXP:10",hyouji_i:0,OK:0,cursor:0};
+                }
+                if(deyu_x==kusokinoko_2_x && deyu_y==kusokinoko_2_y){
+                    battle[battle.length]={image:[kusokinoko_0,kusokinoko_1],HP_MAX:30,HP:30,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:10,damaging:0};
+                    serihu[serihu.length]={text:"耐久キノコだ！HP:30 AT:1 EXP:10",hyouji_i:0,OK:0,cursor:0};
                 }
             }
 
