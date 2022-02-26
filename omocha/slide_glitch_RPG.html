@@ -107,6 +107,9 @@
             var habanero_1=new Image();
             var kusokinoko_0=new Image();
             var kusokinoko_1=new Image();
+            var torendei_0=new Image();
+            var torendei_1=new Image();
+            var torendei_doa=new Image();
             // 画像読み込み
             var image_url="../images/omocha/slide_glitch_RPG/";
             taitoru.src=image_url+"suraidosyuukuntitle.png";
@@ -133,6 +136,9 @@
             habanero_1.src=image_url+"nagekihabanero_1.png";
             kusokinoko_0.src=image_url+"kusokinoko32_0.png";
             kusokinoko_1.src=image_url+"kusokinoko32_1.png";
+            torendei_0.src=image_url+"torendei32_0.png";
+            torendei_1.src=image_url+"torendei32_1.png";
+            torendei_doa.src=image_url+"torendei_doa.png";
             //座標
             var deyu_x;
             var deyu_y;
@@ -150,6 +156,8 @@
             var kanbansan_3_y;
             var kanbansan_4_x;
             var kanbansan_4_y;
+            var kanbansan_5_x;
+            var kanbansan_5_y;
             var zakozakosan_x;
             var zakozakosan_y;
             var moetti_x;
@@ -168,6 +176,8 @@
             var kusokinoko_1_y;
             var kusokinoko_2_x;
             var kusokinoko_2_y;
+            var torendei_x;
+            var torendei_y;
 
             function set_iti(){//ゲームオーバーで初期位置にずらしたいので初期化を関数にしておきます。
                 deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
@@ -186,6 +196,8 @@
                 kanbansan_3_y=5+4*32+4*170;
                 kanbansan_4_x=5+1*32+1*170;
                 kanbansan_4_y=5+2*32+2*170;
+                kanbansan_5_x=5+1*32+2*170;
+                kanbansan_5_y=5+2*32+1*170;
                 zakozakosan_x=5+2*32+0*170;
                 zakozakosan_y=5+2*32+1*170;
                 moetti_x=5+2*32+0*170;
@@ -204,6 +216,8 @@
                 kusokinoko_1_y=5+2*32+3*170;
                 kusokinoko_2_x=5+3*32+2*170;
                 kusokinoko_2_y=5+3*32+2*170;
+                torendei_x=5+2*32+2*170;
+                torendei_y=5+1*32+1*170;
             }
             set_iti();
             var world_doko_x=0;
@@ -223,6 +237,8 @@
                 kanbansan_3_y-=world_dy;
                 kanbansan_4_x-=world_dx;
                 kanbansan_4_y-=world_dy;
+                kanbansan_5_x-=world_dx;
+                kanbansan_5_y-=world_dy;
                 zakozakosan_x-=world_dx;
                 zakozakosan_y-=world_dy;
                 moetti_x-=world_dx;
@@ -241,6 +257,8 @@
                 kusokinoko_1_y-=world_dy;
                 kusokinoko_2_x-=world_dx;
                 kusokinoko_2_y-=world_dy;
+                torendei_x-=world_dx;
+                torendei_y-=world_dy;
                 
                 world_doko_x+=world_dx;
                 world_doko_y+=world_dy;
@@ -255,6 +273,7 @@
             var loop_count=-1;//あれです、1秒で100数えます。
             var GAMEOVER=0;//死にやがった！
             var save_point=0;//復活地点に関するアレさ！
+            var flag=0;//なんのだよ！そう、全ての。
             //しゅうくんのステータスだよ！
             var HP_MAX=10;
             var HP=10;
@@ -462,9 +481,12 @@
                     }else{//--------------------------------------------------------------------------------------------------------
 
 
-                        ctx.drawImage(map,-world_x,-world_y);//世界表示
+                        ctx.drawImage(map,-world_x,-world_y);//世界表示 壁は世界の色を参照するため、先に世界を表示しときます
+                        if(flag<2){
+                            ctx.drawImage(torendei_doa,torendei_x,torendei_y-37);//トレンデイ撃破後に消滅する壁
+                        }
 
-                        //しゅうくん移動。壁は世界の色を参照するため、先に世界を表示しときます。
+                        //しゅうくん移動。。
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                             key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
                             for(let i=0;i<key_input.length;i++){
@@ -518,9 +540,13 @@
                                                 if(battle[i].HP<=0){
                                                     battle[i].hyouji=3;//死んでた
                                                     battle[i].HP=0;
+
                                                     EXP=EXP+battle[i].EXP;//経験値プレゼント！よろこべ
-                                                    
-                                                    level_up();//クソ雑なレベルアップに喜べ！
+                                                    level_up();//レベルアップに喜べ！
+
+                                                    if(battle[i].image[0]==torendei_0 && flag==1){//倒したのトレンデイやんけ！
+                                                        flag=2;
+                                                    }
                                                     
                                                 }else{
                                                     HP=HP-battle[i].Attack;//生きてる！痛い！
@@ -531,6 +557,9 @@
                                         if(HP<=0){//死んでしまうとは何事だ！
                                             HP=0;
                                             GAMEOVER=1;
+                                            if(flag==1){//トレンデイに敗北…
+                                                flag=0;
+                                            }
                                         }
                                     }
                                     
@@ -554,6 +583,8 @@
                         ctx.drawImage(kanbansan,kanbansan_2_x,kanbansan_2_y);
                         ctx.drawImage(kanbansan,kanbansan_3_x,kanbansan_3_y);
                         ctx.drawImage(kanbansan,kanbansan_4_x,kanbansan_4_y);
+                        ctx.drawImage(kanbansan,kanbansan_5_x,kanbansan_5_y);
+                        
                         for (let i=0;i<5;i++){
                             ctx.drawImage(jirai,jirai_x+32*i,jirai_y);
                             ctx.drawImage(jirai,jirai_x+32*i,jirai_y+2*32);
@@ -576,6 +607,7 @@
                             ctx.drawImage(habanero_0,habanero_2_x,habanero_2_y);
                             ctx.drawImage(kusokinoko_0,kusokinoko_1_x,kusokinoko_1_y);
                             ctx.drawImage(kusokinoko_0,kusokinoko_2_x,kusokinoko_2_y);
+                            ctx.drawImage(torendei_0,torendei_x,torendei_y);
 
                         }else{
                             if(serihu.length==0 &&  battle.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
@@ -591,6 +623,7 @@
                             ctx.drawImage(habanero_1,habanero_2_x,habanero_2_y);
                             ctx.drawImage(kusokinoko_1,kusokinoko_1_x,kusokinoko_1_y);
                             ctx.drawImage(kusokinoko_1,kusokinoko_2_x,kusokinoko_2_y);
+                            ctx.drawImage(torendei_1,torendei_x,torendei_y);
                         }
                         
                         if(tekuteku==0){//しゅうくんがあるくよ！ 
@@ -852,6 +885,9 @@
                 if(deyu_x==kanbansan_4_x && deyu_y==kanbansan_4_y){
                     serihu[serihu.length]={text:"しゅうくんの攻撃力はレベルと同じなんだ！だから一撃で倒すにはそれだけレベルが必要なんだ！",hyouji_i:0,OK:0,cursor:0};
                 }
+                if(deyu_x==kanbansan_5_x && deyu_y==kanbansan_5_y){
+                    serihu[serihu.length]={text:"知ってるかい？このゲームは長押しすると連打になるんだ。",hyouji_i:0,OK:0,cursor:0};
+                }
                 if(deyu_x==(yadoya_x-32) && deyu_y==yadoya_y){
                     serihu[serihu.length]={text:"泊まります？",hyouji_i:0,OK:0,cursor:1};
                 }
@@ -866,6 +902,9 @@
                         if(HP<=0){//死んでしまうとは何事だ！
                             HP=0;
                             GAMEOVER=1;
+                            if(flag==1){//トレンデイとの戦闘中なら、負けで。
+                                flag=0;
+                            }
                         }
                     }
                 }
@@ -898,7 +937,7 @@
             }
             
             function battle_show(battle){
-                ctx.fillText("▶", 14, 35+battle.cursor*20);
+                ctx.fillText("▶", 12, 35+battle.cursor*20);
                 if(battle.hyouji<2){
                     ctx.drawImage(battle.image[battle.hyouji],battle.x,80);
                 }else if(battle.hyouji<100){
@@ -945,6 +984,16 @@
                 if(deyu_x==kusokinoko_2_x && deyu_y==kusokinoko_2_y){
                     battle[battle.length]={image:[kusokinoko_0,kusokinoko_1],HP_MAX:30,HP:30,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:10,damaging:0};
                     serihu[serihu.length]={text:"耐久キノコだ！HP:30 AT:1 EXP:10",hyouji_i:0,OK:0,cursor:0};
+                }
+                if(deyu_x==torendei_x && deyu_y==torendei_y){
+                    if(flag==0){
+                        battle[battle.length]={image:[torendei_0,torendei_1],HP_MAX:1000,HP:1000,Attack:1,x:70,hyouji:0,cursor:0,EXP:100,damaging:0};
+                        serihu[serihu.length]={text:"トレンデイだ！HP:1000 AT:1 EXP:100",hyouji_i:0,OK:0,cursor:0};
+                        flag=1;
+                    }else if(flag>1){
+                        serihu[serihu.length]={text:"トホホ、もう戦わないよ",hyouji_i:0,OK:0,cursor:0};
+                    }
+                    
                 }
             }
 
