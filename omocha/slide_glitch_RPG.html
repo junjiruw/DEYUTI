@@ -120,6 +120,10 @@
             var aoreba_1=new Image();
             var aoblock_0=new Image();
             var aoblock_1=new Image();
+            var lite_0=new Image();
+            var lite_1=new Image();
+            var lite_2=new Image();
+            var lite_3=new Image();
             // 画像読み込み
             var image_url="../images/omocha/slide_glitch_RPG/";
             taitoru.src=image_url+"suraidosyuukuntitle.png";
@@ -159,6 +163,11 @@
             aoreba_1.src=image_url+"aoreba32_1.png";
             aoblock_0.src=image_url+"aoblock32_0.png"
             aoblock_1.src=image_url+"aoblock32_1.png";
+            lite_0.src=image_url+"lite32_0.png";
+            lite_1.src=image_url+"lite32_1.png";
+            lite_2.src=image_url+"lite32_2.png";
+            lite_3.src=image_url+"lite32_3.png";
+
             //座標
             var deyu_x;
             var deyu_y;
@@ -192,6 +201,8 @@
             var save_1_y;
             var save_2_x;
             var save_2_y;
+            var save_3_x;
+            var save_3_y;
             var habanero_1_x;
             var habanero_1_y;
             var habanero_2_x;
@@ -220,7 +231,8 @@
             var aoreba_2_y;
             var aoblock_2_x;
             var aoblock_2_y;
-
+            var lite_x;
+            var lite_y;
             function set_iti(){//ゲームオーバーで初期位置にずらしたいので初期化を関数にしておきます。
                 deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
                 deyu_y=5;
@@ -254,6 +266,8 @@
                 save_1_y=5+4*32+3*170;
                 save_2_x=5+2*32+2*170;
                 save_2_y=5+4*32+0*170;
+                save_3_x=5+4*32+3*170;
+                save_3_y=5+4*32+1*170;
                 habanero_1_x=5+3*32+1*170;
                 habanero_1_y=5+1*32+3*170;
                 habanero_2_x=5+2*32+2*170;
@@ -285,6 +299,8 @@
                 aoreba_2_y=5+0*32+1*170;
                 aoblock_2_x=5+0*32+4*170;
                 aoblock_2_y=5+4*32+1*170;
+                lite_x=5+0*32+3*170;
+                lite_y=5+0*32+2*170;
             }
             set_iti();
             var world_doko_x=0;
@@ -320,6 +336,8 @@
                 save_1_y-=world_dy;
                 save_2_x-=world_dx;
                 save_2_y-=world_dy;
+                save_3_x-=world_dx;
+                save_3_y-=world_dy;
                 habanero_1_x-=world_dx;
                 habanero_1_y-=world_dy;
                 habanero_2_x-=world_dx;
@@ -348,6 +366,8 @@
                 aoreba_2_y-=world_dy;
                 aoblock_2_x-=world_dx;
                 aoblock_2_y-=world_dy;
+                lite_x-=world_dx;
+                lite_y-=world_dy;
 
                 world_doko_x+=world_dx;
                 world_doko_y+=world_dy;
@@ -499,8 +519,8 @@
                             }
                         }else if(load_gamen==1){
                             if(start_cursor<0){
-                                start_cursor=2;
-                            }else if(start_cursor>2){
+                                start_cursor=3;
+                            }else if(start_cursor>3){
                                 start_cursor=0;
                             } 
                             
@@ -522,6 +542,11 @@
                                 ctx.drawImage(torendei_0,120,79);
                             }else{
                                 ctx.drawImage(torendei_1,120,79);
+                            }
+                            if(start_cursor==3 && loop_count>50){
+                                ctx.drawImage(aoblock_0,120,111);
+                            }else{
+                                ctx.drawImage(aoblock_1,120,111);
                             }
                             ctx.drawImage(taitoru_cursor,-5,-100+start_cursor*32);
                         }
@@ -557,6 +582,12 @@
                                         }else if(start_cursor==2){
                                             start_gamen=1;
                                             EXP=140;
+                                            flag=2;//トレンデイ撃破
+                                            level_up();
+                                            worp_load();//開始地点変更ワープ！
+                                        }else if(start_cursor==3){
+                                            start_gamen=1;
+                                            EXP=990;
                                             flag=2;//トレンデイ撃破
                                             level_up();
                                             worp_load();//開始地点変更ワープ！
@@ -734,8 +765,24 @@
                             ctx.drawImage(jirai,jirai_x+32*i,jirai_y);
                             ctx.drawImage(jirai,jirai_x+32*i,jirai_y+2*32);
                         }
-                    
-
+                        var lite_time=Math.floor(loop_count/25);
+                        var lite_img;
+                        if(lite_time==0){
+                            lite_img=lite_0;
+                        }else if(lite_time==1){
+                            lite_img=lite_1;
+                        }else if(lite_time==2){
+                            lite_img=lite_2;
+                        }else if(lite_time==3){
+                            lite_img=lite_3;
+                        }
+                        for (let l=0;l<3;l++){
+                            for (let j=0;j<2;j++){
+                                for (let i=0;i<5;i++){
+                                    ctx.drawImage(lite_img,lite_x+j*128,lite_y+i*32+170*l);
+                                }
+                            }
+                        }
                         var tekuteku;//しゅうくんを歩かせるのに使うよ！
                         if(Math.floor(loop_count/50)==0){//しゅうくん以外が歩くよ
                             if(serihu.length==0 && battle.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
@@ -750,6 +797,7 @@
                             ctx.drawImage(moetti_0,moetti_x,moetti_y);
                             ctx.drawImage(save_0,save_1_x,save_1_y);
                             ctx.drawImage(save_0,save_2_x,save_2_y);
+                            ctx.drawImage(save_0,save_3_x,save_3_y);
                             ctx.drawImage(habanero_0,habanero_1_x,habanero_1_y);
                             ctx.drawImage(habanero_0,habanero_2_x,habanero_2_y);
                             ctx.drawImage(kusokinoko_0,kusokinoko_1_x,kusokinoko_1_y);
@@ -775,6 +823,7 @@
                             ctx.drawImage(moetti_1,moetti_x,moetti_y);
                             ctx.drawImage(save_1,save_1_x,save_1_y);
                             ctx.drawImage(save_1,save_2_x,save_2_y);
+                            ctx.drawImage(save_1,save_3_x,save_3_y);
                             ctx.drawImage(habanero_1,habanero_1_x,habanero_1_y);
                             ctx.drawImage(habanero_1,habanero_2_x,habanero_2_y);
                             ctx.drawImage(kusokinoko_1,kusokinoko_1_x,kusokinoko_1_y);
@@ -826,7 +875,7 @@
                             }
                         }
 
-                        if((world_doko_x==1*170 && world_doko_y==3*170)||(world_doko_x==2*170 && world_doko_y==0*170)){
+                        if((world_doko_x==1*170 && world_doko_y==3*170)||(world_doko_x==2*170 && world_doko_y==0*170)||(world_doko_x==3*170 && world_doko_y==1*170)){
                             kirakira_save_point();//虹色に光輝くセーブポイントに震えろ
                         }
                         
@@ -903,10 +952,13 @@
                     world_slide(1*170,3*170);
                     deyu_x=5+2*32;
                     deyu_y=5+3*32;
-                }
-                if(save_point==2){
+                }else if(save_point==2){
                     world_slide(2*170,0*170);
                     deyu_x=5+2*32;
+                    deyu_y=5+3*32;
+                }else if(save_point==3){
+                    world_slide(3*170,1*170);
+                    deyu_x=5+4*32;
                     deyu_y=5+3*32;
                 }
             }
@@ -1006,6 +1058,7 @@
                 }else if(iro_data[0]==90 && iro_data[1]==90 && iro_data[2]== 90){//灰色２
                 }else if(iro_data[0]==200 && iro_data[1]==0 && iro_data[2]== 0){//赤ブロック
                 }else if(iro_data[0]==0 && iro_data[1]==0 && iro_data[2]== 200){//青ブロック
+                }else if(iro_data[0]==255 && iro_data[1]==255 && iro_data[2]== 255){//白
                 }else{//ヨシ！
                     return 1;
                 }
@@ -1142,6 +1195,13 @@
                     HP=HP_MAX;
                     if(GAMEOVER==0){
                         save_point=2;
+                    }
+                }
+                if(deyu_x==save_3_x&&deyu_y==save_3_y){
+                    serihu[serihu.length]={text:"回復しちゃうよ！",hyouji_i:0,OK:0,cursor:0};
+                    HP=HP_MAX;
+                    if(GAMEOVER==0){
+                        save_point=3;
                     }
                 }
                 if((deyu_x==akareba_1_x && deyu_y==akareba_1_y)||(deyu_x==akareba_2_x && deyu_y==akareba_2_y)){
