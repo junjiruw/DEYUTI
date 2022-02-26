@@ -116,6 +116,10 @@
             var akareba_1=new Image();
             var akablock_0=new Image();
             var akablock_1=new Image();
+            var aoreba_0=new Image();
+            var aoreba_1=new Image();
+            var aoblock_0=new Image();
+            var aoblock_1=new Image();
             // 画像読み込み
             var image_url="../images/omocha/slide_glitch_RPG/";
             taitoru.src=image_url+"suraidosyuukuntitle.png";
@@ -151,6 +155,10 @@
             akareba_1.src=image_url+"akareba32_1.png";
             akablock_0.src=image_url+"akablock32_0.png"
             akablock_1.src=image_url+"akablock32_1.png";
+            aoreba_0.src=image_url+"aoreba32_0.png";
+            aoreba_1.src=image_url+"aoreba32_1.png";
+            aoblock_0.src=image_url+"aoblock32_0.png"
+            aoblock_1.src=image_url+"aoblock32_1.png";
             //座標
             var deyu_x;
             var deyu_y;
@@ -204,6 +212,14 @@
             var akareba_1_y;
             var akablock_1_x;
             var akablock_1_y;
+            var akareba_2_x;
+            var akareba_2_y;
+            var akablock_2_x;
+            var akablock_2_y;
+            var aoreba_2_x;
+            var aoreba_2_y;
+            var aoblock_2_x;
+            var aoblock_2_y;
 
             function set_iti(){//ゲームオーバーで初期位置にずらしたいので初期化を関数にしておきます。
                 deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
@@ -261,6 +277,14 @@
                 akareba_1_y=5+2*32+0*170;
                 akablock_1_x=5+2*32+4*170;
                 akablock_1_y=5+2*32+0*170;
+                akareba_2_x=5+4*32+4*170;
+                akareba_2_y=5+1*32+1*170;
+                akablock_2_x=5+0*32+4*170;
+                akablock_2_y=5+3*32+1*170;
+                aoreba_2_x=5+4*32+4*170;
+                aoreba_2_y=5+0*32+1*170;
+                aoblock_2_x=5+0*32+4*170;
+                aoblock_2_y=5+4*32+1*170;
             }
             set_iti();
             var world_doko_x=0;
@@ -316,6 +340,14 @@
                 akareba_1_y-=world_dy;
                 akablock_1_x-=world_dx;
                 akablock_1_y-=world_dy;
+                akareba_2_x-=world_dx;
+                akareba_2_y-=world_dy;
+                akablock_2_x-=world_dx;
+                akablock_2_y-=world_dy;
+                aoreba_2_x-=world_dx;
+                aoreba_2_y-=world_dy;
+                aoblock_2_x-=world_dx;
+                aoblock_2_y-=world_dy;
 
                 world_doko_x+=world_dx;
                 world_doko_y+=world_dy;
@@ -332,6 +364,7 @@
             var save_point=0;//復活地点に関するアレさ！
             var flag=0;//なんのだよ！そう、全ての。
             var akareba=0;
+            var aoreba=0;
             //しゅうくんのステータスだよ！
             var HP_MAX=10;
             var HP=10;
@@ -556,14 +589,37 @@
                         }
                         if(akareba==0){
                             ctx.drawImage(akareba_0,akareba_1_x,akareba_1_y);
-                            ctx.drawImage(akareba_0,akareba_1_x+64,akareba_1_y+64);
+                            ctx.drawImage(akareba_0,akareba_2_x,akareba_2_y);
+
                             ctx.drawImage(akablock_0,akablock_1_x,akablock_1_y);
-                             ctx.drawImage(akablock_1,akablock_1_x+32,akablock_1_y+32);
+                            ctx.drawImage(akablock_1,akablock_1_x+32,akablock_1_y+32);
+
+                            ctx.drawImage(akablock_0,akablock_2_x,akablock_2_y);
+                            ctx.drawImage(akablock_1,akablock_2_x+64,akablock_2_y);
+                            ctx.drawImage(akablock_0,akablock_2_x+96,akablock_2_y);
                         }else{
                             ctx.drawImage(akareba_1,akareba_1_x,akareba_1_y);
-                            ctx.drawImage(akareba_1,akareba_1_x+64,akareba_1_y+64);
+                            ctx.drawImage(akareba_1,akareba_2_x,akareba_2_y);
+
                             ctx.drawImage(akablock_1,akablock_1_x,akablock_1_y);
                             ctx.drawImage(akablock_0,akablock_1_x+32,akablock_1_y+32);
+
+                            ctx.drawImage(akablock_1,akablock_2_x,akablock_2_y);
+                            ctx.drawImage(akablock_0,akablock_2_x+64,akablock_2_y);
+                            ctx.drawImage(akablock_1,akablock_2_x+96,akablock_2_y);
+                        }
+                        if(aoreba==0){
+                            ctx.drawImage(aoreba_0,aoreba_2_x,aoreba_2_y);
+
+                            ctx.drawImage(aoblock_1,aoblock_2_x,aoblock_2_y);
+                            ctx.drawImage(aoblock_0,aoblock_2_x+32,aoblock_2_y-32);
+                            ctx.drawImage(aoblock_1,aoblock_2_x+96,aoblock_2_y-64);
+                        }else{
+                            ctx.drawImage(aoreba_1,aoreba_2_x,aoreba_2_y);
+
+                            ctx.drawImage(aoblock_0,aoblock_2_x,aoblock_2_y);
+                            ctx.drawImage(aoblock_1,aoblock_2_x+32,aoblock_2_y-32);
+                            ctx.drawImage(aoblock_0,aoblock_2_x+96,aoblock_2_y-64);
                         }
                         
 
@@ -594,11 +650,12 @@
                                                 }
                                                 if(serihu[i].cursor==2){}//無
                                                 if(serihu[i].cursor==3){HP=HP_MAX;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i}//回復用選択肢
-                                                if(serihu[i].cursor==4){
-                                                    serihu[i].cursor=5;//選択モードにしとくよ
-                                                }
-                                                if(serihu[i].cursor==5){}//無
-                                                if(serihu[i].cursor==6){akareba=(akareba+1)%2;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i}//ON_OFF
+
+                                                if(serihu[i].cursor==4){}//無
+                                                if(serihu[i].cursor==5){akareba=(akareba+1)%2;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i}//ON_OFF
+
+                                                if(serihu[i].cursor==6){}//無
+                                                if(serihu[i].cursor==7){aoreba=(aoreba+1)%2;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i}//ON_OFF
                                             }
                                         }
                                     }
@@ -877,11 +934,16 @@
                         }else if(serihu[i].cursor==3){
                             serihu[i].cursor=2;
                         }
-                        if(serihu[i].cursor==5){
+                        if(serihu[i].cursor==4){
+                            serihu[i].cursor=5;
+                        }else if(serihu[i].cursor==5){
+                            serihu[i].cursor=4;
+                        } 
+                        if(serihu[i].cursor==7){
                             serihu[i].cursor=6;
                         }else if(serihu[i].cursor==6){
-                            serihu[i].cursor=5;
-                        }    
+                            serihu[i].cursor=7;
+                        }       
                     }
                 }
                 //移動可能かを調べる
@@ -940,6 +1002,7 @@
                 }else if(iro_data[0]==83 && iro_data[1]==83 && iro_data[2]== 83){//灰色
                 }else if(iro_data[0]==90 && iro_data[1]==90 && iro_data[2]== 90){//灰色２
                 }else if(iro_data[0]==200 && iro_data[1]==0 && iro_data[2]== 0){//赤ブロック
+                }else if(iro_data[0]==0 && iro_data[1]==0 && iro_data[2]== 200){//青ブロック
                 }else{//ヨシ！
                     return 1;
                 }
@@ -983,7 +1046,9 @@
                         ctx.fillText("▶", 44, 124);
                     }
 
-                }else if(serihu.cursor==5 || serihu.cursor==6){
+                }else if(serihu.hyouji_i<(serihu.OK+1)*28 || serihu.hyouji_i<serihu.text.length){//文字がウィンドウいっぱい表示されてない or セリフが全部表示されてない
+                    serihu.hyouji_i=serihu.hyouji_i+1;//表示文字増やす //OKボタン押したら+1して続きの文字を押す、というのがいい感じだよね。そう思うよ。俺は
+                }else if(serihu.cursor==4 || serihu.cursor==5){
                     ctx.fillStyle="rgb(100,50,0,0.1)";
                     ctx.fillRect(10,114,70,10);
                     ctx.fillStyle="#FFFFFF";
@@ -992,14 +1057,26 @@
                     ctx.fillRect(10,114,70,1);
                     ctx.fillText("悩む", 20, 124);
                     ctx.fillText("切替る", 50, 124);
-                    if(serihu.cursor==5){
+                    if(serihu.cursor==4){
                         ctx.fillText("▶", 14, 124);
                     }else{
                         ctx.fillText("▶", 44, 124);
                     }
-                }else if(serihu.hyouji_i<(serihu.OK+1)*28 || serihu.hyouji_i<serihu.text.length){//文字がウィンドウいっぱい表示されてない or セリフが全部表示されてない
-                    serihu.hyouji_i=serihu.hyouji_i+1;//表示文字増やす
-                }//OKボタン押したら+1して続きの文字を押す、というのがいい感じだよね。そう思うよ。俺は
+                }else if(serihu.cursor==6 || serihu.cursor==7){
+                    ctx.fillStyle="rgb(100,50,0,0.1)";
+                    ctx.fillRect(10,114,70,10);
+                    ctx.fillStyle="#FFFFFF";
+                    ctx.fillRect(10,114,1,12);
+                    ctx.fillRect(80,114,1,12);
+                    ctx.fillRect(10,114,70,1);
+                    ctx.fillText("悩む", 20, 124);
+                    ctx.fillText("切替る", 50, 124);
+                    if(serihu.cursor==6){
+                        ctx.fillText("▶", 14, 124);
+                    }else{
+                        ctx.fillText("▶", 44, 124);
+                    }
+                }
             }
 
             function serihu_tuika(){
@@ -1064,8 +1141,11 @@
                         save_point=2;
                     }
                 }
-                if((deyu_x==akareba_1_x && deyu_y==akareba_1_y)||(deyu_x==akareba_1_x+64 && deyu_y==akareba_1_y+64)){
+                if((deyu_x==akareba_1_x && deyu_y==akareba_1_y)||(deyu_x==akareba_2_x && deyu_y==akareba_2_y)){
                     serihu[serihu.length]={text:"赤スイッチを切り替える？",hyouji_i:0,OK:0,cursor:4};
+                }
+                if((deyu_x==aoreba_2_x && deyu_y==aoreba_2_y)){
+                    serihu[serihu.length]={text:"青スイッチを切り替える？",hyouji_i:0,OK:0,cursor:6};
                 }
             }
 
