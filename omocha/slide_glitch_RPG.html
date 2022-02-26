@@ -400,13 +400,13 @@
                 document.addEventListener('keydown', function(key){//キーボード操作
 
                     what_input="";
-                    if(key.key=="w" || key.key=="ArrowUp"){
+                    if(key.key=="w" || key.key=="k" || key.key=="ArrowUp"){
                         what_input="↑";
-                    }else if(key.key=="a" || key.key=="ArrowLeft"){
+                    }else if(key.key=="a" || key.key=="h" || key.key=="ArrowLeft"){
                         what_input="←";
-                    }else if(key.key=="d" || key.key=="ArrowRight"){
+                    }else if(key.key=="d" || key.key=="l" || key.key=="ArrowRight"){
                         what_input="→";
-                    }else if(key.key=="s" || key.key=="ArrowDown"){
+                    }else if(key.key=="s" || key.key=="j" || key.key=="ArrowDown"){
                         what_input="↓";
                     }else if(key.key=="Enter"){//AがAで入力できない！？←だってWASDに使ってるんだもん…
                         what_input="〇";
@@ -1223,7 +1223,7 @@
         <div id="mannaka">
             <h2>すらいどぐりっちしゅうくんRPG</h2>
             <p>
-                キーボード    移動:WASD,↑←→↓    〇:Enter, ×:Shift
+                キーボード    移動:WASD,↑←→↓,KHLJ    〇:Enter, ×:Shift
             </p> 
             <div id="parent_div">
                 <canvas id="cnvs" height="170px" width="170px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
