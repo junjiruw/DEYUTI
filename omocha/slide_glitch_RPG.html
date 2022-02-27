@@ -205,6 +205,8 @@
             var kanbansan_5_y;
             var kanbansan_6_x;
             var kanbansan_6_y;
+            var kanbansan_7_x;
+            var kanbansan_7_y;
             var zakozakosan_x;
             var zakozakosan_y;
             var moetti_x;
@@ -280,6 +282,8 @@
                 kanbansan_5_y=5+2*32+1*170;
                 kanbansan_6_x=5+1*32+2*170;
                 kanbansan_6_y=5+1*32+0*170;
+                kanbansan_7_x=5+1*32+3*170;
+                kanbansan_7_y=5+4*32+3*170;
                 zakozakosan_x=5+2*32+0*170;
                 zakozakosan_y=5+2*32+1*170;
                 moetti_x=5+2*32+0*170;
@@ -360,6 +364,8 @@
                 kanbansan_5_y-=world_dy;
                 kanbansan_6_x-=world_dx;
                 kanbansan_6_y-=world_dy;
+                kanbansan_7_x-=world_dx;
+                kanbansan_7_y-=world_dy;
                 zakozakosan_x-=world_dx;
                 zakozakosan_y-=world_dy;
                 moetti_x-=world_dx;
@@ -866,6 +872,9 @@
                         ctx.drawImage(kanbansan,kanbansan_4_x,kanbansan_4_y);
                         ctx.drawImage(kanbansan,kanbansan_5_x,kanbansan_5_y);
                         ctx.drawImage(kanbansan,kanbansan_6_x,kanbansan_6_y);
+                        if(vs_deyu>0){
+                            ctx.drawImage(kanbansan,kanbansan_7_x,kanbansan_7_y);
+                        }
                         
                         for (let i=0;i<5;i++){
                             ctx.drawImage(jirai,jirai_x+32*i,jirai_y);
@@ -1307,6 +1316,14 @@
                 }
                 if(deyu_x==kanbansan_6_x && deyu_y==kanbansan_6_y){
                     serihu[serihu.length]={text:"見よ！この光り輝く「！」を！これがエリート看板だ！",hyouji_i:0,OK:0,cursor:0};
+                }
+                if(deyu_x==kanbansan_7_x && deyu_y==kanbansan_7_y){
+                    if(vs_deyu==1){
+                        serihu[serihu.length]={text:"ヒントだ！ラスボスは戦闘開始時にこちらの攻撃力+100の回復力に設定されるぜ！",hyouji_i:0,OK:0,cursor:0};
+                    }else if(vs_deyu>1){
+                        serihu[serihu.length]={text:"俺のヒントは役立ったかい？",hyouji_i:0,OK:0,cursor:0};
+                    }
+                    
                 }
                 if(deyu_x==(yadoya_x-32) && deyu_y==yadoya_y){
                     serihu[serihu.length]={text:"泊まります？",hyouji_i:0,OK:0,cursor:1};
