@@ -125,6 +125,14 @@
             var lite_1=new Image();
             var lite_2=new Image();
             var lite_3=new Image();
+            var deyukabe =new Image();
+            var deyu32_0=new Image();
+            var deyu32_1=new Image();
+            var deyu64_0=new Image();
+            var deyu64_1=new Image();
+            var deyuhando_0=new Image();
+            var deyuhando_1=new Image();
+            var kusotori=new Image();
             // 画像読み込み
             var image_url="../images/omocha/slide_glitch_RPG/";
             taitoru.src=image_url+"suraidosyuukuntitle.png";
@@ -168,7 +176,14 @@
             lite_1.src=image_url+"lite32_1.png";
             lite_2.src=image_url+"lite32_2.png";
             lite_3.src=image_url+"lite32_3.png";
-
+            deyukabe.src=image_url+"deyukabe32.png";
+            deyu32_0.src=image_url+"deyu32_0.png";
+            deyu32_1.src=image_url+"deyu32_1.png"
+            deyu64_0.src=image_url+"deyu64_0.png";
+            deyu64_1.src=image_url+"deyu64_1.png";
+            deyuhando_0.src=image_url+"deyuhando_0.png";
+            deyuhando_1.src=image_url+"deyuhando_1.png";
+            kusotori.src=image_url+"kusotori32.png";
             //座標
             var deyu_x;
             var deyu_y;
@@ -234,6 +249,16 @@
             var aoblock_2_y;
             var lite_x;
             var lite_y;
+            var pazupazusan_x;
+            var pazupazusan_y;
+            var deyukabe_x;
+            var deyukabe_y;
+            var deyu32_x;
+            var deyu32_y;
+            var kusotori_x;
+            var kusotori_y;
+            var owapon_x;
+            var owapon_y;
             function set_iti(){//ゲームオーバーで初期位置にずらしたいので初期化を関数にしておきます。
                 deyu_x=5;//周囲に壁を置くのでずらします。 しゅうくんの座標なのにでゆって変数名で草。おもしろいのでこのままでいいか
                 deyu_y=5;
@@ -302,6 +327,16 @@
                 aoblock_2_y=5+4*32+1*170;
                 lite_x=5+0*32+3*170;
                 lite_y=5+0*32+2*170;
+                pazupazusan_x=5+1*32+3*170;
+                pazupazusan_y=5+3*32+1*170;
+                deyukabe_x=138+3*170;
+                deyukabe_y=5+4*32+4*170;
+                deyu32_x=5+2*32+3*170;
+                deyu32_y=5+4*32+4*170;
+                kusotori_x=5+4*32+4*170;
+                kusotori_y=5+0*32+3*170;
+                owapon_x=5+3*32+4*170;
+                owapon_y=5+1*32+2*170;
             }
             set_iti();
             var world_doko_x=0;
@@ -369,6 +404,16 @@
                 aoblock_2_y-=world_dy;
                 lite_x-=world_dx;
                 lite_y-=world_dy;
+                pazupazusan_x-=world_dx;
+                pazupazusan_y-=world_dy;
+                deyukabe_x-=world_dx;
+                deyukabe_y-=world_dy;
+                deyu32_x-=world_dx;
+                deyu32_y-=world_dy;
+                kusotori_x-=world_dx;
+                kusotori_y-=world_dy;
+                owapon_x-=world_dx;
+                owapon_y-=world_dy;
 
                 world_doko_x+=world_dx;
                 world_doko_y+=world_dy;
@@ -386,6 +431,8 @@
             var flag=0;//なんのだよ！そう、全ての。
             var akareba=0;
             var aoreba=0;
+            var vs_deyu=0;
+            var tweet_suruze=0;
             //しゅうくんのステータスだよ！
             var HP_MAX=10;
             var HP=10;
@@ -398,6 +445,7 @@
              //serihu[serihu.length]={text:"スライドグリッチという、話してても戦ってても動けるバグがあるみたいです。",hyouji_i:0,OK:0,cursor:0};
             var battle=[];//画像2枚,最大HP,現在HP,攻撃,位置x,表示,カーソル位置,経験値,ダメージ描写
             // battle[battle.length]={image:[zakozakosan_0,zakozakosan_1],HP_MAX:3,HP:3,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:1,damaging:0};
+            var deyu_battle=[];
 
             onload = function(){
                 onload_functions();
@@ -522,15 +570,15 @@
                             }
                         }else if(load_gamen==1){
                             if(start_cursor<0){
-                                start_cursor=3;
-                            }else if(start_cursor>3){
+                                start_cursor=4;
+                            }else if(start_cursor>4){
                                 start_cursor=0;
                             } 
                             
                             ctx.fillStyle="rgb(0,80,0)";
-                            ctx.fillRect(108,18,49,148);
+                            ctx.fillRect(108,18,49,154);
                             ctx.fillStyle="rgb(255,255,255)";
-                            ctx.fillRect(110,20,45,144);
+                            ctx.fillRect(110,20,45,150);
                             if(start_cursor==0 && loop_count>50){
                                 ctx.drawImage(zakozakosan_0,120,15);
                             }else{
@@ -550,6 +598,11 @@
                                 ctx.drawImage(aoblock_0,120,111);
                             }else{
                                 ctx.drawImage(aoblock_1,120,111);
+                            }
+                            if(start_cursor==4 && loop_count>50){
+                                ctx.drawImage(deyu32_0,120,143);
+                            }else{
+                                ctx.drawImage(deyu32_1,120,143);
                             }
                             ctx.drawImage(taitoru_cursor,-5,-100+start_cursor*32);
                         }
@@ -592,6 +645,12 @@
                                             start_gamen=1;
                                             EXP=990;
                                             flag=2;//トレンデイ撃破
+                                            level_up();
+                                            worp_load();//開始地点変更ワープ！
+                                        }else if(start_cursor==4){
+                                            start_gamen=1;
+                                            EXP=9999999;
+                                            vs_deyu=2;//deyu撃破
                                             level_up();
                                             worp_load();//開始地点変更ワープ！
                                         }
@@ -655,6 +714,9 @@
                             ctx.drawImage(aoblock_1,aoblock_2_x+32,aoblock_2_y-32);
                             ctx.drawImage(aoblock_0,aoblock_2_x+96,aoblock_2_y-64);
                         }
+                        if(vs_deyu<2){
+                            ctx.drawImage(deyukabe,deyukabe_x,deyukabe_y);
+                        }
                         
 
                         //しゅうくん移動。。
@@ -683,13 +745,26 @@
                                                     serihu[i].cursor=2;//選択モードにしとくよ
                                                 }
                                                 if(serihu[i].cursor==2){}//無
-                                                if(serihu[i].cursor==3){HP=HP_MAX;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i}//回復用選択肢
+                                                if(serihu[i].cursor==3){HP=HP_MAX;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i;}//回復用選択肢
 
                                                 if(serihu[i].cursor==4){}//無
-                                                if(serihu[i].cursor==5){akareba=(akareba+1)%2;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i}//ON_OFF
+                                                if(serihu[i].cursor==5){akareba=(akareba+1)%2;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i;}//ON_OFF
 
                                                 if(serihu[i].cursor==6){}//無
-                                                if(serihu[i].cursor==7){aoreba=(aoreba+1)%2;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i}//ON_OFF
+                                                if(serihu[i].cursor==7){aoreba=(aoreba+1)%2;serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i;}//ON_OFF
+
+                                                if(serihu[i].cursor==8){}//無
+                                                if(serihu[i].cursor==9){
+                                                    tweet_suruze=1;
+                                                    if(tweet_suruze==1){
+                                                        key_input="";
+                                                        key_owarasete=1;
+                                                        tweet_suruze=0;
+                                                        var URL_tweet_text="https://twitter.com/intent/tweet?text=邪悪の根源を打ち倒し、ゲームクリアしました！%0A"+document.title+"%0A"+document.URL;;//%0Aで改行
+                                                        window.open( URL_tweet_text, '_blank'); 
+                                                    }
+                                                    serihu_sakujo_yotei[serihu_sakujo_yotei.length]=i;
+                                                }//ツイートだ！
                                             }
                                         }
                                     }
@@ -703,6 +778,19 @@
                                                 if(battle[i].cursor==0){
                                                     battle[i].HP=battle[i].HP-Attack;//攻撃！
                                                     battle[i].damaging=1;
+                                                }else{
+                                                    HP=HP+Math.floor(HP_MAX/3);//回復！
+                                                    if(HP>HP_MAX){
+                                                        HP=HP_MAX;//しすぎ！
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if(vs_deyu==1){//ラスボス戦
+                                            if(deyu_battle.hyouji<2){//死体蹴り禁止機能
+                                                if(deyu_battle.cursor==0){
+                                                    deyu_battle.HP=deyu_battle.HP-Attack;//攻撃！
+                                                    deyu_battle.damaging=1;
                                                 }else{
                                                     HP=HP+Math.floor(HP_MAX/3);//回復！
                                                     if(HP>HP_MAX){
@@ -728,6 +816,21 @@
                                                 }else{
                                                     HP=HP-battle[i].Attack;//生きてる！痛い！
                                                     damaging=1;
+                                                }
+                                            }
+                                        }
+                                        if(vs_deyu==1){//ラスボス戦
+                                            if(deyu_battle.hyouji<2){//死体を動かさない
+                                                if(deyu_battle.HP<=0){
+                                                    deyu_battle.hyouji=3;//死んでた
+                                                    deyu_battle.HP=0;
+
+                                                    EXP=EXP+999999;//経験値プレゼント！よろこべ
+                                                    level_up();//レベルアップに喜べ！
+                                                }else{
+                                                    //生きてる！
+                                                    HP=HP-Math.floor(deyu_battle.Attack/30);//生きてる！痛い！
+                                                    deyu_battle.HP=deyu_battle.HP+deyu_battle.Attack;
                                                 }
                                             }
                                         }
@@ -795,6 +898,7 @@
                             ctx.drawImage(pon_0,pon_x,pon_y);
                             ctx.drawImage(pon_0,yadoya_x,yadoya_y);
                             ctx.drawImage(pon_0,mori_pon_x,mori_pon_y);
+                            ctx.drawImage(pon_0,owapon_x,owapon_y);
                             ctx.drawImage(pon_0,uketuke_x,uketuke_y);
                             ctx.drawImage(zakozakosan_0,zakozakosan_x,zakozakosan_y);
                             ctx.drawImage(moetti_0,moetti_x,moetti_y);
@@ -814,6 +918,10 @@
                             ctx.drawImage(zakozakosan_0,vs_goninsyuu_x,vs_goninsyuu_y+32);
                             ctx.drawImage(zakozakosan_0,vs_goninsyuu_x,vs_goninsyuu_y+64);
 
+                            ctx.drawImage(zakozakosan_0,pazupazusan_x,pazupazusan_y);
+                            ctx.drawImage(deyu32_0,deyu32_x,deyu32_y);
+
+                            ctx.drawImage(kusotori,kusotori_x,kusotori_y);
                         }else{
                             if(serihu.length==0 &&  battle.length==0){//ウィンドウが出てるときはしゅうくんがslide_glitch状態にから歩きを停止する
                                 tekuteku=1;
@@ -821,6 +929,7 @@
                             ctx.drawImage(pon_1,pon_x,pon_y);
                             ctx.drawImage(pon_1,yadoya_x,yadoya_y);
                             ctx.drawImage(pon_1,mori_pon_x,mori_pon_y);
+                            ctx.drawImage(pon_1,owapon_x,owapon_y);
                             ctx.drawImage(pon_1,uketuke_x,uketuke_y);
                             ctx.drawImage(zakozakosan_1,zakozakosan_x,zakozakosan_y);
                             ctx.drawImage(moetti_1,moetti_x,moetti_y);
@@ -839,6 +948,9 @@
                             ctx.drawImage(zakozakosan_1,vs_goninsyuu_x+32,vs_goninsyuu_y);
                             ctx.drawImage(zakozakosan_1,vs_goninsyuu_x,vs_goninsyuu_y+32);
                             ctx.drawImage(zakozakosan_1,vs_goninsyuu_x,vs_goninsyuu_y+64);
+
+                            ctx.drawImage(zakozakosan_1,pazupazusan_x,pazupazusan_y);
+                            ctx.drawImage(deyu32_1,deyu32_x,deyu32_y);
                         }
                         
                         if(tekuteku==0){//しゅうくんがあるくよ！ 
@@ -855,6 +967,9 @@
                                     battle[i].hyouji=0;
                                 }
                                 
+                            }
+                            if(vs_deyu==1 &&  deyu_battle.hyouji<2){
+                                deyu_battle.hyouji=(deyu_battle.hyouji+1)%2;
                             }
 
                             var rand_x = (Math.floor(Math.random()*3)-1)*32;//ランダムウォーク
@@ -910,6 +1025,9 @@
                                 battle.splice(teki_sakujo_yotei[teki_sakujo_yotei.length-i-1],1);//死亡した敵を後ろから除去していくね
                             }
                         }
+                        if(vs_deyu==1){
+                            deyu_battle_show() ;
+                        }
                         ctx.drawImage(map_2,-world_x,-world_y);//世界表示2
 
                         if(GAMEOVER>0 && GAMEOVER<100){
@@ -924,6 +1042,10 @@
                         }else if(GAMEOVER>=100){
                             if(flag==1){//トレンデイに敗北…
                                 flag=0;
+                            }
+                            if(vs_deyu==1){//でゆっちに負け！
+                                vs_deyu=0;
+                                save_point=4;
                             }
                             HP=HP_MAX;
                             GAMEOVER=0;
@@ -963,6 +1085,10 @@
                     world_slide(3*170,1*170);
                     deyu_x=5+4*32;
                     deyu_y=5+3*32;
+                }else if(save_point==4){
+                    world_slide(3*170,4*170);
+                    deyu_x=5+2*32;
+                    deyu_y=5+3*32;
                 }
             }
             function level_up(){
@@ -984,6 +1110,9 @@
                             battle[i].cursor=0;
                         }  
                     }
+                    if(vs_deyu==1){
+                        deyu_battle.cursor=(deyu_battle.cursor+1)%2;
+                    }
                 }
                 if(dx!=0){
                     for(let i=0;i<serihu.length;i++){//会話コマンド選択
@@ -1001,7 +1130,12 @@
                             serihu[i].cursor=6;
                         }else if(serihu[i].cursor==6){
                             serihu[i].cursor=7;
-                        }       
+                        }
+                        if(serihu[i].cursor==8){
+                            serihu[i].cursor=9;
+                        }else if(serihu[i].cursor==9){
+                            serihu[i].cursor=8;
+                        }        
                     }
                 }
                 //移動可能かを調べる
@@ -1135,6 +1269,20 @@
                     }else{
                         ctx.fillText("▶", 44, 124);
                     }
+                }else if(serihu.cursor==8 || serihu.cursor==9){
+                    ctx.fillStyle="rgb(100,50,0,0.1)";
+                    ctx.fillRect(10,114,70,10);
+                    ctx.fillStyle="#FFFFFF";
+                    ctx.fillRect(10,114,1,12);
+                    ctx.fillRect(80,114,1,12);
+                    ctx.fillRect(10,114,70,1);
+                    ctx.fillText("悩む", 20, 124);
+                    ctx.fillText("ツイる", 50, 124);
+                    if(serihu.cursor==8){
+                        ctx.fillText("▶", 14, 124);
+                    }else{
+                        ctx.fillText("▶", 44, 124);
+                    }
                 }
             }
 
@@ -1213,6 +1361,15 @@
                 if((deyu_x==aoreba_2_x && deyu_y==aoreba_2_y)){
                     serihu[serihu.length]={text:"青スイッチを切り替える？",hyouji_i:0,OK:0,cursor:6};
                 }
+                if(deyu_x==pazupazusan_x && deyu_y==pazupazusan_y){
+                    serihu[serihu.length]={text:"きみはパズル解けた？ぼくは全然だめだったよ><",hyouji_i:0,OK:0,cursor:0};
+                }
+                if(deyu_x==deyu32_x&&deyu_y==deyu32_y&&vs_deyu>1){
+                    serihu[serihu.length]={text:"ぐえー",hyouji_i:0,OK:0,cursor:0};
+                }
+                if((deyu_x==kusotori_x&& deyu_y==kusotori_y)){
+                    serihu[serihu.length]={text:"ツイートする？",hyouji_i:0,OK:0,cursor:8};
+                }
             }
 
             function battle_window(){
@@ -1258,6 +1415,53 @@
                 ctx.fillStyle="rgb(0,255,0)";
                 ctx.fillRect(battle.x,74,Math.floor(32*battle.HP/battle.HP_MAX),5);
             }
+            function deyu_battle_show(){
+                ctx.fillStyle="rgb(200,0,255,0.1)";
+                ctx.fillRect(10,19,150,100);
+                ctx.fillStyle="#FFFFFF";
+                ctx.fillRect(11,20,1,40);
+                ctx.fillRect(59,20,1,40);
+                ctx.fillRect(11,20,49,1);
+                ctx.fillRect(11,60,49,1);
+                ctx.fillText("たたかう", 20, 35);
+                ctx.fillText("1/3 回復", 21, 55);
+
+                ctx.fillRect(61,20,1,43);
+                ctx.fillRect(158,20,1,98);
+                ctx.fillRect(61,20,97,1);
+                ctx.fillRect(11,117,148,1);
+                ctx.fillRect(11,62,50,1);
+                ctx.fillRect(11,62,1,56);
+
+                ctx.fillText("▶", 12, 35+deyu_battle.cursor*20);
+                if(deyu_battle.hyouji<2){
+                    ctx.drawImage(deyu_battle.image[deyu_battle.hyouji],deyu_battle.x,48);
+                }else if(deyu_battle.hyouji<100){
+                    ctx.drawImage(deyu_battle.image[0],deyu_battle.x,48+0.1*(deyu_battle.hyouji*deyu_battle.hyouji-50*deyu_battle.hyouji+98));
+                    ctx.drawImage(DEATH,deyu_battle.x,80);
+                    deyu_battle.hyouji=deyu_battle.hyouji+1;
+                }else{
+                    vs_deyu=2;//エンディングだ～！
+                    save_point=4;
+                    worp_load();//ワープ！
+                    //死、完了！
+                }
+                if(deyu_battle.damaging>0){
+                    deyu_battle.damaging=deyu_battle.damaging+1;
+                    ctx.drawImage(damage,deyu_battle.x+16,64);
+                    if(deyu_battle.damaging==10){
+                        deyu_battle.damaging=0;
+                    }
+                }
+                ctx.fillStyle="rgb(0,0,0)";
+                ctx.fillRect(deyu_battle.x-2,50,36,9);
+                ctx.fillStyle="rgb(255,255,255)";
+                ctx.fillRect(deyu_battle.x-1,51,34,7);
+                ctx.fillStyle="rgb(255,0,0)";
+                ctx.fillRect(deyu_battle.x,52,32,5);
+                ctx.fillStyle="rgb(0,255,0)";
+                ctx.fillRect(deyu_battle.x,52,Math.floor(32*deyu_battle.HP/deyu_battle.HP_MAX),5);
+            }
             function teki_tuika(){
                 if(deyu_x==zakozakosan_x && deyu_y==zakozakosan_y){
                     battle[battle.length]={image:[zakozakosan_0,zakozakosan_1],HP_MAX:3,HP:3,Attack:1,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:1,damaging:0};
@@ -1299,6 +1503,17 @@
                     battle[battle.length]={image:[goninsyuu_0,goninsyuu_1],HP_MAX:50,HP:50,Attack:5,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:30,damaging:0};
                     battle[battle.length]={image:[goninsyuu_0,goninsyuu_1],HP_MAX:50,HP:50,Attack:5,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:30,damaging:0};
                     serihu[serihu.length]={text:"影の五人衆だ！×5　HP:50 AT:5 EXP:30",hyouji_i:0,OK:0,cursor:0};
+                }
+                if(deyu_x==deyu32_x && deyu_y==deyu32_y && vs_deyu==0){
+                    battle[battle.length]={image:[deyuhando_0,deyuhando_0],HP_MAX:3000,HP:3000,Attack:10,x:120,hyouji:0,cursor:0,EXP:0,damaging:0};
+                    battle[battle.length]={image:[deyuhando_1,deyuhando_1],HP_MAX:3000,HP:3000,Attack:10,x:15,hyouji:0,cursor:0,EXP:0,damaging:0};
+                    deyu_battle={image:[deyu64_0,deyu64_1],HP_MAX:3000+Level,HP:3000+Level,Attack:Level+100,x:53,hyouji:0,cursor:0,EXP:0,damaging:0};
+                    serihu[serihu.length]={text:"JUN汁ｗがいぢわるしてくる HP,AT,EXP: ?",hyouji_i:0,OK:0,cursor:0};
+                    vs_deyu=1;
+                }
+                if(deyu_x==owapon_x && deyu_y==owapon_y){
+                    battle[battle.length]={image:[pon_0,pon_1],HP_MAX:9999999,HP:9999999,Attack:9999999,x:Math.floor(Math.random()*(115)+12),hyouji:0,cursor:0,EXP:9999999,damaging:0};
+                    serihu[serihu.length]={text:"部屋一個余っちゃいました（笑）  HP:9999999 AT:9999999",hyouji_i:0,OK:0,cursor:0};
                 }
             }
 
@@ -1359,7 +1574,7 @@
                 <ul id="html_link_ul"></ul>
             </nav>
             <a href="../index.html">
-                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
             </a>
             <h1 id="title_h1">
                 JUN汁ｗおもちゃばこ。
@@ -1401,7 +1616,7 @@
             <footer>
                 <ul id="footul">
                     <li id="foot_tweet_li">
-                        <a href="" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
                             <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
                         </a>
                     </li>
