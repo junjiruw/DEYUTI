@@ -46,6 +46,7 @@
                 display: flex;
             }
             input.key_button{
+                background-color: #FFFFFF;
                 width: 1.5em;
                 height: 1.5em;
                 font-size: 2em;
@@ -469,6 +470,8 @@
                     if(key_input.indexOf(what_input)==-1){//すでに押されていたら、文字列検索でひっかかる。ひっかからないなら-1が帰ってくる
                         key_input=key_input+what_input;//キーボードは同時押しが可能なので書き換えではなく、追加にします。え？キーボードとボタン同時押しされたら？バ～カ
                     }
+                    if (what_input != ""){key.preventDefault();}//矢印キーでの操作時に、画面が上下にスクロールしてしまうことを防ぐ
+
                     
                 });
                 document.addEventListener('keyup', function(key){//キーボード操作

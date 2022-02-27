@@ -84,7 +84,8 @@ function btn_looks_better(){//jsでボタンの見た目を改善しましょう
 
     document.getElementById("title_h1").style.paddingLeft=header_height+10+ 'px';//ボタン置くスペース確保
     document.getElementById("go_home").style.height=header_height+ 'px';
-    if(document.getElementById("header").style.position=="fixed"){  //fixedじゃないとき…つまりheaderについてきて欲しくないとき
+    
+    if(window.getComputedStyle(document.getElementById('header')).position=="fixed"){  //fixed…つまりheaderについてきて欲しいとき CSSが別ファイルだとwindow.getしないとstyleとれないらしい
         document.getElementById("top").style.height=header_height*1.6+ 'px';//header置くところを縦にスペース確保
 
         setInterval(function(){//1秒に100回動くぞ！
