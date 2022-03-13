@@ -36,205 +36,44 @@
             footer{
                 background:linear-gradient(rgba(4,29,66,0.6), rgba(4,29,66,0));
             }
-            div#table{
-                display: table;
-                padding: 1px;
-                background:#0f4936;
-            }
-            div#table p{
-                display: table-row;
-                background:#0f4936;
-                padding: 1px;
-            }
-            div#table img{
-                margin: 1px;
-                display: table-cell;
-                display: inline;
-            }
-            div#parent_div{
-                text-align: center;
-                margin: 10px;
-            }
-            canvas{
-                background: #ffffff;
-                height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ*/
-                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-            }
-            div#buttons{
-                display: flex;
-            }
-            input.key_button{
-                width: 1.5em;
-                height: 1.5em;
-                font-size: 2em;
-                margin: 0.25em;
-            }
-            input.key_button:active{
-                background-color: #656965;
-                color: #FFFFFF;
-            }
-            div#button_left{
-                text-align: left;
-                width: 50%;
-            }
-            div#button_left div{
+
+            #hoge{
                 text-align: center;
             }
-            div#button_right{
-                text-align: center;
-                width: 50%;
+            #hoge button{
+                color:rgb(251, 255, 0);
+                border: 2px solid #fff;
+                background-color: #000000;
+            }
+            #hoge button:hover{
+                cursor:unset;
+                color:rgb(0, 0, 0);
+                border: 2px solid rgb(255, 0, 0);
+                background-color: #eeff00;
             }
 
         </style>
         <script src="../js/public.js"></script>
         <script>
-        var ctx; 
-        var img;
-        var deyu_x=0;
-        var deyu_y=0;
-        var key_input="";
-        var what_input="";//キーボード同時おしに使う
-        var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
-        var key_owarasete=0;
-
             onload = function(){
                 onload_functions();
-                const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
-                
-                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
-                    cnvs.style.width=90+"%";
-                    console.log(cnvs.clientWidth);
-                    cnvs.style.height=cnvs.clientWidth+"px";
-                    console.log(cnvs.clientHeight);
-                }
-
-                ctx = cnvs.getContext("2d");
-                // 画像読み込み
-                img= new Image();
-                img.src = "../images/site/favicon32.png";  // 画像のURLを指定
-
-
-                var buttons = document.getElementsByClassName("key_button");//ボタン操作
-                if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
-                    //ようするにタッチ機能がある端末なら
-                    for(let i=0;i<buttons.length;i++){
-                        buttons[i].addEventListener("touchstart",function(e){//押すと動く
-                            e.preventDefault();//ボタンをもとの状態に戻してください（血涙）
-                            key_input=this.value;
-                            key_interval=-1;//初回限定モード（1回は動作させたいので。）
-                            key_owarasete=0;
-                        });
-                        buttons[i].addEventListener("touchend",function(){//離すと動く
-                            if(key_interval!=-1){//一回も実行されてないのに終了するのはボタンとしておかしいので、はじく
-                                key_input="";
-                                key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
-                            }else{
-                                key_owarasete=1;//一度も実行されてないけど、ボタンはもう押してないのよ。
-                            }
-                        });
+                var mannaka = document.getElementById('mannaka');//IDを指定して変数にぶち込む
+                var i=0;
+                setInterval(function(){//1秒に100回動くぞ！
+                    i++;
+                    if(i<50){
+                        mannaka.style.cursor="url(../images/site/mettyaka-sorusyuukun_0.png),auto";
+                    }else if(i<100){
+                        mannaka.style.cursor="url(../images/site/mettyaka-sorusyuukun_1.png),auto";
+                    }else{
+                        i=0;
                     }
-                }else{
-                    //一般的なPCなら
-                    for(let i=0;i<buttons.length;i++){
-                        buttons[i].addEventListener("mousedown",function(){//押すと動く
-                            key_input=this.value;
-                            key_interval=-1;//初回限定モード（1回は動作させたいので。）
-                            key_owarasete=0;
-                        });
-                        buttons[i].addEventListener("mouseup",function(){//離すと動く
-                            if(key_interval!=-1){//一回も実行されてないのに終了するのはボタンとしておかしいので、はじく
-                                key_input="";
-                                key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
-                            }else{
-                                key_owarasete=1;//一度も実行されてないけど、ボタンはもう押してないのよ。
-                            }
-                        });
-
-                    }
-                }
-                
-                document.addEventListener('keydown', function(key){//キーボード操作
-
-                    what_input="";
-                    if(key.key=="w" || key.key=="ArrowUp"){
-                        what_input="↑";
-                    }else if(key.key=="a" || key.key=="ArrowLeft"){
-                        what_input="←";
-                    }else if(key.key=="d" || key.key=="ArrowRight"){
-                        what_input="→";
-                    }else if(key.key=="s" || key.key=="ArrowDown"){
-                        what_input="↓";
-                    }else if(key.key=="Enter"){//AがAで入力できない！？←だってWASDに使ってるんだもん…
-                        what_input="〇";
-                    }else if(key.key=="Shift"){
-                        what_input="×";
-                    }
-                    if(key_input.indexOf(what_input)==-1){//すでに押されていたら、文字列検索でひっかかる。ひっかからないなら-1が帰ってくる
-                        key_input=key_input+what_input;//キーボードは同時押しが可能なので書き換えではなく、追加にします。え？キーボードとボタン同時押しされたら？バ～カ
-                    }
-                    
-                });
-                document.addEventListener('keyup', function(key){//キーボード操作
-                    what_input="";
-                    if(key.key=="w" || key.key=="ArrowUp"){
-                        what_input="↑";
-                    }else if(key.key=="a" || key.key=="ArrowLeft"){
-                        what_input="←";
-                    }else if(key.key=="d" || key.key=="ArrowRight"){
-                        what_input="→";
-                    }else if(key.key=="s" || key.key=="ArrowDown"){
-                        what_input="↓";
-                    }else if(key.key=="Enter"){//AがAで入力できない！？←だってWASDに使ってるんだもん…
-                        what_input="〇";
-                    }else if(key.key=="Shift"){
-                        what_input="×";
-                    }
-                    
-                    key_input=key_input.slice(0,key_input.indexOf(what_input))+key_input.slice(key_input.indexOf(what_input)+1);//該当文字を消去
-                    if(key_input==""){
-                        key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
-                    }
-                });
+                }, 1);//10/1000[s]でくりかえすぞ！
             }
 
-            setInterval(function(){//1秒に100回動くぞ！
-                if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                    key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
-                    for(let i=0;i<key_input.length;i++){
-                        if(key_input.charAt(i)=="↑"){
-                            idou(0,-16);
-                        }else if(key_input.charAt(i)=="←"){
-                            idou(-16,0);
-                        }else if(key_input.charAt(i)=="→"){
-                            idou(16,0);
-                        }else if(key_input.charAt(i)=="↓"){
-                            idou(0,16);
-                        }else if(key_input.charAt(i)=="〇"){
-                            deyu_x=0;
-                        }else if(key_input.charAt(i)=="×"){
-                            deyu_y=0;
-                        }
-                }
-                    if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
-                        key_input="";
-                        key_interval=0;
-                    }
-                }else if(key_interval>0){
-                    key_interval=key_interval-1;//カウントダウン
-                }
-                CLEAR_cnvs();
-                ctx.drawImage(img,deyu_x,deyu_y);
-            }, 10);//10/1000[s]でくりかえすぞ！
+           
 
-            function idou(dx,dy){
-                deyu_x=deyu_x+dx;
-                deyu_y=deyu_y+dy;
-            }
 
-            function CLEAR_cnvs(){//キャンバスを白く塗るだけの精霊
-                ctx.fillStyle="#FFFFFF";
-                ctx.fillRect(0,0,320,320);
-            }
 
             
         </script>
@@ -255,35 +94,16 @@
         </header>
 
         <div id="mannaka">
-            このページはテスト用です。
+            このページを創った奴はこう考えた<br>
 
-            <div id="parent_div">
-                <canvas id="cnvs" height="320px" width="320px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
-                </canvas>
+            なんかカーソルが変わったほうが面白いってな
+            <br><br><br><br><br><br><br><br><br>
+            <div id="hoge">
+                <button onclick="new function(){window.alert('押すなんて…そんな…');}">俺を押す気か！？</button>
             </div>
-            <div id="buttons">
-                <div id="button_left">
-                    <div>
-                        <input type="button" class="key_button" value="↑">
-                    </div>
-                    <div>
-                        <input type="button" class="key_button" value="←">
-                        <input type="button" class="key_button" value="→">
-                    </div>
-                    <div>
-                        <input type="button" class="key_button" value="↓">
-                    </div>
-                    
-                </div>
-                <div id="button_right">
-                    <input type="button" class="key_button" value="〇">
-                    <input type="button" class="key_button" value="×">
-                </div>
-            </div>
-            <p>
-                キーボード    移動:WASD,↑←→↓    〇:Enter, ×:Shift
-            </p>            
             
+            <br><br><br><br><br><br><br><br><br>
+         
 
             <footer>
                 <ul id="footul">
