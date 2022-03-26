@@ -17,22 +17,147 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
-
+            img{
+                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+            }
+            .flex_div{
+                display: flex;   
+            }
+            .right_div{
+                text-align: right;
+                justify-content: flex-end;
+            }
+            .left_div{
+                text-align: left;
+                justify-content: flex-start;
+                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+            }
+            .figure_icon{
+                text-align: center;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+            .figure_icon img{
+                border-radius: 25%;
+                height: 5em;
+                background-color: white;
+            }
+            #pointa_syuu{
+                width: 100%;
+                height: 100%;
+            }
+            #pointa_point{
+                cursor: url(../images/yomimono/cursor_kaeyou/sasurainopoint.png),pointer;
+            }
+            #pointa_point2{
+                cursor: url(../images/yomimono/cursor_kaeyou/sasurainopoint2.png),pointer;
+            }
+            #pointa_tyuukuu{
+                cursor: url(../images/yomimono/cursor_kaeyou/tyuukuuka-soru.png),pointer;
+            }
+            #pointa_surudoi{
+                cursor: url(../images/yomimono/cursor_kaeyou/surudoi_pointa.png),pointer;
+            }
+            #pointa_kawaii{
+                cursor: url(../images/yomimono/cursor_kaeyou/surudoi_pointa_kawaii.png),pointer;
+            }
         </style>
         <script src="../js/public.js"></script>
         <script>
             onload = function(){
                 onload_functions();
-                var mannaka = document.getElementById('mannaka');//IDを指定して変数にぶち込む
+                
+                const canvas = document.querySelector('canvas');
+                const ctx = canvas.getContext('2d');
+                
+
+
+                var syuu = document.getElementById('pointa_syuu');//IDを指定して変数にぶち込む
                 var i=0;
                 var j=0;
                 var h1_1st=document.getElementById("h1_1st");
+                
+                var maru_x=200;
+                var maru_y=200;
+                var maru_h=10;
+                var hantei_span=document.getElementById("hantei");
+                var haikei=0;
+                canvas.addEventListener("click",e=>{
+                    const rect = e.target.getBoundingClientRect();
+    
+                        // ブラウザ上での座標を求める
+                    const   viewX = e.clientX - rect.left,
+                            viewY = e.clientY - rect.top;
+    
+                        // 表示サイズとキャンバスの実サイズの比率を求める
+                    const   scaleWidth =  canvas.clientWidth / canvas.width,
+                            scaleHeight =  canvas.clientHeight / canvas.height;
+    
+                        // ブラウザ上でのクリック座標をキャンバス上に変換
+                    const   canvasX = Math.floor( viewX / scaleWidth ),
+                            canvasY = Math.floor( viewY / scaleHeight );
+                    var kyori= Math.sqrt( Math.pow( canvasX-maru_x, 2 ) + Math.pow( canvasY-maru_y, 2 ) ) ;
+                    
+                    if(kyori<=maru_h+5){
+                        hantei_span.innerText="判定：青色！";
+                        haikei=3;
+
+                        maru_x=Math.random()*200+100;
+                        maru_y=Math.random()*200+100;
+                        maru_h=Math.random()*10+6;
+
+                    }
+
+                    if(kyori<=maru_h-5){
+                        hantei_span.innerText="判定：黄色！";
+                        haikei=1;
+                        console.log(kyori);
+                    }else if(kyori<=maru_h){
+                        hantei_span.innerText="判定：赤色！";
+                        haikei=2;
+                    }
+                    
+                });
                 setInterval(function(){//1秒に100回動くぞ！
+                    if(haikei==0){
+                        ctx.fillStyle = 'white';
+                    }else if(haikei==1){
+                        ctx.fillStyle = 'yellow';
+                    }else if(haikei==2){
+                        ctx.fillStyle = 'red';
+                    }else if(haikei==3){
+                        ctx.fillStyle = 'blue';
+                    }
+                    
+                    ctx.fillRect(0, 0, 400, 400);
+
+                    ctx.beginPath () ;
+                    ctx.arc( maru_x, maru_y, maru_h+5, 0 * Math.PI / 180, 360 * Math.PI / 180, false ) ;
+                    ctx.fillStyle = "rgba(0,0,255,1)" ;
+                    ctx.fill() ;
+                    ctx.strokeStyle = "black" ;
+                    ctx.lineWidth = 2 ;
+                    ctx.stroke() ;
+                    ctx.beginPath () ;
+                    ctx.arc( maru_x, maru_y, maru_h, 0 * Math.PI / 180, 360 * Math.PI / 180, false ) ;
+                    ctx.fillStyle = "rgba(255,0,0,1)" ;
+                    ctx.fill() ;
+                    ctx.strokeStyle = "red" ;
+                    ctx.lineWidth = 0 ;
+                    ctx.stroke() ;
+                    ctx.beginPath () ;
+                    ctx.arc( maru_x, maru_y, maru_h-5, 0 * Math.PI / 180, 360 * Math.PI / 180, false ) ;
+                    ctx.fillStyle = "rgba(255,255,0,1)" ;
+                    ctx.fill() ;
+                    ctx.strokeStyle = "yellow" ;
+                    ctx.lineWidth = 0 ;
+                    ctx.stroke() ;
+
                     i++;
                     if(i<50){
-                        mannaka.style.cursor="url(../images/yomimono/cursor_kaeyou/mettyaka-sorusyuukun_0.png),auto";
+                        syuu.style.cursor="url(../images/yomimono/cursor_kaeyou/mettyaka-sorusyuukun_0.png),auto";
                     }else if(i<100){
-                        mannaka.style.cursor="url(../images/yomimono/cursor_kaeyou/mettyaka-sorusyuukun_1.png),auto";
+                        syuu.style.cursor="url(../images/yomimono/cursor_kaeyou/mettyaka-sorusyuukun_1.png),auto";
                     }else{
                         i=0;
                     }
@@ -66,29 +191,46 @@
                         h1_1st.innerHTML=h1_1st.innerHTML+COLOR_DAYO(j,"！");
                         j--;//こうすると左から右へ文字色が変わるのじぇ。
                         if(j>=66){j=0}
+
+                        var suke_iro;
+                        if(j%6==0){
+                            suke_iro="blue";
+                        }else if(j%6==1){
+                            suke_iro="aqua";
+                        }else if(j%6==2){
+                            suke_iro="lime";
+                        }else if(j%6==3){
+                            suke_iro="yellow";
+                        }else if(j%6==4){
+                            suke_iro="red";
+                        }else if(j%6==5){
+                            suke_iro="fuchsia";
+                        }
+                        document.getElementsByClassName("suke")[0].style.backgroundColor=suke_iro;
                     }
                     
                     
                 }, 1);//10/1000[s]でくりかえすぞ！
                 
                 function COLOR_DAYO(color_num,moji){
-                    var sakusei_mojiretu="";
+                    var sakusei_mojiretu;
                     if(color_num%6==0){
-                        sakusei_mojiretu="<span style='color:blue'>";
+                        sakusei_mojiretu="blue";
                     }else if(color_num%6==1){
-                        sakusei_mojiretu="<span style='color:aqua'>";
+                        sakusei_mojiretu="aqua";
                     }else if(color_num%6==2){
-                        sakusei_mojiretu="<span style='color:lime'>";
+                        sakusei_mojiretu="lime";
                     }else if(color_num%6==3){
-                        sakusei_mojiretu="<span style='color:yellow'>";
+                        sakusei_mojiretu="yellow";
                     }else if(color_num%6==4){
-                        sakusei_mojiretu="<span style='color:red'>";
+                        sakusei_mojiretu="red";
                     }else if(color_num%6==5){
-                        sakusei_mojiretu="<span style='color:fuchsia'>";
+                        sakusei_mojiretu="fuchsia";
                     }
-                    sakusei_mojiretu=sakusei_mojiretu+moji+"</span>";
+                    sakusei_mojiretu="<span style='color:"+sakusei_mojiretu+"'>"+moji+"</span>";
                     return sakusei_mojiretu;
                 }
+                
             }
             
         </script>
@@ -108,11 +250,456 @@
             </h1>
         </header>
         <div id="mannaka">
+                <div id="pointa_syuu">
+                <h1 id="h1_1st">マウスカーソル変えようぜ！！</h1>
 
-            <h1 id="h1_1st">マウスカーソル変えようぜ！！</h1>
-            <p>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>全日本マウスカーソル変えようぜ協会のみなさまこんにちは。</p>
+                        <p>しゅうくんです。</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img class="suke" src="../images/yomimono/cursor_kaeyou/syuukun_suke.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                    
+                </div>
+                <hr>
+                
+                <div class="right_div flex_div">
+                    <div>
+                        <p>みなさん、マウスカーソルを見失ってませんか？</p>
+                        <p>JUN汁ｗは毎日見失ってます。愚かですね。</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                    
+                </div>
+                <hr>
 
-            </p>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>そこでこのページでは優しいしゅうくんがカーソルの位置を教えてあげています。やさし～</p>
+                        <p>え？スマホで見てるからわからない？</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint.png">
+                        <figcaption>???</figcaption>
+                    </figure>
+                    <div>
+                        <p>ようニイちゃん、困ってるみたいだな</p>
+                    </div>
+                    
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p>あ…！あなたは！</p>
+                        <h3>さすらいのポインツ！</h3>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+            </div>
+            <div id="pointa_point">
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>俺そんな名前なの！？</p>
+                    </div>
+                    
+                </div>
+                <hr>
+                <h2>～パソコンのマウスカーソルを変えよう～</h2>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>しゅうくんがポインターの位置を教えてあげられるのはこのページだけだから、他のサイトとかゲームしてるときはダメなんだよね</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>そんならパソコンの設定を変えりゃいいじゃねえか</p>
+                        <img src="../images/yomimono/cursor_kaeyou/win11_mausu.png" style="width: 100%; height: auto;">
+                    <p>※画面はうぃんどうず１１だが、１０でもあんまり変わらない。それ以外のOSは知らん</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>へえ、色変えるだけならマウスポチポチするだけでいいンだ</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+            </div>
+            <div id="pointa_point2">
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>色変えるだけでも視認性は向上するな！</p>
+                            <p>画面を共有したりキャプチャするときでもマウスが見やすいのはいいことだ！</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>うひょ～</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>まあでも、これだけだと面白みがないよね、カーソルも、このページも、お前も</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <h2>！？</h2>
+                    </div>
+                </div>
+                <hr>
+                <h2>～面白みを求めて～</h2>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>オリジナルカーソル作るぞ！</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>用意するファイルは.curか.ani(動く)だ。絵は.pngやらで作成してソフトで変換すりゃいい。画像サイズに制限はない感じだが、小さく圧縮されることだけ注意だ(16×16?)。もちろん、うぃんどうず以外のことは、知らん。</p>
+                        <img src="../images/yomimono/cursor_kaeyou/win11_mausu_kobetu.png" style="width: 100%; height: auto;">
+                        <p>※画面はうぃんどうず１１だが、１０でもあんまり変わらない。それ以外のOSは知らん</p>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <div id="pointa_tyuukuu">
+                <div class="right_div flex_div">
+                    <div>
+                        <p>できた(32×32)</p>
+                        <img src="../images/yomimono/cursor_kaeyou/tyuukuuka-soru.png" width="128px">
+                        <p>色を緑にして目立たせ、立体的にすることで面白みをプラス。さらに色を2色に絞ることでシンプルに仕上げました。</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>なんで穴あいてるの？</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>面白み</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>(こいつ全部面白みで通すつもりか…！？)</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>でもなんか違和感がある</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>俺の形状と見比べてみるとわかるかもな</p>
+                        <img src="../images/yomimono/cursor_kaeyou/kihonka-soru.png" style="background-color: white;" width="128px">
+                        <img src="../images/yomimono/cursor_kaeyou/tyuukuuka-soru.png" style="background-color: white;" width="128px">
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>太いのか、32×32を目いっぱい使ってるからシルエットが正方形なんだ</p>
+                        <p>でもデフォルトのカーソルは画像の左半分くらいの領域しか使ってない</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>マウスカーソルの一番大事な部分はマウスカーソルの先端だ</p>
+                        <p>だってそこに判定があるんだからな</p>
+                        <p>つまり、カーソルを見たときに視線が先端に誘導されることが大事だ</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>なるほど、このカーソルはぱっと見たときにカーソルの中央付近を見ちゃうな</p>
+                        <img src="../images/yomimono/cursor_kaeyou/tyuukuuka-soru.png" width="64px">
+                        <p>これは形状が正方形だからなのか</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>実際には世の中には正方形デザインのカーソルは多くあるし、JUN汁ｗが勝手にそう思ってるだけの可能性は高いけどな</p>
+                        <p>あと、穴あいてるのも原因だな（笑）</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>泣いてます</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: blue;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <h2>～視線誘導を考慮しよう～</h2>
+                <hr>
+            </div>
+            <div id="pointa_surudoi">
+                <div class="right_div flex_div">
+                    <div>
+                        <img src="../images/yomimono/cursor_kaeyou/surudoi_pointa.png" width="128px" style="image-rendering: pixelated;background-color: white;border: 2px solid white;">
+                    </div>
+                    <figure class="figure_icon" style="margin-left:100px;">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <h2>！？</h2>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <img src="../images/yomimono/cursor_kaeyou/surudoi_pointa.png" width="64px">
+                        <p>すべてを貫く槍…ゲイ・ボルグとでも呼ぼうか…</p>
+                    </div>
+                    <figure class="figure_icon" style="margin-left:100px;">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>先端恐怖症の人は見れないな</p>
+                    </div>
+                </div>
+                <hr>
+                <div style="background-color:white;color: black;">
+                    テスト用広場 <span id="hantei">判定：</span><br>
+                    <canvas width="400px" height="400px">
+                        マウステスト用
+                    </canvas>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>刺しやす～い</p>
+                    </div>
+                    <figure class="figure_icon" style="margin-left:100px;">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>いうほど刺しやすいか…？</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>どちらにせよ見た目がよくない、もっと親しみやすいかわいらしさが必要</p>
+                    </div>
+                    <figure class="figure_icon" style="margin-left:100px;">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <h2>～kawaii～</h2>
+                <hr>
+            </div>
+            <div id="pointa_kawaii">
+                
+                <div class="right_div flex_div">
+                    <div>
+                        <img src="../images/yomimono/cursor_kaeyou/surudoi_pointa_kawaii.png" width="128px" style="image-rendering: pixelated;background-color: white;border: 2px solid white;">
+                    </div>
+                    <figure class="figure_icon" style="margin-left:100px;">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>…</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <img src="../images/yomimono/cursor_kaeyou/surudoi_pointa_kawaii.png" width="64px">
+                        <p>…</p>
+                    </div>
+                    <figure class="figure_icon" style="margin-left:100px;">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>…</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p>きょうはもう寝ます</p>
+                    </div>
+                    <figure class="figure_icon" style="margin-left:100px;">
+                        <img src="../images/yomimono/cursor_kaeyou/syuukun_suke.png" style="background-color: aquamarine;">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/cursor_kaeyou/sasurainopoint2.png">
+                        <figcaption>さすポイ</figcaption>
+                    </figure>
+                    <div>
+                        <p>ハイ。</p>
+                    </div>
+                </div>
+                <hr>
+            </div>
 
             <footer>
                 <ul id="footul">
