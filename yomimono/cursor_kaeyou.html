@@ -23,7 +23,20 @@
         <script>
             onload = function(){
                 onload_functions();
+                var mannaka = document.getElementById('mannaka');//IDを指定して変数にぶち込む
+                var i=0;
+                setInterval(function(){//1秒に100回動くぞ！
+                    i++;
+                    if(i<50){
+                        mannaka.style.cursor="url(../images/yomimono/mettyaka-sorusyuukun_0.png),auto";
+                    }else if(i<100){
+                        mannaka.style.cursor="url(../images/yomimono/mettyaka-sorusyuukun_1.png),auto";
+                    }else{
+                        i=0;
+                    }
+                }, 1);//10/1000[s]でくりかえすぞ！
             }
+            
         </script>
     </head>
     <body>
@@ -42,7 +55,10 @@
         </header>
         <div id="mannaka">
 
-            ここに本文
+            <h1>マウスカーソル変えようぜ！！</h1>
+            <p>
+
+            </p>
 
             <footer>
                 <ul id="footul">
