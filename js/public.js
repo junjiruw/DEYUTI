@@ -73,7 +73,7 @@ function html_link_show(){//え？この程度ならhtmlに最初から書けっ
 
     var new_li = document.createElement("li");
     var new_a = document.createElement('a');
-    new_a.href="https://junjiruw.github.io/DEYUTI/omocha/yomimono_top.html";
+    new_a.href="https://junjiruw.github.io/DEYUTI/yomimono/yomimono_top.html";
     new_a.textContent="読み物";
     new_li.appendChild(new_a);
     new_a.className="added_a";
