@@ -27,6 +27,8 @@
                 background-repeat:no-repeat,no-repeat,repeat;
                 background-attachment: fixed,fixed,fixed;
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+
+                overflow-x: hidden;/*左右のスクロールバー消そうぜ！*/
             }
             div#mannaka{
                 border-image: linear-gradient(rgba(255,255,255,1), rgba(0,30,100,1));/*透明は黒になるっぽいね*/
@@ -37,48 +39,221 @@
                 background:linear-gradient(rgba(4,29,66,0.6), rgba(4,29,66,0));
             }
 
-            #hoge{
+
+            #syuukun{
+                position: absolute;
+                top:40vh;
+                left: 50vw;
+                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+            }
+            #syuukun img{
+                height: 15vw;
+                position: absolute;
+            }
+            div#parent_div{
+                text-align: center;
+                margin: 10px;
+            }
+            canvas{
+                background: #ffffff;
+                height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ*/
+                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+            }
+            div#buttons{
+            }
+            div#buttons div{
                 text-align: center;
             }
-            #hoge button{
-                color:rgb(251, 255, 0);
-                border: 2px solid #fff;
-                background-color: #000000;
+            input.key_button{
+                background-color: #FFFFFF;
+                width: 1.5em;
+                height: 1.5em;
+                font-size: 2em;
+                margin: 0.25em;
+                margin-left: 1em;
             }
-            #hoge button:hover{
-                cursor:unset;
-                color:rgb(0, 0, 0);
-                border: 2px solid rgb(255, 0, 0);
-                background-color: #eeff00;
+            input.key_button:active{
+                background-color: #656965;
+                color: #FFFFFF;
             }
+
+            
 
         </style>
         <script src="../js/public.js"></script>
         <script>
+            //キーボードなど、システムの、あの、アレ、アレさ！
+            var key_input="";
+            var what_input="";//キーボード同時おしに使う
+            var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
+            var key_owarasete=0;
+
             onload = function(){
                 onload_functions();
-                var mannaka = document.getElementById('mannaka');//IDを指定して変数にぶち込む
-                var i=0;
-                setInterval(function(){//1秒に100回動くぞ！
-                    i++;
-                    if(i<50){
-                        mannaka.style.cursor="url(../images/yomimono/cursor_kaeyou/mettyaka-sorusyuukun_0.png),auto";
-                    }else if(i<100){
-                        mannaka.style.cursor="url(../images/yomimono/cursor_kaeyou/mettyaka-sorusyuukun_1.png),auto";
-                    }else{
-                        i=0;
+                const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
+                
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                    cnvs.style.width=90+"%";
+                    cnvs.style.height=cnvs.clientWidth+"px";
+                }
+
+                var buttons = document.getElementsByClassName("key_button");//ボタン操作
+                if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
+                    //ようするにタッチ機能がある端末なら
+                    for(let i=0;i<buttons.length;i++){
+                        buttons[i].addEventListener("touchstart",function(e){//押すと動く
+                            e.preventDefault();//ボタンをもとの状態に戻してください（血涙）
+                            key_input=this.value;
+                            key_interval=-1;//初回限定モード（1回は動作させたいので。）
+                            key_owarasete=0;
+                        });
+                        buttons[i].addEventListener("touchend",function(e){//離すと動く
+                            e.preventDefault();//ボタンをもとの状態に戻してください（血涙）
+                            if(key_interval!=-1){//一回も実行されてないのに終了するのはボタンとしておかしいので、はじく
+                                key_input="";
+                                key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                            }else{
+                                key_owarasete=1;//一度も実行されてないけど、ボタンはもう押してないのよ。
+                            }
+                        });
                     }
-                }, 1);//10/1000[s]でくりかえすぞ！
+                }else{
+                    //一般的なPCなら
+                    for(let i=0;i<buttons.length;i++){
+                        buttons[i].addEventListener("mousedown",function(){//押すと動く
+                            key_input=this.value;
+                            key_interval=-1;//初回限定モード（1回は動作させたいので。）
+                            key_owarasete=0;
+                        });
+                        buttons[i].addEventListener("mouseup",function(){//離すと動く
+                            if(key_interval!=-1){//一回も実行されてないのに終了するのはボタンとしておかしいので、はじく
+                                key_input="";
+                                key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                            }else{
+                                key_owarasete=1;//一度も実行されてないけど、ボタンはもう押してないのよ。
+                            }
+                        });
+
+                    }
+                }
+                
+                document.addEventListener('keydown', function(key){//キーボード操作
+
+                    what_input="";
+                    if(key.key=="w" || key.key=="k" || key.key=="ArrowUp"){
+                        what_input="↑";
+                    }else if(key.key=="a" || key.key=="h" || key.key=="ArrowLeft"){
+                        what_input="←";
+                    }else if(key.key=="d" || key.key=="l" || key.key=="ArrowRight"){
+                        what_input="→";
+                    }else if(key.key=="s" || key.key=="j" || key.key=="ArrowDown"){
+                        what_input="↓";
+                    }else if(key.key=="Enter"){
+                        what_input="〇";
+                    }else if(key.key=="Shift"){
+                        what_input="×";
+                    }
+                    if(key_input.indexOf(what_input)==-1){//すでに押されていたら、文字列検索でひっかかる。ひっかからないなら-1が帰ってくる
+                        key_input=key_input+what_input;//キーボードは同時押しが可能なので書き換えではなく、追加にします。え？キーボードとボタン同時押しされたら？バ～カ
+                    }
+                    if (what_input != ""){key.preventDefault();}//矢印キーでの操作時に、画面が上下にスクロールしてしまうことを防ぐ
+
+                    
+                });
+                document.addEventListener('keyup', function(key){//キーボード操作
+                    what_input="";
+                    if(key.key=="w" || key.key=="ArrowUp"){
+                        what_input="↑";
+                    }else if(key.key=="a" || key.key=="ArrowLeft"){
+                        what_input="←";
+                    }else if(key.key=="d" || key.key=="ArrowRight"){
+                        what_input="→";
+                    }else if(key.key=="s" || key.key=="ArrowDown"){
+                        what_input="↓";
+                    }else if(key.key=="Enter"){
+                        what_input="〇";
+                    }else if(key.key=="Shift"){
+                        what_input="×";
+                    }
+                    
+                    key_input=key_input.slice(0,key_input.indexOf(what_input))+key_input.slice(key_input.indexOf(what_input)+1);//該当文字を消去
+                    if(key_input==""){
+                        key_interval=0;//長押しの連続入力に使ってるだけなので長押しが終わったら初期化するんよ
+                    }
+                });
+                //--------------------------------------------------------------------------------------------------------
+                setInterval(function(){
+                    //しゅうくん移動。。
+                    if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                        key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
+                        for(let i=0;i<key_input.length;i++){
+                            if(key_input.charAt(i)=="↑"){
+                                idou(0,-1);
+                                muki(muki_sayuu,1);
+                            }else if(key_input.charAt(i)=="←"){
+                                idou(-1,0);
+                                muki(1,muki_jouge);
+                            }else if(key_input.charAt(i)=="→"){
+                                idou(1,0);
+                                muki(0,muki_jouge);
+                            }else if(key_input.charAt(i)=="↓"){
+                                idou(0,1);
+                                muki(muki_sayuu,0);
+                            }else if(key_input.charAt(i)=="〇"){
+                            }
+                        }
+                        if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                            key_input="";
+                            key_interval=0;
+                        }
+                    }else if(key_interval>0){
+                        key_interval=key_interval-1;//カウントダウン
+                    }
+                }, 1);//10/1000[s]でくりかえすぞ！-----------------------------------------------------------------------------------------------
+                
+                var syuukun = document.getElementById('syuukun');//IDを指定して変数にぶち込む
+                
+                var syuukun_x=50;
+                var syuukun_y=40;
+                var muki_sayuu=0;
+                var muki_jouge=0;
+
+                function idou(dx,dy){
+                    syuukun_x += dx*3;
+                    syuukun_y += dy*3;
+                    if(syuukun_x>100){//これちょっとはみ出るよね
+                        syuukun_x=100;
+                    }else if(syuukun_x<-10){
+                        syuukun_x=-10;
+                    }
+                    if(syuukun_y<-10){
+                        syuukun_y=-10;
+                    }
+                    syuukun.style.left = syuukun_x+"vw";
+                    syuukun.style.top = syuukun_y+"vh";
+                }
+                var syuukun_imgs=syuukun.children;
+                function muki(sayuu,jouge){
+                    muki_sayuu=sayuu;
+                    muki_jouge=jouge;
+                    for(let i=0;i<syuukun_imgs.length;i++){
+                        syuukun_imgs[i].style.display ="none";
+                    }
+                    syuukun_imgs[muki_sayuu+muki_jouge*2].style.display ="block";
+                }
+
+                
             }
-
-           
-
-
-
-            
         </script>
     </head>
     <body>
+        <div id="syuukun">
+            <img id="mae_migi" src="../images/omocha/freedom_syuukun/tibisyuukun_mae.png">
+            <img id="mae_hidari" src="../images/omocha/freedom_syuukun/tibisyuukun_mae.png"  style="transform: scale(-1, 1); display: none;">
+            <img id="ushiro_migi" src="../images/omocha/freedom_syuukun/tibisyuukun_usiro.png" style="display: none;">
+            <img id="ushiro_hidari" src="../images/omocha/freedom_syuukun/tibisyuukun_usiro.png" style="transform: scale(-1, 1); display: none;">
+        </div>
+
         <div id="top"></div>
         <header id="header">
             <button onclick="html_link_btn()" id="html_link_btn"></button>
@@ -94,16 +269,28 @@
         </header>
 
         <div id="mannaka">
-            このページを創った奴はこう考えた<br>
 
-            なんかカーソルが変わったほうが面白いってな
-            <br><br><br><br><br><br><br><br><br>
-            <div id="hoge">
-                <button onclick="new function(){window.alert('押すなんて…そんな…');}">俺を押す気か！？</button>
-            </div>
             
-            <br><br><br><br><br><br><br><br><br>
-         
+            
+            <div id="parent_div">
+                <canvas id="cnvs" height="160px" width="160px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                </canvas>
+            </div>
+
+            <div id="buttons">
+                <div>
+                    <input type="button" class="key_button" value="↑">
+                </div>
+                    <div>
+                        <input type="button" class="key_button" value="←">
+                        <input type="button" class="key_button" value="→">
+                    </div>
+                    <div>
+                        <input type="button" class="key_button" value="↓">
+                    </div>
+                    
+
+            </div>
 
             <footer>
                 <ul id="footul">
