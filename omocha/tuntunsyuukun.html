@@ -19,12 +19,16 @@
         <style>
             #syuukun{
                 position: fixed;
-                top:40vh;
-                left: 50vw;
+                top:0vh;/*あとで初期化するね*/
+                left:0vw;
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
             }
-            #syuukun img{
-                height: 15vw;
+            #syuukun_div2{
+                height: 14vh;/*canvasの大きさ÷2.5　これでドットの大きさが一致する*//*うそ、半分の大きさにする*/
+                width: 14vh;
+            }
+            #syuukun_div2 img{
+                height: 100%;
                 position: absolute;
             }
             div#parent_div{
@@ -35,8 +39,6 @@
                 background: #ffffff;
                 height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ*/
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-            }
-            div#buttons{
             }
             div#buttons div{
                 text-align: center;
@@ -56,20 +58,49 @@
         </style>
         <script src="../js/public.js"></script>
         <script>
+            var うんち=new Image();
+            うんち.src="../images/omocha/tuntunsyuukun/untiking.png";
             //キーボードなど、システムの、あの、アレ、アレさ！
             var key_input="";
             var what_input="";//キーボード同時おしに使う
             var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
             var key_owarasete=0;
+            var idouryou=0;
+            var idou_seigen;
+            var syuukun_size;
+            var cnvs_width;
+            var cnvs_left;
+            var cnvs_top;
 
             onload = function(){
+                var syuukun = document.getElementById('syuukun');//IDを指定して変数にぶち込む
+                var syuukun2 = document.getElementById('syuukun_div2');
                 onload_functions();
+
+
                 const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
                 
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
                     cnvs.style.width=90+"%";
                     cnvs.style.height=cnvs.clientWidth+"px";
+                    syuukun2.style.width=cnvs.clientWidth/5+"px";
+                    syuukun2.style.height=syuukun2.style.width;
                 }
+                idouryou=cnvs.clientWidth/10;
+                syuukun_size=syuukun2.clientWidth;
+                cnvs_width=cnvs.clientWidth;
+                cnvs_left=cnvs.getBoundingClientRect().left;
+                cnvs_top=cnvs.getBoundingClientRect().top;
+                idou_seigen=window.innerWidth-syuukun_size/2;
+                window.addEventListener('resize', function(){//ウィンドウの大きさが変わったことを検知すると…？
+                    cnvs_width=cnvs.clientWidth;
+                    cnvs_left=cnvs.getBoundingClientRect().left;
+                    cnvs_top=cnvs.getBoundingClientRect().top;
+                    syuukun_size=syuukun2.clientWidth;
+                    idou_seigen=window.innerWidth-syuukun_size/2;
+                    idou(0,0);//位置更新
+                });
+                ctx = cnvs.getContext("2d");
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
                 if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
@@ -157,6 +188,15 @@
                 });
                 //--------------------------------------------------------------------------------------------------------
                 setInterval(function(){
+                    ctx.clearRect(0, 0, 80,80);
+                    ctx.beginPath();
+                    ctx.arc((syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8, (window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top)/cnvs_width*80+8, 5, 0 * Math.PI / 180, 360 * Math.PI / 180, false);
+                    ctx.strokeStyle="red";
+                    ctx.lineWidth=1;
+                    ctx.stroke();
+
+                    ctx.drawImage(うんち,40-16,40-16);
+
                     //しゅうくん移動。。
                     if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                         key_interval=10;//100/1000[s]の間、長押しでの連続入力を無効。
@@ -166,10 +206,10 @@
                                 muki(muki_sayuu,1);
                             }else if(key_input.charAt(i)=="←"){
                                 idou(-1,0);
-                                muki(1,muki_jouge);
+                                muki(1,0);//左右に動くときはもう前を向いたほうがかわいいね。かわいい。
                             }else if(key_input.charAt(i)=="→"){
                                 idou(1,0);
-                                muki(0,muki_jouge);
+                                muki(0,0);
                             }else if(key_input.charAt(i)=="↓"){
                                 idou(0,1);
                                 muki(muki_sayuu,0);
@@ -185,28 +225,29 @@
                     }
                 }, 1);//10/1000[s]でくりかえすぞ！-----------------------------------------------------------------------------------------------
                 
-                var syuukun = document.getElementById('syuukun');//IDを指定して変数にぶち込む
                 
-                var syuukun_x=50;
-                var syuukun_y=40;
+                
+                var syuukun_x=cnvs.getBoundingClientRect().left;
+                var syuukun_y=cnvs.getBoundingClientRect().top;
                 var muki_sayuu=0;
                 var muki_jouge=0;
 
                 function idou(dx,dy){
-                    syuukun_x += dx*3;
-                    syuukun_y += dy*3;
-                    if(syuukun_x>100){//これちょっとはみ出るよね
-                        syuukun_x=100;
-                    }else if(syuukun_x<-10){
-                        syuukun_x=-10;
+                    syuukun_x += dx*idouryou;
+                    syuukun_y += dy*idouryou;
+                    if(syuukun_x>idou_seigen){
+                        syuukun_x=idou_seigen;
+                    }else if(syuukun_x<-syuukun_size/2){
+                        syuukun_x=-syuukun_size/2;
                     }
-                    if(syuukun_y<-10){
-                        syuukun_y=-10;
+                    if(syuukun_y<-syuukun_size/2){
+                        syuukun_y=-syuukun_size/2;
                     }
-                    syuukun.style.left = syuukun_x+"vw";
-                    syuukun.style.top = syuukun_y+"vh";
+                    syuukun.style.left = syuukun_x+"px";
+                    syuukun.style.top = syuukun_y+"px";
                 }
-                var syuukun_imgs=syuukun.children;
+                idou(0,0);//位置の初期化
+                var syuukun_imgs=syuukun2.children;
                 function muki(sayuu,jouge){
                     muki_sayuu=sayuu;
                     muki_jouge=jouge;
@@ -222,10 +263,12 @@
     </head>
     <body>
         <div id="syuukun">
-            <img id="mae_migi" src="../images/omocha/tuntunsyuukun/tibisyuukun_mae.png">
-            <img id="mae_hidari" src="../images/omocha/tuntunsyuukun/tibisyuukun_mae.png"  style="transform: scale(-1, 1); display: none;">
-            <img id="ushiro_migi" src="../images/omocha/tuntunsyuukun/tibisyuukun_usiro.png" style="display: none;">
-            <img id="ushiro_hidari" src="../images/omocha/tuntunsyuukun/tibisyuukun_usiro.png" style="transform: scale(-1, 1); display: none;">
+            <div id="syuukun_div2">
+                <img id="mae_migi" src="../images/omocha/tuntunsyuukun/tibisyuukun_mae.png">
+                <img id="mae_hidari" src="../images/omocha/tuntunsyuukun/tibisyuukun_mae.png"  style="transform: scale(-1, 1); display: none;">
+                <img id="ushiro_migi" src="../images/omocha/tuntunsyuukun/tibisyuukun_usiro.png" style="display: none;">
+                <img id="ushiro_hidari" src="../images/omocha/tuntunsyuukun/tibisyuukun_usiro.png" style="transform: scale(-1, 1); display: none;">
+            </div>
         </div>
 
         <div id="top"></div>
@@ -244,7 +287,7 @@
         <div id="mannaka">
 
             <div id="parent_div">
-                <canvas id="cnvs" height="160px" width="160px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                <canvas id="cnvs" height="80px" width="80px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                 </canvas>
             </div>
 
