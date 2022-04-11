@@ -3,43 +3,20 @@
     <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
         <meta charset="UTF-8">
         <!--文字コードは上のほうにないとすべておしまいになるらしい-->
-        <meta name="description" content="技術的なテストをしている">
-        <title>JUN汁ｗおもちゃばこ。/TEST</title>
+        <meta name="description" content="つんつんするしゅうくんはいかにはやくつんつんするかを求めている">                                                                 <!--ページ説明　入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/つんつんしゅうくん</title>                                                         <!--タイトル　入力すること！-->
         <!--OGPとかいうの-->
-        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/TEST">
-        <meta property="og:title" content="テスト用ページ"/>
-        <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
-        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/test/gomibako_for_test"/>
-        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/つんつんしゅうくん">                                <!--タイトル　入力すること！-->
+        <meta property="og:title" content="つんつんしゅうくん">                                                               <!--タイトル　入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/tuntunsyuukun.html">                   <!--リンク　入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
         <meta name="twitter:card" content="summary"><!--なにを表示するか-->
         <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
         <link rel="stylesheet" href="../css/style.css">
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
-            body {
-                background-image:url("../images/site/junjiruw_pro.png"),
-                url("../images/site/junjiruw_pro_rev.png"),
-                linear-gradient(#053a24,80%,#000000);
-                
-                background-size:10% 120%,10% 120%,auto;
-                background-position: -2% 70%, 102% 0%;/*0%で画像の左が画面端。100%で右が画面端*/
-                background-repeat:no-repeat,no-repeat,repeat;
-                background-attachment: fixed,fixed,fixed;
-                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-
-                overflow-x: hidden;/*左右のスクロールバー消そうぜ！*/
-            }
-            div#mannaka{
-                border-image: linear-gradient(rgba(255,255,255,1), rgba(0,30,100,1));/*透明は黒になるっぽいね*/
-                border-image-slice: 1;
-                background:linear-gradient(rgba(22,21,26,1), rgba(22,21,26,0.6));
-            }
-            footer{
-                background:linear-gradient(rgba(4,29,66,0.6), rgba(4,29,66,0));
-            }
-
-
             #syuukun{
                 position: fixed;
                 top:40vh;
@@ -76,9 +53,6 @@
                 background-color: #656965;
                 color: #FFFFFF;
             }
-
-            
-
         </style>
         <script src="../js/public.js"></script>
         <script>
@@ -248,10 +222,10 @@
     </head>
     <body>
         <div id="syuukun">
-            <img id="mae_migi" src="../images/omocha/freedom_syuukun/tibisyuukun_mae.png">
-            <img id="mae_hidari" src="../images/omocha/freedom_syuukun/tibisyuukun_mae.png"  style="transform: scale(-1, 1); display: none;">
-            <img id="ushiro_migi" src="../images/omocha/freedom_syuukun/tibisyuukun_usiro.png" style="display: none;">
-            <img id="ushiro_hidari" src="../images/omocha/freedom_syuukun/tibisyuukun_usiro.png" style="transform: scale(-1, 1); display: none;">
+            <img id="mae_migi" src="../images/omocha/tuntunsyuukun/tibisyuukun_mae.png">
+            <img id="mae_hidari" src="../images/omocha/tuntunsyuukun/tibisyuukun_mae.png"  style="transform: scale(-1, 1); display: none;">
+            <img id="ushiro_migi" src="../images/omocha/tuntunsyuukun/tibisyuukun_usiro.png" style="display: none;">
+            <img id="ushiro_hidari" src="../images/omocha/tuntunsyuukun/tibisyuukun_usiro.png" style="transform: scale(-1, 1); display: none;">
         </div>
 
         <div id="top"></div>
@@ -267,11 +241,8 @@
                 JUN汁ｗおもちゃばこ。
             </h1>
         </header>
-
         <div id="mannaka">
 
-            
-            
             <div id="parent_div">
                 <canvas id="cnvs" height="160px" width="160px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                 </canvas>
@@ -293,7 +264,7 @@
             <footer>
                 <ul id="footul">
                     <li id="foot_tweet_li">
-                        <a href="" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
                             <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
                         </a>
                     </li>
