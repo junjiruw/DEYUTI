@@ -65,13 +65,30 @@
             var what_input="";//キーボード同時おしに使う
             var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
             var key_owarasete=0;
+
             var idouryou=0;
-            var idou_seigen;
+            var idou_seigen_x;
+            var idou_seigen_y;
+            var sokudo_x=0;
+            var sokudo_y=0;
+            
             var syuukun_size;
             var cnvs_width;
             var cnvs_left;
             var cnvs_top;
-
+            var syuukun_cnvs_x;
+            var syuukun_cnvs_y;
+            
+            var iro;
+            var atatta=0;
+            var HP=0;
+            var boga=[];
+            for(let i=0;i<10;i++){//同時になる可能性あがる音は複数作成しておく必要がある見たいっすよ
+                boga[i] = new Audio("../sound/omocha/tuntunsyuukun/boga.wav");
+            }
+            var popopohe=new Audio("../sound/omocha/tuntunsyuukun/popopohe.wav");
+            var tekoretekore=new Audio("../sound/omocha/tuntunsyuukun/tekoretekore.wav");
+            tekoretekore.addEventListener("ended",function(){tekoretekore.play();})
             onload = function(){
                 var syuukun = document.getElementById('syuukun');//IDを指定して変数にぶち込む
                 var syuukun2 = document.getElementById('syuukun_div2');
@@ -91,13 +108,15 @@
                 cnvs_width=cnvs.clientWidth;
                 cnvs_left=cnvs.getBoundingClientRect().left;
                 cnvs_top=cnvs.getBoundingClientRect().top;
-                idou_seigen=window.innerWidth-syuukun_size/2;
+                idou_seigen_x=window.innerWidth-syuukun_size/2;
+                idou_seigen_y=window.innerHeight-syuukun_size/2;
                 window.addEventListener('resize', function(){//ウィンドウの大きさが変わったことを検知すると…？
                     cnvs_width=cnvs.clientWidth;
                     cnvs_left=cnvs.getBoundingClientRect().left;
                     cnvs_top=cnvs.getBoundingClientRect().top;
                     syuukun_size=syuukun2.clientWidth;
-                    idou_seigen=window.innerWidth-syuukun_size/2;
+                    idou_seigen_x=window.innerWidth-syuukun_size/2;
+                    idou_seigen_y=window.innerHeight-syuukun_size/2;
                     idou(0,0);//位置更新
                 });
                 ctx = cnvs.getContext("2d");
@@ -189,13 +208,77 @@
                 //--------------------------------------------------------------------------------------------------------
                 setInterval(function(){
                     ctx.clearRect(0, 0, 80,80);
+                    
+                    /*
                     ctx.beginPath();
-                    ctx.arc((syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8, (window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top)/cnvs_width*80+8, 5, 0 * Math.PI / 180, 360 * Math.PI / 180, false);
+                    ctx.arc(syuukun_cnvs_x, syuukun_cnvs_y+2, 4, 0 * Math.PI / 180, 360 * Math.PI / 180, false);
                     ctx.strokeStyle="red";
                     ctx.lineWidth=1;
                     ctx.stroke();
+                    */
 
+                    syuukun_cnvs_x=(syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8;
+                    syuukun_cnvs_y=(window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top)/cnvs_width*80+8;
+                    
                     ctx.drawImage(うんち,40-16,40-16);
+
+                    
+                    atatta=0;
+                    
+                    for(let i=0;i<8;i++){//しゅうくんの周囲の色を取得して、💩にぶつかってるかを判定します。
+                        iro=ctx.getImageData(syuukun_cnvs_x+Math.floor(Math.cos(i*Math.PI/4)*4),syuukun_cnvs_y+2+Math.floor(Math.sin(i*Math.PI/4)*4), 1, 1).data;//1ピクセル取得,データ見る
+                        if(iro[0]==104 && iro[1]==53 && iro[2]==33){//こげ茶
+                            atatta=1;
+                        }else if(iro[0]==255 && iro[1]==152 && iro[2]==18){//茶色
+                            atatta=1;
+                        }else if(iro[0]==255 && iro[1]==223 && iro[2]==114){//黄色
+                            atatta=1;
+                        }
+                    }
+
+                    if(atatta==1){
+                        if(HP==0){
+                            tekoretekore.play();
+                        }
+                        if(HP<9){
+                        boga[HP].play();
+                        HP+=1;
+                        sokudo_x =-sokudo_x+(syuukun_cnvs_x-40)/Math.sqrt((syuukun_cnvs_x-40)**2+(syuukun_cnvs_y+2-40)**2)/5*(HP**0.5);
+                        sokudo_y =-sokudo_y+(syuukun_cnvs_y+2-40)/Math.sqrt((syuukun_cnvs_x-40)**2+(syuukun_cnvs_y+2-40)**2)/5*(HP**0.5);
+                        idou(sokudo_x*5,sokudo_y*5);
+                        }else if(HP==9){
+                            tekoretekore.pause();
+                            boga[HP].play();
+                            popopohe.play();
+                            HP=999;
+                        }
+
+                        console.log("OK");
+                    }
+                    
+                    idou(sokudo_x,sokudo_y);
+                    if(sokudo_x>0){
+                        sokudo_x -=1/100;
+                        if(sokudo_x<0){
+                            sokudo_x=0;
+                        }
+                    }else if(sokudo_x<0){
+                        sokudo_x +=1/100;
+                        if(sokudo_x>0){
+                            sokudo_x=0;
+                        }
+                    }
+                    if(sokudo_y>0){
+                        sokudo_y -=1/100;
+                        if(sokudo_y<0){
+                            sokudo_y=0;
+                        }
+                    }else if(sokudo_y<0){
+                        sokudo_y +=1/100;
+                        if(sokudo_y>0){
+                            sokudo_y=0;
+                        }
+                    }
 
                     //しゅうくん移動。。
                     if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
@@ -235,13 +318,19 @@
                 function idou(dx,dy){
                     syuukun_x += dx*idouryou;
                     syuukun_y += dy*idouryou;
-                    if(syuukun_x>idou_seigen){
-                        syuukun_x=idou_seigen;
+                    if(syuukun_x>idou_seigen_x){
+                        syuukun_x=idou_seigen_x;
+                        sokudo_x=-1/10;
                     }else if(syuukun_x<-syuukun_size/2){
                         syuukun_x=-syuukun_size/2;
+                        sokudo_x=1/10;
                     }
                     if(syuukun_y<-syuukun_size/2){
                         syuukun_y=-syuukun_size/2;
+                        sokudo_y=1/10;
+                    }else if(syuukun_y>idou_seigen_y){
+                        syuukun_y=idou_seigen_y;
+                        sokudo_y=-1/10;
                     }
                     syuukun.style.left = syuukun_x+"px";
                     syuukun.style.top = syuukun_y+"px";
