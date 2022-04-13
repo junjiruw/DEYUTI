@@ -155,7 +155,7 @@
                     idouryou=cnvs.clientWidth/10;
                     cnvs_width=cnvs.clientWidth;
                     cnvs_left=cnvs.getBoundingClientRect().left;
-                    cnvs_top=cnvs.getBoundingClientRect().top;
+                    //cnvs_top=cnvs.getBoundingClientRect().top; バグの温床
                     syuukun_size=syuukun2.clientWidth;
                     idou_seigen_x=window.innerWidth-syuukun_size/2;
                     idou_seigen_y=window.innerHeight-syuukun_size/2;
@@ -262,7 +262,7 @@
                     ctx.lineWidth=1;
                     ctx.stroke();
                     
-
+                    //console.log(window.scrollY +" "+syuukun.getBoundingClientRect().top+" "+-cnvs_top +" "+-syoki_offset);
                     syuukun_cnvs_x=(syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8;
                     syuukun_cnvs_y=(window.scrollY +syuukun.getBoundingClientRect().top-cnvs_top-syoki_offset)/cnvs_width*80+8;
                     
