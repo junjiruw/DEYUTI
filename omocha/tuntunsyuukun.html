@@ -152,6 +152,7 @@
                 idou_seigen_x=window.innerWidth-syuukun_size/2;
                 idou_seigen_y=window.innerHeight-syuukun_size/2;
                 window.addEventListener('resize', function(){//ウィンドウの大きさが変わったことを検知すると…？
+                    idouryou=cnvs.clientWidth/10;
                     cnvs_width=cnvs.clientWidth;
                     cnvs_left=cnvs.getBoundingClientRect().left;
                     cnvs_top=cnvs.getBoundingClientRect().top;
@@ -254,13 +255,13 @@
                 setInterval(function(){
                     ctx.clearRect(0, 0, 80,80);
                     
-                    /*
+                    
                     ctx.beginPath();
                     ctx.arc(syuukun_cnvs_x, syuukun_cnvs_y+2, 4, 0 * Math.PI / 180, 360 * Math.PI / 180, false);
                     ctx.strokeStyle="red";
                     ctx.lineWidth=1;
                     ctx.stroke();
-                    */
+                    
 
                     syuukun_cnvs_x=(syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8;
                     syuukun_cnvs_y=(window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top-syoki_offset)/cnvs_width*80+8;
@@ -268,7 +269,7 @@
                     ctx.drawImage(うんち,24,24);
                     
                     ctx.fillStyle="rgb(255,0,0)";
-                    ctx.fillText(sec+":"+min_sec, 1, 79);
+                    ctx.fillText(sec+":"+( '00' + min_sec ).slice( -2 ), 1, 79);
                     if(0<HP && HP<10){
                         ctx.drawImage(らいふ,24,5);
                         ctx.fillStyle="rgb(0,255,0)";
@@ -313,14 +314,48 @@
                             HP=999;
 
                             var table_HTML;
-                            table_HTML="<tr><td>2:00</td><td>うんち神</td></tr>";
-                            table_HTML+="<tr style='color:#00FF00'><td>2:00</td><td>💩あなた💩</td></tr>";
-                            table_HTML+="<tr><td>5:00</td><td>うんち王</td></tr>";
-                            table_HTML+="<tr><td>10:00</td><td>うんちプロ</td></tr>";
-                            table_HTML+="<tr><td>20:00</td><td>うんち趣味</td></tr>";
+                            var tweet_text="https://twitter.com/intent/tweet?text=";
+                            if(sec<2){
+                                table_HTML="<tr style='color:#00FF00'><td>"+sec+":"+( '00' + min_sec ).slice( -2 )+"</td><td>💩あなた💩</td></tr>";
+                                table_HTML+="<tr><td>2:00</td><td>うんち神</td></tr>";
+                                table_HTML+="<tr><td>5:00</td><td>うんち王</td></tr>";
+                                table_HTML+="<tr><td>10:00</td><td>うんちプロ</td></tr>";
+                                table_HTML+="<tr><td>20:00</td><td>うんち趣味</td></tr>";
+                                tweet_text+="うんち神";
+                            }else if(sec<5){
+                                table_HTML="<tr><td>2:00</td><td>うんち神</td></tr>";
+                                table_HTML+="<tr style='color:#00FF00'><td>"+sec+":"+( '00' + min_sec ).slice( -2 )+"</td><td>💩あなた💩</td></tr>";
+                                table_HTML+="<tr><td>5:00</td><td>うんち王</td></tr>";
+                                table_HTML+="<tr><td>10:00</td><td>うんちプロ</td></tr>";
+                                table_HTML+="<tr><td>20:00</td><td>うんち趣味</td></tr>";
+                                tweet_text+="うんち王";
+                            }else if(sec<10){
+                                table_HTML="<tr><td>2:00</td><td>うんち神</td></tr>";
+                                table_HTML+="<tr><td>5:00</td><td>うんち王</td></tr>";
+                                table_HTML+="<tr style='color:#00FF00'><td>"+sec+":"+( '00' + min_sec ).slice( -2 )+"</td><td>💩あなた💩</td></tr>";
+                                table_HTML+="<tr><td>10:00</td><td>うんちプロ</td></tr>";
+                                table_HTML+="<tr><td>20:00</td><td>うんち趣味</td></tr>";
+                                tweet_text+="うんちプロ";
+                            }else if(sec<20){
+                                table_HTML="<tr><td>2:00</td><td>うんち神</td></tr>";
+                                table_HTML+="<tr><td>5:00</td><td>うんち王</td></tr>";
+                                table_HTML+="<tr><td>10:00</td><td>うんちプロ</td></tr>";
+                                table_HTML+="<tr style='color:#00FF00'><td>"+sec+":"+( '00' + min_sec ).slice( -2 )+"</td><td>💩あなた💩</td></tr>";
+                                table_HTML+="<tr><td>20:00</td><td>うんち趣味</td></tr>";
+                                tweet_text+="うんち趣味";
+                            }else{
+                                table_HTML="<tr><td>2:00</td><td>うんち神</td></tr>";
+                                table_HTML+="<tr><td>5:00</td><td>うんち王</td></tr>";
+                                table_HTML+="<tr><td>10:00</td><td>うんちプロ</td></tr>";
+                                table_HTML+="<tr><td>20:00</td><td>うんち趣味</td></tr>";
+                                table_HTML+="<tr style='color:#00FF00'><td>"+sec+":"+( '00' + min_sec ).slice( -2 )+"</td><td>💩あなた💩</td></tr>";
+                                tweet_text+="うんち修行中";
+                            }
+                            
                             document.getElementById("table").innerHTML=table_HTML;
+                            
+                            tweet_text+=" TIME "+sec+":"+( '00' + min_sec ).slice( -2 )+"%0A%0A";//%0Aで改行
 
-                            var tweet_text="https://twitter.com/intent/tweet?text=うんちツンツンした！ TIME "+sec+":"+min_sec+"%0A";//%0Aで改行
                             tweet_text+="JUN汁ｗおもちゃばこ。/おもちゃ/つんつんしゅうくん&hashtags=TunTun_syuukun_w&url=https://junjiruw.github.io/DEYUTI/omocha/tuntunsyuukun.html";
                             document.getElementById("tweet_a").href=tweet_text;
                             var END_div=document.getElementById("END");
@@ -479,7 +514,7 @@
                 <p class="reset_p">リロード☟</p>
                 <button class="reset_button" id="reset" onclick="new function(){location.reload();}" style="font-size: 3em;">↻</button>
             </div>
-
+            キーボード    移動:WASD,↑←→↓,KHLJ
             <div id="parent_div">
                 <canvas id="cnvs" height="80px" width="80px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                 </canvas>
