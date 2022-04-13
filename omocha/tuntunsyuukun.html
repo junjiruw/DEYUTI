@@ -248,19 +248,22 @@
                     }
                 });
                 //--------------------------------------------------------------------------------------------------------
+                var syoki_offset=window.pageYOffset;
+
+                
                 setInterval(function(){
                     ctx.clearRect(0, 0, 80,80);
                     
-                    
+                    /*
                     ctx.beginPath();
                     ctx.arc(syuukun_cnvs_x, syuukun_cnvs_y+2, 4, 0 * Math.PI / 180, 360 * Math.PI / 180, false);
                     ctx.strokeStyle="red";
                     ctx.lineWidth=1;
                     ctx.stroke();
-                    
+                    */
 
                     syuukun_cnvs_x=(syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8;
-                    syuukun_cnvs_y=(window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top)/cnvs_width*80+8;
+                    syuukun_cnvs_y=(window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top-syoki_offset)/cnvs_width*80+8;
                     
                     ctx.drawImage(うんち,24,24);
                     
@@ -394,7 +397,7 @@
                 
                 
                 var syuukun_x=cnvs.getBoundingClientRect().left;
-                var syuukun_y=cnvs.getBoundingClientRect().top;
+                var syuukun_y=cnvs.getBoundingClientRect().top+window.pageYOffset ;
                 var muki_sayuu=0;
                 var muki_jouge=0;
 
