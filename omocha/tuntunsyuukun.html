@@ -251,13 +251,13 @@
                 setInterval(function(){
                     ctx.clearRect(0, 0, 80,80);
                     
-                    /*
+                    
                     ctx.beginPath();
                     ctx.arc(syuukun_cnvs_x, syuukun_cnvs_y+2, 4, 0 * Math.PI / 180, 360 * Math.PI / 180, false);
                     ctx.strokeStyle="red";
                     ctx.lineWidth=1;
                     ctx.stroke();
-                    */
+                    
 
                     syuukun_cnvs_x=(syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8;
                     syuukun_cnvs_y=(window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top)/cnvs_width*80+8;
@@ -308,6 +308,15 @@
                             tekoretekore.pause();
                             popopohe.play();
                             HP=999;
+
+                            var table_HTML;
+                            table_HTML="<tr><td>2:00</td><td>うんち神</td></tr>";
+                            table_HTML+="<tr style='color:#00FF00'><td>2:00</td><td>💩あなた💩</td></tr>";
+                            table_HTML+="<tr><td>5:00</td><td>うんち王</td></tr>";
+                            table_HTML+="<tr><td>10:00</td><td>うんちプロ</td></tr>";
+                            table_HTML+="<tr><td>20:00</td><td>うんち趣味</td></tr>";
+                            document.getElementById("table").innerHTML=table_HTML;
+
                             var tweet_text="https://twitter.com/intent/tweet?text=うんちツンツンした！ TIME "+sec+":"+min_sec+"%0A";//%0Aで改行
                             tweet_text+="JUN汁ｗおもちゃばこ。/おもちゃ/つんつんしゅうくん&hashtags=TunTun_syuukun_w&url=https://junjiruw.github.io/DEYUTI/omocha/tuntunsyuukun.html";
                             document.getElementById("tweet_a").href=tweet_text;
@@ -460,9 +469,12 @@
         <div id="mannaka">
             <div id="END">
                 <h2 id="END_h2">うんちツンツン　-完了-</h2>
+                <table id="table" border="1" bordercolor="white" style=" margin: auto;font-size: 2em;">
+
+                </table>
                 <a id="tweet_a"  target="_blank" rel="noopener noreferrer">ツイートでシェアしよう！</a>
                 <p class="reset_p">リロード☟</p>
-                <button class="reset_button" id="reset" onclick="new function(){location.reload();}">↻</button>
+                <button class="reset_button" id="reset" onclick="new function(){location.reload();}" style="font-size: 3em;">↻</button>
             </div>
 
             <div id="parent_div">
