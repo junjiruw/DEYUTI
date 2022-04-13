@@ -249,7 +249,7 @@
                     }
                 });
                 //--------------------------------------------------------------------------------------------------------
-                var syoki_offset=window.pageYOffset;
+                var syoki_offset=window.scrollY;
 
                 
                 setInterval(function(){
@@ -264,7 +264,7 @@
                     
 
                     syuukun_cnvs_x=(syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8;
-                    syuukun_cnvs_y=(window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top-syoki_offset)/cnvs_width*80+8;
+                    syuukun_cnvs_y=(window.scrollY +syuukun.getBoundingClientRect().top-cnvs_top-syoki_offset)/cnvs_width*80+8;
                     
                     ctx.drawImage(うんち,24,24);
                     
