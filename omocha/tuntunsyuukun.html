@@ -17,6 +17,10 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
+            @font-face {
+                font-family: "misaki_gothic";
+                src: url("../font/misaki_gothic_2nd.ttf") format('truetype');
+            }
             #syuukun{
                 position: fixed;
                 top:0vh;/*あとで初期化するね*/
@@ -30,6 +34,34 @@
             #syuukun_div2 img{
                 height: 100%;
                 position: absolute;
+            }
+            div#END{
+                display: none;
+                background:rgba(0,0,0,0.8);
+                z-index: 999;
+                position:absolute;
+                width: 10%;/*absoluteで100%とるとバグるから実際にはjsで大きさとってしまうね。（天才）*/
+                height: 10%;
+                text-align: center;
+            }
+            div#END h2{
+                text-align: center;
+                font-size: 5vw;
+                color: #00FF00;
+                margin: 0;
+            }
+            div#END a{
+                display       : inline-block;         
+                font-size     : 3vw;       
+                text-align    : center;     
+                cursor        : pointer;/*カーソルを☝に*/
+                padding       : 12px; 
+                background    : #80a1e9;
+                color         : #ffffff;     
+                transition    : 0.1s; 
+            }
+            div#END a:hover{
+                font-size     : 5vw;
             }
             div#parent_div{
                 text-align: center;
@@ -60,6 +92,8 @@
         <script>
             var うんち=new Image();
             うんち.src="../images/omocha/tuntunsyuukun/untiking.png";
+            var らいふ=new Image();
+            らいふ.src="../images/omocha/tuntunsyuukun/raihuba-.png";
             //キーボードなど、システムの、あの、アレ、アレさ！
             var key_input="";
             var what_input="";//キーボード同時おしに使う
@@ -82,13 +116,20 @@
             var iro;
             var atatta=0;
             var HP=0;
-            var boga=[];
-            for(let i=0;i<10;i++){//同時になる可能性あがる音は複数作成しておく必要がある見たいっすよ
-                boga[i] = new Audio("../sound/omocha/tuntunsyuukun/boga.wav");
+            var poyo=[];
+            for(let i=0;i<9;i++){//同時になる可能性あがる音は複数作成しておく必要がある見たいっすよ
+                poyo[i] = new Audio("../sound/omocha/tuntunsyuukun/poyo.wav");
             }
+            var big_unti=32;
+
             var popopohe=new Audio("../sound/omocha/tuntunsyuukun/popopohe.wav");
             var tekoretekore=new Audio("../sound/omocha/tuntunsyuukun/tekoretekore.wav");
             tekoretekore.addEventListener("ended",function(){tekoretekore.play();})
+            var peu=new Audio("../sound/omocha/tuntunsyuukun/peu.wav");
+
+            var min_sec=0;
+            var sec=0;
+
             onload = function(){
                 var syuukun = document.getElementById('syuukun');//IDを指定して変数にぶち込む
                 var syuukun2 = document.getElementById('syuukun_div2');
@@ -120,6 +161,7 @@
                     idou(0,0);//位置更新
                 });
                 ctx = cnvs.getContext("2d");
+                ctx.font = "16px 'misaki_gothic' ";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
 
                 var buttons = document.getElementsByClassName("key_button");//ボタン操作
                 if( window.ontouchstart === null ){ // 注：ontouchstartが存在しない時は undefined が返る
@@ -220,9 +262,20 @@
                     syuukun_cnvs_x=(syuukun.getBoundingClientRect().left-cnvs_left)/cnvs_width*80+8;
                     syuukun_cnvs_y=(window.pageYOffset +syuukun.getBoundingClientRect().top-cnvs_top)/cnvs_width*80+8;
                     
-                    ctx.drawImage(うんち,40-16,40-16);
-
+                    ctx.drawImage(うんち,24,24);
                     
+                    ctx.fillStyle="rgb(255,0,0)";
+                    ctx.fillText(sec+":"+min_sec, 1, 79);
+                    if(0<HP && HP<10){
+                        ctx.drawImage(らいふ,24,5);
+                        ctx.fillStyle="rgb(0,255,0)";
+                        ctx.fillRect(27,19,Math.floor(26*(10-HP)/10),4);
+                        min_sec+=1;
+                        if(min_sec==100){
+                            min_sec=0;
+                            sec+=1;
+                        }
+                    }
                     atatta=0;
                     
                     for(let i=0;i<8;i++){//しゅうくんの周囲の色を取得して、💩にぶつかってるかを判定します。
@@ -240,20 +293,37 @@
                         if(HP==0){
                             tekoretekore.play();
                         }
+
                         if(HP<9){
-                        boga[HP].play();
-                        HP+=1;
-                        sokudo_x =-sokudo_x+(syuukun_cnvs_x-40)/Math.sqrt((syuukun_cnvs_x-40)**2+(syuukun_cnvs_y+2-40)**2)/5*(HP**0.5);
-                        sokudo_y =-sokudo_y+(syuukun_cnvs_y+2-40)/Math.sqrt((syuukun_cnvs_x-40)**2+(syuukun_cnvs_y+2-40)**2)/5*(HP**0.5);
-                        idou(sokudo_x*5,sokudo_y*5);
+                            poyo[HP].play();
+                            HP+=1;
+                            sokudo_x =-sokudo_x+(syuukun_cnvs_x-40)/Math.sqrt((syuukun_cnvs_x-40)**2+(syuukun_cnvs_y+2-40)**2)/5*(HP**0.5);
+                            sokudo_y =-sokudo_y+(syuukun_cnvs_y+2-40)/Math.sqrt((syuukun_cnvs_x-40)**2+(syuukun_cnvs_y+2-40)**2)/5*(HP**0.5);
+                            idou(sokudo_x*5,sokudo_y*5);
+                            big_unti=48;
                         }else if(HP==9){
+                            sokudo_x =(syuukun_cnvs_x-40)/Math.sqrt((syuukun_cnvs_x-40)**2+(syuukun_cnvs_y+2-40)**2)/5;
+                            sokudo_y =(syuukun_cnvs_y+2-40)/Math.sqrt((syuukun_cnvs_x-40)**2+(syuukun_cnvs_y+2-40)**2)/5;
+                            idou(sokudo_x*0.05,sokudo_y*0.05);
                             tekoretekore.pause();
-                            boga[HP].play();
                             popopohe.play();
                             HP=999;
+                            var tweet_text="https://twitter.com/intent/tweet?text=うんちツンツンした！ TIME "+sec+":"+min_sec+"%0A";//%0Aで改行
+                            tweet_text+="JUN汁ｗおもちゃばこ。/おもちゃ/つんつんしゅうくん&hashtags=TunTun_syuukun_w&url=https://junjiruw.github.io/DEYUTI/omocha/tuntunsyuukun.html";
+                            document.getElementById("tweet_a").href=tweet_text;
+                            var END_div=document.getElementById("END");
+                            END_div.style.display="inline-block";
+                            END_div.style.width=document.getElementById("mannaka").clientWidth+"px";
+                            END_div.style.height=document.getElementById("mannaka").clientHeight+"px";
                         }
-
-                        console.log("OK");
+                        
+                        
+                    }
+                    if(big_unti>32){
+                        ctx.drawImage(うんち,Math.floor(40-big_unti/2),Math.floor(40-big_unti/2),Math.floor(big_unti),Math.floor(big_unti));
+                        big_unti-=0.5;
+                    }else{
+                        big_unti=32
                     }
                     
                     idou(sokudo_x,sokudo_y);
@@ -287,15 +357,19 @@
                             if(key_input.charAt(i)=="↑"){
                                 idou(0,-1);
                                 muki(muki_sayuu,1);
+                                peu.play();
                             }else if(key_input.charAt(i)=="←"){
                                 idou(-1,0);
                                 muki(1,0);//左右に動くときはもう前を向いたほうがかわいいね。かわいい。
+                                peu.play();
                             }else if(key_input.charAt(i)=="→"){
                                 idou(1,0);
                                 muki(0,0);
+                                peu.play();
                             }else if(key_input.charAt(i)=="↓"){
                                 idou(0,1);
                                 muki(muki_sayuu,0);
+                                peu.play();
                             }else if(key_input.charAt(i)=="〇"){
                             }
                         }
@@ -306,7 +380,7 @@
                     }else if(key_interval>0){
                         key_interval=key_interval-1;//カウントダウン
                     }
-                }, 1);//10/1000[s]でくりかえすぞ！-----------------------------------------------------------------------------------------------
+                }, 1);//1/1000[s]でくりかえすぞ！-----------------------------------------------------------------------------------------------
                 
                 
                 
@@ -345,9 +419,19 @@
                     }
                     syuukun_imgs[muki_sayuu+muki_jouge*2].style.display ="block";
                 }
-
+                
                 
             }
+            var ようずみじゃボケ=0;
+            function oto_demasuyo(){
+                if(ようずみじゃボケ==0){
+                    popopohe.play();
+                    popopohe.pause();
+                    ようずみじゃボケ=1;
+                }
+                
+            }
+
         </script>
     </head>
     <body>
@@ -374,6 +458,12 @@
             </h1>
         </header>
         <div id="mannaka">
+            <div id="END">
+                <h2 id="END_h2">うんちツンツン　-完了-</h2>
+                <a id="tweet_a"  target="_blank" rel="noopener noreferrer">ツイートでシェアしよう！</a>
+                <p class="reset_p">リロード☟</p>
+                <button class="reset_button" id="reset" onclick="new function(){location.reload();}">↻</button>
+            </div>
 
             <div id="parent_div">
                 <canvas id="cnvs" height="80px" width="80px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
@@ -382,14 +472,14 @@
 
             <div id="buttons">
                 <div>
-                    <input type="button" class="key_button" value="↑">
+                    <input type="button" class="key_button" value="↑" onclick="oto_demasuyo()">
                 </div>
                     <div>
-                        <input type="button" class="key_button" value="←">
-                        <input type="button" class="key_button" value="→">
+                        <input type="button" class="key_button" value="←" onclick="oto_demasuyo()">
+                        <input type="button" class="key_button" value="→" onclick="oto_demasuyo()">
                     </div>
                     <div>
-                        <input type="button" class="key_button" value="↓">
+                        <input type="button" class="key_button" value="↓" onclick="oto_demasuyo()">
                     </div>
             </div>
 
