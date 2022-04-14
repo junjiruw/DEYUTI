@@ -106,7 +106,7 @@ a:link { /*アクセスしたことのないリンク*/
     color:#5dccff;
 }
 a:visited { /*アクセスしたことのあるリンク*/
-    color:#1722b8;
+    color:#174fb8;
 }
 a:hover {/*マウスが上に乗っている状態*/
     color:#88ff00;
