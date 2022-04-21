@@ -23,9 +23,6 @@
                 background-color: #ffffff;
                 border-radius: 20%;
             }
-            dl .img32{
-                vertical-align:bottom;
-            }
             dl div{
                 background: #FFFFFF00;
                 padding: 1em;
@@ -33,14 +30,19 @@
                 border-radius:1em;
                 box-shadow:0px 0px 0px 5px #003621 inset,0px 0px 0px 6px #ffffff inset;
             }
-            dl dd{
-                margin-top: 1em;
-            }
             dt a{
                 background: #ffffff00;
                 padding: 0.2em;
                 border-radius:0.5em;
                 border: 1px solid #FFF;
+                display: inline-block;
+            }
+            dt .img32{
+                vertical-align:bottom;
+                margin-top: 0.3em;
+            }
+            dd{
+                margin-top: 1em;
             }
         </style>
         <script src="../js/public.js"></script>
@@ -71,11 +73,7 @@
             <p>
                 ここではユーザーが遊べるおもちゃへのリンクがあるよ！まだ少ないけどね。
             </p>
-            <div style="text-align: right;">
-                <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"> PCで遊べます。<br>
-                <img class="img32" src="../images/omocha/omocha_top/sumaho32.png"> スマホで遊べます。<br>
-                <small>…PCもスマホも俺の持ってるやつでしかテストしてないけど</small>
-            </div>
+            
             
             
             <dl id="pages_ul" >
@@ -119,7 +117,11 @@
                 </div>
             
             </dl>
-
+            <div style="text-align: right;">
+                <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"> PCで遊べます。<br>
+                <img class="img32" src="../images/omocha/omocha_top/sumaho32.png"> スマホで遊べます。<br>
+                <small>…PCもスマホも俺の持ってるやつでしかテストしてないけど</small>
+            </div>
             <footer>
                 <ul id="footul">
                     <li id="foot_tweet_li">
