@@ -74,63 +74,159 @@
             test.src="../images/omocha/syuukun_card/200130.png";
             var yamahuda=new Image();
             yamahuda.src="../images/omocha/syuukun_card/yamahuda.png";
+            var hakaba=new Image();
+            hakaba.src="../images/omocha/syuukun_card/hakaba64.png";
+            var card_basyo=new Image();
+            card_basyo.src="../images/omocha/syuukun_card/card_basyo.png";
+            var yubi=new Image();
+            yubi.src="../images/omocha/syuukun_card/ka-soru64.png";//嘘。拡大したから128
+            //カード定義 effectを使うときはeffect()
+            var test_card={name:"テストカード",image:test,ATK:0,HP:0,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！"};
+            var test_card2={name:"テストカード2",image:test,ATK:0,HP:0,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！"};
+            //ここにゲームパラメータを置くとイイネ。
+            var my_deck=[];
+            for(let i=0;i<40;i++){
+                my_deck[i]={card:test_card,ATK:0,HP:0,state:[],position:"my_yamahuda"};
+            }
+            var teki_deck=[];
+            for(let i=0;i<40;i++){
+                teki_deck[i]={card:test_card,ATK:0,HP:0,state:[],position:"teki_yamahuda"};
+            }
+            var my_tehuda=[];
+            for(let i=0;i<5;i++){
+                my_tehuda[i]=my_deck[i];
+                my_tehuda[i].position="my_tehuda_"+i;
+            }
+            var my_ba=["","","","",""];
+            for(let i=0;i<5;i++){
+                my_ba[i]=my_deck[i+5];
+                my_ba[i].position="my_ba_"+i;
+            }
+            var my_ba_num=5;
+            var teki_ba=["","","","",""];
+            for(let i=0;i<2;i++){
+                teki_ba[i]=teki_deck[i];
+                teki_ba[i].position="teki_ba_"+i;
+            }
+            var teki_ba_num=5;
             //キーボードなど、システムの、あの、アレ、アレさ！
             var key_input="";
             var what_input="";//キーボード同時おしに使う
             var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
             var key_owarasete=0;
-
+            var carsor=0;
 
             onload = function(){
                 onload_functions();
                 const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
-                ctx = cnvs.getContext("2d");
+                const ctx = cnvs.getContext("2d");
+                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
 
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
                     cnvs.style.width=100+"%";
                     cnvs.style.height=cnvs.clientWidth+"px";
                 }
-                ctx.save();
 
-                ctx.fillStyle="rgb(130,255,170)";
-                ctx.fillRect(0,0,1000,1000);
+                function card_waku_kaku(hidariue_x,hidariue_y){
+                    ctx.fillStyle="rgb(255,255,255)";
+                    ctx.fillRect(hidariue_x+1,hidariue_y+1,128,198);
+                }
 
-                ctx.rotate(90 * Math.PI / 180);
-                ctx.drawImage(test,105,-205);
-                ctx.drawImage(test,240,-215);
-                ctx.drawImage(test,375,-225);
-                ctx.drawImage(test,510,-215);
-                ctx.drawImage(test,645,-205);
-                ctx.restore();
-                ctx.save();
-                ctx.rotate(270 * Math.PI / 180);
-                ctx.drawImage(test,-235,795);
-                ctx.drawImage(test,-370,785);
-                ctx.drawImage(test,-505,775);
-                ctx.drawImage(test,-640,785);
-                ctx.drawImage(test,-775,795);
-                ctx.restore();
+                setInterval(function(){//1秒にn回動くぞ！
+                    ctx.fillStyle="rgb(130,255,170)";
+                    ctx.fillRect(0,0,1000,1000);
+                    ctx.drawImage(card_basyo,0,0);
 
-                ctx.fillStyle="rgb(0,0,0)";
-                ctx.fillRect(5,5,990,90);
-                ctx.fillStyle="rgb(255,255,255)";
-                ctx.fillRect(10,10,980,80);
-                ctx.drawImage(yamahuda,10,20);
-                ctx.drawImage(yamahuda,926,20);
+                    if(my_ba_num=!0){//ここで自分のフィールドにカードを並べる
+                        ctx.save();
+                        ctx.rotate(90 * Math.PI / 180);
+                        for(let i=0;i<my_ba.length;i++){
+                            if(my_ba[i].position=="my_ba_0"){
+                                ctx.drawImage(my_ba[i].card.image,105,-205);
+                            }else if(my_ba[i].position=="my_ba_1"){
+                                ctx.drawImage(my_ba[i].card.image,240,-215);
+                            }else if(my_ba[i].position=="my_ba_2"){
+                                ctx.drawImage(my_ba[i].card.image,375,-225);
+                            }else if(my_ba[i].position=="my_ba_3"){
+                                ctx.drawImage(my_ba[i].card.image,510,-215);
+                            }else if(my_ba[i].position=="my_ba_4"){   
+                                ctx.drawImage(my_ba[i].card.image,645,-205);
+                            }
+                        }
+                        ctx.restore();
+                    }
+                    
 
-                ctx.fillStyle="rgb(0,0,0)";
-                ctx.fillRect(5,785,990,210);
-                ctx.fillStyle="rgb(255,255,255)";
-                ctx.fillRect(10,790,980,200);
-                ctx.rotate(10 * Math.PI / 180);
-                ctx.drawImage(test,50*Math.cos(10 * Math.PI / 180)+780*Math.sin(10 * Math.PI / 180),780*Math.cos(10 * Math.PI / 180)-50*Math.sin(10 * Math.PI / 180));
-                ctx.rotate(5 * Math.PI / 180);
-                ctx.drawImage(test,200*Math.cos(15 * Math.PI / 180)+780*Math.sin(15 * Math.PI / 180),780*Math.cos(15 * Math.PI / 180)-200*Math.sin(15 * Math.PI / 180));
-                ctx.rotate(5 * Math.PI / 180);
-                ctx.drawImage(test,350*Math.cos(20 * Math.PI / 180)+780*Math.sin(20 * Math.PI / 180),780*Math.cos(20 * Math.PI / 180)-350*Math.sin(20 * Math.PI / 180));
-                ctx.rotate(5 * Math.PI / 180);
-                ctx.drawImage(test,510*Math.cos(25 * Math.PI / 180)+780*Math.sin(25 * Math.PI / 180),780*Math.cos(25 * Math.PI / 180)-510*Math.sin(25 * Math.PI / 180));
+                    if(teki_ba_num=!0){//ここで敵のフィールドにカードを並べる
+                        ctx.save();
+                        ctx.rotate(270 * Math.PI / 180);
+                        for(let i=0;i<teki_ba.length;i++){
+                            if(teki_ba[i].position=="teki_ba_0"){
+                                ctx.drawImage(teki_ba[i].card.image,-235,795);
+                            }else if(teki_ba[i].position=="teki_ba_1"){
+                                ctx.drawImage(teki_ba[i].card.image,-370,785);
+                            }else if(teki_ba[i].position=="teki_ba_2"){
+                                ctx.drawImage(teki_ba[i].card.image,-505,775);
+                            }else if(teki_ba[i].position=="teki_ba_3"){
+                                ctx.drawImage(teki_ba[i].card.image,-640,785);
+                            }else if(teki_ba[i].position=="teki_ba_4"){
+                                ctx.drawImage(teki_ba[i].card.image,-775,795);
+                            }
+                            
+                        }
+                        ctx.restore();
+                    }
+                    
+
+                    ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
+                    ctx.fillRect(5,5,490,90);
+                    ctx.fillRect(505,5,490,90);
+                    ctx.fillStyle="rgb(255,255,255)";
+                    ctx.fillRect(10,10,480,80);
+                    ctx.fillRect(510,10,480,80);
+                    ctx.fillStyle="rgb(150,200,255)";
+                    ctx.fillRect(288,12,200,76);
+                    ctx.fillRect(788,12,200,76);
+                    ctx.fillStyle="rgb(0,0,0)";
+                    ctx.drawImage(yamahuda,10,20);
+                    ctx.fillText("40", 74, 70);
+                    ctx.drawImage(yamahuda,510,20);
+                    ctx.fillText("40", 574, 70);
+                    ctx.drawImage(hakaba,174,20);
+                    ctx.fillText("0", 238, 70);
+                    ctx.drawImage(hakaba,674,20);
+                    ctx.fillText("0", 738, 70);
+
+                    ctx.save();//ここから手札
+                    ctx.fillStyle="rgb(0,0,0)";
+                    ctx.fillRect(5,785,990,210);
+                    ctx.fillStyle="rgb(255,255,255)";
+                    ctx.fillRect(10,790,980,200);
+                    
+                    tehuda_maisuu=my_tehuda.length;
+                    if(tehuda_maisuu<7){
+                        card_kankaku=130;
+                    }else{
+                        card_kankaku=850/tehuda_maisuu;
+                    }
+                    
+                    
+                    kakudo=25/tehuda_maisuu;
+                    
+                    ctx.rotate(10 * Math.PI / 180);
+                    ctx.drawImage(test,50*Math.cos(10 * Math.PI / 180)+780*Math.sin(10 * Math.PI / 180),780*Math.cos(10 * Math.PI / 180)-50*Math.sin(10 * Math.PI / 180));
+                    for (let i=1;i<tehuda_maisuu;i++){
+                        ctx.rotate(kakudo * Math.PI / 180);
+                        card_waku_kaku((50+card_kankaku*i)*Math.cos((10+i*kakudo) * Math.PI / 180)+780*Math.sin((10+i*kakudo) * Math.PI / 180),780*Math.cos((10+i*kakudo) * Math.PI / 180)-(50+card_kankaku*i)*Math.sin((10+i*kakudo) * Math.PI / 180));
+                        ctx.drawImage(test,(50+card_kankaku*i)*Math.cos((10+i*kakudo) * Math.PI / 180)+780*Math.sin((10+i*kakudo) * Math.PI / 180),780*Math.cos((10+i*kakudo) * Math.PI / 180)-(50+card_kankaku*i)*Math.sin((10+i*kakudo) * Math.PI / 180));
+                    }
+                    ctx.restore();
+                    
+                    ctx.drawImage(yubi,500,500);
+                },30);//30/1000[s]でくりかえすぞ！
+                
             }
+            
         </script>
     </head>
     <body>
