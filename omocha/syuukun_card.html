@@ -396,10 +396,13 @@
                                 }else if(key_input.charAt(i)=="〇"){
                                     if(carsor_phase=="自由"){
                                         if(carsor>=6 && carsor<=10 && my_ba[carsor-6]!=""){
-                                            carsor_phase="攻撃";
-                                            atk_card=my_ba[carsor-6];//こちらの攻撃カード
                                             
-                                            carsor=13;//ここ、敵がいない場合は山札にカーソル合わせてほしいな
+                                            atk_card=my_ba[carsor-6];//こちらの攻撃カード
+                                            if(atk_card.can_ATK==1){
+                                                carsor_phase="攻撃";
+                                                carsor=13;//ここ、敵がいない場合は山札にカーソル合わせてほしいな
+                                            }
+                                            
 
                                         }else if(carsor>=16 && my_tehuda.length!=0){
                                             if(my_tehuda[carsor-16].state.indexOf("monster")!=-1){//手札にあったモンスターカードを選んだな！
