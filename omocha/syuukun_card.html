@@ -92,39 +92,33 @@
             var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！"};
             var test_card2={name:"テストカード2",image:test_syuukun,ATK:2,HP:3,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん"};
             //ここにゲームパラメータを置くとイイネ。
+            var deck_list=[[test_card,38],[test_card2,2]];
             var my_deck=[];
-            for(let i=0;i<40;i++){
-                my_deck[i]={card:test_card,ATK:1,HP:1,state:[],position:"my_yamahuda",can_ATK:0};
-            }
-            my_deck[5].card=test_card2;
-            my_deck[5].HP=test_card2.ATK;
-            my_deck[5].ATK=test_card2.HP;
+                //my_deck[i]={card:test_card,ATK:1,HP:1,state:[],position:"my_yamahuda",can_ATK:0};
             var teki_deck=[];
             for(let i=0;i<40;i++){
                 teki_deck[i]={card:test_card,ATK:1,HP:1,state:[],position:"teki_yamahuda",can_ATK:0};
             }
             teki_deck[0].card=test_card2;
-            teki_deck[0].HP=test_card2.ATK;
-            teki_deck[0].ATK=test_card2.HP;
+            teki_deck[0].HP=test_card2.HP;
+            teki_deck[0].ATK=test_card2.ATK;
+            var my_yamahuda=[];
+            var teki_yamahuda=[];
             var my_tehuda=[];
-            for(let i=0;i<4;i++){
-                my_tehuda[i]=my_deck[i];
-                my_tehuda[i].position="my_tehuda_"+i;
-            }
             var my_ba=["","","","",""];
-            for(let i=0;i<5;i++){
+            /*
                 my_ba[i]=my_deck[i+5];
                 my_ba[i].position="my_ba_"+i;
                 my_ba[i].can_ATK=1;
-            }
-            var my_ba_num=5;//こいつ絶対設定わすれるゾ
+            */
+
             var teki_ba=["","","","",""];
+
             for(let i=0;i<2;i++){
                 teki_ba[i]=teki_deck[i];
                 teki_ba[i].position="teki_ba_"+i;
                 teki_ba[i].can_ATK=1;
             }
-            var teki_ba_num=5;//こいつ絶対設定わすれるゾ
             var my_haka=[];
             var teki_haka=[];
             //キーボードなど、システムの、あの、アレ、アレさ！
@@ -137,6 +131,7 @@
             var carsor_phase="自由";
             var atk_card;
             var def_card;
+            var tukau_card_num;
 
             var time=0;
 
@@ -265,8 +260,52 @@
                     shi_card.state=shi_card.card.state;//回復
                     shi_card.can_ATK=0;//攻撃不可
                     haka.push(shi_card);//GO墓場
-                    shi_card="";//場から除去
+                    
+                    return "";//場から除去するためにこいつをba_i[n]に代入しておいてくれ。
+                    
                 }
+                function deck_initialize(list,deck,yamahuda){
+                    //my_deck[i]={card:test_card,ATK:1,HP:1,state:[],position:"my_yamahuda",can_ATK:0};
+                    var doko_position;
+                    if(deck==my_deck){
+                        doko_position="my_yamahuda";//自デッキの初期化なら自分の山札に入れてね
+                    }else{
+                        doko_position="teki_yamahuda";//敵だね。
+                    }
+                    var nani_card;
+                    var imano_num;
+                    imano_num=0;
+                    for(let i=0;i<list.length;i++){
+                        nani_card=list[i][0];//このカードn枚山札に入れるぜ！
+                        for(let j=0;j<list[i][1];j++){
+                            deck[imano_num]={card:nani_card};//ここだけ描き方が違うのはな、しかたないんやなって
+                            deck[imano_num].ATK=nani_card.ATK;
+                            deck[imano_num].HP=nani_card.HP;
+                            deck[imano_num].state=nani_card.state;
+                            deck[imano_num].position=doko_position;
+                            deck[imano_num].can_ATK=0;//これは攻撃可能かどうかを意味するぞ！山札から攻撃しないでくれよな！（いや、できるやつがいずれでるかもしれんが）
+                            yamahuda[imano_num]=deck[imano_num];//とりあえず全部山札にぶちこんでやるぜ～！
+                            imano_num+=1;
+                        }
+                    }
+                    //ここでシャッフルすべきよ！そうだわ！
+                }
+                function draw_card(yamahuda,tehuda,maisuu){
+                    var doko_position;
+                    if(yamahuda==my_yamahuda){
+                        doko_position="my_tehuda_";//自デッキの初期化なら自分の山札に入れてね
+                    }else{//敵だね。
+                    }
+                    for(let i=0;i<maisuu;i++){
+                        tehuda[tehuda.length]=yamahuda[yamahuda.length-1];
+                        tehuda[tehuda.length-1].position=doko_position+(tehuda.length-1+i);
+                        yamahuda.splice(-1,1);//ドローしたので山札減ります。
+                    }
+                    
+                }
+                deck_initialize(deck_list,my_deck,my_yamahuda);
+
+                draw_card(my_yamahuda,my_tehuda,5);
                 //--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
                     time+=1;
@@ -289,13 +328,17 @@
                                             carsor=10;
                                         }
                                     }else if(carsor_phase=="攻撃"){
-                                        if(carsor!=3){
+                                        if(carsor!=3){//山札への攻撃じゃないなら
                                             carsor-=1;
                                             if(carsor<=10){
                                                 carsor=15;
                                             }
                                         }
-                                        
+                                    }else if(carsor_phase=="召喚"){
+                                        carsor-=1;
+                                        if(carsor<=5){
+                                            carsor=10;
+                                        }
                                     }
                                     
                                 }else if(key_input.charAt(i)=="←"){
@@ -337,11 +380,16 @@
                                             carsor+=1;
                                         }
                                     }else if(carsor_phase=="攻撃"){
-                                        if(carsor!=3){
+                                        if(carsor!=3){//山札への攻撃じゃないなら
                                             carsor+=1;
                                             if(carsor>=16){
                                                 carsor=11;
                                             }
+                                        }
+                                    }else if(carsor_phase=="召喚"){
+                                        carsor+=1;
+                                        if(carsor>=11){
+                                            carsor=6;
                                         }
                                     }
                                     
@@ -349,18 +397,38 @@
                                     if(carsor_phase=="自由"){
                                         if(carsor>=6 && carsor<=10 && my_ba[carsor-6]!=""){
                                             carsor_phase="攻撃";
-                                            atk_card=my_ba[carsor-6];
-                                            carsor=13;
+                                            atk_card=my_ba[carsor-6];//こちらの攻撃カード
+                                            
+                                            carsor=13;//ここ、敵がいない場合は山札にカーソル合わせてほしいな
+
+                                        }else if(carsor>=16 && my_tehuda.length!=0){
+                                            if(my_tehuda[carsor-16].state.indexOf("monster")!=-1){//手札にあったモンスターカードを選んだな！
+                                                tukau_card_num=carsor-16;
+
+                                                carsor_phase="召喚";//いや、場が埋まってたらどうすんのさ！
+                                                carsor=8;
+                                            }
                                         }
                                     }else if(carsor_phase=="攻撃"){
                                         if(teki_ba[carsor-11]!=""){
                                             def_card=teki_ba[carsor-11];
                                             def_card.HP-=atk_card.ATK;
-                                            if(def_card.HP<=0){
-                                                death_card(def_card,teki_haka);
+                                            if(def_card.HP<=0){//倒した～
+                                                teki_ba[carsor-11]=death_card(def_card,teki_haka);
+                                                //teki_ba[carsor-11]="";になるよん
+                                                //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
                                             }
                                             atk_card.can_ATK=0;
-                                            carsor=7;
+                                            carsor=8;
+                                            carsor_phase="自由";
+                                        }
+                                    }else if(carsor_phase=="召喚"){
+                                        //生贄召喚とかほしいね、知らん。
+                                        if(my_ba[carsor-6]==""){//あいてるじゃ～ん
+                                            my_ba[carsor-6]=my_tehuda[tukau_card_num];
+                                            my_ba[carsor-6].position="my_ba_"+(carsor-6);
+                                            my_ba[carsor-6].can_ATK=1;
+                                            my_tehuda.splice(tukau_card_num,1);
                                             carsor_phase="自由";
                                         }
                                         
@@ -371,7 +439,10 @@
                                         
                                     }else if(carsor_phase=="攻撃"){
                                         carsor_phase="自由";
-                                        carsor=7;
+                                        carsor=8;
+                                    }else if(carsor_phase=="召喚"){
+                                        carsor_phase="自由";
+                                        carsor=16;
                                     }
                                 }
                             }
@@ -388,45 +459,45 @@
                     ctx.fillRect(0,0,1000,1000);
                     ctx.drawImage(card_basyo,0,0);
 
-                    if(my_ba_num=!0){//ここで自分のフィールドにカードを並べる
-                        ctx.save();
-                        ctx.rotate(90 * Math.PI / 180);
-                        for(let i=0;i<my_ba.length;i++){
-                            if(my_ba[i].position=="my_ba_0"){
-                                card_draw(my_ba[i],105,-205);
-                            }else if(my_ba[i].position=="my_ba_1"){
-                                card_draw(my_ba[i],240,-215);
-                            }else if(my_ba[i].position=="my_ba_2"){
-                                card_draw(my_ba[i],375,-225);
-                            }else if(my_ba[i].position=="my_ba_3"){
-                                card_draw(my_ba[i],510,-215);
-                            }else if(my_ba[i].position=="my_ba_4"){   
-                                card_draw(my_ba[i],645,-205);
-                            }
+                    //ここで自分のフィールドにカードを並べる
+                    ctx.save();
+                    ctx.rotate(90 * Math.PI / 180);
+                    for(let i=0;i<my_ba.length;i++){
+                        if(my_ba[i].position=="my_ba_0"){
+                            card_draw(my_ba[i],105,-205);
+                        }else if(my_ba[i].position=="my_ba_1"){
+                            card_draw(my_ba[i],240,-215);
+                        }else if(my_ba[i].position=="my_ba_2"){
+                            card_draw(my_ba[i],375,-225);
+                        }else if(my_ba[i].position=="my_ba_3"){
+                            card_draw(my_ba[i],510,-215);
+                        }else if(my_ba[i].position=="my_ba_4"){   
+                            card_draw(my_ba[i],645,-205);
                         }
-                        ctx.restore();
                     }
+                    ctx.restore();
+                    
                     
 
-                    if(teki_ba_num=!0){//ここで敵のフィールドにカードを並べる
-                        ctx.save();
-                        ctx.rotate(270 * Math.PI / 180);
-                        for(let i=0;i<teki_ba.length;i++){
-                            if(teki_ba[i].position=="teki_ba_0"){
-                                card_draw(teki_ba[i],-235,795);
-                            }else if(teki_ba[i].position=="teki_ba_1"){
-                                card_draw(teki_ba[i],-370,785);
-                            }else if(teki_ba[i].position=="teki_ba_2"){
-                                card_draw(teki_ba[i],-505,775);
-                            }else if(teki_ba[i].position=="teki_ba_3"){
-                                card_draw(teki_ba[i],-640,785);
-                            }else if(teki_ba[i].position=="teki_ba_4"){
-                                card_draw(teki_ba[i],-775,795);
-                            }
-                            
+                    //ここで敵のフィールドにカードを並べる
+                    ctx.save();
+                    ctx.rotate(270 * Math.PI / 180);
+                    for(let i=0;i<teki_ba.length;i++){
+                        if(teki_ba[i].position=="teki_ba_0"){
+                            card_draw(teki_ba[i],-235,795);
+                        }else if(teki_ba[i].position=="teki_ba_1"){
+                            card_draw(teki_ba[i],-370,785);
+                        }else if(teki_ba[i].position=="teki_ba_2"){
+                            card_draw(teki_ba[i],-505,775);
+                        }else if(teki_ba[i].position=="teki_ba_3"){
+                            card_draw(teki_ba[i],-640,785);
+                        }else if(teki_ba[i].position=="teki_ba_4"){
+                            card_draw(teki_ba[i],-775,795);
                         }
-                        ctx.restore();
+                        
                     }
+                    ctx.restore();
+                    
                     
 
                     ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
@@ -441,9 +512,9 @@
                     ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                     ctx.fillStyle="rgb(0,0,0)";
                     ctx.drawImage(yamahuda,10,20);
-                    ctx.fillText("40", 74, 70);
+                    ctx.fillText(my_yamahuda.length, 74, 70);
                     ctx.drawImage(yamahuda,510,20);
-                    ctx.fillText("40", 574, 70);
+                    ctx.fillText(teki_yamahuda.length, 574, 70);
                     ctx.drawImage(hakaba,174,20);
                     ctx.fillText(my_haka.length, 238, 70);
                     ctx.drawImage(hakaba,674,20);
