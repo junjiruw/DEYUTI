@@ -74,6 +74,8 @@
             test.src="../images/omocha/syuukun_card/200130.png";
             var test_syuukun=new Image();
             test_syuukun.src="../images/omocha/syuukun_card/test_syuukun200130.png";
+            var turn_end=new Image();
+            turn_end.src="../images/omocha/syuukun_card/ta-nendman.png";
             var yamahuda=new Image();
             yamahuda.src="../images/omocha/syuukun_card/yamahuda.png";
             var hakaba=new Image();
@@ -117,7 +119,7 @@
             var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
             var key_owarasete=0;
 
-            var carsor=0;
+            var carsor=16;
             var carsor_phase="自由";
             var atk_card;
             var def_card;
@@ -335,7 +337,7 @@
                                 if(key_input.charAt(i)=="↑"){
                                     if(carsor_phase=="自由"){
                                         if(carsor==6){
-                                            carsor=0;
+                                            carsor=-1;
                                         }else if(carsor==11){
                                             carsor=5;
                                         }else if(carsor>=7 && carsor<=15){
@@ -359,7 +361,8 @@
                                     
                                 }else if(key_input.charAt(i)=="←"){
                                     if(carsor_phase=="自由"){
-                                        if(carsor==0){
+                                        if(carsor==-1){
+                                            carsor=5;
                                         }else if(carsor<=5){ 
                                         carsor-=1;
                                         }else if(carsor>=11 && carsor<=15){
@@ -374,7 +377,7 @@
                                         if(carsor<=4){
                                             carsor+=1;
                                         }else if(carsor==5){
-                                            
+                                            carsor=-1;
                                         }else if(carsor>=6 && carsor<=10){
                                             carsor+=5;
                                         }else if(carsor>=16 && carsor<=(my_tehuda.length+14)){
@@ -411,7 +414,9 @@
                                     
                                 }else if(key_input.charAt(i)=="〇"){
                                     if(carsor_phase=="自由"){
-                                        if(carsor>=6 && carsor<=10 && my_ba[carsor-6]!=""){
+                                        if(carsor==-1){
+
+                                        }else if(carsor>=6 && carsor<=10 && my_ba[carsor-6]!=""){
                                             
                                             atk_card=my_ba[carsor-6];//こちらの攻撃カード
                                             if(atk_card.can_ATK>=1){
@@ -532,24 +537,25 @@
                     
 
                     ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
-                    ctx.fillRect(5,5,490,90);
-                    ctx.fillRect(505,5,490,90);
+                    ctx.fillRect(105,5,440,90);
+                    ctx.fillRect(555,5,440,90);
                     ctx.fillStyle="rgb(255,255,255)";
-                    ctx.fillRect(10,10,480,80);
-                    ctx.fillRect(510,10,480,80);
+                    ctx.fillRect(110,10,430,80);
+                    ctx.fillRect(560,10,430,80);
                     ctx.fillStyle="rgb(150,200,255)";
-                    ctx.fillRect(288,12,200,76);
-                    ctx.fillRect(788,12,200,76);
+                    ctx.fillRect(388,12,150,76);
+                    ctx.fillRect(838,12,150,76);
                     ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                     ctx.fillStyle="rgb(0,0,0)";
-                    ctx.drawImage(yamahuda,10,20);
-                    ctx.fillText(my_yamahuda.length, 74, 70);
-                    ctx.drawImage(yamahuda,510,20);
-                    ctx.fillText(teki_yamahuda.length, 574, 70);
-                    ctx.drawImage(hakaba,174,20);
-                    ctx.fillText(my_haka.length, 238, 70);
-                    ctx.drawImage(hakaba,674,20);
-                    ctx.fillText(teki_haka.length, 738, 70);
+                    ctx.drawImage(turn_end,5,5);
+                    ctx.drawImage(yamahuda,110,20);
+                    ctx.fillText(my_yamahuda.length, 174, 70);
+                    ctx.drawImage(yamahuda,560,20);
+                    ctx.fillText(teki_yamahuda.length, 624, 70);
+                    ctx.drawImage(hakaba,274,20);
+                    ctx.fillText(my_haka.length, 338, 70);
+                    ctx.drawImage(hakaba,724,20);
+                    ctx.fillText(teki_haka.length, 788, 70);
 
                     ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                     ctx.fillStyle="rgb(0,0,0)";
@@ -579,13 +585,14 @@
                     
                     
                     //カーソル表示…
-                    if(carsor==0){  ctx.drawImage(yubi,10,80+4*Math.sin(time*Math.PI/8)); //左上
-                    }else if(carsor==1){    ctx.drawImage(yubi,160,80+4*Math.sin(time*Math.PI/8));
-                    }else if(carsor==2){    ctx.drawImage(yubi,300,80+4*Math.sin(time*Math.PI/8));
+                    if(carsor==-1){  ctx.drawImage(yubi,-10,80+4*Math.sin(time*Math.PI/8)); //左上 なんで-1から始まってるの？　それはね、設計ミスさ！
+                    }else if(carsor==0){  ctx.drawImage(yubi,110,80+4*Math.sin(time*Math.PI/8)); 
+                    }else if(carsor==1){    ctx.drawImage(yubi,260,80+4*Math.sin(time*Math.PI/8));
+                    }else if(carsor==2){    ctx.drawImage(yubi,400,80+4*Math.sin(time*Math.PI/8));
 
-                    }else if(carsor==3){ ctx.drawImage(yubi,510,80+4*Math.sin(time*Math.PI/8));//右上
-                    }else if(carsor==4){ctx.drawImage(yubi,660,80+4*Math.sin(time*Math.PI/8));
-                    }else if(carsor==5){ctx.drawImage(yubi,800,80+4*Math.sin(time*Math.PI/8));
+                    }else if(carsor==3){ ctx.drawImage(yubi,560,80+4*Math.sin(time*Math.PI/8));//右上
+                    }else if(carsor==4){ctx.drawImage(yubi,710,80+4*Math.sin(time*Math.PI/8));
+                    }else if(carsor==5){ctx.drawImage(yubi,850,80+4*Math.sin(time*Math.PI/8));
 
 
                     }else if(carsor==6){//左場
@@ -672,7 +679,11 @@
 
         <div id="mannaka">
 
-            
+            <table border="5" bordercolor="#ffffff" align="center">
+                <tr>
+                    <td> キーボード</td> <td bgcolor="#005000">移動 : WASD,↑←→↓,KHLJ</td> <td bgcolor="#500000">〇 : Enter</td> <td bgcolor="#000050">× : Shift</td>
+                </tr>
+            </table> 
             
             <div id="parent_div">
                 <canvas id="cnvs" height="1000px" width="1000px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
@@ -697,9 +708,7 @@
                     <input type="button" class="key_button" value="×">
                 </div>
             </div>
-            <p>
-                キーボード    移動:WASD,↑←→↓,KHLJ    〇:Enter, ×:Shift
-            </p> 
+            
 
             <footer>
                 <ul id="footul">
