@@ -302,6 +302,9 @@
                     //ここでシャッフルすべきよ！そうだわ！
                 }
                 function pull_card(yamahuda,tehuda=undefined,maisuu){
+                    if(yamahuda.length<maisuu){
+                        maisuu=yamahuda.length;//山札にカードがないのに引くんじゃない
+                    }
                     if(yamahuda==my_yamahuda){//自デッキの初期化なら自分の山札に入れてね
                         for(let i=0;i<maisuu;i++){
                             tehuda[tehuda.length]=yamahuda[yamahuda.length-1];
@@ -463,7 +466,14 @@
                                             if(ba_mons_num(teki_ba)==0){
                                                 cursor=3;//敵がいない場合は山札にカーソル合わせてほしいな
                                             }else{
-                                                cursor=13;
+                                                cursor=11;
+                                                for(let i=0;i<4;i++){//敵がいるところにカーソル合わせようぜ。
+                                                    if(teki_ba[cursor-11]==""){
+                                                        cursor+=1;
+                                                    }else{
+                                                        break;
+                                                    }
+                                                }
                                             }
                                             
                                         }
@@ -475,7 +485,14 @@
                                         if(my_tehuda[tukau_card_num].state.indexOf("monster")!=-1){//手札にあったモンスターカードを選んだな！
                                             if(ba_mons_num(my_ba)!=5){//場がいっぱいじゃないので、いや、生贄召喚系ならいっぱいでもいいのか
                                                 duel_phase="召喚";
-                                                cursor=8;
+                                                cursor=10;
+                                                for(let i=0;i<4;i++){//カードがないところにカーソル合わせようぜ。
+                                                    if(my_ba[cursor-6]!=""){
+                                                        cursor-=1;
+                                                    }else{
+                                                        break;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -538,7 +555,6 @@
                     if(duel_phase=="相手"){
                         if(aite_delay>0){
                             aite_delay-=1;
-                            console.log(aite_delay);
                         }else if(aite_phase=="始まり"){
                             for(let i=0;i<5;i++){
                                 if(my_ba[i]!=""){
@@ -623,7 +639,7 @@
                             }
                         }else if(aite_phase=="終わり"){
                             duel_phase="自由";
-                            pull_card(my_yamahuda,my_tehuda,2);
+                            pull_card(my_yamahuda,my_tehuda,3);
                             for(let i=0;i<5;i++){
                                 if(teki_ba[i]!=""){
                                     teki_ba[i].can_ATK=1;//効果によっては変わるかもね
