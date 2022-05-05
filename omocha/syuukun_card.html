@@ -127,7 +127,8 @@
             var pre_cursor;
             var duel_phase="自由";
             var aite_phase=0;//相手のターンに動かしたい。
-            var teki_siyou_tehuda;//相手ターン最後に使ったカードを一括で捨てる
+            var aite_nayami;//相手ターンの悩みフェーズに使うなんか用途不明の変数だ！
+            var aite_delay=0;//お前高速で動きすぎ！
             var atk_card;
             var def_card;
             var tukau_card_num;
@@ -317,7 +318,7 @@
                     
                     
                 }
-                function atk_yamahuda(atk,yamahuda,haka,bag,tehuda){
+                function atk_yamahuda(atk,yamahuda,haka,ba,tehuda){
                     if(yamahuda==teki_yamahuda){//敵への攻撃さ！
                         for(let i=0;i<atk;i++){
                             haka[haka.length]=yamahuda[yamahuda.length-1];//エースモンスターの場合は別にやる必要があるべ。
@@ -325,7 +326,11 @@
                             yamahuda.splice(-1,1);
                         }
                     }else{
-
+                        for(let i=0;i<atk;i++){
+                            haka[haka.length]=yamahuda[yamahuda.length-1];//エースモンスターの場合は別にやる必要があるべ。
+                            haka[haka.length-1].position="my_haka";
+                            yamahuda.splice(-1,1);
+                        }
                     }
                 }
                 function ba_mons_num(ba){
@@ -342,7 +347,7 @@
 
                 deck_initialize(deck_list,my_deck,my_yamahuda);
                 deck_initialize(deck_list,teki_deck,teki_yamahuda);
-                pull_card(my_yamahuda,my_tehuda,5);
+                pull_card(my_yamahuda,my_tehuda,1);
                 /*
                 for(let i=0;i<5;i++){
                     teki_ba[i]=teki_deck[39-i];
@@ -448,6 +453,7 @@
                                 if(duel_phase=="自由"){
                                     if(cursor==-1){
                                         duel_phase="相手";
+                                        aite_phase="始まり";
                                         cursor=16;
                                     }else if(cursor>=6 && cursor<=10 && my_ba[cursor-6]!=""){
                                         pre_cursor=cursor;//キャンセルしたときにここに戻してあげたいよね。
@@ -475,7 +481,7 @@
                                     }
                                 }else if(duel_phase=="攻撃"){
                                     if(cursor==3){//ダイレクトアタック！
-                                        atk_yamahuda(atk_card.ATK,teki_yamahuda,teki_haka,teki_ba,undefined);
+                                        atk_yamahuda(atk_card.ATK,teki_yamahuda,teki_haka,teki_ba,teki_tehuda);
                                         atk_card.can_ATK-=1;//攻撃可能回数が1減る
                                         my_ba[pre_cursor-6].move=-3;
                                         cursor=pre_cursor;
@@ -490,6 +496,7 @@
                                             //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
                                         }
                                         atk_card.can_ATK-=1;//攻撃可能回数が1減る
+                                        my_ba[pre_cursor-6].move=-3;
                                         teki_ba[cursor-11].move=2;
                                         zuba[cursor]=6;
                                         cursor=pre_cursor;
@@ -529,36 +536,102 @@
                     }
 
                     if(duel_phase=="相手"){
-                        for(let i=0;i<5;i++){
-                            if(my_ba[i]!=""){
-                                my_ba[i].can_ATK=1;//効果によっては変わるかもね
+                        if(aite_delay>0){
+                            aite_delay-=1;
+                            console.log(aite_delay);
+                        }else if(aite_phase=="始まり"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){
+                                    my_ba[i].can_ATK=1;//効果によっては変わるかもね
+                                }
                             }
-                        }
-                        pull_card(teki_yamahuda,teki_tehuda,2);//相手の手札枚数は右上のあそこに表示してあげるとやさしいと思うな。
-                        teki_siyou_tehuda=[];
-                        for(let i=0;i<teki_tehuda.length;i++){
-                            if(teki_tehuda[i].state.indexOf("monster")!=-1){//モンスターカードやんけ！
-                                for(let j=0;j<5;j++){
-                                    if(teki_ba[j]==""){//空いてる場所あるじゃん！
-                                        teki_ba[j]=teki_tehuda[i];
-                                        teki_ba[j].position="teki_ba_"+(j);
-                                        teki_ba[j].can_ATK=1;//召喚時効果によっては変わるかもね
-                                        teki_ba[j].move=5;
-                                        teki_siyou_tehuda[teki_siyou_tehuda.length]=i;
-                                        break;//
+                            pull_card(teki_yamahuda,teki_tehuda,2);//相手の手札枚数は右上のあそこに表示してあげるとやさしいと思うな。
+                            teki_siyou_tehuda=[];
+                            aite_phase="召喚";
+                        }else if(aite_phase=="召喚"){
+                            aite_nayami="悩むぜ！";
+                            for(let i=0;i<teki_tehuda.length;i++){//手札使うぜ！    
+                                if(teki_tehuda[i].state.indexOf("monster")!=-1){//モンスターカードやんけ！
+                                    for(let j=0;j<5;j++){
+                                        if(teki_ba[j]==""){//空いてる場所あるじゃん！
+                                            teki_ba[j]=teki_tehuda[i];
+                                            teki_ba[j].position="teki_ba_"+(j);
+                                            teki_ba[j].can_ATK=1;//召喚時効果によっては変わるかもね
+                                            teki_ba[j].move=5;
+                                            aite_delay=5;
+                                            teki_tehuda.splice(aite_phase,1);
+                                            aite_nayami="手札使ったよ";
+                                            break;//
+                                        }
+                                    }
+                                }
+                                if(aite_nayami=="手札使ったよ"){
+                                    break;//手札一枚使ったらループしなおしてきて
+                                }
+                            }
+                            if(aite_nayami=="悩むぜ！"){//やることなくなった？
+                                aite_phase="攻撃";
+                                aite_delay=3;
+                            }
+                        }else if(aite_phase=="攻撃"){
+                            aite_nayami="悩むぜ！";
+                            for(let i=0;i<5;i++){//攻撃力が一番高いやつを見つけるぜ！
+                                if(teki_ba[i]!=""){
+                                    if(teki_ba[i].can_ATK>0){
+                                        if(aite_nayami=="悩むぜ！"){
+                                            aite_nayami=i;
+                                        }else if(teki_ba[aite_nayami].ATK<teki_ba[i].ATK){//攻撃力が高いやつから攻撃しようぜ（これがいいのかは…知らん。）
+                                            aite_nayami=i;
+                                        }
                                     }
                                 }
                             }
-                        }
-                        for(let i=0;i<teki_siyou_tehuda.length;i++){//仕様した手札を削除していきます。
-                            teki_tehuda.splice(teki_siyou_tehuda[teki_siyou_tehuda.length]-1,1);
-                        }
-                        duel_phase="自由";
-                        for(let i=0;i<5;i++){
-                            if(teki_ba[i]!=""){
-                                teki_ba[i].can_ATK=1;//効果によっては変わるかもね
+                            if(aite_nayami=="悩むぜ！"){//攻撃できるカードがなかったぜ！
+                                aite_phase="終わり";
+                            }else{
+                                teki_ba[aite_nayami].move=-3;
+                                aite_delay=10;
+                                atk_card=teki_ba[aite_nayami];
+                                aite_nayami="悩むぜ！";
+
+                                for(let i=0;i<5;i++){//体力とか攻撃力を加味して攻撃相手を決めたいぜ！
+                                    if(my_ba[i]!=""){
+                                        if(aite_nayami=="悩むぜ！"){
+                                            aite_nayami=i;
+                                        }else if(my_ba[aite_nayami].ATK/Math.ceil(my_ba[aite_nayami].HP/atk_card.ATK)<my_ba[i].ATK/Math.ceil(my_ba[i].HP/atk_card.ATK)){//なんか殺しやすくて強いやつを殴ろう
+                                            aite_nayami=i;
+                                        }
+                                    }
+                                }
+
+                                if(aite_nayami=="悩むぜ！"){//俺の場がガラ空きだぁ
+                                    atk_yamahuda(atk_card.ATK,my_yamahuda,my_haka,my_ba,my_tehuda);
+                                    zuba[0]=6;
+                                }else{
+                                    def_card=my_ba[aite_nayami];
+                                    def_card.HP-=atk_card.ATK;
+                                    if(def_card.HP<=0){//倒した～
+                                        my_ba[aite_nayami]=death_card(def_card,my_haka,aite_nayami);
+                                        //my_ba[aite_nayami]="";になるよん
+                                        //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
+                                    }
+                                    my_ba[aite_nayami].move=2;
+                                    zuba[aite_nayami+6]=6;
+                                }
+                                
+                                atk_card.can_ATK-=1;//攻撃したら…ね
                             }
+                        }else if(aite_phase=="終わり"){
+                            duel_phase="自由";
+                            pull_card(my_yamahuda,my_tehuda,2);
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    teki_ba[i].can_ATK=1;//効果によっては変わるかもね
+                                }
+                            }
+                        
                         }
+                        
                     }
                     ctx.fillStyle="rgb(130,255,170)";
                     ctx.fillRect(0,0,1000,1000);
@@ -751,6 +824,7 @@
                         ctx.fillText("相手ターン", 300, 300);
                         ctx.fillText("召喚", 400, 400);
                     }
+
                     for (let i=0;i<16;i++){ //攻撃時にzuba64を表示
                         if(zuba[i]!=0){
                             zuba[i]-=1;
