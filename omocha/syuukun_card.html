@@ -367,8 +367,9 @@
                     var past_i;
                     kaigyou=0;
                     past_i=0;
+                    ctx.font = moji_zenkaku+"px";//フォント設定。
                     for (i = 0; i <txt.length; i++){
-                        if(ctx.measureText(txt.substr(past_i,i-past_i+1)).width >= x_haba){
+                        if(ctx.measureText(txt.substr(past_i,i-past_i+1)).width >= x_haba-1){
                             
                             ctx.fillText(txt.substr(past_i,i-past_i+1), x, y+kaigyou*moji_zenkaku);
                             kaigyou+=1;
