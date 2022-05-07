@@ -97,8 +97,8 @@
             var make_image=new Image();
             make_image.src="../images/omocha/syuukun_card/syouhai300_make.png";
             //カード定義 effectを使うときはeffect()
-            var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！…ところで俺がめちゃくちゃ長い説明文を持ってたとしたらどうする？ぐげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげ"};
-            var test_card2={name:"テストカード2",image:test_syuukun,ATK:2,HP:3,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
+            var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！…ところで俺がめちゃくちゃ長い説明文を持ってたとしたらどうする？ぐげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげ"};
+            var test_card2={name:"テストカード2",image:test_syuukun,ATK:2,HP:3,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
             //ここにゲームパラメータを置くとイイネ。
             var deck_list=[[test_card,38],[test_card2,2]];
             var my_deck=[];
@@ -138,7 +138,9 @@
             var atk_card;
             var def_card;
             var tukau_card_num;
+
             var syousai_card;
+            var syousai_state;
 
             var tehuda_maisuu=0;//手札の角度覚えるのに使ってる
             var card_kankaku=0;
@@ -377,11 +379,11 @@
                     if(past_i!=txt.length){//切り取り余ってますよ
                         txt_array[txt_array.length]=txt.substr(past_i);
                     }
-                    if(txt_array.length>Math.floor(y_haba/moji_zenkaku)){//縦にはみ出してるぞ
+                    if(txt_array.length+1>Math.floor(y_haba/moji_zenkaku)){//縦にはみ出してるぞ
                         text_kaigyou_hyouji(txt,x,y,x_haba,y_haba,moji_zenkaku-1);//ちょっと小さくなってやりなおしてこい
                     }else{
                         for (let i=0; i<txt_array.length; i++){
-                            ctx.fillText(txt_array[i], x, y+i*moji_zenkaku);//文字を表示していくぜー！
+                            ctx.fillText(txt_array[i], x, y+(i+1)*moji_zenkaku);//文字を表示していくぜー！
                         }
                     }
                     
@@ -523,7 +525,7 @@
                                     }else if(cursor>=16 && my_tehuda.length!=0){
                                         pre_cursor=cursor;//キャンセルしたときにここに戻してあげたいよね。
                                         tukau_card_num=cursor-16;
-                                        if(my_tehuda[tukau_card_num].state.indexOf("monster")!=-1){//手札にあったモンスターカードを選んだな！
+                                        if(my_tehuda[tukau_card_num].state.indexOf("モンスター")!=-1){//手札にあったモンスターカードを選んだな！
                                             if(ba_mons_num(my_ba)!=5){//場がいっぱいじゃないので、いや、生贄召喚系ならいっぱいでもいいのか
                                                 duel_phase="召喚";
                                                 cursor=10;
@@ -611,7 +613,7 @@
                         }else if(aite_phase=="召喚"){
                             aite_nayami="悩むぜ！";
                             for(let i=0;i<teki_tehuda.length;i++){//手札使うぜ！    
-                                if(teki_tehuda[i].state.indexOf("monster")!=-1){//モンスターカードやんけ！
+                                if(teki_tehuda[i].state.indexOf("モンスター")!=-1){//モンスターカードやんけ！
                                     for(let j=0;j<5;j++){
                                         if(teki_ba[j]==""){//空いてる場所あるじゃん！
                                             teki_ba[j]=teki_tehuda[i];
@@ -801,7 +803,7 @@
 
                         ctx.drawImage(atk_plate,400,180);
                         ctx.drawImage(def_plate,450,185);
-                        ctx.fillText("←(", 520, 225);
+                        ctx.fillText("(", 570, 225);
                         ctx.drawImage(atk_plate,600,180);
                         ctx.drawImage(def_plate,650,185);
                         ctx.fillText(")", 704, 225);
@@ -828,8 +830,13 @@
                             ctx.fillText(syousai_card.card.HP, 654, 222);
                         }
                         ctx.fillStyle="rgb(0,0,0)";
-                        text_kaigyou_hyouji(syousai_card.card.text, 260, 420,480,200,40);//650-370=280
-                        ctx.fillRect(255,590,490,2);
+                        text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40);//x,yは左上指定だから注意だ！
+                        ctx.fillRect(255,600,490,2);
+                        syousai_state="分類:";
+                        for(let i=0;i<syousai_card.state.length;i++){
+                            syousai_state+=" "+syousai_card.state[i];
+                        }
+                        text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40);//x,yは左上指定だから注意だ！
                     }
 
                     ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
