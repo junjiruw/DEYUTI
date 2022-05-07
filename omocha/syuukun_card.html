@@ -392,7 +392,7 @@
                     var x_maisuu;
                     kakudai=1;
                     while(card.length>Math.floor(x_haba/(kakudai*140))*Math.floor(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
-                        kakudai-=0.1;
+                        kakudai-=0.05;
                     }
                     x_maisuu=Math.floor(x_haba/(kakudai*140));
                     ctx.save();
