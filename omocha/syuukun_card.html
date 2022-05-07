@@ -363,29 +363,19 @@
                     return num_of_mons;
                 }
                 function text_kaigyou_hyouji(txt,x,y,x_haba,moji_zenkaku){//テキストをcanvasでも改行してくれるんや！
-                    var byte;
                     var kaigyou;
                     var past_i;
-                    byte=0;
                     kaigyou=0;
                     past_i=0;
-                    ctx.font = moji_zenkaku+"px  'ＭＳ ゴシック',monospace";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                     for (i = 0; i <txt.length; i++){
-                        if(txt[i].match(/[ -~]/)){//正規表現は　//で囲む　[A-B]はAからBまでを探す　NULLから~までが半角文字に割り当てられてるので、当てはまったら半角ってワケ！…半角カタカナは？知らん！✊
-                            byte += 1; //半角の場合
-                        }else{
-                            byte += 2; //全角の場合
-                        }
-                        if(byte+2 > Math.floor(2*x_haba/moji_zenkaku)){
+                        if(ctx.measureText(txt.substr(past_i,i-past_i+1)).width >= x_haba){
                             
                             ctx.fillText(txt.substr(past_i,i-past_i+1), x, y+kaigyou*moji_zenkaku);
-                            byte=0;
                             kaigyou+=1;
                             past_i=i+1;
                         }
                     }
                     ctx.fillText(txt.substr(past_i,i-past_i), x, y+kaigyou*moji_zenkaku);
-                    ctx.font = moji_zenkaku+"px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
 
 
                 }
