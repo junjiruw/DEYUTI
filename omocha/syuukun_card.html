@@ -98,7 +98,7 @@
             make_image.src="../images/omocha/syuukun_card/syouhai300_make.png";
             //カード定義 effectを使うときはeffect()
             var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！"};
-            var test_card2={name:"テストカード2",image:test_syuukun,ATK:2,HP:3,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderftgyhjukiolp;@どうや！！…へえやるじゃん。でも半角カタカナには耐えられないんだろ？ｵｲﾄﾞｳﾅﾝﾀﾞｲｯﾃﾐﾛｵﾜｵﾜｵﾜｵﾜ…終わりだ…"};
+            var test_card2={name:"テストカード2",image:test_syuukun,ATK:2,HP:3,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
             //ここにゲームパラメータを置くとイイネ。
             var deck_list=[[test_card,38],[test_card2,2]];
             var my_deck=[];
@@ -368,15 +368,14 @@
                     kaigyou=0;
                     past_i=0;
                     ctx.font = moji_zenkaku+"px";//フォント設定。
-                    for (i = 0; i <txt.length; i++){
-                        if(ctx.measureText(txt.substr(past_i,i-past_i+1)).width >= x_haba-1){
-                            
+                    for (let i=0; i<txt.length; i++){
+                        if(ctx.measureText(txt.substr(past_i,i-past_i+2)).width > x_haba){
                             ctx.fillText(txt.substr(past_i,i-past_i+1), x, y+kaigyou*moji_zenkaku);
                             kaigyou+=1;
                             past_i=i+1;
                         }
                     }
-                    ctx.fillText(txt.substr(past_i,i-past_i), x, y+kaigyou*moji_zenkaku);
+                    ctx.fillText(txt.substr(past_i), x, y+kaigyou*moji_zenkaku);
 
 
                 }
