@@ -97,7 +97,7 @@
             var make_image=new Image();
             make_image.src="../images/omocha/syuukun_card/syouhai300_make.png";
             //カード定義 effectを使うときはeffect()
-            var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！"};
+            var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！…ところで俺がめちゃくちゃ長い説明文を持ってたとしたらどうする？ぐげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげ"};
             var test_card2={name:"テストカード2",image:test_syuukun,ATK:2,HP:3,state:["monster","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
             //ここにゲームパラメータを置くとイイネ。
             var deck_list=[[test_card,38],[test_card2,2]];
@@ -362,20 +362,29 @@
                     }
                     return num_of_mons;
                 }
-                function text_kaigyou_hyouji(txt,x,y,x_haba,moji_zenkaku){//テキストをcanvasでも改行してくれるんや！
-                    var kaigyou;
+                function text_kaigyou_hyouji(txt,x,y,x_haba,y_haba,moji_zenkaku){//テキストをcanvasでも改行してくれるんや！
+                    var txt_array;
                     var past_i;
-                    kaigyou=0;
+                    txt_array=[];
                     past_i=0;
-                    ctx.font = moji_zenkaku+"px";//フォント設定。
+                    ctx.font = moji_zenkaku+"px  'ＭＳ ゴシック'";//フォント設定。
                     for (let i=0; i<txt.length; i++){
                         if(ctx.measureText(txt.substr(past_i,i-past_i+2)).width > x_haba){
-                            ctx.fillText(txt.substr(past_i,i-past_i+1), x, y+kaigyou*moji_zenkaku);
-                            kaigyou+=1;
+                            txt_array[txt_array.length]=txt.substr(past_i,i-past_i+1);
                             past_i=i+1;
                         }
                     }
-                    ctx.fillText(txt.substr(past_i), x, y+kaigyou*moji_zenkaku);
+                    if(past_i!=txt.length){//切り取り余ってますよ
+                        txt_array[txt_array.length]=txt.substr(past_i);
+                    }
+                    if(txt_array.length>Math.floor(y_haba/moji_zenkaku)){//縦にはみ出してるぞ
+                        text_kaigyou_hyouji(txt,x,y,x_haba,y_haba,moji_zenkaku-1);//ちょっと小さくなってやりなおしてこい
+                    }else{
+                        for (let i=0; i<txt_array.length; i++){
+                            ctx.fillText(txt_array[i], x, y+i*moji_zenkaku);//文字を表示していくぜー！
+                        }
+                    }
+                    
 
 
                 }
@@ -770,6 +779,7 @@
                     }
                     ctx.restore();
                     
+                    //カードの詳細表示
                     if((cursor>=6 &&cursor<=10 && (my_ba[cursor-6]!="")) || (cursor>=11 && cursor<=15 && (teki_ba[cursor-11]!="")) || (cursor>=16 && my_tehuda.length!=0)){//カード詳細を表示するときはカードがあるときだけだぜ！
                         ctx.fillStyle="rgb(55,55,55)";
                         ctx.fillRect(240,110,520,670);
@@ -790,7 +800,11 @@
                         ctx.drawImage(syousai_card.card.image,260,180);
 
                         ctx.drawImage(atk_plate,400,180);
-                        ctx.drawImage(def_plate,400,230);
+                        ctx.drawImage(def_plate,450,185);
+                        ctx.fillText("←(", 520, 225);
+                        ctx.drawImage(atk_plate,600,180);
+                        ctx.drawImage(def_plate,650,185);
+                        ctx.fillText(")", 704, 225);
                         ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                         ctx.fillStyle="rgb(255,255,255)";
                         if(syousai_card.ATK<10){
@@ -799,14 +813,23 @@
                             ctx.fillText(syousai_card.ATK, 404, 222);
                         }
                         if(syousai_card.HP<10){
-                            ctx.fillText(syousai_card.HP, 414, 267);
+                            ctx.fillText(syousai_card.HP, 464, 222);
                         }else{
-                            ctx.fillText(syousai_card.HP, 404, 267);
+                            ctx.fillText(syousai_card.HP, 454, 222);
+                        }
+                        if(syousai_card.card.ATK<10){
+                            ctx.fillText(syousai_card.card.ATK, 614, 222);
+                        }else{
+                            ctx.fillText(syousai_card.card.ATK, 604, 222);
+                        }
+                        if(syousai_card.card.HP<10){
+                            ctx.fillText(syousai_card.card.HP, 664, 222);
+                        }else{
+                            ctx.fillText(syousai_card.card.HP, 654, 222);
                         }
                         ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(":攻撃力", 450, 222);
-                        ctx.fillText(":残り体力", 450, 267);
-                        text_kaigyou_hyouji(syousai_card.card.text, 260, 420,480,40);
+                        text_kaigyou_hyouji(syousai_card.card.text, 260, 420,480,200,40);//650-370=280
+                        ctx.fillRect(255,590,490,2);
                     }
 
                     ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
@@ -838,7 +861,7 @@
                     ctx.fillRect(5,785,990,210);
                     ctx.fillStyle="rgb(255,255,255)";
                     ctx.fillRect(10,790,980,200);
-                    if(my_tehuda.length!=0){//ここから手札
+                    if(my_tehuda.length!=0){//ここから手札-------------------
                         ctx.save();
                         tehuda_maisuu=my_tehuda.length;
                         if(tehuda_maisuu<7){
