@@ -369,6 +369,7 @@
                     byte=0;
                     kaigyou=0;
                     past_i=0;
+                    ctx.font = moji_zenkaku+"px  'ＭＳ ゴシック',monospace";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                     for (i = 0; i <txt.length; i++){
                         if(txt[i].match(/[ -~]/)){//正規表現は　//で囲む　[A-B]はAからBまでを探す　NULLから~までが半角文字に割り当てられてるので、当てはまったら半角ってワケ！…半角カタカナは？知らん！✊
                             byte += 1; //半角の場合
@@ -384,6 +385,7 @@
                         }
                     }
                     ctx.fillText(txt.substr(past_i,i-past_i), x, y+kaigyou*moji_zenkaku);
+                    ctx.font = moji_zenkaku+"px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
 
 
                 }
@@ -921,7 +923,7 @@
                         ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                         ctx.fillStyle="rgb(255,255,255)";
                         ctx.fillText("相手ターン", 300, 300);
-                        ctx.fillText("召喚", 400, 400);
+                        //ctx.fillText("召喚", 400, 400);
                     }else if(duel_phase=="俺勝ち"){
                         ctx.fillStyle="rgb(0,0,0,0.5)";
                         ctx.fillRect(0,0,1000,1000);
