@@ -386,9 +386,21 @@
                             ctx.fillText(txt_array[i], x, y+(i+1)*moji_zenkaku);//文字を表示していくぜー！
                         }
                     }
-                    
-
-
+                }
+                function takusan_card_draw(card,x,y,x_haba,y_haba){
+                    var kakudai;
+                    var x_maisuu;
+                    kakudai=1;
+                    while(card.length>Math.floor(x_haba/(kakudai*140))*Math.floor(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
+                        kakudai-=0.1;
+                    }
+                    x_maisuu=Math.floor(x_haba/(kakudai*140));
+                    ctx.save();
+                    ctx.scale(kakudai,kakudai);
+                    for(let i=0;i<card.length;i++){
+                        ctx.drawImage(card[i].card.image,x/kakudai+140*(i%x_maisuu),y/kakudai+210*(Math.floor(i/x_maisuu)));
+                    }
+                    ctx.restore();
                 }
 
                 deck_initialize(deck_list,my_deck,my_yamahuda);
@@ -837,6 +849,20 @@
                             syousai_state+=" "+syousai_card.state[i];
                         }
                         text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40);//x,yは左上指定だから注意だ！
+                    }
+
+                    if(cursor==1){
+                        ctx.fillStyle="rgb(55,55,55)";
+                        ctx.fillRect(240,110,520,670);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(250,120,500,650);
+                        takusan_card_draw(my_haka,260,130,480,630);
+                    }else if(cursor==4){
+                        ctx.fillStyle="rgb(55,55,55)";
+                        ctx.fillRect(240,110,520,670);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(250,120,500,650);
+                        takusan_card_draw(teki_haka,260,130,480,630);
                     }
 
                     ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
