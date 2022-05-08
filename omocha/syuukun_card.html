@@ -96,11 +96,17 @@
             kati_image.src="../images/omocha/syuukun_card/syouhai300_kati.png";
             var make_image=new Image();
             make_image.src="../images/omocha/syuukun_card/syouhai300_make.png";
+
+            var card_syuukun=new Image();
+            card_syuukun.src="../images/omocha/syuukun_card/card_syuukun130200.png";
             //カード定義 effectを使うときはeffect()
             var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！…ところで俺がめちゃくちゃ長い説明文を持ってたとしたらどうする？ぐげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげ"};
-            var test_card2={name:"テストカード2",image:test_syuukun,ATK:2,HP:3,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
+            var test_card2={name:"テストカード2",image:test_syuukun,ATK:3,HP:4,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
+            
+            var syuukun={name:"しゅうくん",image:card_syuukun,ATK:3,HP:10,state:["モンスター","しゅうくん"],effect:function(){console.log("name:"+this.name);},text:"カードに力を込めろ！"};
             //ここにゲームパラメータを置くとイイネ。
-            var deck_list=[[test_card,38],[test_card2,2]];
+            var deck_list={card_list:[[test_card,29],[test_card2,10],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
+            var zako_list={card_list:[[test_card,15],[test_card2,5]],ACE:[test_card,test_card,test_card,test_card,test_card],TOP_ACE:[test_card2,test_card2]};
             var my_deck=[];
                 //my_deck[i]={card:test_card,ATK:1,HP:1,state:[],position:"my_yamahuda",can_ATK:0};
             var teki_deck=[];
@@ -129,6 +135,7 @@
 
             var cursor=16;
             var pre_cursor;
+            var ba_haiti=[2,1,3,0,4];
 
             var duel_phase="自由";
             var aite_phase=0;//相手のターンに動かしたい。
@@ -250,6 +257,20 @@
                     ctx.drawImage(print_card.card.image,x,y+of_y);
                     ctx.drawImage(atk_plate,x,y+104+of_y);
                     ctx.drawImage(def_plate,x,y+152+of_y);
+                    if(print_card.state.indexOf("TOP_ACE")!=-1){
+                        ctx.fillStyle="rgb(255,0,0,1)";
+                        ctx.fillRect(x-2,y+of_y,5,200);
+                        ctx.fillRect(x+128,y+of_y,5,200);
+                        ctx.fillRect(x,y+of_y,133,5);
+                        ctx.fillRect(x,y+of_y+195,133,5);
+                    }
+                    if(print_card.state.indexOf("ACE")!=-1){
+                        ctx.fillStyle="rgb(255,255,0)";
+                        ctx.fillRect(x-2,y+of_y,5,200);
+                        ctx.fillRect(x+128,y+of_y,5,200);
+                        ctx.fillRect(x,y+of_y,133,5);
+                        ctx.fillRect(x,y+195+of_y,133,5);
+                    }
                     ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                     ctx.fillStyle="rgb(255,255,255)";
                     if(print_card.ATK<10){
@@ -265,6 +286,7 @@
                     if(print_card.can_ATK!=0){//攻撃可能モンスターにはマークを表示、複数攻撃マンが実装されたら変更してちょ
                         ctx.drawImage(atk_circle,x+10+10*Math.sin(time*Math.PI/64),y+20+8*Math.sin(time*Math.PI/16)+of_y);
                     }
+                    
                 }
                 function death_card(shi_card,haka,doko){
                     if(haka==teki_haka){
@@ -277,9 +299,9 @@
                         death_my_ba[doko].move=10;
                     }
                     shi_card.HP=shi_card.card.HP;//回復
-                    shi_card.state=shi_card.card.state;//回復
+                    //shi_card.state=shi_card.card.state;
                     shi_card.can_ATK=0;//攻撃不可
-                    haka.push(shi_card);//GO墓場
+                    haka.push(shi_card);//GO墓場…なんでここだけpush使ってるんだろ
                     
                     return "";//場から除去するためにこいつをba_i[n]に代入しておいてくれ。
                     
@@ -287,28 +309,77 @@
                 function deck_initialize(list,deck,yamahuda){
                     //my_deck[i]={card:test_card,ATK:1,HP:1,state:[],position:"my_yamahuda",can_ATK:0};
                     var doko_position;
+                    var doko_syoukan;
+                    var ba;
                     if(deck==my_deck){
                         doko_position="my_yamahuda";//自デッキの初期化なら自分の山札に入れてね
+                        doko_syoukan="my_ba_";
+                        ba=my_ba;
                     }else{
                         doko_position="teki_yamahuda";//敵だね。
+                        doko_syoukan="teki_ba_";
+                        ba=teki_ba;
                     }
                     var nani_card;
                     var imano_num;
+                    var swap;
+                    var ACE;
                     imano_num=0;
-                    for(let i=0;i<list.length;i++){
-                        nani_card=list[i][0];//このカードn枚山札に入れるぜ！
-                        for(let j=0;j<list[i][1];j++){
+
+                    for(let i=0;i<list.card_list.length;i++){
+                        nani_card=list.card_list[i][0];//このカードn枚山札に入れるぜ！
+                        for(let j=0;j<list.card_list[i][1];j++){
                             deck[imano_num]={card:nani_card};//ここだけ描き方が違うのはな、しかたないんやなって
                             deck[imano_num].ATK=nani_card.ATK;
                             deck[imano_num].HP=nani_card.HP;
-                            deck[imano_num].state=nani_card.state;//ここでエースモンスターの設定をしたいね。
+                            deck[imano_num].state=nani_card.state.slice();//sliceをつけることで参照渡しをやめさせて値渡しを行わせています
                             deck[imano_num].position=doko_position;
                             deck[imano_num].can_ATK=0;//これは攻撃可能かどうかを意味するぞ！山札から攻撃しないでくれよな！（いや、できるやつがいずれでるかもしれんが）
                             yamahuda[imano_num]=deck[imano_num];//とりあえず全部山札にぶちこんでやるぜ～！
                             imano_num+=1;
                         }
                     }
-                    //ここでシャッフルすべきよ！そうだわ！
+                    
+                    ACE=list.TOP_ACE;
+                    for(let i=0;i<yamahuda.length;i++){//TOP_ACEを召喚…TOP_ACEは5枚以下でおねがします
+                        for(let j=0;j<ACE.length;j++){
+                            if(yamahuda[i].card==ACE[j]){//TOPがいっぱいいるかも！？
+                                yamahuda[i].state[yamahuda[i].state.length]="TOP_ACE";
+                                ba[ba_haiti[ACE.length-1]]=yamahuda[i];
+                                ba[ba_haiti[ACE.length-1]].position=doko_syoukan+ba_haiti[ACE.length-1];
+                                ba[ba_haiti[ACE.length-1]].can_ATK=1;//召喚時効果によっては変わるかもね
+                                ba[ba_haiti[ACE.length-1]].move=5;
+                                ACE.splice(j,1);
+                                yamahuda.splice(i,1);//召喚したので山札減ります。
+                                i-=1;//場に出して消えたので
+                                break;
+                            }
+                        }
+                        if(ACE.length==0){
+                            break;
+                        }
+                    }
+
+                    ACE=list.ACE;
+                    for(let i=0;i<yamahuda.length;i++){//ACEにACEstateをあげる
+                        for(let j=0;j<ACE.length;j++){
+                            if(yamahuda[i].card==ACE[j]){
+                                yamahuda[i].state[yamahuda[i].state.length]="ACE";
+                                ACE.splice(j,1);
+                                break;
+                            }
+                        }
+                        if(ACE.length==0){
+                            break;
+                        }
+                    }
+                    //ここでシャッフルすべきよ！そうだわ！　→Fisher-Yates shuffleというらしい
+                    for(let i=yamahuda.length-1;i>0;i--){//デッキのケツから…
+                        var j = Math.floor(Math.random() * (i + 1));//ケツ以下の番号の札をランダムに選び
+                        swap =yamahuda[i];//iとjでスワップする。
+                        yamahuda[i]=yamahuda[j];
+                        yamahuda[j]=swap;
+                    }
                 }
                 function pull_card(yamahuda,tehuda=undefined,maisuu){
                     if(yamahuda.length<maisuu){
@@ -331,27 +402,43 @@
                     
                 }
                 function atk_yamahuda(atk,yamahuda,haka,ba,tehuda){
-                    
+                    var doko_haka;
+                    var dare_kati;
+                    var doko_syoukan;
                     if(yamahuda==teki_yamahuda){//敵への攻撃さ！
-                        if(atk>yamahuda.length){//はい死亡～！お前の負け✋
-                            atk=yamahuda.length;
-                            duel_phase="俺勝ち";                            
-                        }
-                        for(let i=0;i<atk;i++){
-                            haka[haka.length]=yamahuda[yamahuda.length-1];//エースモンスターの場合は別にやる必要があるべ。
-                            haka[haka.length-1].position="teki_haka";
-                            yamahuda.splice(-1,1);
-                        }
+                        darekati="俺勝ち";                          
+                        doko_haka="teki_haka";
+                        doko_syoukan="teki_ba_";
                     }else{
-                        if(atk>yamahuda.length){//はい死亡～！俺の負け👍
-                            atk=yamahuda.length;
-                            duel_phase="敵勝ち";
+                        darekati="敵勝ち";                          
+                        doko_haka="my_haka";
+                        doko_syoukan="my_ba_";
+                    }
+                    if(atk>yamahuda.length){//はい死亡～！攻撃された側の負け👍
+                        atk=yamahuda.length;
+                        duel_phase=darekati;
+                    }
+                    for(let i=0;i<atk;i++){
+                        if(yamahuda[yamahuda.length-1].state.indexOf("ACE")!=-1 || yamahuda[yamahuda.length-1].state.indexOf("TOP_ACE")!=-1){//ACEモンスター来た！
+                            for(let j=0;j<5;j++){
+                                if(ba[ba_haiti[j]]==""){
+                                    ba[ba_haiti[j]]=yamahuda[yamahuda.length-1];
+                                    ba[ba_haiti[j]].position=doko_syoukan+ba_haiti[j];
+                                    ba[ba_haiti[j]].can_ATK=1;//召喚時効果によっては変わるかもね
+                                    ba[ba_haiti[j]].move=5;
+                                    break;
+                                }
+                                if(j==4){//召喚できなかった（笑）
+
+                                }
+                            }
+                            
+                        }else{
+                            haka[haka.length]=yamahuda[yamahuda.length-1];
+                            haka[haka.length-1].position=doko_haka;
                         }
-                        for(let i=0;i<atk;i++){
-                            haka[haka.length]=yamahuda[yamahuda.length-1];//エースモンスターの場合は別にやる必要があるべ。
-                            haka[haka.length-1].position="my_haka";
-                            yamahuda.splice(-1,1);
-                        }
+                        
+                        yamahuda.splice(-1,1);
                     }
                 }
                 function ba_mons_num(ba){
@@ -398,13 +485,13 @@
                     ctx.save();
                     ctx.scale(kakudai,kakudai);
                     for(let i=0;i<card.length;i++){
-                        ctx.drawImage(card[i].card.image,x/kakudai+140*(i%x_maisuu),y/kakudai+210*(Math.floor(i/x_maisuu)));
+                        card_draw(card[i],x/kakudai+140*(i%x_maisuu),y/kakudai+210*(Math.floor(i/x_maisuu)));
                     }
                     ctx.restore();
                 }
 
                 deck_initialize(deck_list,my_deck,my_yamahuda);
-                deck_initialize(deck_list,teki_deck,teki_yamahuda);
+                deck_initialize(zako_list,teki_deck,teki_yamahuda);
                 pull_card(my_yamahuda,my_tehuda,3);
                 /*
                 for(let i=0;i<5;i++){
@@ -627,11 +714,11 @@
                             for(let i=0;i<teki_tehuda.length;i++){//手札使うぜ！    
                                 if(teki_tehuda[i].state.indexOf("モンスター")!=-1){//モンスターカードやんけ！
                                     for(let j=0;j<5;j++){
-                                        if(teki_ba[j]==""){//空いてる場所あるじゃん！
-                                            teki_ba[j]=teki_tehuda[i];
-                                            teki_ba[j].position="teki_ba_"+(j);
-                                            teki_ba[j].can_ATK=1;//召喚時効果によっては変わるかもね
-                                            teki_ba[j].move=5;
+                                        if(teki_ba[ba_haiti[j]]==""){//空いてる場所あるじゃん！
+                                            teki_ba[ba_haiti[j]]=teki_tehuda[i];
+                                            teki_ba[ba_haiti[j]].position="teki_ba_"+ba_haiti[j];
+                                            teki_ba[ba_haiti[j]].can_ATK=1;//召喚時効果によっては変わるかもね
+                                            teki_ba[ba_haiti[j]].move=5;
                                             aite_delay=5;
                                             teki_tehuda.splice(aite_phase,1);
                                             aite_nayami="手札使ったよ";
