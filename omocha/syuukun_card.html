@@ -103,10 +103,10 @@
             var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！…ところで俺がめちゃくちゃ長い説明文を持ってたとしたらどうする？ぐげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげ"};
             var test_card2={name:"テストカード2",image:test_syuukun,ATK:3,HP:4,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
             
-            var syuukun={name:"しゅうくん",image:card_syuukun,ATK:3,HP:10,state:["モンスター","しゅうくん"],effect:function(){console.log("name:"+this.name);},text:"カードに力を込めろ！"};
+            var syuukun={name:"しゅうくん",image:card_syuukun,ATK:30,HP:10,state:["モンスター","しゅうくん"],effect:function(){console.log("name:"+this.name);},text:"カードに力を込めろ！"};
             //ここにゲームパラメータを置くとイイネ。
             var deck_list={card_list:[[test_card,29],[test_card2,10],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
-            var zako_list={card_list:[[test_card,15],[test_card2,5]],ACE:[test_card,test_card,test_card,test_card,test_card],TOP_ACE:[test_card2,test_card2]};
+            var zako_list={card_list:[[test_card,15],[test_card2,5]],ACE:[test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card],TOP_ACE:[test_card2,test_card2]};
             var my_deck=[];
                 //my_deck[i]={card:test_card,ATK:1,HP:1,state:[],position:"my_yamahuda",can_ATK:0};
             var teki_deck=[];
@@ -154,6 +154,7 @@
             var kakudo=10;
 
             var zuba=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]//zuba64を表示するタイマー
+            var yamahuda_damage=[0,0];//左が俺へのダメージで、右が相手へのダメージ描写
 
             var time=0;
 
@@ -405,17 +406,25 @@
                     var doko_haka;
                     var dare_kati;
                     var doko_syoukan;
+                    var doko_tehuda;
+                    var dare_yamahuda_damage;
                     if(yamahuda==teki_yamahuda){//敵への攻撃さ！
                         darekati="俺勝ち";                          
                         doko_haka="teki_haka";
                         doko_syoukan="teki_ba_";
+                        doko_tehuda="teki_tehuda_";
+                        dare_yamahuda_damage=yamahuda_damage[1];
                     }else{
                         darekati="敵勝ち";                          
                         doko_haka="my_haka";
                         doko_syoukan="my_ba_";
+                        doko_tehuda="my_tehuda_";
+                        dare_yamahuda_damage=yamahuda_damage[0];
                     }
+                    dare_yamahuda_damage+=atk;
                     if(atk>yamahuda.length){//はい死亡～！攻撃された側の負け👍
                         atk=yamahuda.length;
+                        dare_yamahuda_damage=atk;
                         duel_phase=darekati;
                     }
                     for(let i=0;i<atk;i++){
@@ -425,9 +434,15 @@
                                     ba[ba_haiti[j]]=syoukan(yamahuda[yamahuda.length-1],ba[ba_haiti[j]],doko_syoukan+ba_haiti[j]);
                                     break;
                                 }
-                                if(j==4){//召喚できなかった（笑）
-
+                                if(j==4){//召喚できなかった（笑）→手札へ
+                                    tehuda[tehuda.length]=yamahuda[yamahuda.length-1];
+                                    tehuda[tehuda.length-1].position=doko_tehuda+(tehuda.length-1+i);
                                 }
+                            }
+                            if(dare_kati=="俺勝ち"){
+                                duel_phase="自由";//最後の砦が召喚されたので勝ちを取り消してターン続行
+                            }else{
+                                duel_phase="相手";
                             }
                             
                         }else{
@@ -496,6 +511,7 @@
 
                 deck_initialize(deck_list,my_deck,my_yamahuda);
                 deck_initialize(zako_list,teki_deck,teki_yamahuda);
+                
                 pull_card(my_yamahuda,my_tehuda,3);
                 /*
                 for(let i=0;i<5;i++){
@@ -964,14 +980,23 @@
                     ctx.fillStyle="rgb(0,0,0)";
                     ctx.drawImage(turn_end,5,5);
                     ctx.drawImage(yamahuda,110,20);
-                    ctx.fillText(my_yamahuda.length, 174, 70);
+                    ctx.fillText(my_yamahuda.length+yamahuda_damage[0], 174, 70);
                     ctx.drawImage(yamahuda,560,20);
-                    ctx.fillText(teki_yamahuda.length, 624, 70);
+                    ctx.fillText(teki_yamahuda.length+yamahuda_damage[1], 624, 70);
                     ctx.drawImage(hakaba,274,20);
-                    ctx.fillText(my_haka.length, 338, 70);
+                    ctx.fillText(my_haka.length-yamahuda_damage[0], 338, 70);
                     ctx.drawImage(hakaba,724,20);
-                    ctx.fillText(teki_haka.length, 788, 70);
-                    
+                    ctx.fillText(teki_haka.length-yamahuda_damage[1], 788, 70);
+                    if(yamahuda_damage[0]>0){
+                        if(time%3==0){
+                            yamahuda_damage[0]-=1;
+                        }
+                    }
+                    if(yamahuda_damage[1]>0){
+                        if(time%3==0){
+                            yamahuda_damage[1]-=1;
+                        }
+                    }
                     
                     
 
