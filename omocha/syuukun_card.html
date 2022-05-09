@@ -412,13 +412,13 @@
                     var doko_tehuda;
                     var dare_yamahuda_damage;
                     if(yamahuda==teki_yamahuda){//敵への攻撃さ！
-                        darekati="俺勝ち";                          
+                        dare_kati="俺勝ち";                          
                         doko_haka="teki_haka";
                         doko_syoukan="teki_ba_";
                         doko_tehuda="teki_tehuda_";
                         dare_yamahuda_damage=yamahuda_damage[1];
                     }else{
-                        darekati="敵勝ち";                          
+                        dare_kati="敵勝ち";                          
                         doko_haka="my_haka";
                         doko_syoukan="my_ba_";
                         doko_tehuda="my_tehuda_";
@@ -428,13 +428,13 @@
                     if(atk>yamahuda.length){//はい死亡～！攻撃された側の負け👍
                         atk=yamahuda.length;
                         dare_yamahuda_damage=atk;
-                        duel_phase=darekati;
+                        duel_phase=dare_kati;
                     }
                     for(let i=0;i<atk;i++){
                         if(yamahuda[yamahuda.length-1].state.indexOf("ACE")!=-1 || yamahuda[yamahuda.length-1].state.indexOf("TOP_ACE")!=-1){//ACEモンスター来た！
                             for(let j=0;j<5;j++){
                                 if(ba[ba_haiti[j]]==""){
-                                    ba[ba_haiti[j]]=syoukan(yamahuda[yamahuda.length-1],ba[ba_haiti[j]],doko_syoukan+ba_haiti[j]);
+                                    ba[ba_haiti[j]]=syoukan(yamahuda[yamahuda.length-1],doko_syoukan+ba_haiti[j]);
                                     break;
                                 }
                                 if(j==4){//召喚できなかった（笑）→手札へ
@@ -442,6 +442,7 @@
                                     tehuda[tehuda.length-1].position=doko_tehuda+(tehuda.length-1+i);
                                 }
                             }
+                            
                             if(dare_kati=="俺勝ち"){
                                 duel_phase="自由";//最後の砦が召喚されたので勝ちを取り消してターン続行
                             }else{
@@ -504,7 +505,8 @@
                     }
                     ctx.restore();
                 }
-                function syoukan(card,ba,ba_name){
+                function syoukan(card,ba_name){
+                    var ba
                     ba=card;
                     ba.position=ba_name;
                     ba.can_ATK=1;//召喚時効果によっては変わるかもね
@@ -690,7 +692,7 @@
                                 }else if(duel_phase=="召喚"){
                                     //生贄召喚とかほしいね、知らん。
                                     if(my_ba[cursor-6]==""){//あいてるじゃ～ん
-                                        my_ba[cursor-6]=syoukan(my_tehuda[tukau_card_num],my_ba[cursor-6],"my_ba_"+(cursor-6));
+                                        my_ba[cursor-6]=syoukan(my_tehuda[tukau_card_num],"my_ba_"+(cursor-6));
                                         my_tehuda.splice(tukau_card_num,1);
                                         duel_phase="自由";
                                     }
@@ -736,7 +738,7 @@
                                     for(let j=0;j<5;j++){
                                         if(teki_ba[ba_haiti[j]]==""){//空いてる場所あるじゃん！
                                             
-                                            teki_ba[ba_haiti[j]]=syoukan(teki_tehuda[i],teki_ba[ba_haiti[j]],"teki_ba_"+ba_haiti[j]);
+                                            teki_ba[ba_haiti[j]]=syoukan(teki_tehuda[i],"teki_ba_"+ba_haiti[j]);
                                             aite_delay=5;
                                             teki_tehuda.splice(aite_phase,1);
                                             aite_nayami="手札使ったよ";
