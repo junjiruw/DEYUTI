@@ -422,10 +422,7 @@
                         if(yamahuda[yamahuda.length-1].state.indexOf("ACE")!=-1 || yamahuda[yamahuda.length-1].state.indexOf("TOP_ACE")!=-1){//ACEモンスター来た！
                             for(let j=0;j<5;j++){
                                 if(ba[ba_haiti[j]]==""){
-                                    ba[ba_haiti[j]]=yamahuda[yamahuda.length-1];
-                                    ba[ba_haiti[j]].position=doko_syoukan+ba_haiti[j];
-                                    ba[ba_haiti[j]].can_ATK=1;//召喚時効果によっては変わるかもね
-                                    ba[ba_haiti[j]].move=5;
+                                    ba[ba_haiti[j]]=syoukan(yamahuda[yamahuda.length-1],ba[ba_haiti[j]],doko_syoukan+ba_haiti[j]);
                                     break;
                                 }
                                 if(j==4){//召喚できなかった（笑）
@@ -488,6 +485,13 @@
                         card_draw(card[i],x/kakudai+140*(i%x_maisuu),y/kakudai+210*(Math.floor(i/x_maisuu)));
                     }
                     ctx.restore();
+                }
+                function syoukan(card,ba,ba_name){
+                    ba=card;
+                    ba.position=ba_name;
+                    ba.can_ATK=1;//召喚時効果によっては変わるかもね
+                    ba.move=5;
+                    return ba;
                 }
 
                 deck_initialize(deck_list,my_deck,my_yamahuda);
@@ -667,10 +671,7 @@
                                 }else if(duel_phase=="召喚"){
                                     //生贄召喚とかほしいね、知らん。
                                     if(my_ba[cursor-6]==""){//あいてるじゃ～ん
-                                        my_ba[cursor-6]=my_tehuda[tukau_card_num];
-                                        my_ba[cursor-6].position="my_ba_"+(cursor-6);
-                                        my_ba[cursor-6].can_ATK=1;//召喚時効果によっては変わるかもね
-                                        my_ba[cursor-6].move=5;
+                                        my_ba[cursor-6]=syoukan(my_tehuda[tukau_card_num],my_ba[cursor-6],"my_ba_"+(cursor-6));
                                         my_tehuda.splice(tukau_card_num,1);
                                         duel_phase="自由";
                                     }
@@ -715,10 +716,8 @@
                                 if(teki_tehuda[i].state.indexOf("モンスター")!=-1){//モンスターカードやんけ！
                                     for(let j=0;j<5;j++){
                                         if(teki_ba[ba_haiti[j]]==""){//空いてる場所あるじゃん！
-                                            teki_ba[ba_haiti[j]]=teki_tehuda[i];
-                                            teki_ba[ba_haiti[j]].position="teki_ba_"+ba_haiti[j];
-                                            teki_ba[ba_haiti[j]].can_ATK=1;//召喚時効果によっては変わるかもね
-                                            teki_ba[ba_haiti[j]].move=5;
+                                            
+                                            teki_ba[ba_haiti[j]]=syoukan(teki_tehuda[i],teki_ba[ba_haiti[j]],"teki_ba_"+ba_haiti[j]);
                                             aite_delay=5;
                                             teki_tehuda.splice(aite_phase,1);
                                             aite_nayami="手札使ったよ";
