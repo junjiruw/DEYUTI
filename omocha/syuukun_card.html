@@ -99,6 +99,9 @@
 
             var card_syuukun=new Image();
             card_syuukun.src="../images/omocha/syuukun_card/card_syuukun130200.png";
+
+            var tehuda32=new Image();
+            tehuda32.src="../images/omocha/syuukun_card/tehuda32.png";
             //カード定義 effectを使うときはeffect()
             var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！…ところで俺がめちゃくちゃ長い説明文を持ってたとしたらどうする？ぐげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげ"};
             var test_card2={name:"テストカード2",image:test_syuukun,ATK:3,HP:4,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
@@ -997,7 +1000,18 @@
                             yamahuda_damage[1]-=1;
                         }
                     }
-                    
+                    if(my_tehuda.length>0){
+                        ctx.drawImage(tehuda32,389,14);
+                        ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText(my_tehuda.length, 425, 41);
+                    }
+                    if(teki_tehuda.length>0){
+                        ctx.drawImage(tehuda32,839,14);
+                        ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText(teki_tehuda.length, 875, 41);
+                    }
                     
 
                     ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
