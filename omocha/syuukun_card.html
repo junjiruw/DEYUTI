@@ -103,10 +103,10 @@
             var tehuda32=new Image();
             tehuda32.src="../images/omocha/syuukun_card/tehuda32.png";
             //カード定義 effectを使うときはeffect()
-            var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！…ところで俺がめちゃくちゃ長い説明文を持ってたとしたらどうする？ぐげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげ"};
-            var test_card2={name:"テストカード2",image:test_syuukun,ATK:3,HP:4,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！"};
+            var test_card={name:"テストカード",image:test,ATK:1,HP:1,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"オイラはテストカード！真っ赤な赤色がトレードマークさ！…ところで俺がめちゃくちゃ長い説明文を持ってたとしたらどうする？ぐげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげげ",text_iro:[]};
+            var test_card2={name:"テストカード2",image:test_syuukun,ATK:3,HP:4,state:["モンスター","test"],effect:function(){console.log("name:"+this.name);},text:"伝説のテストしゅうくん。あ、まって半角文字のテストしたい123456789aqswderfﾍｲﾍｲﾍｲﾄﾞｳﾅﾝﾀﾞｲﾍｲﾍｲ…いけるじゃん！",text_iro:[[0,1,"rgb(255,0,0)"],[1,1,"rgb(255,255,0)"],[2,1,"rgb(0,255,0)"],[3,1,"rgb(0,255,255)"],[4,1,"rgb(0,0,255)"],[5,1,"rgb(255,0,255)"],[6,1,"rgb(255,0,0)"],[7,1,"rgb(255,255,0)"],[8,1,"rgb(0,255,0)"],[9,1,"rgb(0,255,255)"],[10,1,"rgb(0,0,255)"]]};
             
-            var syuukun={name:"しゅうくん",image:card_syuukun,ATK:30,HP:10,state:["モンスター","しゅうくん"],effect:function(){console.log("name:"+this.name);},text:"カードに力を込めろ！"};
+            var syuukun={name:"しゅうくん",image:card_syuukun,ATK:30,HP:10,state:["モンスター","しゅうくん"],effect:function(){console.log("name:"+this.name);},text:"カードに力を込めろ！",text_iro:[[4,1,"rgb(255,0,0)"]]};
             //ここにゲームパラメータを置くとイイネ。
             var deck_list={card_list:[[test_card,29],[test_card2,10],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
             var zako_list={card_list:[[test_card,15],[test_card2,5]],ACE:[test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card,test_card],TOP_ACE:[test_card2,test_card2]};
@@ -151,6 +151,7 @@
 
             var syousai_card;
             var syousai_state;
+            var syousai_state_color;
 
             var tehuda_maisuu=0;//手札の角度覚えるのに使ってる
             var card_kankaku=0;
@@ -467,11 +468,20 @@
                     }
                     return num_of_mons;
                 }
-                function text_kaigyou_hyouji(txt,x,y,x_haba,y_haba,moji_zenkaku){//テキストをcanvasでも改行してくれるんや！
+                function text_kaigyou_hyouji(txt,x,y,x_haba,y_haba,moji_zenkaku,iro=[]){//テキストをcanvasでも改行してくれるんや！
                     var txt_array;
                     var past_i;
+                    var moji_x;
+                    var moji_count;
+                    var moji_color;
+                    var color_count;
+                    var iro_count;
                     txt_array=[];
                     past_i=0;
+                    moji_count=0;
+                    color_count=-1;
+                    iro_count=0;
+                    moji_color=ctx.fillStyle;
                     ctx.font = moji_zenkaku+"px  'ＭＳ ゴシック'";//フォント設定。
                     for (let i=0; i<txt.length; i++){
                         if(ctx.measureText(txt.substr(past_i,i-past_i+2)).width > x_haba){
@@ -483,11 +493,39 @@
                         txt_array[txt_array.length]=txt.substr(past_i);
                     }
                     if(txt_array.length+1>Math.floor(y_haba/moji_zenkaku)){//縦にはみ出してるぞ
-                        text_kaigyou_hyouji(txt,x,y,x_haba,y_haba,moji_zenkaku-1);//ちょっと小さくなってやりなおしてこい
+                        text_kaigyou_hyouji(txt,x,y,x_haba,y_haba,moji_zenkaku-1,iro);//ちょっと小さくなってやりなおしてこい
                     }else{
-                        for (let i=0; i<txt_array.length; i++){
-                            ctx.fillText(txt_array[i], x, y+(i+1)*moji_zenkaku);//文字を表示していくぜー！
+                        if(iro==""){//色ぬりしない
+                            for (let i=0; i<txt_array.length; i++){
+                                    ctx.fillText(txt_array[i], x, y+(i+1)*moji_zenkaku);//文字を表示していくぜー！
+                            }
+                        }else{
+                            //色を塗りたいという気持ちはありませんか？
+                            //iro[[色変えはじめ,塗る文字数,"rgb( , , )"],[],[],...] 
+                            iro[iro.length]=[0,0,"終わり"];
+                            for (let i=0; i<txt_array.length; i++){
+                                moji_x=0;
+                                for(let j=0;j<txt_array[i].length;j++){
+                                    
+                                    if(moji_count==iro[iro_count][0]){
+                                        color_count=iro[iro_count][1];
+                                        ctx.fillStyle=iro[iro_count][2];
+                                        iro_count+=1;
+                                    }
+                                        
+                                    if(color_count>=1){
+                                        color_count-=1;
+                                    }else if(color_count==0){
+                                        color_count-=1;
+                                        ctx.fillStyle=moji_color;//色戻して
+                                    }
+                                    ctx.fillText(txt_array[i][j], x+moji_x, y+(i+1)*moji_zenkaku);//文字を表示していくぜー!(1文字ずつ)
+                                    moji_x+=ctx.measureText(txt_array[i][j]).width;
+                                    moji_count+=1;
+                                }
+                            }
                         }
+                        ctx.fillStyle=moji_color;//色戻して
                     }
                 }
                 function takusan_card_draw(card,x,y,x_haba,y_haba){
@@ -949,13 +987,20 @@
                             ctx.fillText(syousai_card.card.HP, 654, 222);
                         }
                         ctx.fillStyle="rgb(0,0,0)";
-                        text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40);//x,yは左上指定だから注意だ！
+                        text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40,syousai_card.card.text_iro);//x,yは左上指定だから注意だ！
                         ctx.fillRect(255,600,490,2);
+                        syousai_state_color=[];
                         syousai_state="分類:";
                         for(let i=0;i<syousai_card.state.length;i++){
+                            if(syousai_card.state[i]=="TOP_ACE"){
+                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                            }else if(syousai_card.state[i]=="ACE"){
+                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                            }
                             syousai_state+=" "+syousai_card.state[i];
                         }
-                        text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40);//x,yは左上指定だから注意だ！
+                        text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
+                        
                     }
 
                     if(cursor==1){
