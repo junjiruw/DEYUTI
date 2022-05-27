@@ -838,6 +838,7 @@
                     if(長押し阻止==1 && key_input.indexOf("〇")==-1){//〇ボタンの長押し連打阻止。
                         長押し阻止=0; 
                     }
+                    //相手ターン操作は下のほうに置いとくね。スクロールして
 
                     if(duel_phase=="相手"){
                         if(aite_delay>0){
@@ -931,12 +932,10 @@
                                             }
                                         }
                                         if(my_kougeki_sum>teki_kougeki_sum){//発動条件ざつすぎん？
-                                            teki_tehuda[i].card.effect("手札から");
-                                            teki_tehuda[i].position="teki_haka";
-                                            teki_haka.push(teki_tehuda[i]);
-                                            aite_delay=5;
-                                            teki_tehuda.splice(i,1);
-                                            aite_nayami="手札使ったよ";
+                                            aite_phase="相手発動確認";
+                                            aite_nayami="確認待ちだぜ！";
+                                            tukau_card_num=i;
+                                            break;
                                         }
                                         
                                     }
@@ -1453,6 +1452,55 @@
                         }
                     }
 
+                    if(aite_phase=="相手発動確認"){
+                        if(key_input.indexOf("〇")!=-1 || key_input.indexOf("×")!=-1){
+                            teki_tehuda[tukau_card_num].card.effect("手札から");
+                            teki_tehuda[tukau_card_num].position="teki_haka";
+                            teki_haka.push(teki_tehuda[tukau_card_num]);
+                            aite_delay=5;
+                            teki_tehuda.splice(tukau_card_num,1);
+                            aite_phase="攻撃";
+                        }
+                        ctx.fillStyle="rgb(55,55,55)";
+                        ctx.fillRect(240,110,520,670);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(250,120,500,650);
+                        syousai_card=teki_tehuda[tukau_card_num];
+                        ctx.fillStyle="rgb(200,200,200)";
+                        ctx.fillRect(255,125,490,50);
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText(syousai_card.card.name, 260, 168);
+                        ctx.drawImage(syousai_card.card.image,260,180);
+
+                        ctx.fillStyle="rgb(0,0,0)";
+                        text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40,syousai_card.card.text_iro);//x,yは左上指定だから注意だ！
+                        ctx.fillRect(255,600,490,2);
+                        syousai_state_color=[];
+                        syousai_state="分類:";
+                        for(let i=0;i<syousai_card.state.length;i++){
+                            if(syousai_card.state[i]=="TOP_ACE"){
+                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                            }else if(syousai_card.state[i]=="ACE"){
+                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                            }
+                            syousai_state+=" "+syousai_card.state[i];
+                        }
+                        text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
+
+                        ctx.fillStyle="rgb(55,55,55)";
+                        ctx.fillRect(90,790,820,200);
+                        ctx.fillStyle="rgb(200,255,200)";
+                        ctx.fillRect(100,800,800,180);
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText("・発動されました！", 150, 870);
+                        ctx.fillText("OK", 380, 950);
+                        ctx.save();
+                        ctx.rotate(90 * Math.PI / 180);
+                        ctx.drawImage(yubi,870,-370+4*Math.sin(time*Math.PI/8));
+                        ctx.restore();
+                    }
                 },30);//30/1000[s]でくりかえすぞ！
                 
             }
