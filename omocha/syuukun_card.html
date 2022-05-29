@@ -135,12 +135,16 @@
             
             var my_haka=[];
             var teki_haka=[];
-            //キーボードなど、システムの、あの、アレ、アレさ！
+            //キーボードなど、システムの、あの、アレ、アレさ！-------------------------------------------------
             var key_input="";
             var what_input="";//キーボード同時おしに使う
             var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
             var key_owarasete=0;
             var 長押し阻止=0;//決定ボタンを長押し連打するのはまずいのでは？となったので阻止します。
+
+            var game_phase="戦闘準備";
+
+            //----------------------
 
             var cursor=16;
             var pre_cursor;
@@ -761,22 +765,9 @@
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,5],[powerup3,5],[test_card,4],[test_card2,4],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
                 //var deck_list={card_list:[[kinkyuujitai5,5],[test_card2,10],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
-                var zako_list={card_list:[[HPup5,5],[powerup3,5],[ryuunoitigeki,5],[test_card,2],[test_card2,15]],ACE:[test_card,test_card,test_card2,test_card2],TOP_ACE:[test_card2,test_card2]};
+                var zako_list={card_list:[[HPup5,5],[powerup3,15],[ryuunoitigeki,5],[test_card,2],[test_card2,15]],ACE:[test_card,test_card,test_card2,test_card2],TOP_ACE:[test_card2,test_card2]};
 
-
-
-                //deck_initialize(deck_list,my_deck,my_yamahuda);
-                deck_initialize(test_list,my_deck,my_yamahuda);
-                deck_initialize(zako_list,teki_deck,teki_yamahuda);
                 
-                pull_card(my_yamahuda,my_tehuda,3);
-                /*
-                for(let i=0;i<5;i++){
-                    teki_ba[i]=teki_deck[39-i];
-                    teki_ba[i].position="teki_ba_"+i;
-                    teki_ba[i].move=5;
-                }
-                */
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
                     time+=1;
@@ -784,1022 +775,1099 @@
                         time=0;
                     }
 
-                    if(key_interval<=0 && key_input!="" && duel_phase!="相手"){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                        key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
-                        for(let i=0;i<key_input.length;i++){
-                            if(key_input.charAt(i)=="↑"){
-                                if(duel_phase=="自由"){
-                                    if(cursor<=2){
-                                        cursor=16;
-                                    }else if(cursor<=5){
-                                        cursor=15;
-                                    }else if(cursor==6){
-                                        cursor=-1;
-                                    }else if(cursor==11){
-                                        cursor=5;
-                                    }else if(cursor>=7 && cursor<=15){
-                                        cursor-=1;
-                                    }else if(cursor>=16){
-                                        cursor=10;
-                                    }
-                                }else if(duel_phase=="攻撃"){
-                                    if(cursor!=3){//山札への攻撃じゃないなら
-                                        cursor-=1;
-                                        if(cursor<=10){
+                    if(game_phase=="タイトル"){
+                        if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            for(let i=0;i<key_input.length;i++){
+                                if(key_input.charAt(i)=="↑"){
+                                }else if(key_input.charAt(i)=="←"){
+                                }else if(key_input.charAt(i)=="→"){
+                                }else if(key_input.charAt(i)=="↓"){
+                                }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                    長押し阻止=1;
+                                    game_phase="戦闘準備";
+                                }else if(key_input.charAt(i)=="×"){
+                                    長押し阻止=1;
+                                }
+                            }
+                            if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                                key_input="";
+                                key_interval=0;
+                            }
+                        }else if(key_interval>0){
+                            key_interval=key_interval-1;//カウントダウン
+                        }
+                        if(長押し阻止==1 && (key_input.indexOf("〇")==-1 || key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
+                            長押し阻止=0; 
+                        }
+                    }else if(game_phase=="デッキ編集"){
+
+                        if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            for(let i=0;i<key_input.length;i++){
+                                if(key_input.charAt(i)=="↑"){
+                                    
+                                }else if(key_input.charAt(i)=="←"){
+
+                                    
+                                }else if(key_input.charAt(i)=="→"){
+
+                                    
+                                }else if(key_input.charAt(i)=="↓"){
+
+                                    
+                                }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                    長押し阻止=1;
+                                    
+                                }else if(key_input.charAt(i)=="×"){
+                                    長押し阻止=1;
+                                }
+                            }
+                            if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                                key_input="";
+                                key_interval=0;
+                            }
+                            
+                        }else if(key_interval>0){
+                            key_interval=key_interval-1;//カウントダウン
+                        }
+
+                        if(長押し阻止==1 && (key_input.indexOf("〇")==-1 || key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
+                            長押し阻止=0; 
+                        }
+
+
+                        ctx.fillStyle="rgb(100,100,130,1)";
+                        ctx.fillRect(0,0,1000,1000);
+
+
+                    }else if(game_phase=="戦闘準備"){
+                        deck_initialize(test_list,my_deck,my_yamahuda);
+                        deck_initialize(zako_list,teki_deck,teki_yamahuda);
+                        
+                        pull_card(my_yamahuda,my_tehuda,3);
+                        game_phase="戦闘";
+                    }else if(game_phase=="戦闘"){
+                        if(key_interval<=0 && key_input!="" && duel_phase!="相手"){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            for(let i=0;i<key_input.length;i++){
+                                if(key_input.charAt(i)=="↑"){
+                                    if(duel_phase=="自由"){
+                                        if(cursor<=2){
+                                            cursor=16;
+                                        }else if(cursor<=5){
                                             cursor=15;
+                                        }else if(cursor==6){
+                                            cursor=-1;
+                                        }else if(cursor==11){
+                                            cursor=5;
+                                        }else if(cursor>=7 && cursor<=15){
+                                            cursor-=1;
+                                        }else if(cursor>=16){
+                                            cursor=10;
                                         }
-                                    }
-                                }else if(duel_phase=="召喚"){
-                                    cursor-=1;
-                                    if(cursor<=5){
-                                        cursor=10;
-                                    }
-                                }else if(duel_phase=="魔法発動確認" || duel_phase=="ターンエンド確認"){
-                                    cursor2=(cursor2+1)%2;
-                                }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){
-                                    cursor2-=1;
-                                    if(cursor2<0){
-                                        cursor2=4;
-                                    }
-                                }
-                                
-                            }else if(key_input.charAt(i)=="←"){
-                                if(duel_phase=="自由"){
-                                    if(cursor==-1){
-                                        cursor=5;
-                                    }else if(cursor<=5){ 
-                                    cursor-=1;
-                                    }else if(cursor>=11 && cursor<=15){
-                                        cursor-=5;
-                                    }else if(cursor>=17){
+                                    }else if(duel_phase=="攻撃"){
+                                        if(cursor!=3){//山札への攻撃じゃないなら
+                                            cursor-=1;
+                                            if(cursor<=10){
+                                                cursor=15;
+                                            }
+                                        }
+                                    }else if(duel_phase=="召喚"){
                                         cursor-=1;
+                                        if(cursor<=5){
+                                            cursor=10;
+                                        }
+                                    }else if(duel_phase=="魔法発動確認" || duel_phase=="ターンエンド確認"){
+                                        cursor2=(cursor2+1)%2;
+                                    }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){
+                                        cursor2-=1;
+                                        if(cursor2<0){
+                                            cursor2=4;
+                                        }
                                     }
-                                }
-                                
-                            }else if(key_input.charAt(i)=="→"){
-                                if(duel_phase=="自由"){
-                                    if(cursor<=4){
-                                        cursor+=1;
-                                    }else if(cursor==5){
-                                        cursor=-1;
-                                    }else if(cursor>=6 && cursor<=10){
-                                        cursor+=5;
-                                    }else if(cursor>=16 && cursor<=(my_tehuda.length+14)){
-                                        cursor+=1;
+                                    
+                                }else if(key_input.charAt(i)=="←"){
+                                    if(duel_phase=="自由"){
+                                        if(cursor==-1){
+                                            cursor=5;
+                                        }else if(cursor<=5){ 
+                                        cursor-=1;
+                                        }else if(cursor>=11 && cursor<=15){
+                                            cursor-=5;
+                                        }else if(cursor>=17){
+                                            cursor-=1;
+                                        }
                                     }
-                                }
-                                
-                            }else if(key_input.charAt(i)=="↓"){
-                                if(duel_phase=="自由"){
-                                    if(cursor<=2){
-                                        cursor=6;
-                                    }else if(cursor<=5){
-                                        cursor=11;
-                                    }else if(cursor<=9){
-                                        cursor+=1;
-                                    }else if(cursor==10){
-                                        cursor=16;
-                                    }else if(cursor<=15){
-                                        cursor+=1;
-                                    }else{
-                                        cursor=-1;
+                                    
+                                }else if(key_input.charAt(i)=="→"){
+                                    if(duel_phase=="自由"){
+                                        if(cursor<=4){
+                                            cursor+=1;
+                                        }else if(cursor==5){
+                                            cursor=-1;
+                                        }else if(cursor>=6 && cursor<=10){
+                                            cursor+=5;
+                                        }else if(cursor>=16 && cursor<=(my_tehuda.length+14)){
+                                            cursor+=1;
+                                        }
                                     }
-                                }else if(duel_phase=="攻撃"){
-                                    if(cursor!=3){//山札への攻撃じゃないなら
-                                        cursor+=1;
-                                        if(cursor>=16){
+                                    
+                                }else if(key_input.charAt(i)=="↓"){
+                                    if(duel_phase=="自由"){
+                                        if(cursor<=2){
+                                            cursor=6;
+                                        }else if(cursor<=5){
                                             cursor=11;
+                                        }else if(cursor<=9){
+                                            cursor+=1;
+                                        }else if(cursor==10){
+                                            cursor=16;
+                                        }else if(cursor<=15){
+                                            cursor+=1;
+                                        }else{
+                                            cursor=-1;
                                         }
-                                    }
-                                }else if(duel_phase=="召喚"){
-                                    cursor+=1;
-                                    if(cursor>=11){
-                                        cursor=6;
-                                    }
-                                }else if(duel_phase=="魔法発動確認" || duel_phase=="ターンエンド確認"){
-                                    cursor2=(cursor2+1)%2;
-                                }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){
-                                    cursor2+=1;
-                                    if(cursor2>4){
-                                        cursor2=0;
-                                    }
-                                }
-                                
-                            }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
-                                長押し阻止=1;
-                                if(duel_phase=="自由"){
-                                    if(cursor==-1){
-                                        cursor2=0;
-                                        duel_phase="ターンエンド確認";
-                                    }else if(cursor>=6 && cursor<=10 && my_ba[cursor-6]!=""){
-                                        pre_cursor=cursor;//キャンセルしたときにここに戻してあげたいよね。
-                                        atk_card=my_ba[cursor-6];//こちらの攻撃カード
-                                        if(atk_card.can_ATK>=1){
-                                            duel_phase="攻撃";
-                                            if(ba_mons_num(teki_ba)==0){
-                                                cursor=3;//敵がいない場合は山札にカーソル合わせてほしいな
-                                            }else{
+                                    }else if(duel_phase=="攻撃"){
+                                        if(cursor!=3){//山札への攻撃じゃないなら
+                                            cursor+=1;
+                                            if(cursor>=16){
                                                 cursor=11;
-                                                for(let i=0;i<4;i++){//敵がいるところにカーソル合わせようぜ。
-                                                    if(teki_ba[cursor-11]==""){
-                                                        cursor+=1;
-                                                    }else{
-                                                        break;
-                                                    }
-                                                }
                                             }
-                                            
                                         }
-                                        
-
-                                    }else if(cursor>=16 && my_tehuda.length!=0){
-                                        pre_cursor=cursor;//キャンセルしたときにここに戻してあげたいよね。
-                                        tukau_card_num=cursor-16;
-                                        if(my_tehuda[tukau_card_num].state.indexOf("モンスター")!=-1){//手札にあったモンスターカードを選んだな！
-                                            if(ba_mons_num(my_ba)!=5){//場がいっぱいじゃないので、いや、生贄召喚系ならいっぱいでもいいのか
-                                                duel_phase="召喚";
-                                                cursor=10;
-                                                for(let i=0;i<4;i++){//カードがないところにカーソル合わせようぜ。
-                                                    if(my_ba[cursor-6]!=""){
-                                                        cursor-=1;
-                                                    }else{
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }else if(my_tehuda[tukau_card_num].state.indexOf("魔法")!=-1){//たぶん魔法だぜ！
-                                            if(my_tehuda[tukau_card_num].card.effect_req("手札から")){//発動条件確認！
-                                                if(my_tehuda[tukau_card_num].state.indexOf("敵選択")!=-1){
-                                                    duel_phase="敵選択";
-                                                    
-                                                    for(let i=0;i<4;i++){//敵がいるところにカーソル合わせようぜ。
-                                                        if(teki_ba[i]==""){
-                                                        }else{
-                                                            cursor2=i;
-                                                            break;
-                                                        }
-                                                    }
-                                                }else if(my_tehuda[tukau_card_num].state.indexOf("味方選択")!=-1){
-                                                    duel_phase="味方選択";
-                                                    for(let i=0;i<4;i++){//味方いるところにカーソル合わせようぜ。
-                                                        if(my_ba[i]==""){
-                                                        }else{
-                                                            cursor2=i;
-                                                            break;
-                                                        }
-                                                    }
-                                                }else{//選択しないタイプだと…思う
-                                                    duel_phase="魔法発動確認";
-                                                    cursor2=0;
-                                                }
-                                            }else{//使えなかったらなんかしてあげたいという気持ちがないといわけでもないが、とくにない
-
-                                            }
-                                            
+                                    }else if(duel_phase=="召喚"){
+                                        cursor+=1;
+                                        if(cursor>=11){
+                                            cursor=6;
+                                        }
+                                    }else if(duel_phase=="魔法発動確認" || duel_phase=="ターンエンド確認"){
+                                        cursor2=(cursor2+1)%2;
+                                    }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){
+                                        cursor2+=1;
+                                        if(cursor2>4){
+                                            cursor2=0;
                                         }
                                     }
-                                }else if(duel_phase=="攻撃"){
-                                    if(cursor==3){//ダイレクトアタック！
-                                        atk_yamahuda(atk_card.ATK,teki_yamahuda,teki_haka,teki_ba,teki_tehuda);
-                                        atk_card.can_ATK-=1;//攻撃可能回数が1減る
-                                        my_ba[pre_cursor-6].move=-3;
-                                        cursor=pre_cursor;
-                                        zuba[3]=6;
-                                        if(duel_phase=="攻撃"){//これが通らなかったらどっちかが負けてる
+                                    
+                                }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                    長押し阻止=1;
+                                    if(duel_phase=="自由"){
+                                        if(cursor==-1){
+                                            cursor2=0;
+                                            duel_phase="ターンエンド確認";
+                                        }else if(cursor>=6 && cursor<=10 && my_ba[cursor-6]!=""){
+                                            pre_cursor=cursor;//キャンセルしたときにここに戻してあげたいよね。
+                                            atk_card=my_ba[cursor-6];//こちらの攻撃カード
+                                            if(atk_card.can_ATK>=1){
+                                                duel_phase="攻撃";
+                                                if(ba_mons_num(teki_ba)==0){
+                                                    cursor=3;//敵がいない場合は山札にカーソル合わせてほしいな
+                                                }else{
+                                                    cursor=11;
+                                                    for(let i=0;i<4;i++){//敵がいるところにカーソル合わせようぜ。
+                                                        if(teki_ba[cursor-11]==""){
+                                                            cursor+=1;
+                                                        }else{
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                
+                                            }
+                                            
+
+                                        }else if(cursor>=16 && my_tehuda.length!=0){
+                                            pre_cursor=cursor;//キャンセルしたときにここに戻してあげたいよね。
+                                            tukau_card_num=cursor-16;
+                                            if(my_tehuda[tukau_card_num].state.indexOf("モンスター")!=-1){//手札にあったモンスターカードを選んだな！
+                                                if(ba_mons_num(my_ba)!=5){//場がいっぱいじゃないので、いや、生贄召喚系ならいっぱいでもいいのか
+                                                    duel_phase="召喚";
+                                                    cursor=10;
+                                                    for(let i=0;i<4;i++){//カードがないところにカーソル合わせようぜ。
+                                                        if(my_ba[cursor-6]!=""){
+                                                            cursor-=1;
+                                                        }else{
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }else if(my_tehuda[tukau_card_num].state.indexOf("魔法")!=-1){//たぶん魔法だぜ！
+                                                if(my_tehuda[tukau_card_num].card.effect_req("手札から")){//発動条件確認！
+                                                    if(my_tehuda[tukau_card_num].state.indexOf("敵選択")!=-1){
+                                                        duel_phase="敵選択";
+                                                        
+                                                        for(let i=0;i<4;i++){//敵がいるところにカーソル合わせようぜ。
+                                                            if(teki_ba[i]==""){
+                                                            }else{
+                                                                cursor2=i;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }else if(my_tehuda[tukau_card_num].state.indexOf("味方選択")!=-1){
+                                                        duel_phase="味方選択";
+                                                        for(let i=0;i<4;i++){//味方いるところにカーソル合わせようぜ。
+                                                            if(my_ba[i]==""){
+                                                            }else{
+                                                                cursor2=i;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }else{//選択しないタイプだと…思う
+                                                        duel_phase="魔法発動確認";
+                                                        cursor2=0;
+                                                    }
+                                                }else{//使えなかったらなんかしてあげたいという気持ちがないといわけでもないが、とくにない
+
+                                                }
+                                                
+                                            }
+                                        }
+                                    }else if(duel_phase=="攻撃"){
+                                        if(cursor==3){//ダイレクトアタック！
+                                            atk_yamahuda(atk_card.ATK,teki_yamahuda,teki_haka,teki_ba,teki_tehuda);
+                                            atk_card.can_ATK-=1;//攻撃可能回数が1減る
+                                            my_ba[pre_cursor-6].move=-3;
+                                            cursor=pre_cursor;
+                                            zuba[3]=6;
+                                            if(duel_phase=="攻撃"){//これが通らなかったらどっちかが負けてる
+                                                duel_phase="自由";
+                                            }
+                                            
+                                        }else if(teki_ba[cursor-11]!=""){//相手のいる場所を攻撃
+                                            def_card=teki_ba[cursor-11];
+                                            def_card.HP-=atk_card.ATK;
+                                            if(def_card.HP<=0){//倒した～
+                                                teki_ba[cursor-11]=death_card(def_card,teki_haka,cursor-11);
+                                                //teki_ba[cursor-11]="";になるよん
+                                                //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
+                                            }
+                                            atk_card.can_ATK-=1;//攻撃可能回数が1減る
+                                            my_ba[pre_cursor-6].move=-3;
+                                            teki_ba[cursor-11].move=2;
+                                            zuba[cursor]=6;
+                                            cursor=pre_cursor;
+                                            duel_phase="自由";
+                                        }
+                                    }else if(duel_phase=="召喚"){
+                                        //生贄召喚とかほしいね、知らん。
+                                        if(my_ba[cursor-6]==""){//あいてるじゃ～ん
+                                            my_ba[cursor-6]=syoukan(my_tehuda[tukau_card_num],"my_ba_"+(cursor-6));
+                                            my_tehuda.splice(tukau_card_num,1);
                                             duel_phase="自由";
                                         }
                                         
-                                    }else if(teki_ba[cursor-11]!=""){//相手のいる場所を攻撃
-                                        def_card=teki_ba[cursor-11];
-                                        def_card.HP-=atk_card.ATK;
-                                        if(def_card.HP<=0){//倒した～
-                                            teki_ba[cursor-11]=death_card(def_card,teki_haka,cursor-11);
-                                            //teki_ba[cursor-11]="";になるよん
-                                            //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
+                                    }else if(duel_phase=="魔法発動確認"){
+                                        if(cursor2==0){//発動するってなら
+                                            my_tehuda[tukau_card_num].card.effect("手札から");
+                                            tukau_mahou[tukau_mahou.length]=[my_tehuda[tukau_card_num],50+card_kankaku*tukau_card_num,780,10];
+                                            my_tehuda[tukau_card_num].position="my_haka";
+                                            my_haka.push(my_tehuda[tukau_card_num]);
+
+                                            my_tehuda.splice(tukau_card_num,1);
+                                            if(cursor!=16 && cursor==(my_tehuda.length+16)){
+                                                cursor-=1;//カーソルがそのままだとはみ出るから…さ。
+                                            }
                                         }
-                                        atk_card.can_ATK-=1;//攻撃可能回数が1減る
-                                        my_ba[pre_cursor-6].move=-3;
-                                        teki_ba[cursor-11].move=2;
-                                        zuba[cursor]=6;
+                                        
+                                        duel_phase="自由";
+                                    }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){//発動するってなら
+                                        if(my_tehuda[tukau_card_num].card.effect("手札から")){//効果がないときはfalseが返ってくるぜ！
+                                            tukau_mahou[tukau_mahou.length]=[my_tehuda[tukau_card_num],50+card_kankaku*tukau_card_num,780,10];
+                                            my_tehuda[tukau_card_num].position="my_haka";
+                                            my_haka.push(my_tehuda[tukau_card_num]);
+
+                                            my_tehuda.splice(tukau_card_num,1);
+                                            if(cursor!=16 && cursor==(my_tehuda.length+16)){
+                                                cursor-=1;//カーソルがそのままだとはみ出るから…さ。
+                                            }
+                                            duel_phase="自由";
+                                        }   
+                                    }else if(duel_phase=="ターンエンド確認"){
+                                        if(cursor2==0){//OK
+                                            duel_phase="相手";
+                                            aite_phase="始まり";
+                                            cursor=16;
+                                        }else{
+                                            duel_phase="自由";
+                                        }
+                                    }
+                                    
+                                }else if(key_input.charAt(i)=="×"){
+                                    if(duel_phase=="自由"){
+                                        
+                                    }else if(duel_phase=="攻撃"){
+                                        duel_phase="自由";
                                         cursor=pre_cursor;
+                                    }else if(duel_phase=="召喚"){
+                                        duel_phase="自由";
+                                        cursor=pre_cursor;
+                                    }else if(duel_phase=="魔法発動確認" || duel_phase=="ターンエンド確認" || duel_phase=="敵選択" || duel_phase=="味方選択"){
                                         duel_phase="自由";
                                     }
-                                }else if(duel_phase=="召喚"){
-                                    //生贄召喚とかほしいね、知らん。
-                                    if(my_ba[cursor-6]==""){//あいてるじゃ～ん
-                                        my_ba[cursor-6]=syoukan(my_tehuda[tukau_card_num],"my_ba_"+(cursor-6));
-                                        my_tehuda.splice(tukau_card_num,1);
-                                        duel_phase="自由";
-                                    }
-                                    
-                                }else if(duel_phase=="魔法発動確認"){
-                                    if(cursor2==0){//発動するってなら
-                                        my_tehuda[tukau_card_num].card.effect("手札から");
-                                        tukau_mahou[tukau_mahou.length]=[my_tehuda[tukau_card_num],50+card_kankaku*tukau_card_num,780,10];
-                                        my_tehuda[tukau_card_num].position="my_haka";
-                                        my_haka.push(my_tehuda[tukau_card_num]);
-
-                                        my_tehuda.splice(tukau_card_num,1);
-                                        if(cursor!=16 && cursor==(my_tehuda.length+16)){
-                                            cursor-=1;//カーソルがそのままだとはみ出るから…さ。
-                                        }
-                                    }
-                                    
-                                    duel_phase="自由";
-                                }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){//発動するってなら
-                                    if(my_tehuda[tukau_card_num].card.effect("手札から")){//効果がないときはfalseが返ってくるぜ！
-                                        tukau_mahou[tukau_mahou.length]=[my_tehuda[tukau_card_num],50+card_kankaku*tukau_card_num,780,10];
-                                        my_tehuda[tukau_card_num].position="my_haka";
-                                        my_haka.push(my_tehuda[tukau_card_num]);
-
-                                        my_tehuda.splice(tukau_card_num,1);
-                                        if(cursor!=16 && cursor==(my_tehuda.length+16)){
-                                            cursor-=1;//カーソルがそのままだとはみ出るから…さ。
-                                        }
-                                        duel_phase="自由";
-                                    }   
-                                }else if(duel_phase=="ターンエンド確認"){
-                                    if(cursor2==0){//OK
-                                        duel_phase="相手";
-                                        aite_phase="始まり";
-                                        cursor=16;
-                                    }else{
-                                        duel_phase="自由";
-                                    }
-                                }
-                                
-                            }else if(key_input.charAt(i)=="×"){
-                                if(duel_phase=="自由"){
-                                    
-                                }else if(duel_phase=="攻撃"){
-                                    duel_phase="自由";
-                                    cursor=pre_cursor;
-                                }else if(duel_phase=="召喚"){
-                                    duel_phase="自由";
-                                    cursor=pre_cursor;
-                                }else if(duel_phase=="魔法発動確認" || duel_phase=="ターンエンド確認" || duel_phase=="敵選択" || duel_phase=="味方選択"){
-                                    duel_phase="自由";
                                 }
                             }
-                        }
-                        if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
-                            key_input="";
-                            key_interval=0;
-                        }
-                        
-                    }else if(key_interval>0){
-                        key_interval=key_interval-1;//カウントダウン
-                    }
-
-                    if(長押し阻止==1 && key_input.indexOf("〇")==-1){//〇ボタンの長押し連打阻止。
-                        長押し阻止=0; 
-                    }
-                    //相手ターン操作は下のほうに置いとくね。スクロールして
-
-                    if(duel_phase=="相手"){
-                        if(aite_delay>0){
-                            aite_delay-=1;
-                        }else if(aite_phase=="始まり"){
-                            for(let i=0;i<5;i++){
-                                if(my_ba[i]!=""){
-                                    my_ba[i].can_ATK=1;//効果によっては変わるかもね
-                                }
+                            if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                                key_input="";
+                                key_interval=0;
                             }
-                            pull_card(teki_yamahuda,teki_tehuda,2);//相手の手札枚数は右上のあそこに表示してあげるとやさしいと思うな。
-                            teki_siyou_tehuda=[];
-                            aite_phase="攻撃";
                             
-                        }else if(aite_phase=="攻撃"){
-                            aite_nayami="悩むぜ！";
-                            for(let i=0;i<teki_tehuda.length;i++){//攻撃する前に使うべき手札があったら使うぜ！
-                                if(teki_tehuda[i].state.indexOf("魔法")!=-1 && teki_tehuda[i].card.effect_req("手札から")){//魔法だね。&& //発動条件確認！
-                                    if(teki_tehuda[i].state.indexOf("攻撃上昇")!=-1){
-                                            if(teki_tehuda[i].card.AI("手札から")){//AI的な発動条件
+                        }else if(key_interval>0){
+                            key_interval=key_interval-1;//カウントダウン
+                        }
+
+                        if(長押し阻止==1 && key_input.indexOf("〇")==-1){//〇ボタンの長押し連打阻止。
+                            長押し阻止=0; 
+                        }
+                        //相手ターン操作は下のほうに置いとくね。スクロールして
+
+                        if(duel_phase=="相手"){
+                            if(aite_delay>0){
+                                aite_delay-=1;
+                            }else if(aite_phase=="始まり"){
+                                for(let i=0;i<5;i++){
+                                    if(my_ba[i]!=""){
+                                        my_ba[i].can_ATK=1;//効果によっては変わるかもね
+                                    }
+                                }
+                                pull_card(teki_yamahuda,teki_tehuda,2);//相手の手札枚数は右上のあそこに表示してあげるとやさしいと思うな。
+                                teki_siyou_tehuda=[];
+                                aite_phase="攻撃";
+                                
+                            }else if(aite_phase=="攻撃"){
+                                aite_nayami="悩むぜ！";
+                                for(let i=0;i<teki_tehuda.length;i++){//攻撃する前に使うべき手札があったら使うぜ！
+                                    if(teki_tehuda[i].state.indexOf("魔法")!=-1 && teki_tehuda[i].card.effect_req("手札から")){//魔法だね。&& //発動条件確認！
+                                        if(teki_tehuda[i].state.indexOf("攻撃上昇")!=-1){
+                                                if(teki_tehuda[i].card.AI("手札から")){//AI的な発動条件
+                                                aite_phase="相手発動確認";
+                                                aite_nayami="確認待ちだぜ！";
+                                                tukau_card_num=i;
+                                                break;                                        
+                                            }
+                                        }
+                                    }
+                                }
+                                if(aite_nayami!="確認待ちだぜ！"){//攻撃するの？
+                                    for(let i=0;i<5;i++){//攻撃力が一番高いやつを見つけるぜ！
+                                        if(teki_ba[i]!=""){
+                                            if(teki_ba[i].can_ATK>0){
+                                                if(aite_nayami=="悩むぜ！"){
+                                                    aite_nayami=i;
+                                                }else if(teki_ba[aite_nayami].ATK<teki_ba[i].ATK){//攻撃力が高いやつから攻撃しようぜ（これがいいのかは…知らん。）
+                                                    
+                                                    aite_nayami=i;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if(aite_nayami=="悩むぜ！"){//攻撃できるカードがなかったぜ！
+                                        aite_phase="召喚";
+                                    }else{
+                                        teki_ba[aite_nayami].move=-3;
+                                        aite_delay=10;
+                                        atk_card=teki_ba[aite_nayami];
+                                        aite_nayami="悩むぜ！";
+
+                                        for(let i=0;i<5;i++){//体力とか攻撃力を加味して攻撃相手を決めたいぜ！
+                                            if(my_ba[i]!=""){
+                                                if(aite_nayami=="悩むぜ！"){
+                                                    aite_nayami=i;
+                                                }else if(my_ba[aite_nayami].ATK/Math.ceil(my_ba[aite_nayami].HP/atk_card.ATK)<my_ba[i].ATK/Math.ceil(my_ba[i].HP/atk_card.ATK)){//なんか殺しやすくて強いやつを殴ろう
+                                                    aite_nayami=i;
+                                                }
+                                            }
+                                        }
+
+                                        if(aite_nayami=="悩むぜ！"){//俺の場がガラ空きだぁ
+                                            atk_yamahuda(atk_card.ATK,my_yamahuda,my_haka,my_ba,my_tehuda);
+                                            if(duel_phase!="相手"){
+                                                aite_phase="終わり";//どっちか負けたぞ
+                                            }
+                                            zuba[0]=6;
+                                        }else{
+                                            def_card=my_ba[aite_nayami];
+                                            def_card.HP-=atk_card.ATK;
+                                            if(def_card.HP<=0){//倒した～
+                                                my_ba[aite_nayami]=death_card(def_card,my_haka,aite_nayami);
+                                                //my_ba[aite_nayami]="";になるよん
+                                                //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
+                                            }
+                                            my_ba[aite_nayami].move=2;
+                                            zuba[aite_nayami+6]=6;
+                                        }
+                                        
+                                        atk_card.can_ATK-=1;//攻撃したら…ね
+                                    }
+                                }
+                            }else if(aite_phase=="召喚"){//召喚…魔法発動もしてるぜ！
+                                aite_nayami="悩むぜ！";
+                                for(let i=0;i<teki_tehuda.length;i++){//手札使うぜ！    
+                                    if(teki_tehuda[i].state.indexOf("モンスター")!=-1){//モンスターカードやんけ！
+                                        for(let j=0;j<5;j++){
+                                            if(teki_ba[ba_haiti[j]]==""){//空いてる場所あるじゃん！
+                                                
+                                                teki_ba[ba_haiti[j]]=syoukan(teki_tehuda[i],"teki_ba_"+ba_haiti[j]);
+                                                aite_delay=5;
+                                                teki_tehuda.splice(i,1);
+                                                aite_nayami="手札使ったよ";
+                                                break;//
+                                            }
+                                        }
+                                    }else if(teki_tehuda[i].state.indexOf("魔法")!=-1 && teki_tehuda[i].card.effect_req("手札から")){//魔法だね。&& //発動条件確認！
+                                        if(teki_tehuda[i].card.AI("手札から")){//AI的な発動条件
                                             aite_phase="相手発動確認";
                                             aite_nayami="確認待ちだぜ！";
                                             tukau_card_num=i;
                                             break;                                        
                                         }
+                                        
+                                    }
+
+                                    if(aite_nayami=="手札使ったよ"){
+                                        aite_phase="攻撃";//場が変化してそうだから攻撃検討しなおして
+                                        break;//手札一枚使ったらループしなおしてきて
+                                        
                                     }
                                 }
-                            }
-                            if(aite_nayami!="確認待ちだぜ！"){//攻撃するの？
-                                for(let i=0;i<5;i++){//攻撃力が一番高いやつを見つけるぜ！
+                                if(aite_nayami=="悩むぜ！"){//やることなくなった？
+                                    aite_phase="終わり";
+                                    aite_delay=3;
+                                }
+                            
+                            }else if(aite_phase=="終わり"){
+                                duel_phase="自由";
+                                pull_card(my_yamahuda,my_tehuda,3);
+                                for(let i=0;i<5;i++){
                                     if(teki_ba[i]!=""){
-                                        if(teki_ba[i].can_ATK>0){
-                                            if(aite_nayami=="悩むぜ！"){
-                                                aite_nayami=i;
-                                            }else if(teki_ba[aite_nayami].ATK<teki_ba[i].ATK){//攻撃力が高いやつから攻撃しようぜ（これがいいのかは…知らん。）
-                                                
-                                                aite_nayami=i;
-                                            }
+                                        teki_ba[i].can_ATK=1;//効果によっては変わるかもね
+                                    }
+                                }
+                                if(teki_yamahuda.length==0){//もう山札ないじゃん…
+                                    teki_kougeki_sum=0;
+                                    for(let i=0;i<5;i++){//場の攻撃力が…
+                                        if(teki_ba[i]!=""){
+                                            teki_kougeki_sum+=teki_ba[i].ATK;
                                         }
                                     }
-                                }
-                                if(aite_nayami=="悩むぜ！"){//攻撃できるカードがなかったぜ！
-                                    aite_phase="召喚";
-                                }else{
-                                    teki_ba[aite_nayami].move=-3;
-                                    aite_delay=10;
-                                    atk_card=teki_ba[aite_nayami];
-                                    aite_nayami="悩むぜ！";
-
-                                    for(let i=0;i<5;i++){//体力とか攻撃力を加味して攻撃相手を決めたいぜ！
-                                        if(my_ba[i]!=""){
-                                            if(aite_nayami=="悩むぜ！"){
-                                                aite_nayami=i;
-                                            }else if(my_ba[aite_nayami].ATK/Math.ceil(my_ba[aite_nayami].HP/atk_card.ATK)<my_ba[i].ATK/Math.ceil(my_ba[i].HP/atk_card.ATK)){//なんか殺しやすくて強いやつを殴ろう
-                                                aite_nayami=i;
-                                            }
-                                        }
-                                    }
-
-                                    if(aite_nayami=="悩むぜ！"){//俺の場がガラ空きだぁ
-                                        atk_yamahuda(atk_card.ATK,my_yamahuda,my_haka,my_ba,my_tehuda);
-                                        if(duel_phase!="相手"){
-                                            aite_phase="終わり";//どっちか負けたぞ
-                                        }
-                                        zuba[0]=6;
-                                    }else{
-                                        def_card=my_ba[aite_nayami];
-                                        def_card.HP-=atk_card.ATK;
-                                        if(def_card.HP<=0){//倒した～
-                                            my_ba[aite_nayami]=death_card(def_card,my_haka,aite_nayami);
-                                            //my_ba[aite_nayami]="";になるよん
-                                            //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
-                                        }
-                                        my_ba[aite_nayami].move=2;
-                                        zuba[aite_nayami+6]=6;
-                                    }
-                                    
-                                    atk_card.can_ATK-=1;//攻撃したら…ね
-                                }
-                            }
-                        }else if(aite_phase=="召喚"){//召喚…魔法発動もしてるぜ！
-                            aite_nayami="悩むぜ！";
-                            for(let i=0;i<teki_tehuda.length;i++){//手札使うぜ！    
-                                if(teki_tehuda[i].state.indexOf("モンスター")!=-1){//モンスターカードやんけ！
-                                    for(let j=0;j<5;j++){
-                                        if(teki_ba[ba_haiti[j]]==""){//空いてる場所あるじゃん！
-                                            
-                                            teki_ba[ba_haiti[j]]=syoukan(teki_tehuda[i],"teki_ba_"+ba_haiti[j]);
-                                            aite_delay=5;
-                                            teki_tehuda.splice(i,1);
-                                            aite_nayami="手札使ったよ";
-                                            break;//
-                                        }
-                                    }
-                                }else if(teki_tehuda[i].state.indexOf("魔法")!=-1 && teki_tehuda[i].card.effect_req("手札から")){//魔法だね。&& //発動条件確認！
-                                    if(teki_tehuda[i].card.AI("手札から")){//AI的な発動条件
-                                        aite_phase="相手発動確認";
-                                        aite_nayami="確認待ちだぜ！";
-                                        tukau_card_num=i;
-                                        break;                                        
-                                    }
-                                    
-                                }
-
-                                if(aite_nayami=="手札使ったよ"){
-                                    aite_phase="攻撃";//場が変化してそうだから攻撃検討しなおして
-                                    break;//手札一枚使ったらループしなおしてきて
-                                    
-                                }
-                            }
-                            if(aite_nayami=="悩むぜ！"){//やることなくなった？
-                                aite_phase="終わり";
-                                aite_delay=3;
-                            }
-                        
-                        }else if(aite_phase=="終わり"){
-                            duel_phase="自由";
-                            pull_card(my_yamahuda,my_tehuda,3);
-                            for(let i=0;i<5;i++){
-                                if(teki_ba[i]!=""){
-                                    teki_ba[i].can_ATK=1;//効果によっては変わるかもね
-                                }
-                            }
-                            if(teki_yamahuda.length==0){//もう山札ないじゃん…
-                                teki_kougeki_sum=0;
-                                for(let i=0;i<5;i++){//場の攻撃力が…
-                                    if(teki_ba[i]!=""){
-                                        teki_kougeki_sum+=teki_ba[i].ATK;
+                                    if(teki_kougeki_sum==0){//攻撃力の合計も0！？これはもうダメみたいですね。
+                                        duel_phase="俺勝ち";
                                     }
                                 }
-                                if(teki_kougeki_sum==0){//攻撃力の合計も0！？これはもうダメみたいですね。
-                                    duel_phase="俺勝ち";
-                                }
-                            }
-                        
-                        }
-                        
-                    }
-                    ctx.fillStyle="rgb(130,255,170)";
-                    ctx.fillRect(0,0,1000,1000);
-                    ctx.drawImage(card_basyo,0,0);
-
-                    //ここで自分のフィールドにカードを並べる
-                    ctx.save();
-                    ctx.rotate(90 * Math.PI / 180);
-                    for(let i=0;i<my_ba.length;i++){
-                        if(my_ba[i].position=="my_ba_0"){//なんか妙な表示判定方法採用してますね…なんだこれは…
-                            card_draw(my_ba[i],105,-205+my_ba[i].move*50);
-                        }else if(my_ba[i].position=="my_ba_1"){
-                            card_draw(my_ba[i],240,-215+my_ba[i].move*50);
-                        }else if(my_ba[i].position=="my_ba_2"){
-                            card_draw(my_ba[i],375,-225+my_ba[i].move*50);
-                        }else if(my_ba[i].position=="my_ba_3"){
-                            card_draw(my_ba[i],510,-215+my_ba[i].move*50);
-                        }else if(my_ba[i].position=="my_ba_4"){   
-                            card_draw(my_ba[i],645,-205+my_ba[i].move*50);
-                        }
-                        if(my_ba[i].move>0){
-                            my_ba[i].move-=1;
-                        }else if(my_ba[i].move<0){
-                            my_ba[i].move+=1;
-                        }
-                    }
-                    ctx.restore();
-                                       
-
-                    //ここで敵のフィールドにカードを並べる
-                    ctx.save();
-                    ctx.rotate(270 * Math.PI / 180);
-                    for(let i=0;i<teki_ba.length;i++){
-                        if(teki_ba[i].position=="teki_ba_0"){
-                            card_draw(teki_ba[i],-235,795+teki_ba[i].move*50);
-                        }else if(teki_ba[i].position=="teki_ba_1"){
-                            card_draw(teki_ba[i],-370,785+teki_ba[i].move*50);
-                        }else if(teki_ba[i].position=="teki_ba_2"){
-                            card_draw(teki_ba[i],-505,775+teki_ba[i].move*50);
-                        }else if(teki_ba[i].position=="teki_ba_3"){
-                            card_draw(teki_ba[i],-640,785+teki_ba[i].move*50);
-                        }else if(teki_ba[i].position=="teki_ba_4"){
-                            card_draw(teki_ba[i],-775,795+teki_ba[i].move*50);
-                        }
-                        if(teki_ba[i].move>0){
-                            teki_ba[i].move-=1;
-                        }else if(teki_ba[i].move<0){
-                            teki_ba[i].move+=1;
-                        }
-                    }
-                    ctx.restore();
-
-                    //自分カードの死
-                    ctx.save();
-                    ctx.rotate(90 * Math.PI / 180);
-                    for(let i=0;i<5;i++){
-                        if(death_my_ba[i]!=""){
-                            card_draw(death_my_ba[i],105+135*i+(death_my_ba[i].move%2)*10,-225+(Math.abs(2-i)*10)+(10-death_my_ba[i].move)*30);
-                        }
-                        if(death_my_ba[i].move>0){
-                            death_my_ba[i].move-=1;
-                            if(death_my_ba[i].move==0){
-                                death_my_ba[i]="";
-                            }
-                        }
-                    }
-                    ctx.restore();
-
-                    //相手カードの死
-                    ctx.save();
-                    ctx.rotate(270 * Math.PI / 180);
-                    for(let i=0;i<5;i++){
-                        if(death_teki_ba[i]!=""){
-                            card_draw(death_teki_ba[i],-235-135*i+(death_teki_ba[i].move%2)*10,775+(Math.abs(2-i)*10)+(10-death_teki_ba[i].move)*30);
-                        }
-                        if(death_teki_ba[i].move>0){
-                            death_teki_ba[i].move-=1;
-                            if(death_teki_ba[i].move==0){
-                                death_teki_ba[i]="";
-                            }
-                        }
-                    }
-                    ctx.restore();
-
-                    if(cursor==1){
-                        ctx.fillStyle="rgb(55,55,55)";
-                        ctx.fillRect(240,110,520,670);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(250,120,500,650);
-                        takusan_card_draw(my_haka,260,130,480,630);
-                    }else if(cursor==4){
-                        ctx.fillStyle="rgb(55,55,55)";
-                        ctx.fillRect(240,110,520,670);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(250,120,500,650);
-                        takusan_card_draw(teki_haka,260,130,480,630);
-                    }
-
-                    ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
-                    ctx.fillRect(105,5,440,90);
-                    ctx.fillRect(555,5,440,90);
-                    ctx.fillStyle="rgb(255,255,255)";
-                    ctx.fillRect(110,10,430,80);
-                    ctx.fillRect(560,10,430,80);
-                    ctx.fillStyle="rgb(150,200,255)";
-                    ctx.fillRect(388,12,150,76);
-                    ctx.fillRect(838,12,150,76);
-                    ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                    ctx.fillStyle="rgb(0,0,0)";
-                    ctx.drawImage(turn_end,5,5);
-                    ctx.drawImage(yamahuda,110,20);
-                    ctx.fillText(my_yamahuda.length+yamahuda_damage[0], 174, 70);
-                    ctx.drawImage(yamahuda,560,20);
-                    ctx.fillText(teki_yamahuda.length+yamahuda_damage[1], 624, 70);
-                    ctx.drawImage(hakaba,274,20);
-                    ctx.fillText(my_haka.length-yamahuda_damage[0], 338, 70);
-                    ctx.drawImage(hakaba,724,20);
-                    ctx.fillText(teki_haka.length-yamahuda_damage[1], 788, 70);
-                    if(yamahuda_damage[0]>0){
-                        if(time%3==0){
-                            yamahuda_damage[0]-=1;
-                        }
-                    }
-                    if(yamahuda_damage[1]>0){
-                        if(time%3==0){
-                            yamahuda_damage[1]-=1;
-                        }
-                    }
-                    if(my_tehuda.length>0){
-                        ctx.drawImage(tehuda32,389,14);
-                        ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(my_tehuda.length, 425, 41);
-                    }
-                    if(teki_tehuda.length>0){
-                        ctx.drawImage(tehuda32,839,14);
-                        ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(teki_tehuda.length, 875, 41);
-                    }
-                    
-
-                    ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                    ctx.fillStyle="rgb(0,0,0)";
-                    ctx.fillRect(5,785,990,210);
-                    ctx.fillStyle="rgb(255,255,255)";
-                    ctx.fillRect(10,790,980,200);
-                    if(my_tehuda.length!=0){//ここから手札-------------------
-                        ctx.save();
-                        tehuda_maisuu=my_tehuda.length;
-                        if(tehuda_maisuu<7){
-                            card_kankaku=130;
-                        }else{
-                            card_kankaku=850/tehuda_maisuu;
-                        }
-                        kakudo=25/tehuda_maisuu;
-                        ctx.rotate(10 * Math.PI / 180);
-                       for (let i=0;i<tehuda_maisuu;i++){                      
-                            if((cursor-16)==i || ((pre_cursor-16)==i && duel_phase=="召喚")){
-                                card_draw(my_tehuda[i],(50+card_kankaku*i)*Math.cos((10+i*kakudo) * Math.PI / 180)+780*Math.sin((10+i*kakudo) * Math.PI / 180),780*Math.cos((10+i*kakudo) * Math.PI / 180)-(50+card_kankaku*i)*Math.sin((10+i*kakudo) * Math.PI / 180),-40);
-                            }else{
-                                card_draw(my_tehuda[i],(50+card_kankaku*i)*Math.cos((10+i*kakudo) * Math.PI / 180)+780*Math.sin((10+i*kakudo) * Math.PI / 180),780*Math.cos((10+i*kakudo) * Math.PI / 180)-(50+card_kankaku*i)*Math.sin((10+i*kakudo) * Math.PI / 180));
-                            }
-                            ctx.rotate(kakudo * Math.PI / 180);
-                        }
-                        ctx.restore();
-                    }
-                    
-                    
-                    
-
-                    for (let i=0;i<16;i++){ //攻撃時にzuba64を表示
-                        if(zuba[i]!=0){
-                            zuba[i]-=1;
-                            if(i==0){
-                                ctx.drawImage(zuba64,110,20);
-                            }else if(i==1){
-                            }else if(i==2){
-                            }else if(i==3){
-                                ctx.drawImage(zuba64,560,20);
-                            }else if(i==4){
-                            }else if(i==5){
-                            }else if(i==6){
-                                ctx.drawImage(zuba64,20,100);
-                            }else if(i==7){
-                                ctx.drawImage(zuba64,30,235);
-                            }else if(i==8){
-                                ctx.drawImage(zuba64,40,370);
-                            }else if(i==9){
-                                ctx.drawImage(zuba64,30,505);
-                            }else if(i==10){
-                                ctx.drawImage(zuba64,20,640);
-                            }else if(i==11){
-                                ctx.drawImage(zuba64,916,170);
-                            }else if(i==12){
-                                ctx.drawImage(zuba64,906,305);
-                            }else if(i==13){
-                                ctx.drawImage(zuba64,896,440);
-                            }else if(i==14){
-                                ctx.drawImage(zuba64,906,575);
-                            }else if(i==15){
-                                ctx.drawImage(zuba64,916,710);
+                            
                             }
                             
                         }
-                    }
-                    
-                    
-                    //カーソル表示…
-                    if(cursor==-1){  ctx.drawImage(yubi,-10,80+4*Math.sin(time*Math.PI/8)); //左上 なんで-1から始まってるの？　それはね、設計ミスさ！
-                    }else if(cursor==0){  ctx.drawImage(yubi,110,80+4*Math.sin(time*Math.PI/8)); 
-                    }else if(cursor==1){  ctx.drawImage(yubi,260,80+4*Math.sin(time*Math.PI/8));
-                    }else if(cursor==2){  ctx.drawImage(yubi,400,80+4*Math.sin(time*Math.PI/8));
+                        ctx.fillStyle="rgb(130,255,170)";
+                        ctx.fillRect(0,0,1000,1000);
+                        ctx.drawImage(card_basyo,0,0);
 
-                    }else if(cursor==3){ ctx.drawImage(yubi,560,80+4*Math.sin(time*Math.PI/8));//右上
-                    }else if(cursor==4){ctx.drawImage(yubi,710,80+4*Math.sin(time*Math.PI/8));
-                    }else if(cursor==5){ctx.drawImage(yubi,850,80+4*Math.sin(time*Math.PI/8));
-
-
-                    }else if(cursor==6){//左場
+                        //ここで自分のフィールドにカードを並べる
                         ctx.save();
                         ctx.rotate(90 * Math.PI / 180);
-                        ctx.drawImage(yubi,105,-100+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }else if(cursor==7){
-                        ctx.save();
-                        ctx.rotate(90 * Math.PI / 180);
-                        ctx.drawImage(yubi,245,-110+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }else if(cursor==8){
-                        ctx.save();
-                        ctx.rotate(90 * Math.PI / 180);
-                        ctx.drawImage(yubi,375,-120+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }else if(cursor==9){
-                        ctx.save();
-                        ctx.rotate(90 * Math.PI / 180);
-                        ctx.drawImage(yubi,510,-110+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }else if(cursor==10){
-                        ctx.save();
-                        ctx.rotate(90 * Math.PI / 180);
-                        ctx.drawImage(yubi,645,-100+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-
-                    }else if(cursor==11){//右ば
-                        ctx.save();
-                        ctx.rotate(270 * Math.PI / 180);
-                        ctx.drawImage(yubi,-235,900+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }else if(cursor==12){
-                        ctx.save();
-                        ctx.rotate(270 * Math.PI / 180);
-                        ctx.drawImage(yubi,-370,890+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }else if(cursor==13){
-                        ctx.save();
-                        ctx.rotate(270 * Math.PI / 180);
-                        ctx.drawImage(yubi,-505,880+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }else if(cursor==14){
-                        ctx.save();
-                        ctx.rotate(270 * Math.PI / 180);
-                        ctx.drawImage(yubi,-640,890+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }else if(cursor==15){
-                        ctx.save();
-                        ctx.rotate(270 * Math.PI / 180);
-                        ctx.drawImage(yubi,-775,900+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-
-                    }else{//手札でヤンス。
-                        ctx.save();
-                        ctx.rotate((10+kakudo*(cursor-16)) * Math.PI / 180);
-                        ctx.drawImage(yubi,(50+card_kankaku*(cursor-16))*Math.cos((10+(cursor-16)*kakudo) * Math.PI / 180)+780*Math.sin((10+(cursor-16)*kakudo) * Math.PI / 180),100+4*Math.sin(time*Math.PI/8)+780*Math.cos((10+(cursor-16)*kakudo) * Math.PI / 180)-(50+card_kankaku*(cursor-16))*Math.sin((10+(cursor-16)*kakudo) * Math.PI / 180));
-                        ctx.restore();
-                    }
-                    if(duel_phase=="敵選択"){
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,780,1000,100);
-                        ctx.fillRect(0,100,770,680);
-                        ctx.fillRect(0,0,1000,100);
-                        
-                        ctx.fillStyle="rgb(0,150,0)";
-                        ctx.fillRect(0,800,1000,200);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(200,825,600,150);
-                        ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,200,0)";
-                        ctx.fillText("魔法対象選択！", 225, 900);
-                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillText("キャンセル：×", 570, 960);
-                        if(cursor2==0){//右ば
-                            ctx.save();
-                            ctx.rotate(270 * Math.PI / 180);
-                            ctx.drawImage(yubi,-235,900+4*Math.sin(time*Math.PI/8));
-                            ctx.restore();
-                        }else if(cursor2==1){
-                            ctx.save();
-                            ctx.rotate(270 * Math.PI / 180);
-                            ctx.drawImage(yubi,-370,890+4*Math.sin(time*Math.PI/8));
-                            ctx.restore();
-                        }else if(cursor2==2){
-                            ctx.save();
-                            ctx.rotate(270 * Math.PI / 180);
-                            ctx.drawImage(yubi,-505,880+4*Math.sin(time*Math.PI/8));
-                            ctx.restore();
-                        }else if(cursor2==3){
-                            ctx.save();
-                            ctx.rotate(270 * Math.PI / 180);
-                            ctx.drawImage(yubi,-640,890+4*Math.sin(time*Math.PI/8));
-                            ctx.restore();
-                        }else if(cursor2==4){
-                            ctx.save();
-                            ctx.rotate(270 * Math.PI / 180);
-                            ctx.drawImage(yubi,-775,900+4*Math.sin(time*Math.PI/8));
-                            ctx.restore();
-
+                        for(let i=0;i<my_ba.length;i++){
+                            if(my_ba[i].position=="my_ba_0"){//なんか妙な表示判定方法採用してますね…なんだこれは…
+                                card_draw(my_ba[i],105,-205+my_ba[i].move*50);
+                            }else if(my_ba[i].position=="my_ba_1"){
+                                card_draw(my_ba[i],240,-215+my_ba[i].move*50);
+                            }else if(my_ba[i].position=="my_ba_2"){
+                                card_draw(my_ba[i],375,-225+my_ba[i].move*50);
+                            }else if(my_ba[i].position=="my_ba_3"){
+                                card_draw(my_ba[i],510,-215+my_ba[i].move*50);
+                            }else if(my_ba[i].position=="my_ba_4"){   
+                                card_draw(my_ba[i],645,-205+my_ba[i].move*50);
+                            }
+                            if(my_ba[i].move>0){
+                                my_ba[i].move-=1;
+                            }else if(my_ba[i].move<0){
+                                my_ba[i].move+=1;
+                            }
                         }
-                    }else if(duel_phase=="味方選択"){
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,780,1000,100);
-                        ctx.fillRect(230,100,770,680);
-                        ctx.fillRect(0,0,1000,100);
-                        
-                        ctx.fillStyle="rgb(0,150,0)";
-                        ctx.fillRect(0,800,1000,200);
+                        ctx.restore();
+                                        
+
+                        //ここで敵のフィールドにカードを並べる
+                        ctx.save();
+                        ctx.rotate(270 * Math.PI / 180);
+                        for(let i=0;i<teki_ba.length;i++){
+                            if(teki_ba[i].position=="teki_ba_0"){
+                                card_draw(teki_ba[i],-235,795+teki_ba[i].move*50);
+                            }else if(teki_ba[i].position=="teki_ba_1"){
+                                card_draw(teki_ba[i],-370,785+teki_ba[i].move*50);
+                            }else if(teki_ba[i].position=="teki_ba_2"){
+                                card_draw(teki_ba[i],-505,775+teki_ba[i].move*50);
+                            }else if(teki_ba[i].position=="teki_ba_3"){
+                                card_draw(teki_ba[i],-640,785+teki_ba[i].move*50);
+                            }else if(teki_ba[i].position=="teki_ba_4"){
+                                card_draw(teki_ba[i],-775,795+teki_ba[i].move*50);
+                            }
+                            if(teki_ba[i].move>0){
+                                teki_ba[i].move-=1;
+                            }else if(teki_ba[i].move<0){
+                                teki_ba[i].move+=1;
+                            }
+                        }
+                        ctx.restore();
+
+                        //自分カードの死
+                        ctx.save();
+                        ctx.rotate(90 * Math.PI / 180);
+                        for(let i=0;i<5;i++){
+                            if(death_my_ba[i]!=""){
+                                card_draw(death_my_ba[i],105+135*i+(death_my_ba[i].move%2)*10,-225+(Math.abs(2-i)*10)+(10-death_my_ba[i].move)*30);
+                            }
+                            if(death_my_ba[i].move>0){
+                                death_my_ba[i].move-=1;
+                                if(death_my_ba[i].move==0){
+                                    death_my_ba[i]="";
+                                }
+                            }
+                        }
+                        ctx.restore();
+
+                        //相手カードの死
+                        ctx.save();
+                        ctx.rotate(270 * Math.PI / 180);
+                        for(let i=0;i<5;i++){
+                            if(death_teki_ba[i]!=""){
+                                card_draw(death_teki_ba[i],-235-135*i+(death_teki_ba[i].move%2)*10,775+(Math.abs(2-i)*10)+(10-death_teki_ba[i].move)*30);
+                            }
+                            if(death_teki_ba[i].move>0){
+                                death_teki_ba[i].move-=1;
+                                if(death_teki_ba[i].move==0){
+                                    death_teki_ba[i]="";
+                                }
+                            }
+                        }
+                        ctx.restore();
+
+                        if(cursor==1){
+                            ctx.fillStyle="rgb(55,55,55)";
+                            ctx.fillRect(240,110,520,670);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(250,120,500,650);
+                            takusan_card_draw(my_haka,260,130,480,630);
+                        }else if(cursor==4){
+                            ctx.fillStyle="rgb(55,55,55)";
+                            ctx.fillRect(240,110,520,670);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(250,120,500,650);
+                            takusan_card_draw(teki_haka,260,130,480,630);
+                        }
+
+                        ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
+                        ctx.fillRect(105,5,440,90);
+                        ctx.fillRect(555,5,440,90);
                         ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(200,825,600,150);
-                        ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,200,0)";
-                        ctx.fillText("魔法対象選択！", 225, 900);
-                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillText("キャンセル：×", 570, 960);
-                        if(cursor2==0){//左場
+                        ctx.fillRect(110,10,430,80);
+                        ctx.fillRect(560,10,430,80);
+                        ctx.fillStyle="rgb(150,200,255)";
+                        ctx.fillRect(388,12,150,76);
+                        ctx.fillRect(838,12,150,76);
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.drawImage(turn_end,5,5);
+                        ctx.drawImage(yamahuda,110,20);
+                        ctx.fillText(my_yamahuda.length+yamahuda_damage[0], 174, 70);
+                        ctx.drawImage(yamahuda,560,20);
+                        ctx.fillText(teki_yamahuda.length+yamahuda_damage[1], 624, 70);
+                        ctx.drawImage(hakaba,274,20);
+                        ctx.fillText(my_haka.length-yamahuda_damage[0], 338, 70);
+                        ctx.drawImage(hakaba,724,20);
+                        ctx.fillText(teki_haka.length-yamahuda_damage[1], 788, 70);
+                        if(yamahuda_damage[0]>0){
+                            if(time%3==0){
+                                yamahuda_damage[0]-=1;
+                            }
+                        }
+                        if(yamahuda_damage[1]>0){
+                            if(time%3==0){
+                                yamahuda_damage[1]-=1;
+                            }
+                        }
+                        if(my_tehuda.length>0){
+                            ctx.drawImage(tehuda32,389,14);
+                            ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText(my_tehuda.length, 425, 41);
+                        }
+                        if(teki_tehuda.length>0){
+                            ctx.drawImage(tehuda32,839,14);
+                            ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText(teki_tehuda.length, 875, 41);
+                        }
+                        
+
+                        ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillRect(5,785,990,210);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(10,790,980,200);
+                        if(my_tehuda.length!=0){//ここから手札-------------------
+                            ctx.save();
+                            tehuda_maisuu=my_tehuda.length;
+                            if(tehuda_maisuu<7){
+                                card_kankaku=130;
+                            }else{
+                                card_kankaku=850/tehuda_maisuu;
+                            }
+                            kakudo=25/tehuda_maisuu;
+                            ctx.rotate(10 * Math.PI / 180);
+                        for (let i=0;i<tehuda_maisuu;i++){                      
+                                if((cursor-16)==i || ((pre_cursor-16)==i && duel_phase=="召喚")){
+                                    card_draw(my_tehuda[i],(50+card_kankaku*i)*Math.cos((10+i*kakudo) * Math.PI / 180)+780*Math.sin((10+i*kakudo) * Math.PI / 180),780*Math.cos((10+i*kakudo) * Math.PI / 180)-(50+card_kankaku*i)*Math.sin((10+i*kakudo) * Math.PI / 180),-40);
+                                }else{
+                                    card_draw(my_tehuda[i],(50+card_kankaku*i)*Math.cos((10+i*kakudo) * Math.PI / 180)+780*Math.sin((10+i*kakudo) * Math.PI / 180),780*Math.cos((10+i*kakudo) * Math.PI / 180)-(50+card_kankaku*i)*Math.sin((10+i*kakudo) * Math.PI / 180));
+                                }
+                                ctx.rotate(kakudo * Math.PI / 180);
+                            }
+                            ctx.restore();
+                        }
+                        
+                        
+                        
+
+                        for (let i=0;i<16;i++){ //攻撃時にzuba64を表示
+                            if(zuba[i]!=0){
+                                zuba[i]-=1;
+                                if(i==0){
+                                    ctx.drawImage(zuba64,110,20);
+                                }else if(i==1){
+                                }else if(i==2){
+                                }else if(i==3){
+                                    ctx.drawImage(zuba64,560,20);
+                                }else if(i==4){
+                                }else if(i==5){
+                                }else if(i==6){
+                                    ctx.drawImage(zuba64,20,100);
+                                }else if(i==7){
+                                    ctx.drawImage(zuba64,30,235);
+                                }else if(i==8){
+                                    ctx.drawImage(zuba64,40,370);
+                                }else if(i==9){
+                                    ctx.drawImage(zuba64,30,505);
+                                }else if(i==10){
+                                    ctx.drawImage(zuba64,20,640);
+                                }else if(i==11){
+                                    ctx.drawImage(zuba64,916,170);
+                                }else if(i==12){
+                                    ctx.drawImage(zuba64,906,305);
+                                }else if(i==13){
+                                    ctx.drawImage(zuba64,896,440);
+                                }else if(i==14){
+                                    ctx.drawImage(zuba64,906,575);
+                                }else if(i==15){
+                                    ctx.drawImage(zuba64,916,710);
+                                }
+                                
+                            }
+                        }
+                        
+                        
+                        //カーソル表示…
+                        if(cursor==-1){  ctx.drawImage(yubi,-10,80+4*Math.sin(time*Math.PI/8)); //左上 なんで-1から始まってるの？　それはね、設計ミスさ！
+                        }else if(cursor==0){  ctx.drawImage(yubi,110,80+4*Math.sin(time*Math.PI/8)); 
+                        }else if(cursor==1){  ctx.drawImage(yubi,260,80+4*Math.sin(time*Math.PI/8));
+                        }else if(cursor==2){  ctx.drawImage(yubi,400,80+4*Math.sin(time*Math.PI/8));
+
+                        }else if(cursor==3){ ctx.drawImage(yubi,560,80+4*Math.sin(time*Math.PI/8));//右上
+                        }else if(cursor==4){ctx.drawImage(yubi,710,80+4*Math.sin(time*Math.PI/8));
+                        }else if(cursor==5){ctx.drawImage(yubi,850,80+4*Math.sin(time*Math.PI/8));
+
+
+                        }else if(cursor==6){//左場
                             ctx.save();
                             ctx.rotate(90 * Math.PI / 180);
                             ctx.drawImage(yubi,105,-100+4*Math.sin(time*Math.PI/8));
                             ctx.restore();
-                        }else if(cursor2==1){
+                        }else if(cursor==7){
                             ctx.save();
                             ctx.rotate(90 * Math.PI / 180);
                             ctx.drawImage(yubi,245,-110+4*Math.sin(time*Math.PI/8));
                             ctx.restore();
-                        }else if(cursor2==2){
+                        }else if(cursor==8){
                             ctx.save();
                             ctx.rotate(90 * Math.PI / 180);
                             ctx.drawImage(yubi,375,-120+4*Math.sin(time*Math.PI/8));
                             ctx.restore();
-                        }else if(cursor2==3){
+                        }else if(cursor==9){
                             ctx.save();
                             ctx.rotate(90 * Math.PI / 180);
                             ctx.drawImage(yubi,510,-110+4*Math.sin(time*Math.PI/8));
                             ctx.restore();
-                        }else if(cursor2==4){
+                        }else if(cursor==10){
                             ctx.save();
                             ctx.rotate(90 * Math.PI / 180);
                             ctx.drawImage(yubi,645,-100+4*Math.sin(time*Math.PI/8));
                             ctx.restore();
 
-                        }
-                    }else if(duel_phase=="魔法発動確認"){
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,0,1000,1000);
-                        ctx.fillStyle="rgb(55,55,55)";
-                        ctx.fillRect(290,790,420,200);
-                        ctx.fillStyle="rgb(200,255,200)";
-                        ctx.fillRect(300,800,400,180);
-                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText("使う", 500, 870);
-                        ctx.fillText("やめる", 500, 950);
-                        ctx.save();
-                        ctx.rotate(90 * Math.PI / 180);
-                        ctx.drawImage(yubi,790+cursor2*80,-480+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }
+                        }else if(cursor==11){//右ば
+                            ctx.save();
+                            ctx.rotate(270 * Math.PI / 180);
+                            ctx.drawImage(yubi,-235,900+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor==12){
+                            ctx.save();
+                            ctx.rotate(270 * Math.PI / 180);
+                            ctx.drawImage(yubi,-370,890+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor==13){
+                            ctx.save();
+                            ctx.rotate(270 * Math.PI / 180);
+                            ctx.drawImage(yubi,-505,880+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor==14){
+                            ctx.save();
+                            ctx.rotate(270 * Math.PI / 180);
+                            ctx.drawImage(yubi,-640,890+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor==15){
+                            ctx.save();
+                            ctx.rotate(270 * Math.PI / 180);
+                            ctx.drawImage(yubi,-775,900+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
 
-                    //カードの詳細表示
-                    if((cursor>=6 &&cursor<=10 && (my_ba[cursor-6]!="")) || (cursor>=11 && cursor<=15 && (teki_ba[cursor-11]!="")) || (cursor>=16 && my_tehuda.length!=0)){//カード詳細を表示するときはカードがあるときだけだぜ！
-                        ctx.fillStyle="rgb(55,55,55)";
-                        ctx.fillRect(240,110,520,670);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(250,120,500,650);
-                        if(cursor<=10){
-                            syousai_card=my_ba[cursor-6];
-                        }else if(cursor<=15){
-                            syousai_card=teki_ba[cursor-11];
-                        }else{
-                            syousai_card=my_tehuda[cursor-16];
+                        }else{//手札でヤンス。
+                            ctx.save();
+                            ctx.rotate((10+kakudo*(cursor-16)) * Math.PI / 180);
+                            ctx.drawImage(yubi,(50+card_kankaku*(cursor-16))*Math.cos((10+(cursor-16)*kakudo) * Math.PI / 180)+780*Math.sin((10+(cursor-16)*kakudo) * Math.PI / 180),100+4*Math.sin(time*Math.PI/8)+780*Math.cos((10+(cursor-16)*kakudo) * Math.PI / 180)-(50+card_kankaku*(cursor-16))*Math.sin((10+(cursor-16)*kakudo) * Math.PI / 180));
+                            ctx.restore();
                         }
-                        ctx.fillStyle="rgb(200,200,200)";
-                        ctx.fillRect(255,125,490,50);
-                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(syousai_card.card.name, 260, 168);
-                        ctx.drawImage(syousai_card.card.image,260,180);
+                        if(duel_phase=="敵選択"){
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,780,1000,100);
+                            ctx.fillRect(0,100,770,680);
+                            ctx.fillRect(0,0,1000,100);
+                            
+                            ctx.fillStyle="rgb(0,150,0)";
+                            ctx.fillRect(0,800,1000,200);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(200,825,600,150);
+                            ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,200,0)";
+                            ctx.fillText("魔法対象選択！", 225, 900);
+                            ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillText("キャンセル：×", 570, 960);
+                            if(cursor2==0){//右ば
+                                ctx.save();
+                                ctx.rotate(270 * Math.PI / 180);
+                                ctx.drawImage(yubi,-235,900+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(cursor2==1){
+                                ctx.save();
+                                ctx.rotate(270 * Math.PI / 180);
+                                ctx.drawImage(yubi,-370,890+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(cursor2==2){
+                                ctx.save();
+                                ctx.rotate(270 * Math.PI / 180);
+                                ctx.drawImage(yubi,-505,880+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(cursor2==3){
+                                ctx.save();
+                                ctx.rotate(270 * Math.PI / 180);
+                                ctx.drawImage(yubi,-640,890+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(cursor2==4){
+                                ctx.save();
+                                ctx.rotate(270 * Math.PI / 180);
+                                ctx.drawImage(yubi,-775,900+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
 
-                        if(syousai_card.state.indexOf("モンスター")!=-1){
-                            ctx.drawImage(atk_plate,400,180);
-                            ctx.drawImage(def_plate,450,185);
-                            ctx.fillText("(", 570, 225);
-                            ctx.drawImage(atk_plate,600,180);
-                            ctx.drawImage(def_plate,650,185);
-                            ctx.fillText(")", 704, 225);
+                            }
+                        }else if(duel_phase=="味方選択"){
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,780,1000,100);
+                            ctx.fillRect(230,100,770,680);
+                            ctx.fillRect(0,0,1000,100);
+                            
+                            ctx.fillStyle="rgb(0,150,0)";
+                            ctx.fillRect(0,800,1000,200);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(200,825,600,150);
+                            ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,200,0)";
+                            ctx.fillText("魔法対象選択！", 225, 900);
+                            ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillText("キャンセル：×", 570, 960);
+                            if(cursor2==0){//左場
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                ctx.drawImage(yubi,105,-100+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(cursor2==1){
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                ctx.drawImage(yubi,245,-110+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(cursor2==2){
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                ctx.drawImage(yubi,375,-120+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(cursor2==3){
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                ctx.drawImage(yubi,510,-110+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(cursor2==4){
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                ctx.drawImage(yubi,645,-100+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+
+                            }
+                        }else if(duel_phase=="魔法発動確認"){
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,0,1000,1000);
+                            ctx.fillStyle="rgb(55,55,55)";
+                            ctx.fillRect(290,790,420,200);
+                            ctx.fillStyle="rgb(200,255,200)";
+                            ctx.fillRect(300,800,400,180);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText("使う", 500, 870);
+                            ctx.fillText("やめる", 500, 950);
+                            ctx.save();
+                            ctx.rotate(90 * Math.PI / 180);
+                            ctx.drawImage(yubi,790+cursor2*80,-480+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }
+
+                        //カードの詳細表示
+                        if((cursor>=6 &&cursor<=10 && (my_ba[cursor-6]!="")) || (cursor>=11 && cursor<=15 && (teki_ba[cursor-11]!="")) || (cursor>=16 && my_tehuda.length!=0)){//カード詳細を表示するときはカードがあるときだけだぜ！
+                            ctx.fillStyle="rgb(55,55,55)";
+                            ctx.fillRect(240,110,520,670);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(250,120,500,650);
+                            if(cursor<=10){
+                                syousai_card=my_ba[cursor-6];
+                            }else if(cursor<=15){
+                                syousai_card=teki_ba[cursor-11];
+                            }else{
+                                syousai_card=my_tehuda[cursor-16];
+                            }
+                            ctx.fillStyle="rgb(200,200,200)";
+                            ctx.fillRect(255,125,490,50);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText(syousai_card.card.name, 260, 168);
+                            ctx.drawImage(syousai_card.card.image,260,180);
+
+                            if(syousai_card.state.indexOf("モンスター")!=-1){
+                                ctx.drawImage(atk_plate,400,180);
+                                ctx.drawImage(def_plate,450,185);
+                                ctx.fillText("(", 570, 225);
+                                ctx.drawImage(atk_plate,600,180);
+                                ctx.drawImage(def_plate,650,185);
+                                ctx.fillText(")", 704, 225);
+                                ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(255,255,255)";
+                                if(syousai_card.ATK<10){
+                                    ctx.fillText(syousai_card.ATK, 414, 222);
+                                }else{
+                                    ctx.fillText(syousai_card.ATK, 404, 222);
+                                }
+                                if(syousai_card.HP<10){
+                                    ctx.fillText(syousai_card.HP, 464, 222);
+                                }else{
+                                    ctx.fillText(syousai_card.HP, 454, 222);
+                                }
+                                if(syousai_card.card.ATK<10){
+                                    ctx.fillText(syousai_card.card.ATK, 614, 222);
+                                }else{
+                                    ctx.fillText(syousai_card.card.ATK, 604, 222);
+                                }
+                                if(syousai_card.card.HP<10){
+                                    ctx.fillText(syousai_card.card.HP, 664, 222);
+                                }else{
+                                    ctx.fillText(syousai_card.card.HP, 654, 222);
+                                }
+                            }
+                            ctx.fillStyle="rgb(0,0,0)";
+                            text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40,syousai_card.card.text_iro);//x,yは左上指定だから注意だ！
+                            ctx.fillRect(255,600,490,2);
+                            syousai_state_color=[];
+                            syousai_state="分類:";
+                            for(let i=0;i<syousai_card.state.length;i++){
+                                if(syousai_card.state[i]=="TOP_ACE"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                                }else if(syousai_card.state[i]=="ACE"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                                }
+                                syousai_state+=" "+syousai_card.state[i];
+                            }
+                            text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
+                            
+                        }
+
+                        if(duel_phase=="召喚"){//今なんの状態なんだよっていうお客様の声にお答えする形になった
+                            ctx.save();
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,0,230,100);
+                            ctx.fillRect(0,780,230,220);
+                            ctx.fillRect(230,0,770,1000);
+                            ctx.rotate(45 * Math.PI / 180);
+                            ctx.fillStyle="rgb(0,0,150)";
+                            ctx.fillRect(200,-525,1000,200);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(400,-500,600,150);
+                            ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,200)";
+                            ctx.fillText("召喚場所選択！", 440, -400);
+                            ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillText("キャンセル：×", 750, -360);
+                            ctx.restore();
+                        }else if(duel_phase=="攻撃"){
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,780,1000,100);
+                            ctx.fillRect(230,100,540,680);
+                            ctx.fillRect(0,100,230,(pre_cursor-6)*135);
+                            ctx.fillRect(0,105+(pre_cursor-5)*135,230,(10-pre_cursor)*135);
+                            if(cursor==3){
+                                ctx.fillRect(0,0,550,100);
+                                ctx.fillRect(700,0,300,100);
+                                ctx.fillRect(770,100,230,800);
+                            }else{
+                                ctx.fillRect(0,0,1000,100);
+                            }
+                            ctx.fillStyle="rgb(150,0,0)";
+                            ctx.fillRect(0,800,1000,200);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(200,825,600,150);
+                            ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(200,0,0)";
+                            ctx.fillText("攻撃対象選択！", 225, 900);
+                            ctx.drawImage(atk_circle,100+10*Math.sin(time*Math.PI/64),850+8*Math.sin(time*Math.PI/16));
+                            ctx.drawImage(atk_circle,836+10*Math.sin(time*Math.PI/64),850+8*Math.sin(time*Math.PI/16));
+                            ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillText("キャンセル：×", 570, 960);
+                        }else if(duel_phase=="相手"){
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,0,100,100);
+                            ctx.fillRect(0,780,1000,220);
+                            ctx.fillRect(0,100,15,680);
+                            ctx.fillRect(985,0,15,780);
+                            ctx.fillRect(100,0,885,15);
+                            ctx.fillStyle="rgb(50,50,50)";
+                            ctx.fillRect(230,100,540,680);
                             ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                             ctx.fillStyle="rgb(255,255,255)";
-                            if(syousai_card.ATK<10){
-                                ctx.fillText(syousai_card.ATK, 414, 222);
-                            }else{
-                                ctx.fillText(syousai_card.ATK, 404, 222);
-                            }
-                            if(syousai_card.HP<10){
-                                ctx.fillText(syousai_card.HP, 464, 222);
-                            }else{
-                                ctx.fillText(syousai_card.HP, 454, 222);
-                            }
-                            if(syousai_card.card.ATK<10){
-                                ctx.fillText(syousai_card.card.ATK, 614, 222);
-                            }else{
-                                ctx.fillText(syousai_card.card.ATK, 604, 222);
-                            }
-                            if(syousai_card.card.HP<10){
-                                ctx.fillText(syousai_card.card.HP, 664, 222);
-                            }else{
-                                ctx.fillText(syousai_card.card.HP, 654, 222);
+                            ctx.fillText("相手ターン", 300, 300);
+                            //ctx.fillText("召喚", 400, 400);
+                        }else if(duel_phase=="俺勝ち"){
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,0,1000,1000);
+                            ctx.fillStyle="rgb(255,55,55)";
+                            ctx.fillRect(150,100,700,700);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(200,150,600,600);
+
+                            ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText("勝った！", 250, 250);
+                            ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillText("おめれと", 250, 350);
+                            ctx.drawImage(kati_image,550,500);
+                        }else if(duel_phase=="敵勝ち"){
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,0,1000,1000);
+                            ctx.fillStyle="rgb(55,55,255)";
+                            ctx.fillRect(150,100,700,700);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(200,150,600,600);
+
+                            ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText("負けた！", 250, 250);
+                            ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillText("ぐえー", 250, 350);
+                            ctx.drawImage(make_image,550,525);
+                        }else if(duel_phase=="ターンエンド確認"){
+                            ctx.fillStyle="rgb(0,0,0,0.5)";
+                            ctx.fillRect(0,0,1000,1000);
+                            ctx.fillStyle="rgb(200,100,55)";
+                            ctx.fillRect(250,50,700,480);
+                            ctx.fillStyle="rgb(255,220,200)";
+                            ctx.fillRect(275,75,650,430);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(295,200,610,280);
+                            ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText("ターンエンド", 400, 175);
+                            ctx.drawImage(turn_end,300,100);
+                            
+                            ctx.fillText("OK", 450, 300);
+                            ctx.fillText("キャンセル", 450, 430);
+                            ctx.save();
+                            ctx.rotate(90 * Math.PI / 180);
+                            ctx.drawImage(yubi,200+cursor2*140,-430+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }
+
+                        if(tukau_mahou.length!=0){                        
+                            for(let i=tukau_mahou.length-1;i>=0;i--){
+                                card_draw(tukau_mahou[i][0],tukau_mahou[i][1],tukau_mahou[i][2]-300+tukau_mahou[i][3]*tukau_mahou[i][3]*3);
+                                tukau_mahou[i][3]-=1;
+                                if(tukau_mahou[i][3]==0){
+                                    tukau_mahou.splice(i,1);
+                                }
                             }
                         }
-                        ctx.fillStyle="rgb(0,0,0)";
-                        text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40,syousai_card.card.text_iro);//x,yは左上指定だから注意だ！
-                        ctx.fillRect(255,600,490,2);
-                        syousai_state_color=[];
-                        syousai_state="分類:";
-                        for(let i=0;i<syousai_card.state.length;i++){
-                            if(syousai_card.state[i]=="TOP_ACE"){
-                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
-                            }else if(syousai_card.state[i]=="ACE"){
-                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
-                            }
-                            syousai_state+=" "+syousai_card.state[i];
-                        }
-                        text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
                         
-                    }
+                        if(aite_phase=="相手発動確認"){
+                            
+                            ctx.fillStyle="rgb(55,55,55)";
+                            ctx.fillRect(240,110,520,670);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(250,120,500,650);
+                            syousai_card=teki_tehuda[tukau_card_num];
+                            ctx.fillStyle="rgb(200,200,200)";
+                            ctx.fillRect(255,125,490,50);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText(syousai_card.card.name, 260, 168);
+                            ctx.drawImage(syousai_card.card.image,260,180);
 
-                    if(duel_phase=="召喚"){//今なんの状態なんだよっていうお客様の声にお答えする形になった
-                        ctx.save();
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,0,230,100);
-                        ctx.fillRect(0,780,230,220);
-                        ctx.fillRect(230,0,770,1000);
-                        ctx.rotate(45 * Math.PI / 180);
-                        ctx.fillStyle="rgb(0,0,150)";
-                        ctx.fillRect(200,-525,1000,200);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(400,-500,600,150);
-                        ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,200)";
-                        ctx.fillText("召喚場所選択！", 440, -400);
-                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillText("キャンセル：×", 750, -360);
-                        ctx.restore();
-                    }else if(duel_phase=="攻撃"){
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,780,1000,100);
-                        ctx.fillRect(230,100,540,680);
-                        ctx.fillRect(0,100,230,(pre_cursor-6)*135);
-                        ctx.fillRect(0,105+(pre_cursor-5)*135,230,(10-pre_cursor)*135);
-                        if(cursor==3){
-                            ctx.fillRect(0,0,550,100);
-                            ctx.fillRect(700,0,300,100);
-                            ctx.fillRect(770,100,230,800);
-                        }else{
-                            ctx.fillRect(0,0,1000,100);
-                        }
-                        ctx.fillStyle="rgb(150,0,0)";
-                        ctx.fillRect(0,800,1000,200);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(200,825,600,150);
-                        ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(200,0,0)";
-                        ctx.fillText("攻撃対象選択！", 225, 900);
-                        ctx.drawImage(atk_circle,100+10*Math.sin(time*Math.PI/64),850+8*Math.sin(time*Math.PI/16));
-                        ctx.drawImage(atk_circle,836+10*Math.sin(time*Math.PI/64),850+8*Math.sin(time*Math.PI/16));
-                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillText("キャンセル：×", 570, 960);
-                    }else if(duel_phase=="相手"){
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,0,100,100);
-                        ctx.fillRect(0,780,1000,220);
-                        ctx.fillRect(0,100,15,680);
-                        ctx.fillRect(985,0,15,780);
-                        ctx.fillRect(100,0,885,15);
-                        ctx.fillStyle="rgb(50,50,50)";
-                        ctx.fillRect(230,100,540,680);
-                        ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillText("相手ターン", 300, 300);
-                        //ctx.fillText("召喚", 400, 400);
-                    }else if(duel_phase=="俺勝ち"){
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,0,1000,1000);
-                        ctx.fillStyle="rgb(255,55,55)";
-                        ctx.fillRect(150,100,700,700);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(200,150,600,600);
-
-                        ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText("勝った！", 250, 250);
-                        ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillText("おめれと", 250, 350);
-                        ctx.drawImage(kati_image,550,500);
-                    }else if(duel_phase=="敵勝ち"){
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,0,1000,1000);
-                        ctx.fillStyle="rgb(55,55,255)";
-                        ctx.fillRect(150,100,700,700);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(200,150,600,600);
-
-                        ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText("負けた！", 250, 250);
-                        ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillText("ぐえー", 250, 350);
-                        ctx.drawImage(make_image,550,525);
-                    }else if(duel_phase=="ターンエンド確認"){
-                        ctx.fillStyle="rgb(0,0,0,0.5)";
-                        ctx.fillRect(0,0,1000,1000);
-                        ctx.fillStyle="rgb(200,100,55)";
-                        ctx.fillRect(250,50,700,480);
-                        ctx.fillStyle="rgb(255,220,200)";
-                        ctx.fillRect(275,75,650,430);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(295,200,610,280);
-                        ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText("ターンエンド", 400, 175);
-                        ctx.drawImage(turn_end,300,100);
-                        
-                        ctx.fillText("OK", 450, 300);
-                        ctx.fillText("キャンセル", 450, 430);
-                        ctx.save();
-                        ctx.rotate(90 * Math.PI / 180);
-                        ctx.drawImage(yubi,200+cursor2*140,-430+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-                    }
-
-                    if(tukau_mahou.length!=0){                        
-                        for(let i=tukau_mahou.length-1;i>=0;i--){
-                            card_draw(tukau_mahou[i][0],tukau_mahou[i][1],tukau_mahou[i][2]-300+tukau_mahou[i][3]*tukau_mahou[i][3]*3);
-                            tukau_mahou[i][3]-=1;
-                            if(tukau_mahou[i][3]==0){
-                                tukau_mahou.splice(i,1);
+                            ctx.fillStyle="rgb(0,0,0)";
+                            text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40,syousai_card.card.text_iro);//x,yは左上指定だから注意だ！
+                            ctx.fillRect(255,600,490,2);
+                            syousai_state_color=[];
+                            syousai_state="分類:";
+                            for(let i=0;i<syousai_card.state.length;i++){
+                                if(syousai_card.state[i]=="TOP_ACE"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                                }else if(syousai_card.state[i]=="ACE"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                                }
+                                syousai_state+=" "+syousai_card.state[i];
                             }
-                        }
-                    }
-                    
-                    if(aite_phase=="相手発動確認"){
-                        
-                        ctx.fillStyle="rgb(55,55,55)";
-                        ctx.fillRect(240,110,520,670);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(250,120,500,650);
-                        syousai_card=teki_tehuda[tukau_card_num];
-                        ctx.fillStyle="rgb(200,200,200)";
-                        ctx.fillRect(255,125,490,50);
-                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(syousai_card.card.name, 260, 168);
-                        ctx.drawImage(syousai_card.card.image,260,180);
+                            text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
 
-                        ctx.fillStyle="rgb(0,0,0)";
-                        text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40,syousai_card.card.text_iro);//x,yは左上指定だから注意だ！
-                        ctx.fillRect(255,600,490,2);
-                        syousai_state_color=[];
-                        syousai_state="分類:";
-                        for(let i=0;i<syousai_card.state.length;i++){
-                            if(syousai_card.state[i]=="TOP_ACE"){
-                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
-                            }else if(syousai_card.state[i]=="ACE"){
-                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                            ctx.fillStyle="rgb(55,55,55)";
+                            ctx.fillRect(90,790,820,200);
+                            ctx.fillStyle="rgb(200,255,200)";
+                            ctx.fillRect(100,800,800,180);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText("・発動されました！", 150, 870);
+                            ctx.fillText("OK", 380, 950);
+                            ctx.save();
+                            ctx.rotate(90 * Math.PI / 180);
+                            ctx.drawImage(yubi,870,-370+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                            if(key_interval<=0 && key_input!=""  && 長押し阻止==0){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                                key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                                長押し阻止=1;
+                                if(key_input.indexOf("〇")!=-1 || key_input.indexOf("×")!=-1){
+                                    teki_tehuda[tukau_card_num].card.effect("手札から");
+                                    teki_tehuda[tukau_card_num].position="teki_haka";
+                                    teki_haka.push(teki_tehuda[tukau_card_num]);
+                                    aite_delay=5;
+                                    teki_tehuda.splice(tukau_card_num,1);
+                                    aite_phase="攻撃";
+                                }
                             }
-                            syousai_state+=" "+syousai_card.state[i];
-                        }
-                        text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
-
-                        ctx.fillStyle="rgb(55,55,55)";
-                        ctx.fillRect(90,790,820,200);
-                        ctx.fillStyle="rgb(200,255,200)";
-                        ctx.fillRect(100,800,800,180);
-                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText("・発動されました！", 150, 870);
-                        ctx.fillText("OK", 380, 950);
-                        ctx.save();
-                        ctx.rotate(90 * Math.PI / 180);
-                        ctx.drawImage(yubi,870,-370+4*Math.sin(time*Math.PI/8));
-                        ctx.restore();
-
-                        if(key_input.indexOf("〇")!=-1 || key_input.indexOf("×")!=-1){
-                            teki_tehuda[tukau_card_num].card.effect("手札から");
-                            teki_tehuda[tukau_card_num].position="teki_haka";
-                            teki_haka.push(teki_tehuda[tukau_card_num]);
-                            aite_delay=5;
-                            teki_tehuda.splice(tukau_card_num,1);
-                            aite_phase="攻撃";
                         }
                     }
                 },30);//30/1000[s]でくりかえすぞ！
