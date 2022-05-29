@@ -97,15 +97,21 @@
             var make_image=new Image();
             make_image.src="../images/omocha/syuukun_card/syouhai300_make.png";
 
+            var tehuda32=new Image();
+            tehuda32.src="../images/omocha/syuukun_card/tehuda32.png";
+
             var card_syuukun=new Image();
             card_syuukun.src="../images/omocha/syuukun_card/card_syuukun130200.png";
             var kinkyuujitai5_image=new Image();
             kinkyuujitai5_image.src="../images/omocha/syuukun_card/kinkyuujitai5.png";
             var ryuunoitigeki_img=new Image();
             ryuunoitigeki_img.src="../images/omocha/syuukun_card/ryuunoitigeki.png";
+            var powerup3_img=new Image();
+            powerup3_img.src="../images/omocha/syuukun_card/powerup3.png";
+            var HPup5_img=new Image();
+            HPup5_img.src="../images/omocha/syuukun_card/HPup5.png";
 
-            var tehuda32=new Image();
-            tehuda32.src="../images/omocha/syuukun_card/tehuda32.png";
+            
 
             //ここにゲームパラメータを置くとイイネ。
             var my_deck=[];
@@ -662,12 +668,100 @@
                 },AI:function(タイミング){
                     return true;//殺せるヤツがいるならどんどん使っていけ！
                 },text:"相手モンスターを1体破壊！(TOP_ACE ACEを除く)",text_iro:[[14,7,"rgb(255,0,0)"],[22,3,"rgb(200,200,0)"]]};
+                var powerup3={name:"パワーアップ３",image:powerup3_img,state:["魔法","味方選択","攻撃上昇"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){//味方がいるなら発動可能。
+                                if(my_ba[i]!=""){
+                                    return true; 
+                                }
+                            }
+                        }else{
+                            for(let i=0;i<5;i++){//味方がいるなら発動可能。
+                                if(teki_ba[i]!=""){
+                                    return true; 
+                                }
+                            }
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            if(my_ba[cursor2]!=""){
+                                my_ba[cursor2].ATK+=3;
+                                return true; 
+                            }
+                            return false; 
+                        }else{
+                            var 一番元気なカードの数値=0;
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    if(一番元気なカードの数値<teki_ba[i].HP){
+                                        一番元気なカードの数値=teki_ba[i].HP;
+                                        cursor2=i;
+                                    } 
+                                }
+                            }
+                            teki_ba[cursor2].ATK+=3;
+                        }
+                        
+                    }
+                },AI:function(タイミング){
+                    return true;//体力多いキャラがいないと使わないってほうが賢い気もするが、気にするな！
+                },text:"味方モンスター1体の攻撃力+3！これで君もモテモテだ！",text_iro:[]};
+                var HPup5={name:"体力アップ5",image:HPup5_img,state:["魔法","味方選択","体力上昇"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){//味方がいるなら発動可能。
+                                if(my_ba[i]!=""){
+                                    return true; 
+                                }
+                            }
+                        }else{
+                            for(let i=0;i<5;i++){//味方がいるなら発動可能。
+                                if(teki_ba[i]!=""){
+                                    return true; 
+                                }
+                            }
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            if(my_ba[cursor2]!=""){
+                                my_ba[cursor2].HP+=5;
+                                return true; 
+                            }
+                            return false; 
+                        }else{
+                            var 一番元気なカードの数値=0;
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    if(一番元気なカードの数値<teki_ba[i].ATK){
+                                        一番元気なカードの数値=teki_ba[i].ATK;
+                                        cursor2=i;
+                                    } 
+                                }
+                            }
+                            teki_ba[cursor2].HP+=5;
+                        }
+                        
+                    }
+                },AI:function(タイミング){
+                    return true;//強いキャラがいないと使わないってほうが賢い気もするが、気にするな！
+                },text:"味方モンスター1体の体力+5！きょうもげんきだ！",text_iro:[]};
 
 
                 //デッキ組もうぜ！
-                var test_list={card_list:[[ryuunoitigeki,5],[test_card,4],[test_card2,4],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
+                var test_list={card_list:[[HPup5,5],[powerup3,5],[test_card,4],[test_card2,4],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
                 //var deck_list={card_list:[[kinkyuujitai5,5],[test_card2,10],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
-                var zako_list={card_list:[[kinkyuujitai5,3],[ryuunoitigeki,5],[test_card,2],[test_card2,15]],ACE:[test_card,test_card,test_card2,test_card2],TOP_ACE:[test_card2,test_card2]};
+                var zako_list={card_list:[[HPup5,5],[powerup3,5],[ryuunoitigeki,5],[test_card,2],[test_card2,15]],ACE:[test_card,test_card,test_card2,test_card2],TOP_ACE:[test_card2,test_card2]};
 
 
 
@@ -722,7 +816,7 @@
                                     }
                                 }else if(duel_phase=="魔法発動確認" || duel_phase=="ターンエンド確認"){
                                     cursor2=(cursor2+1)%2;
-                                }else if(duel_phase=="敵選択"){
+                                }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){
                                     cursor2-=1;
                                     if(cursor2<0){
                                         cursor2=4;
@@ -784,7 +878,7 @@
                                     }
                                 }else if(duel_phase=="魔法発動確認" || duel_phase=="ターンエンド確認"){
                                     cursor2=(cursor2+1)%2;
-                                }else if(duel_phase=="敵選択"){
+                                }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){
                                     cursor2+=1;
                                     if(cursor2>4){
                                         cursor2=0;
@@ -846,7 +940,14 @@
                                                         }
                                                     }
                                                 }else if(my_tehuda[tukau_card_num].state.indexOf("味方選択")!=-1){
-
+                                                    duel_phase="味方選択";
+                                                    for(let i=0;i<4;i++){//味方いるところにカーソル合わせようぜ。
+                                                        if(my_ba[i]==""){
+                                                        }else{
+                                                            cursor2=i;
+                                                            break;
+                                                        }
+                                                    }
                                                 }else{//選択しないタイプだと…思う
                                                     duel_phase="魔法発動確認";
                                                     cursor2=0;
@@ -905,7 +1006,7 @@
                                     }
                                     
                                     duel_phase="自由";
-                                }else if(duel_phase=="敵選択"){//発動するってなら
+                                }else if(duel_phase=="敵選択" || duel_phase=="味方選択"){//発動するってなら
                                     if(my_tehuda[tukau_card_num].card.effect("手札から")){//効果がないときはfalseが返ってくるぜ！
                                         tukau_mahou[tukau_mahou.length]=[my_tehuda[tukau_card_num],50+card_kankaku*tukau_card_num,780,10];
                                         my_tehuda[tukau_card_num].position="my_haka";
@@ -916,8 +1017,7 @@
                                             cursor-=1;//カーソルがそのままだとはみ出るから…さ。
                                         }
                                         duel_phase="自由";
-                                    }
-                                    
+                                    }   
                                 }else if(duel_phase=="ターンエンド確認"){
                                     if(cursor2==0){//OK
                                         duel_phase="相手";
@@ -968,60 +1068,74 @@
                             pull_card(teki_yamahuda,teki_tehuda,2);//相手の手札枚数は右上のあそこに表示してあげるとやさしいと思うな。
                             teki_siyou_tehuda=[];
                             aite_phase="攻撃";
-                            console.log(teki_yamahuda.length);
                             
                         }else if(aite_phase=="攻撃"){
                             aite_nayami="悩むぜ！";
-                            for(let i=0;i<5;i++){//攻撃力が一番高いやつを見つけるぜ！
-                                if(teki_ba[i]!=""){
-                                    if(teki_ba[i].can_ATK>0){
-                                        if(aite_nayami=="悩むぜ！"){
-                                            aite_nayami=i;
-                                        }else if(teki_ba[aite_nayami].ATK<teki_ba[i].ATK){//攻撃力が高いやつから攻撃しようぜ（これがいいのかは…知らん。）
-                                            aite_nayami=i;
+                            for(let i=0;i<teki_tehuda.length;i++){//攻撃する前に使うべき手札があったら使うぜ！
+                                if(teki_tehuda[i].state.indexOf("魔法")!=-1 && teki_tehuda[i].card.effect_req("手札から")){//魔法だね。&& //発動条件確認！
+                                    if(teki_tehuda[i].state.indexOf("攻撃上昇")!=-1){
+                                            if(teki_tehuda[i].card.AI("手札から")){//AI的な発動条件
+                                            aite_phase="相手発動確認";
+                                            aite_nayami="確認待ちだぜ！";
+                                            tukau_card_num=i;
+                                            break;                                        
                                         }
                                     }
                                 }
                             }
-                            if(aite_nayami=="悩むぜ！"){//攻撃できるカードがなかったぜ！
-                                aite_phase="召喚";
-                            }else{
-                                teki_ba[aite_nayami].move=-3;
-                                aite_delay=10;
-                                atk_card=teki_ba[aite_nayami];
-                                aite_nayami="悩むぜ！";
-
-                                for(let i=0;i<5;i++){//体力とか攻撃力を加味して攻撃相手を決めたいぜ！
-                                    if(my_ba[i]!=""){
-                                        if(aite_nayami=="悩むぜ！"){
-                                            aite_nayami=i;
-                                        }else if(my_ba[aite_nayami].ATK/Math.ceil(my_ba[aite_nayami].HP/atk_card.ATK)<my_ba[i].ATK/Math.ceil(my_ba[i].HP/atk_card.ATK)){//なんか殺しやすくて強いやつを殴ろう
-                                            aite_nayami=i;
+                            if(aite_nayami!="確認待ちだぜ！"){//攻撃するの？
+                                for(let i=0;i<5;i++){//攻撃力が一番高いやつを見つけるぜ！
+                                    if(teki_ba[i]!=""){
+                                        if(teki_ba[i].can_ATK>0){
+                                            if(aite_nayami=="悩むぜ！"){
+                                                aite_nayami=i;
+                                            }else if(teki_ba[aite_nayami].ATK<teki_ba[i].ATK){//攻撃力が高いやつから攻撃しようぜ（これがいいのかは…知らん。）
+                                                
+                                                aite_nayami=i;
+                                            }
                                         }
                                     }
                                 }
-
-                                if(aite_nayami=="悩むぜ！"){//俺の場がガラ空きだぁ
-                                    atk_yamahuda(atk_card.ATK,my_yamahuda,my_haka,my_ba,my_tehuda);
-                                    if(duel_phase!="相手"){
-                                        aite_phase="終わり";//どっちか負けたぞ
-                                    }
-                                    zuba[0]=6;
+                                if(aite_nayami=="悩むぜ！"){//攻撃できるカードがなかったぜ！
+                                    aite_phase="召喚";
                                 }else{
-                                    def_card=my_ba[aite_nayami];
-                                    def_card.HP-=atk_card.ATK;
-                                    if(def_card.HP<=0){//倒した～
-                                        my_ba[aite_nayami]=death_card(def_card,my_haka,aite_nayami);
-                                        //my_ba[aite_nayami]="";になるよん
-                                        //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
+                                    teki_ba[aite_nayami].move=-3;
+                                    aite_delay=10;
+                                    atk_card=teki_ba[aite_nayami];
+                                    aite_nayami="悩むぜ！";
+
+                                    for(let i=0;i<5;i++){//体力とか攻撃力を加味して攻撃相手を決めたいぜ！
+                                        if(my_ba[i]!=""){
+                                            if(aite_nayami=="悩むぜ！"){
+                                                aite_nayami=i;
+                                            }else if(my_ba[aite_nayami].ATK/Math.ceil(my_ba[aite_nayami].HP/atk_card.ATK)<my_ba[i].ATK/Math.ceil(my_ba[i].HP/atk_card.ATK)){//なんか殺しやすくて強いやつを殴ろう
+                                                aite_nayami=i;
+                                            }
+                                        }
                                     }
-                                    my_ba[aite_nayami].move=2;
-                                    zuba[aite_nayami+6]=6;
+
+                                    if(aite_nayami=="悩むぜ！"){//俺の場がガラ空きだぁ
+                                        atk_yamahuda(atk_card.ATK,my_yamahuda,my_haka,my_ba,my_tehuda);
+                                        if(duel_phase!="相手"){
+                                            aite_phase="終わり";//どっちか負けたぞ
+                                        }
+                                        zuba[0]=6;
+                                    }else{
+                                        def_card=my_ba[aite_nayami];
+                                        def_card.HP-=atk_card.ATK;
+                                        if(def_card.HP<=0){//倒した～
+                                            my_ba[aite_nayami]=death_card(def_card,my_haka,aite_nayami);
+                                            //my_ba[aite_nayami]="";になるよん
+                                            //def_card="";ではだめ。参照はプロパティの場所しか渡せてないらしい、じゃあ渡せばいいじゃん！やだよバーカ！
+                                        }
+                                        my_ba[aite_nayami].move=2;
+                                        zuba[aite_nayami+6]=6;
+                                    }
+                                    
+                                    atk_card.can_ATK-=1;//攻撃したら…ね
                                 }
-                                
-                                atk_card.can_ATK-=1;//攻撃したら…ね
                             }
-                        }else if(aite_phase=="召喚"){
+                        }else if(aite_phase=="召喚"){//召喚…魔法発動もしてるぜ！
                             aite_nayami="悩むぜ！";
                             for(let i=0;i<teki_tehuda.length;i++){//手札使うぜ！    
                                 if(teki_tehuda[i].state.indexOf("モンスター")!=-1){//モンスターカードやんけ！
@@ -1358,9 +1472,7 @@
                     if(duel_phase=="敵選択"){
                         ctx.fillStyle="rgb(0,0,0,0.5)";
                         ctx.fillRect(0,780,1000,100);
-                        ctx.fillRect(230,100,540,680);
-                        ctx.fillRect(0,100,230,(pre_cursor-6)*135);
-                        ctx.fillRect(0,105+(pre_cursor-5)*135,230,(10-pre_cursor)*135);
+                        ctx.fillRect(0,100,770,680);
                         ctx.fillRect(0,0,1000,100);
                         
                         ctx.fillStyle="rgb(0,150,0)";
@@ -1396,6 +1508,48 @@
                             ctx.save();
                             ctx.rotate(270 * Math.PI / 180);
                             ctx.drawImage(yubi,-775,900+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+
+                        }
+                    }else if(duel_phase=="味方選択"){
+                        ctx.fillStyle="rgb(0,0,0,0.5)";
+                        ctx.fillRect(0,780,1000,100);
+                        ctx.fillRect(230,100,770,680);
+                        ctx.fillRect(0,0,1000,100);
+                        
+                        ctx.fillStyle="rgb(0,150,0)";
+                        ctx.fillRect(0,800,1000,200);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(200,825,600,150);
+                        ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,200,0)";
+                        ctx.fillText("魔法対象選択！", 225, 900);
+                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillText("キャンセル：×", 570, 960);
+                        if(cursor2==0){//左場
+                            ctx.save();
+                            ctx.rotate(90 * Math.PI / 180);
+                            ctx.drawImage(yubi,105,-100+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor2==1){
+                            ctx.save();
+                            ctx.rotate(90 * Math.PI / 180);
+                            ctx.drawImage(yubi,245,-110+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor2==2){
+                            ctx.save();
+                            ctx.rotate(90 * Math.PI / 180);
+                            ctx.drawImage(yubi,375,-120+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor2==3){
+                            ctx.save();
+                            ctx.rotate(90 * Math.PI / 180);
+                            ctx.drawImage(yubi,510,-110+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor2==4){
+                            ctx.save();
+                            ctx.rotate(90 * Math.PI / 180);
+                            ctx.drawImage(yubi,645,-100+4*Math.sin(time*Math.PI/8));
                             ctx.restore();
 
                         }
@@ -1589,7 +1743,6 @@
 
                     if(tukau_mahou.length!=0){                        
                         for(let i=tukau_mahou.length-1;i>=0;i--){
-                            console.log(tukau_mahou[i][1]+" "+tukau_mahou[i][2]);
                             card_draw(tukau_mahou[i][0],tukau_mahou[i][1],tukau_mahou[i][2]-300+tukau_mahou[i][3]*tukau_mahou[i][3]*3);
                             tukau_mahou[i][3]-=1;
                             if(tukau_mahou[i][3]==0){
