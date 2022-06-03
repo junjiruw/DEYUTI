@@ -142,7 +142,7 @@
             var key_owarasete=0;
             var 長押し阻止=0;//決定ボタンを長押し連打するのはまずいのでは？となったので阻止します。
 
-            var game_phase="戦闘準備";
+            var game_phase="デッキ編集準備";
 
             //----------------------
 
@@ -174,7 +174,19 @@
             var zuba=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]//zuba64を表示するタイマー
             var yamahuda_damage=[0,0];//左が俺へのダメージで、右が相手へのダメージ描写
 
+
             var time=0;
+
+
+            //---上デュエル系？　下デッキ系？
+            var 編集中デッキ={card_list:[],ACE:[],TOP_ACE:[]};
+            var カードカウント=0;
+
+            var scroll_x=0;
+            var scroll_y=0;
+
+            var cursor_x=0;
+            var cursor_y=0;
 
             onload = function(){
                 onload_functions();
@@ -764,7 +776,7 @@
 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,5],[powerup3,5],[test_card,4],[test_card2,4],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
-                //var deck_list={card_list:[[kinkyuujitai5,5],[test_card2,10],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
+                var deck_list=test_list;
                 var zako_list={card_list:[[HPup5,5],[powerup3,15],[ryuunoitigeki,5],[test_card,2],[test_card2,15]],ACE:[test_card,test_card,test_card2,test_card2],TOP_ACE:[test_card2,test_card2]};
 
                 
@@ -800,27 +812,49 @@
                         if(長押し阻止==1 && (key_input.indexOf("〇")==-1 || key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
                             長押し阻止=0; 
                         }
+                    }else if(game_phase=="デッキ編集準備"){
+                        カードカウント=0;
+                        for(let i=0;i<deck_list.card_list.length;i++){
+                            for(let j=0;j<deck_list.card_list[i][1];j++){
+                                編集中デッキ.card_list[カードカウント]=deck_list.card_list[i][0];
+                                カードカウント+=1;
+                            }
+                        }
+                        game_phase="デッキ編集";
                     }else if(game_phase=="デッキ編集"){
 
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                             key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
                             for(let i=0;i<key_input.length;i++){
                                 if(key_input.charAt(i)=="↑"){
-                                    
+                                    if(cursor_y>0){
+                                        cursor_y-=1;
+                                    }
                                 }else if(key_input.charAt(i)=="←"){
-
+                                    if(cursor_x>0){
+                                        cursor_x-=1;
+                                    }else if(cursor_y==0 && scroll_x!=0){
+                                        scroll_x-=1;
+                                    }
                                     
                                 }else if(key_input.charAt(i)=="→"){
-
+                                    if(cursor_x<6){
+                                        cursor_x+=1;
+                                    }else if(cursor_y==0 && scroll_x<編集中デッキ.card_list.length-7){
+                                        scroll_x+=1;
+                                    }
                                     
                                 }else if(key_input.charAt(i)=="↓"){
-
+                                    if(cursor_y<2){
+                                        cursor_y+=1;
+                                    }
                                     
                                 }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                     長押し阻止=1;
                                     
-                                }else if(key_input.charAt(i)=="×"){
+                                }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
                                     長押し阻止=1;
+                                    game_phase="戦闘準備";
                                 }
                             }
                             if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
@@ -837,12 +871,106 @@
                         }
 
 
-                        ctx.fillStyle="rgb(100,100,130,1)";
+                        ctx.fillStyle="rgb(50,50,80,1)";
                         ctx.fillRect(0,0,1000,1000);
 
+                        //カード表示
+                        ctx.fillStyle="rgb(200,200,200)";
+                        for(let i=0;i<8;i++){
+                            if((i+scroll_x-1)>=0 && (i+scroll_x-1)<=編集中デッキ.card_list.length){
+                                ctx.fillRect(-130+140*i,10,140,220);
+                                ctx.drawImage(編集中デッキ.card_list[i+scroll_x-1].image,-125+140*i,20);
+                            }
+                            
+                        }
+                        for(let i=0;i<7;i++){
+                            ctx.drawImage(test_card.image,10+140*i,320);
+                        }
+                        for(let i=0;i<7;i++){
+                            ctx.drawImage(test_card.image,10+140*i,530);
+                        }
+
+                        ctx.fillRect(100,250,800,60);
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText(編集中デッキ.card_list.length+"/MAX20", 120, 300);
+
+                        //  スクロール？
+                        ctx.fillStyle="rgb(100,100,100)";
+                        ctx.fillRect(50,225,900,20);
+                        ctx.fillRect(970,330,20,400);
+
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(60+680*(scroll_x/(編集中デッキ.card_list.length-7)),227,200,16);
+                        ctx.fillRect(972,340,16,150);
+
+                        //  カーソル
+                        if(cursor_y==0){
+                            ctx.drawImage(yubi,20+cursor_x*140,150+4*Math.sin(time*Math.PI/8));
+                        }else if(cursor_y==1){
+                            ctx.drawImage(yubi,20+cursor_x*140,480+4*Math.sin(time*Math.PI/8));
+                        }else if(cursor_y==2){
+                            ctx.drawImage(yubi,20+cursor_x*140,690+4*Math.sin(time*Math.PI/8));
+                        }
+                        
+
+
+
+                        ctx.fillStyle="rgb(100,100,130)";
+                        ctx.fillRect(0,740,1000,260);
+                        ctx.fillStyle="rgb(55,55,55)";//詳細表示─
+                        ctx.fillRect(5,745,990,250);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(10,750,980,240);
+                        ctx.fillStyle="rgb(55,55,55)";
+                        ctx.fillRect(550,755,5,230);
+                        if(cursor<=10){
+                            syousai_card=my_ba[cursor-6];
+                        }else if(cursor<=15){
+                            syousai_card=teki_ba[cursor-11];
+                        }else{
+                            syousai_card=my_tehuda[cursor-16];
+                        }
+                        ctx.fillStyle="rgb(200,200,200)";
+                        ctx.fillRect(15,755,490,50);
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText(syousai_card.card.name, 20, 798);
+                        
+
+                        if(syousai_card.state.indexOf("モンスター")!=-1){
+                            ctx.drawImage(atk_plate,400,180);
+                            ctx.drawImage(def_plate,450,185);
+                            ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(255,255,255)";
+                            if(syousai_card.card.ATK<10){
+                                ctx.fillText(syousai_card.card.ATK, 614, 222);
+                            }else{
+                                ctx.fillText(syousai_card.card.ATK, 604, 222);
+                            }
+                            if(syousai_card.card.HP<10){
+                                ctx.fillText(syousai_card.card.HP, 664, 222);
+                            }else{
+                                ctx.fillText(syousai_card.card.HP, 654, 222);
+                            }
+                        }
+                        ctx.fillStyle="rgb(0,0,0)";
+                        text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40,syousai_card.card.text_iro);//x,yは左上指定だから注意だ！
+                        ctx.fillRect(255,600,490,2);
+                        syousai_state_color=[];
+                        syousai_state="分類:";
+                        for(let i=0;i<syousai_card.state.length;i++){
+                            if(syousai_card.state[i]=="TOP_ACE"){
+                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                            }else if(syousai_card.state[i]=="ACE"){
+                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                            }
+                            syousai_state+=" "+syousai_card.state[i];
+                        }
+                        text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
 
                     }else if(game_phase=="戦闘準備"){
-                        deck_initialize(test_list,my_deck,my_yamahuda);
+                        deck_initialize(deck_list,my_deck,my_yamahuda);
                         deck_initialize(zako_list,teki_deck,teki_yamahuda);
                         
                         pull_card(my_yamahuda,my_tehuda,3);
