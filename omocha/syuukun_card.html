@@ -179,11 +179,20 @@
 
 
             //---上デュエル系？　下デッキ系？
+            var 所持カード=[];
+
             var 編集中デッキ={card_list:[],ACE:[],TOP_ACE:[]};
             var カードカウント=0;
+            var pre_カード="";
+
+            var MAX_deck=20;
+            var MAX_ACE=3;
+            var MAX_TOPACE=1;
+
+            var カードインデックス=0;
 
             var scroll_x=0;
-            var scroll_y=0;
+            var scroll_x2=0;
 
             var cursor_x=0;
             var cursor_y=0;
@@ -775,9 +784,12 @@
 
 
                 //デッキ組もうぜ！
-                var test_list={card_list:[[HPup5,5],[powerup3,5],[test_card,4],[test_card2,4],[syuukun,1]],ACE:[test_card2],TOP_ACE:[syuukun]};
+                var test_list={card_list:[[HPup5,5],[powerup3,5],[test_card,4],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2,test_card],TOP_ACE:[syuukun]};
                 var deck_list=test_list;
                 var zako_list={card_list:[[HPup5,5],[powerup3,15],[ryuunoitigeki,5],[test_card,2],[test_card2,15]],ACE:[test_card,test_card,test_card2,test_card2],TOP_ACE:[test_card2,test_card2]};
+                
+                //初期所持カード
+                所持カード=[[HPup5,20],[powerup3,10],[test_card,5],[test_card2,10],[syuukun,2],[ryuunoitigeki,5]];
 
                 
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
@@ -820,6 +832,30 @@
                                 カードカウント+=1;
                             }
                         }
+                        カードカウント=0;
+                        pre_カード="";
+                        for(let i=0;i<deck_list.ACE.length;i++){
+                            if(deck_list.ACE[i]==pre_カード){
+                                カードカウント+=1;
+                                編集中デッキ.ACE[i]=編集中デッキ.card_list.indexOf(deck_list.ACE[i])+カードカウント;
+                            }else{
+                                編集中デッキ.ACE[i]=編集中デッキ.card_list.indexOf(deck_list.ACE[i]);
+                                カードカウント=0;
+                            }
+                            pre_カード=deck_list.ACE[i];
+                        }
+                        カードカウント=0;
+                        pre_カード="";
+                        for(let i=0;i<deck_list.TOP_ACE.length;i++){
+                            if(deck_list.TOP_ACE[i]==pre_カード){
+                                カードカウント+=1;
+                                編集中デッキ.TOP_ACE[i]=編集中デッキ.card_list.indexOf(deck_list.TOP_ACE[i])+カードカウント;
+                            }else{
+                                編集中デッキ.TOP_ACE[i]=編集中デッキ.card_list.indexOf(deck_list.TOP_ACE[i]);
+                                カードカウント=0;
+                            }
+                            pre_カード=deck_list.TOP_ACE[i];
+                        }
                         game_phase="デッキ編集";
                     }else if(game_phase=="デッキ編集"){
 
@@ -835,6 +871,8 @@
                                         cursor_x-=1;
                                     }else if(cursor_y==0 && scroll_x!=0){
                                         scroll_x-=1;
+                                    }else if((cursor_y==1 || cursor_y==2) && scroll_x2!=0){
+                                        scroll_x2-=1;
                                     }
                                     
                                 }else if(key_input.charAt(i)=="→"){
@@ -842,13 +880,14 @@
                                         cursor_x+=1;
                                     }else if(cursor_y==0 && scroll_x<編集中デッキ.card_list.length-7){
                                         scroll_x+=1;
+                                    }else if((cursor_y==1 || cursor_y==2) && scroll_x2<所持カード.length/2-7){
+                                        scroll_x2+=1;
                                     }
                                     
                                 }else if(key_input.charAt(i)=="↓"){
                                     if(cursor_y<2){
                                         cursor_y+=1;
                                     }
-                                    
                                 }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                     長押し阻止=1;
                                     
@@ -875,34 +914,148 @@
                         ctx.fillRect(0,0,1000,1000);
 
                         //カード表示
-                        ctx.fillStyle="rgb(200,200,200)";
-                        for(let i=0;i<8;i++){
-                            if((i+scroll_x-1)>=0 && (i+scroll_x-1)<=編集中デッキ.card_list.length){
+                        for(let i=0;i<9;i++){
+                            ctx.fillStyle="rgb(200,200,200)";
+                            if((i+scroll_x-1)>=0 && (i+scroll_x-1)<編集中デッキ.card_list.length){
                                 ctx.fillRect(-130+140*i,10,140,220);
                                 ctx.drawImage(編集中デッキ.card_list[i+scroll_x-1].image,-125+140*i,20);
-                            }
-                            
-                        }
-                        for(let i=0;i<7;i++){
-                            ctx.drawImage(test_card.image,10+140*i,320);
-                        }
-                        for(let i=0;i<7;i++){
-                            ctx.drawImage(test_card.image,10+140*i,530);
+                                if(編集中デッキ.TOP_ACE.indexOf(i+scroll_x-1)!=-1){
+                                    ctx.fillStyle="rgb(255,0,0,1)";
+                                    ctx.fillRect(-125+140*i-2,20,5,200);
+                                    ctx.fillRect(-125+140*i+128,20,5,200);
+                                    ctx.fillRect(-125+140*i,20,133,5);
+                                    ctx.fillRect(-125+140*i,20+195,133,5);
+                                }
+                                if(編集中デッキ.ACE.indexOf(i+scroll_x-1)!=-1){
+                                    ctx.fillStyle="rgb(255,255,0)";
+                                    ctx.fillRect(-125+140*i-2,20,5,200);
+                                    ctx.fillRect(-125+140*i+128,20,5,200);
+                                    ctx.fillRect(-125+140*i,20,133,5);
+                                    ctx.fillRect(-125+140*i,20+195,133,5);
+                                }
+                            } 
                         }
 
+                        ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        for(let i=0;i<14;i++){
+                            if(i<所持カード.length-scroll_x2*2){
+                                if(i%2==0){
+                                    ctx.drawImage(所持カード[i+scroll_x2*2][0].image,10+140*(i/2),320);
+                                    if(所持カード[i+scroll_x2*2][0].state.indexOf("魔法")!=-1){//魔法じゃん）
+                                        ctx.fillStyle="rgb(0,200,0)";   
+                                        ctx.fillRect(10+140*(i/2),320+145,133,45);
+                                        ctx.fillStyle="rgb(255,255,255)";
+                                        ctx.fillText("魔法",10+140*(i/2) , 500);
+                                    }else{
+                                        ctx.fillStyle="rgb(150,50,0)";  
+                                        ctx.fillRect(10+140*(i/2),320+145,133,45);
+                                    }
+                                    
+                                    
+                                    カードインデックス=編集中デッキ.card_list.indexOf(所持カード[i+scroll_x2*2][0]);
+                                    if(カードインデックス!=-1){
+                                        カードカウント=0;
+                                        for(let j=カードインデックス;j<編集中デッキ.card_list.length;j++){
+                                            if(編集中デッキ.card_list[j]==編集中デッキ.card_list[カードインデックス]){
+                                                カードカウント+=1;
+                                            }else{
+                                                break;
+                                            }
+                                        }
+                                        
+                                        ctx.fillStyle="rgb(0,0,0)";
+                                        ctx.fillRect(90+140*(i/2),420,50,50);
+                                        ctx.fillStyle="rgb(255,255,255)";
+                                        ctx.fillRect(95+140*(i/2),425,40,40);
+                                        ctx.fillStyle="rgb(100,0,0)";
+                                        if(カードカウント<10){
+                                            ctx.fillText(カードカウント, 105+140*(i/2), 460);
+                                        }else{
+                                            ctx.fillText(カードカウント, 95+140*(i/2), 460);
+                                        }
+                                        
+                                    }
+                                    ctx.fillStyle="rgb(0,0,0)";
+                                    ctx.fillRect(90+140*(i/2),470,50,50);
+                                    ctx.fillStyle="rgb(155,155,205)";
+                                    ctx.fillRect(95+140*(i/2),475,40,40);
+                                    ctx.fillStyle="rgb(255,255,255)";
+                                    if(所持カード[i+scroll_x2*2][1]<10){
+                                        ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*(i/2), 510);
+                                    }else{
+                                        ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*(i/2), 510);
+                                    }
+                                }else{
+                                    ctx.drawImage(所持カード[i+scroll_x2*2][0].image,10+140*((i-1)/2),530);
+                                    if(所持カード[i+scroll_x2*2][0].state.indexOf("魔法")!=-1){//魔法じゃん）
+                                        ctx.fillStyle="rgb(0,200,0)";   
+                                        ctx.fillRect(10+140*((i-1)/2),530+145,133,45);
+                                        ctx.fillStyle="rgb(255,255,255)";
+                                        ctx.fillText("魔法",10+140*((i-1)/2) , 710);
+                                    }else{
+                                        ctx.fillStyle="rgb(150,50,0)";  
+                                        ctx.fillRect(10+140*((i-1)/2),530+145,133,45);
+                                    }
+                                    
+                                    カードインデックス=編集中デッキ.card_list.indexOf(所持カード[i+scroll_x2*2][0]);
+                                    if(カードインデックス!=-1){
+                                        カードカウント=0;
+                                        for(let j=カードインデックス;j<編集中デッキ.card_list.length;j++){
+                                            if(編集中デッキ.card_list[j]==編集中デッキ.card_list[カードインデックス]){
+                                                カードカウント+=1;
+                                            }else{
+                                                break;
+                                            }
+                                        }
+                                        
+                                        ctx.fillStyle="rgb(0,0,0)";
+                                        ctx.fillRect(90+140*((i-1)/2),630,50,50);
+                                        ctx.fillStyle="rgb(255,255,255)";
+                                        ctx.fillRect(95+140*((i-1)/2),635,40,40);
+                                        ctx.fillStyle="rgb(100,0,0)";
+                                        if(カードカウント<10){
+                                            ctx.fillText(カードカウント, 105+140*((i-1)/2), 670);
+                                        }else{
+                                            ctx.fillText(カードカウント, 95+140*((i-1)/2), 670);
+                                        }
+                                    }
+                                    ctx.fillStyle="rgb(0,0,0)";
+                                    ctx.fillRect(90+140*((i-1)/2),680,50,50);
+                                    ctx.fillStyle="rgb(155,155,205)";
+                                    ctx.fillRect(95+140*((i-1)/2),685,40,40);
+                                    ctx.fillStyle="rgb(255,255,255)";
+                                    if(カードカウント<10){
+                                        ctx.fillText(カードカウント, 105+140*((i-1)/2), 720);
+                                    }else{
+                                        ctx.fillText(カードカウント, 95+140*((i-1)/2), 720);
+                                    }
+                                }
+                            }
+                        }
+                        ctx.fillStyle="rgb(200,200,200)";
                         ctx.fillRect(100,250,800,60);
                         ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                         ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(編集中デッキ.card_list.length+"/MAX20", 120, 300);
+                        ctx.fillText(編集中デッキ.card_list.length+"枚(MAX:"+MAX_deck+")", 120, 300);
 
                         //  スクロール？
                         ctx.fillStyle="rgb(100,100,100)";
                         ctx.fillRect(50,225,900,20);
-                        ctx.fillRect(970,330,20,400);
+                        ctx.fillRect(50,725,900,20);
 
                         ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(60+680*(scroll_x/(編集中デッキ.card_list.length-7)),227,200,16);
-                        ctx.fillRect(972,340,16,150);
+                        
+                        if(編集中デッキ.card_list.length>7){
+                            ctx.fillRect(60+680*(scroll_x/(編集中デッキ.card_list.length-7)),227,200,16);
+                        }else{
+                            ctx.fillRect(60,227,880,16);
+                        }
+                        if(所持カード.length>14){
+                            ctx.fillRect(60+680*(scroll_x2/( Math.ceil(所持カード.length/2)-7)),727,200,16);
+                        }else{
+                            ctx.fillRect(60,727,880,16);
+                        }
+                        
 
                         //  カーソル
                         if(cursor_y==0){
@@ -915,7 +1068,7 @@
                         
 
 
-
+                        
                         ctx.fillStyle="rgb(100,100,130)";
                         ctx.fillRect(0,740,1000,260);
                         ctx.fillStyle="rgb(55,55,55)";//詳細表示─
@@ -924,51 +1077,83 @@
                         ctx.fillRect(10,750,980,240);
                         ctx.fillStyle="rgb(55,55,55)";
                         ctx.fillRect(550,755,5,230);
-                        if(cursor<=10){
-                            syousai_card=my_ba[cursor-6];
-                        }else if(cursor<=15){
-                            syousai_card=teki_ba[cursor-11];
-                        }else{
-                            syousai_card=my_tehuda[cursor-16];
+                        if(cursor_y==0){
+                            if(cursor_x+scroll_x<編集中デッキ.card_list.length){
+                                syousai_card=編集中デッキ.card_list[cursor_x+scroll_x];
+                            }else{
+                                syousai_card="";
+                            }
+                            
+                        }else if(cursor_y==1 || cursor_y==2){
+                            if(cursor_x*2+cursor_y+scroll_x2*2-1<所持カード.length){
+                                syousai_card=所持カード[cursor_x*2+cursor_y+scroll_x2*2-1][0];
+                            }else{
+                                syousai_card="";
+                            }
                         }
-                        ctx.fillStyle="rgb(200,200,200)";
-                        ctx.fillRect(15,755,490,50);
-                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(syousai_card.card.name, 20, 798);
+                        if(syousai_card!=""){
+                            ctx.fillStyle="rgb(200,200,200)";
+                            ctx.fillRect(15,755,490,50);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText(syousai_card.name, 20, 798);
+                            
+
+                            if(syousai_card.state.indexOf("モンスター")!=-1){
+                                ctx.drawImage(atk_plate,560,760);
+                                ctx.drawImage(def_plate,610,765);
+                                ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(255,255,255)";
+                                if(syousai_card.ATK<10){
+                                    ctx.fillText(syousai_card.ATK, 574, 802);
+                                }else{
+                                    ctx.fillText(syousai_card.ATK, 564, 802);
+                                }
+                                if(syousai_card.HP<10){
+                                    ctx.fillText(syousai_card.HP, 624, 802);
+                                }else{
+                                    ctx.fillText(syousai_card.HP, 614, 802);
+                                }
+                            }
+                            ctx.fillStyle="rgb(0,0,0)";
+                            text_kaigyou_hyouji(syousai_card.text, 20, 810,520,180,40,syousai_card.text_iro);//x,yは左上指定だから注意だ！
                         
+                            syousai_state_color=[];
+                            syousai_state="分類:";
+                            for(let i=0;i<syousai_card.state.length;i++){
+                                if(syousai_card.state[i]=="TOP_ACE"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                                }else if(syousai_card.state[i]=="ACE"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                                }
+                                syousai_state+=" "+syousai_card.state[i];
+                            }
+                            text_kaigyou_hyouji(syousai_state, 560, 810,420,180,40,syousai_state_color);//x,yは左上指定だから注意だ！
+                            
+                            カードインデックス=編集中デッキ.card_list.indexOf(syousai_card);
+                            カードカウント=0;
+                            if(カードインデックス!=-1){
+                                カードインデックス
+                                for(let i=カードインデックス;i<編集中デッキ.card_list.length;i++){
+                                    if(編集中デッキ.card_list[i]==編集中デッキ.card_list[カードインデックス]){
+                                        カードカウント+=1;
+                                    }else{
+                                        break;
+                                    }
+                                }
+                            }
+                            for(let i=0;i<所持カード.length;i++){
+                                if(所持カード[i][0]==syousai_card){
+                                    ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                    ctx.fillStyle="rgb(0,0,0)";
+                                    ctx.fillText("デッキ："+カードカウント+"枚", 695, 780);
+                                    ctx.fillText("所持："+所持カード[i][1]+"枚", 700, 810);
+                                    break;
+                                }
+                            }
 
-                        if(syousai_card.state.indexOf("モンスター")!=-1){
-                            ctx.drawImage(atk_plate,400,180);
-                            ctx.drawImage(def_plate,450,185);
-                            ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                            ctx.fillStyle="rgb(255,255,255)";
-                            if(syousai_card.card.ATK<10){
-                                ctx.fillText(syousai_card.card.ATK, 614, 222);
-                            }else{
-                                ctx.fillText(syousai_card.card.ATK, 604, 222);
-                            }
-                            if(syousai_card.card.HP<10){
-                                ctx.fillText(syousai_card.card.HP, 664, 222);
-                            }else{
-                                ctx.fillText(syousai_card.card.HP, 654, 222);
-                            }
-                        }
-                        ctx.fillStyle="rgb(0,0,0)";
-                        text_kaigyou_hyouji(syousai_card.card.text, 260, 380,480,240,40,syousai_card.card.text_iro);//x,yは左上指定だから注意だ！
-                        ctx.fillRect(255,600,490,2);
-                        syousai_state_color=[];
-                        syousai_state="分類:";
-                        for(let i=0;i<syousai_card.state.length;i++){
-                            if(syousai_card.state[i]=="TOP_ACE"){
-                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
-                            }else if(syousai_card.state[i]=="ACE"){
-                                syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
-                            }
-                            syousai_state+=" "+syousai_card.state[i];
-                        }
-                        text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
 
+                        }
                     }else if(game_phase=="戦闘準備"){
                         deck_initialize(deck_list,my_deck,my_yamahuda);
                         deck_initialize(zako_list,teki_deck,teki_yamahuda);
