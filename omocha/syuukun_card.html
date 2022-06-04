@@ -1032,11 +1032,18 @@
                                 }
                             }
                         }
+
+                        ctx.drawImage(yamahuda,5,250);
                         ctx.fillStyle="rgb(200,200,200)";
-                        ctx.fillRect(100,250,800,60);
+                        ctx.fillRect(80,250,400,60);
+                        ctx.fillRect(520,245,450,70);
                         ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                         ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(編集中デッキ.card_list.length+"枚(MAX:"+MAX_deck+")", 120, 300);
+                        ctx.fillText(編集中デッキ.card_list.length+"枚(最大"+MAX_deck+"枚)", 100, 300);
+                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillText("○：カード移動　×：メニュー", 530, 275);
+                        
+                        ctx.fillText("ACE:"+編集中デッキ.ACE.length+"/"+MAX_ACE+"枚　TOP_ACE:"+編集中デッキ.TOP_ACE.length+"/"+MAX_TOPACE+"枚", 530, 310);
 
                         //  スクロール？
                         ctx.fillStyle="rgb(100,100,100)";
