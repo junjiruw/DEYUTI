@@ -191,6 +191,7 @@
             var MAX_TOPACE=1;
 
             var カードインデックス=0;
+            var カードスワップ=0;
             var これのデッキ枚数=0;
             var これの所持枚数=0;
 
@@ -601,6 +602,9 @@
                     ba.move=5;
                     return ba;
                 }
+                var compare = function (a, b) {//sort()関数の引数にこの関数を渡すと、数字のソートが可能になる。
+                    return a - b
+                }
                 //カード定義ー－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－ー－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
                 //effectを使うときはeffect()
                 //場所悪くない？→だってカード内に関数使いたかったんだもん…
@@ -787,13 +791,15 @@
 
 
                 //デッキ組もうぜ！
-                var test_list={card_list:[[HPup5,5],[powerup3,5],[test_card,4],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2,test_card],TOP_ACE:[syuukun]};
+                var test_list={card_list:[[HPup5,5],[powerup3,5],[test_card,6],[test_card2,4],[syuukun,10]],ACE:[test_card2,test_card2,test_card,test_card,test_card,test_card,test_card,test_card],TOP_ACE:[syuukun,syuukun,syuukun,syuukun,syuukun,syuukun,HPup5,HPup5]};
                 var deck_list=test_list;
                 var zako_list={card_list:[[HPup5,5],[powerup3,15],[ryuunoitigeki,5],[test_card,2],[test_card2,15]],ACE:[test_card,test_card,test_card2,test_card2],TOP_ACE:[test_card2,test_card2]};
                 
                 //初期所持カード
                 所持カード=[[HPup5,20],[powerup3,10],[test_card,5],[test_card2,10],[syuukun,2],[ryuunoitigeki,5]];
 
+                MAX_ACE=10;
+                MAX_TOPACE=10;
                 
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
@@ -859,6 +865,8 @@
                             }
                             pre_カード=deck_list.TOP_ACE[i];
                         }
+                        編集中デッキ.ACE.sort(compare);
+                        編集中デッキ.TOP_ACE.sort(compare);
                         game_phase="デッキ編集";
                     }else if(game_phase=="デッキ編集"){
 
@@ -909,7 +917,8 @@
                                         
                                     }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
                                         長押し阻止=1;
-                                        game_phase="戦闘準備";
+                                        hensyuu_phase="メニュー";
+                                        cursor2=0;
                                     }
                                 }else if(hensyuu_phase=="カード移動"){//-----------------------------------------------
                                     if(key_input.charAt(i)=="↑"){
@@ -967,6 +976,272 @@
                                         長押し阻止=1;
                                         hensyuu_phase="基本";
                                     }
+                                }else if(hensyuu_phase=="メニュー"){
+                                    if(key_input.charAt(i)=="↑"){
+                                        cursor2-=1;
+                                        if(cursor2==-1){
+                                            cursor2=3;
+                                        }
+                                    }else if(key_input.charAt(i)=="←"){
+                                    }else if(key_input.charAt(i)=="→"){
+                                    }else if(key_input.charAt(i)=="↓"){
+                                        cursor2+=1;
+                                        if(cursor2==4){
+                                            cursor2=0;
+                                        }
+                                    }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                        if(cursor2==0){
+                                            hensyuu_phase="基本";
+                                        }else if(cursor2==1){
+                                            hensyuu_phase="ACE編集";
+                                            scroll_x2=0;
+                                        }else if(cursor2==2){
+
+                                        }else if(cursor2==3){
+
+                                        }
+                                    }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                        hensyuu_phase="基本";
+                                    }
+                                }else if(hensyuu_phase=="ACE編集" || hensyuu_phase=="deck選択" || hensyuu_phase=="ACE選択" || hensyuu_phase=="TOP_ACE選択"){
+                                    if(key_input.charAt(i)=="↑"){
+                                        if(cursor_y>0){
+                                            cursor_y-=1;
+                                        }
+                                    }else if(key_input.charAt(i)=="←"){
+                                        if(cursor_x>0){
+                                            cursor_x-=1;
+                                        }else if(cursor_y==0 && scroll_x!=0){
+                                            scroll_x-=1;
+                                        }else if((cursor_y==1 || cursor_y==2) && scroll_x2!=0){
+                                            scroll_x2-=1;
+                                        }
+                                        
+                                    }else if(key_input.charAt(i)=="→"){
+                                        if(cursor_x<6){
+                                            cursor_x+=1;
+                                        }else if(cursor_y==0 && scroll_x<編集中デッキ.card_list.length-7){
+                                            scroll_x+=1;
+                                        }else if((cursor_y==1 || cursor_y==2) && scroll_x2<Math.max(MAX_ACE,MAX_TOPACE)-7){
+                                            scroll_x2+=1;
+                                        }
+                                        
+                                    }else if(key_input.charAt(i)=="↓"){
+                                        if(cursor_y<2){
+                                            cursor_y+=1;
+                                        }
+                                    }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                        if(hensyuu_phase=="ACE編集"){
+                                            if(cursor_y==0){
+                                                カードスワップ=cursor_x+scroll_x;
+                                                hensyuu_phase="deck選択";
+                                            }else if(cursor_y==1){
+                                                カードスワップ=cursor_x+scroll_x2;
+                                                hensyuu_phase="ACE選択";
+                                            }else if(cursor_y==2){
+                                                カードスワップ=cursor_x+scroll_x2;
+                                                hensyuu_phase="TOP_ACE選択";
+                                            }
+                                        }else if(hensyuu_phase=="deck選択"){
+                                            if(cursor_y==0){
+                                                if(カードスワップ==(cursor_x+scroll_x)){//同じカードを選択…解除？キャンセルか？
+                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){
+                                                        編集中デッキ.ACE.splice(編集中デッキ.ACE.indexOf(カードスワップ),1);//消しましょうね
+                                                        //消したらソートしたくない？→全体編集後でいいよ
+                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){
+                                                        編集中デッキ.TOP_ACE.splice(編集中デッキ.TOP_ACE.indexOf(カードスワップ),1);//消しましょうね
+                                                    }
+                                                    カードスワップ=0;
+                                                    hensyuu_phase="ACE編集";
+                                                }
+                                            }else if(cursor_y==1){
+                                                if(編集中デッキ.ACE.length>cursor_x+scroll_x2){
+                                                    pre_カード=編集中デッキ.ACE[cursor_x+scroll_x2];
+                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - ACE
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - ACE
+                                                        編集中デッキ.ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                        編集中デッキ.TOP_ACE[編集中デッキ.TOP_ACE.indexOf(カードスワップ)]=pre_カード;
+                                                        
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else{//NULL -ACE
+                                                        編集中デッキ.ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                        
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+
+                                                    }
+                                                }else{//ACEのあいてるところだね
+                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - ACE
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - ACE
+                                                        編集中デッキ.ACE.push(カードスワップ);
+                                                        編集中デッキ.TOP_ACE.splice(編集中デッキ.TOP_ACE.indexOf(カードスワップ),1);//消しましょうね
+                                                        
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else{//NULL -ACE
+                                                        編集中デッキ.ACE.push(カードスワップ);
+                                                        
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+
+                                                    }
+                                                }
+                                            }else if(cursor_y==2){
+                                                if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){
+                                                    pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
+                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - TOP
+                                                        編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                        編集中デッキ.ACE[編集中デッキ.ACE.indexOf(カードスワップ)]=pre_カード;
+
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - TOP
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else{//NULL - TOP
+                                                        編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                        
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+
+                                                    }
+                                                }else{//TOP_ACEのあいてるところだね
+                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - TOP
+                                                        
+                                                        編集中デッキ.TOP_ACE.push(カードスワップ);
+                                                        編集中デッキ.ACE.splice(編集中デッキ.ACE.indexOf(カードスワップ),1);//消しましょうね
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - TOP
+                                                        
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else{//NULL - TOP
+                                                        編集中デッキ.TOP_ACE.push(カードスワップ);
+                                                        
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+
+                                                    }
+                                                }
+                                            }
+                                        }else if(hensyuu_phase=="ACE選択"){
+                                            if(編集中デッキ.ACE.length>カードスワップ){
+                                                if(cursor_y==0){
+                                                    if(編集中デッキ.ACE.indexOf(cursor_x+scroll_x)!=-1){//ACE - ACE
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else if(編集中デッキ.TOP_ACE.indexOf(cursor_x+scroll_x)!=-1){//TOP - ACE
+                                                        
+                                                        pre_カード=cursor_x+scroll_x;
+                                                        カードスワップ=編集中デッキ.ACE[カードスワップ];
+                                                        
+                                                        編集中デッキ.TOP_ACE[編集中デッキ.TOP_ACE.indexOf(pre_カード)]=カードスワップ;
+                                                        編集中デッキ.ACE[編集中デッキ.ACE.indexOf(カードスワップ)]=pre_カード;
+
+
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else{//NULL -ACE
+                                                        pre_カード=cursor_x+scroll_x;
+                                                        
+                                                        編集中デッキ.ACE[カードスワップ]=pre_カード;
+                                                        
+
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+
+                                                    }
+                                                }else if(cursor_y==1){
+                                                    if(カードスワップ==(cursor_x+scroll_x2)){//同じカードを選択…解除！
+                                                        編集中デッキ.ACE.splice(cursor_x+scroll_x2,1);//消しましょうね
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }
+                                                }else if(cursor_y==2){
+                                                    if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){//ACE - TOP 
+                                                        pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
+                                                        カードスワップ=編集中デッキ.ACE[カードスワップ];
+                                                        
+                                                        編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                        編集中デッキ.ACE[編集中デッキ.ACE.indexOf(カードスワップ)]=pre_カード;
+
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                        
+                                                    }else{//TOP_ACEのあいてるところだね//ACE - TOP
+                                                        カードスワップ=編集中デッキ.ACE[カードスワップ];
+                                                        編集中デッキ.TOP_ACE.push(カードスワップ);
+                                                        編集中デッキ.ACE.splice(編集中デッキ.ACE.indexOf(カードスワップ),1);//消しましょうね
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                        
+                                                    }
+                                                }
+                                            }else{//これACEの選択場所がNULLだ！
+                                                if(cursor_y==0){
+                                                    if(編集中デッキ.ACE.indexOf(cursor_x+scroll_x)!=-1){//ACE - ACE
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else if(編集中デッキ.TOP_ACE.indexOf(cursor_x+scroll_x)!=-1){//TOP - ACE
+                                                        
+                                                        pre_カード=cursor_x+scroll_x;
+                                                        
+                                                        編集中デッキ.TOP_ACE.splice(編集中デッキ.TOP_ACE.indexOf(pre_カード),1);//消しましょうね
+                                                        編集中デッキ.ACE.push(pre_カード);
+
+
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }else{//NULL -ACE
+                                                        pre_カード=cursor_x+scroll_x;
+                                                        
+                                                        編集中デッキ.ACE.push(pre_カード);
+                                                        
+
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+
+                                                    }
+                                                }else if(cursor_y==1){//キャンセル？
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                }else if(cursor_y==2){
+                                                    if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){//ACE - TOP 
+                                                        pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
+                                                        
+                                                        編集中デッキ.ACE[カードスワップ]=pre_カード;
+
+                                                        編集中デッキ.TOP_ACE.splice(cursor_x+scroll_x2,1);//消しましょうね
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                        
+                                                    }else{//キャンセル？
+                                                        カードスワップ=0;
+                                                        hensyuu_phase="ACE編集";
+                                                    }
+                                                }
+                                            }
+                                            
+                                        }else if(hensyuu_phase=="TOP_ACE選択"){
+                                            
+                                        }
+
+                                    }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                        if( hensyuu_phase=="deck選択" || hensyuu_phase=="ACE選択" || hensyuu_phase=="TOP_ACE選択"){
+                                            カードスワップ=0;
+                                            hensyuu_phase="ACE編集";
+                                        }
+                                    }
                                 }else{
                                     if(key_input.charAt(i)=="↑"){
                                     }else if(key_input.charAt(i)=="←"){
@@ -994,181 +1269,436 @@
                         }
 
 
-                        ctx.fillStyle="rgb(50,50,80,1)";
+                        ctx.fillStyle="rgb(50,50,80)";
                         ctx.fillRect(0,0,1000,1000);
 
-                        //カード表示
-                        for(let i=0;i<9;i++){
-                            ctx.fillStyle="rgb(200,200,200)";
-                            if((i+scroll_x-1)>=0 && (i+scroll_x-1)<編集中デッキ.card_list.length){
-                                ctx.fillRect(-130+140*i,10,140,220);
-                                ctx.drawImage(編集中デッキ.card_list[i+scroll_x-1].image,-125+140*i,20);
-                                if(編集中デッキ.TOP_ACE.indexOf(i+scroll_x-1)!=-1){
-                                    ctx.fillStyle="rgb(255,0,0,1)";
-                                    ctx.fillRect(-125+140*i-2,20,5,200);
-                                    ctx.fillRect(-125+140*i+128,20,5,200);
-                                    ctx.fillRect(-125+140*i,20,133,5);
-                                    ctx.fillRect(-125+140*i,20+195,133,5);
-                                }
-                                if(編集中デッキ.ACE.indexOf(i+scroll_x-1)!=-1){
-                                    ctx.fillStyle="rgb(255,255,0)";
-                                    ctx.fillRect(-125+140*i-2,20,5,200);
-                                    ctx.fillRect(-125+140*i+128,20,5,200);
-                                    ctx.fillRect(-125+140*i,20,133,5);
-                                    ctx.fillRect(-125+140*i,20+195,133,5);
-                                }
-                            } 
-                        }
+                        if(hensyuu_phase=="基本" || hensyuu_phase=="カード移動" ||hensyuu_phase=="メニュー"){
+                            //カード表示
+                            for(let i=0;i<9;i++){
+                                ctx.fillStyle="rgb(200,200,200)";
+                                if((i+scroll_x-1)>=0 && (i+scroll_x-1)<編集中デッキ.card_list.length){
+                                    ctx.fillRect(-130+140*i,10,140,220);
+                                    ctx.drawImage(編集中デッキ.card_list[i+scroll_x-1].image,-125+140*i,20);
+                                    if(編集中デッキ.TOP_ACE.indexOf(i+scroll_x-1)!=-1){
+                                        ctx.fillStyle="rgb(255,0,0)";
+                                        ctx.fillRect(-125+140*i-2,20,5,200);
+                                        ctx.fillRect(-125+140*i+128,20,5,200);
+                                        ctx.fillRect(-125+140*i,20,133,5);
+                                        ctx.fillRect(-125+140*i,20+195,133,5);
+                                    }
+                                    if(編集中デッキ.ACE.indexOf(i+scroll_x-1)!=-1){
+                                        ctx.fillStyle="rgb(255,255,0)";
+                                        ctx.fillRect(-125+140*i-2,20,5,200);
+                                        ctx.fillRect(-125+140*i+128,20,5,200);
+                                        ctx.fillRect(-125+140*i,20,133,5);
+                                        ctx.fillRect(-125+140*i,20+195,133,5);
+                                    }
+                                } 
+                            }
 
-                        ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        for(let i=0;i<14;i++){
-                            if(i<所持カード.length-scroll_x2*2){
-                                if(i%2==0){
-                                    ctx.drawImage(所持カード[i+scroll_x2*2][0].image,10+140*(i/2),320);
-                                    if(所持カード[i+scroll_x2*2][0].state.indexOf("魔法")!=-1){//魔法じゃん）
-                                        ctx.fillStyle="rgb(0,200,0)";   
-                                        ctx.fillRect(10+140*(i/2),320+145,133,45);
-                                        ctx.fillStyle="rgb(255,255,255)";
-                                        ctx.fillText("魔法",10+140*(i/2) , 500);
-                                    }else{
-                                        ctx.fillStyle="rgb(150,50,0)";  
-                                        ctx.fillRect(10+140*(i/2),320+145,133,45);
-                                    }
-                                    
-                                    
-                                    カードインデックス=編集中デッキ.card_list.indexOf(所持カード[i+scroll_x2*2][0]);
-                                    if(カードインデックス!=-1){
-                                        カードカウント=0;
-                                        for(let j=カードインデックス;j<編集中デッキ.card_list.length;j++){
-                                            if(編集中デッキ.card_list[j]==編集中デッキ.card_list[カードインデックス]){
-                                                カードカウント+=1;
+                            ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            for(let i=0;i<14;i++){
+                                if(i<所持カード.length-scroll_x2*2){
+                                    if(i%2==0){
+                                        ctx.drawImage(所持カード[i+scroll_x2*2][0].image,10+140*(i/2),320);
+                                        if(所持カード[i+scroll_x2*2][0].state.indexOf("魔法")!=-1){//魔法じゃん）
+                                            ctx.fillStyle="rgb(0,200,0)";   
+                                            ctx.fillRect(10+140*(i/2),320+145,133,45);
+                                            ctx.fillStyle="rgb(255,255,255)";
+                                            ctx.fillText("魔法",10+140*(i/2) , 500);
+                                        }else{
+                                            ctx.fillStyle="rgb(150,50,0)";  
+                                            ctx.fillRect(10+140*(i/2),320+145,133,45);
+                                        }
+                                        
+                                        
+                                        カードインデックス=編集中デッキ.card_list.indexOf(所持カード[i+scroll_x2*2][0]);
+                                        if(カードインデックス!=-1){
+                                            カードカウント=0;
+                                            for(let j=カードインデックス;j<編集中デッキ.card_list.length;j++){
+                                                if(編集中デッキ.card_list[j]==編集中デッキ.card_list[カードインデックス]){
+                                                    カードカウント+=1;
+                                                }else{
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            ctx.fillStyle="rgb(0,0,0)";
+                                            ctx.fillRect(90+140*(i/2),420,50,50);
+                                            ctx.fillStyle="rgb(255,255,255)";
+                                            ctx.fillRect(95+140*(i/2),425,40,40);
+                                            ctx.fillStyle="rgb(100,0,0)";
+                                            if(カードカウント<10){
+                                                ctx.fillText(カードカウント, 105+140*(i/2), 460);
                                             }else{
-                                                break;
+                                                ctx.fillText(カードカウント, 95+140*(i/2), 460);
+                                            }
+                                            
+                                        }
+                                        ctx.fillStyle="rgb(0,0,0)";
+                                        ctx.fillRect(90+140*(i/2),470,50,50);
+                                        ctx.fillStyle="rgb(155,155,205)";
+                                        ctx.fillRect(95+140*(i/2),475,40,40);
+                                        ctx.fillStyle="rgb(255,255,255)";
+                                        if(所持カード[i+scroll_x2*2][1]<10){
+                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*(i/2), 510);
+                                        }else{
+                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*(i/2), 510);
+                                        }
+                                    }else{
+                                        ctx.drawImage(所持カード[i+scroll_x2*2][0].image,10+140*((i-1)/2),530);
+                                        if(所持カード[i+scroll_x2*2][0].state.indexOf("魔法")!=-1){//魔法じゃん）
+                                            ctx.fillStyle="rgb(0,200,0)";   
+                                            ctx.fillRect(10+140*((i-1)/2),530+145,133,45);
+                                            ctx.fillStyle="rgb(255,255,255)";
+                                            ctx.fillText("魔法",10+140*((i-1)/2) , 710);
+                                        }else{
+                                            ctx.fillStyle="rgb(150,50,0)";  
+                                            ctx.fillRect(10+140*((i-1)/2),530+145,133,45);
+                                        }
+                                        
+                                        カードインデックス=編集中デッキ.card_list.indexOf(所持カード[i+scroll_x2*2][0]);
+                                        if(カードインデックス!=-1){
+                                            カードカウント=0;
+                                            for(let j=カードインデックス;j<編集中デッキ.card_list.length;j++){
+                                                if(編集中デッキ.card_list[j]==編集中デッキ.card_list[カードインデックス]){
+                                                    カードカウント+=1;
+                                                }else{
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            ctx.fillStyle="rgb(0,0,0)";
+                                            ctx.fillRect(90+140*((i-1)/2),630,50,50);
+                                            ctx.fillStyle="rgb(255,255,255)";
+                                            ctx.fillRect(95+140*((i-1)/2),635,40,40);
+                                            ctx.fillStyle="rgb(100,0,0)";
+                                            if(カードカウント<10){
+                                                ctx.fillText(カードカウント, 105+140*((i-1)/2), 670);
+                                            }else{
+                                                ctx.fillText(カードカウント, 95+140*((i-1)/2), 670);
                                             }
                                         }
-                                        
                                         ctx.fillStyle="rgb(0,0,0)";
-                                        ctx.fillRect(90+140*(i/2),420,50,50);
+                                        ctx.fillRect(90+140*((i-1)/2),680,50,50);
+                                        ctx.fillStyle="rgb(155,155,205)";
+                                        ctx.fillRect(95+140*((i-1)/2),685,40,40);
                                         ctx.fillStyle="rgb(255,255,255)";
-                                        ctx.fillRect(95+140*(i/2),425,40,40);
-                                        ctx.fillStyle="rgb(100,0,0)";
-                                        if(カードカウント<10){
-                                            ctx.fillText(カードカウント, 105+140*(i/2), 460);
+                                        if(所持カード[i+scroll_x2*2][1]<10){
+                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*((i-1)/2), 720);
                                         }else{
-                                            ctx.fillText(カードカウント, 95+140*(i/2), 460);
+                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*((i-1)/2), 720);
                                         }
-                                        
-                                    }
-                                    ctx.fillStyle="rgb(0,0,0)";
-                                    ctx.fillRect(90+140*(i/2),470,50,50);
-                                    ctx.fillStyle="rgb(155,155,205)";
-                                    ctx.fillRect(95+140*(i/2),475,40,40);
-                                    ctx.fillStyle="rgb(255,255,255)";
-                                    if(所持カード[i+scroll_x2*2][1]<10){
-                                        ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*(i/2), 510);
-                                    }else{
-                                        ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*(i/2), 510);
-                                    }
-                                }else{
-                                    ctx.drawImage(所持カード[i+scroll_x2*2][0].image,10+140*((i-1)/2),530);
-                                    if(所持カード[i+scroll_x2*2][0].state.indexOf("魔法")!=-1){//魔法じゃん）
-                                        ctx.fillStyle="rgb(0,200,0)";   
-                                        ctx.fillRect(10+140*((i-1)/2),530+145,133,45);
-                                        ctx.fillStyle="rgb(255,255,255)";
-                                        ctx.fillText("魔法",10+140*((i-1)/2) , 710);
-                                    }else{
-                                        ctx.fillStyle="rgb(150,50,0)";  
-                                        ctx.fillRect(10+140*((i-1)/2),530+145,133,45);
-                                    }
-                                    
-                                    カードインデックス=編集中デッキ.card_list.indexOf(所持カード[i+scroll_x2*2][0]);
-                                    if(カードインデックス!=-1){
-                                        カードカウント=0;
-                                        for(let j=カードインデックス;j<編集中デッキ.card_list.length;j++){
-                                            if(編集中デッキ.card_list[j]==編集中デッキ.card_list[カードインデックス]){
-                                                カードカウント+=1;
-                                            }else{
-                                                break;
-                                            }
-                                        }
-                                        
-                                        ctx.fillStyle="rgb(0,0,0)";
-                                        ctx.fillRect(90+140*((i-1)/2),630,50,50);
-                                        ctx.fillStyle="rgb(255,255,255)";
-                                        ctx.fillRect(95+140*((i-1)/2),635,40,40);
-                                        ctx.fillStyle="rgb(100,0,0)";
-                                        if(カードカウント<10){
-                                            ctx.fillText(カードカウント, 105+140*((i-1)/2), 670);
-                                        }else{
-                                            ctx.fillText(カードカウント, 95+140*((i-1)/2), 670);
-                                        }
-                                    }
-                                    ctx.fillStyle="rgb(0,0,0)";
-                                    ctx.fillRect(90+140*((i-1)/2),680,50,50);
-                                    ctx.fillStyle="rgb(155,155,205)";
-                                    ctx.fillRect(95+140*((i-1)/2),685,40,40);
-                                    ctx.fillStyle="rgb(255,255,255)";
-                                    if(所持カード[i+scroll_x2*2][1]<10){
-                                        ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*((i-1)/2), 720);
-                                    }else{
-                                        ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*((i-1)/2), 720);
                                     }
                                 }
                             }
-                        }
 
-                        ctx.drawImage(yamahuda,5,250);
-                        ctx.fillStyle="rgb(200,200,200)";
-                        ctx.fillRect(80,250,400,60);
-                        ctx.fillRect(520,245,450,70);
-                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillStyle="rgb(0,0,0)";
-                        ctx.fillText(編集中デッキ.card_list.length+"枚(最大"+MAX_deck+"枚)", 100, 300);
-                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                        ctx.fillText("○：カード移動　×：メニュー", 530, 275);
-                        
-                        ctx.fillText("ACE:"+編集中デッキ.ACE.length+"/"+MAX_ACE+"枚　TOP_ACE:"+編集中デッキ.TOP_ACE.length+"/"+MAX_TOPACE+"枚", 530, 310);
+                            ctx.drawImage(yamahuda,5,250);
+                            ctx.fillStyle="rgb(200,200,200)";
+                            ctx.fillRect(80,250,400,60);
+                            ctx.fillRect(520,245,450,70);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText(編集中デッキ.card_list.length+"枚(最大"+MAX_deck+"枚)", 100, 300);
+                            ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillText("○：カード移動　×：メニュー", 530, 275);
+                            
+                            ctx.fillText("ACE:"+編集中デッキ.ACE.length+"/"+MAX_ACE+"枚　TOP_ACE:"+編集中デッキ.TOP_ACE.length+"/"+MAX_TOPACE+"枚", 530, 310);
 
-                        //  スクロール？
-                        ctx.fillStyle="rgb(100,100,100)";
-                        ctx.fillRect(50,225,900,20);
-                        ctx.fillRect(50,725,900,20);
+                            //  スクロール？
+                            ctx.fillStyle="rgb(100,100,100)";
+                            ctx.fillRect(50,225,900,20);
+                            ctx.fillRect(50,725,900,20);
 
-                        ctx.fillStyle="rgb(255,255,255)";
-                        
-                        if(編集中デッキ.card_list.length>7){
-                            ctx.fillRect(60+680*(scroll_x/(編集中デッキ.card_list.length-7)),227,200,16);
-                        }else{
-                            ctx.fillRect(60,227,880,16);
-                        }
-                        if(所持カード.length>14){
-                            ctx.fillRect(60+680*(scroll_x2/( Math.ceil(所持カード.length/2)-7)),727,200,16);
-                        }else{
-                            ctx.fillRect(60,727,880,16);
-                        }
-                        
+                            ctx.fillStyle="rgb(255,255,255)";
+                            
+                            if(編集中デッキ.card_list.length>7){
+                                ctx.fillRect(60+680*(scroll_x/(編集中デッキ.card_list.length-7)),227,200,16);
+                            }else{
+                                ctx.fillRect(60,227,880,16);
+                            }
+                            if(所持カード.length>14){
+                                ctx.fillRect(60+680*(scroll_x2/( Math.ceil(所持カード.length/2)-7)),727,200,16);
+                            }else{
+                                ctx.fillRect(60,727,880,16);
+                            }
+                            
 
-                        //  カーソル
-                        if(cursor_y==0){
-                            ctx.drawImage(yubi,20+cursor_x*140,150+4*Math.sin(time*Math.PI/8));
-                        }else if(cursor_y==1){
-                            ctx.drawImage(yubi,20+cursor_x*140,480+4*Math.sin(time*Math.PI/8));
-                        }else if(cursor_y==2){
-                            ctx.drawImage(yubi,20+cursor_x*140,690+4*Math.sin(time*Math.PI/8));
-                        }
-                        
+                            //  カーソル
+                            if(cursor_y==0){
+                                ctx.drawImage(yubi,20+cursor_x*140,150+4*Math.sin(time*Math.PI/8));
+                            }else if(cursor_y==1){
+                                ctx.drawImage(yubi,20+cursor_x*140,480+4*Math.sin(time*Math.PI/8));
+                            }else if(cursor_y==2){
+                                ctx.drawImage(yubi,20+cursor_x*140,690+4*Math.sin(time*Math.PI/8));
+                            }
+                            
 
 
-                        
-                        ctx.fillStyle="rgb(100,100,130)";
-                        ctx.fillRect(0,740,1000,260);
-                        ctx.fillStyle="rgb(55,55,55)";//詳細表示─
-                        ctx.fillRect(5,745,990,250);
-                        ctx.fillStyle="rgb(255,255,255)";
-                        ctx.fillRect(10,750,980,240);
-                        ctx.fillStyle="rgb(55,55,55)";
-                        ctx.fillRect(550,755,5,230);
-                        if(hensyuu_phase=="基本"){
+                            
+                            ctx.fillStyle="rgb(100,100,130)";
+                            ctx.fillRect(0,740,1000,260);
+                            ctx.fillStyle="rgb(55,55,55)";//詳細表示─
+                            ctx.fillRect(5,745,990,250);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(10,750,980,240);
+                            ctx.fillStyle="rgb(55,55,55)";
+                            ctx.fillRect(550,755,5,230);
+                            if(hensyuu_phase=="基本"){
+                                if(cursor_y==0){
+                                    if(cursor_x+scroll_x<編集中デッキ.card_list.length){
+                                        syousai_card=編集中デッキ.card_list[cursor_x+scroll_x];
+                                    }else{
+                                        syousai_card="";
+                                    }
+                                    
+                                }else if(cursor_y==1 || cursor_y==2){
+                                    if(cursor_x*2+cursor_y+scroll_x2*2-1<所持カード.length){
+                                        syousai_card=所持カード[cursor_x*2+cursor_y+scroll_x2*2-1][0];
+                                    }else{
+                                        syousai_card="";
+                                    }
+                                }
+                            }
+                            
+                            if(syousai_card!=""){
+                                ctx.fillStyle="rgb(200,200,200)";
+                                ctx.fillRect(15,755,490,50);
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.fillText(syousai_card.name, 20, 798);
+                                
+
+                                if(syousai_card.state.indexOf("モンスター")!=-1){
+                                    ctx.drawImage(atk_plate,560,760);
+                                    ctx.drawImage(def_plate,610,765);
+                                    ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                    ctx.fillStyle="rgb(255,255,255)";
+                                    if(syousai_card.ATK<10){
+                                        ctx.fillText(syousai_card.ATK, 574, 802);
+                                    }else{
+                                        ctx.fillText(syousai_card.ATK, 564, 802);
+                                    }
+                                    if(syousai_card.HP<10){
+                                        ctx.fillText(syousai_card.HP, 624, 802);
+                                    }else{
+                                        ctx.fillText(syousai_card.HP, 614, 802);
+                                    }
+                                }
+                                ctx.fillStyle="rgb(0,0,0)";
+                                text_kaigyou_hyouji(syousai_card.text, 20, 810,520,180,40,syousai_card.text_iro);//x,yは左上指定だから注意だ！
+                            
+                                syousai_state_color=[];
+                                syousai_state="分類:";
+                                for(let i=0;i<syousai_card.state.length;i++){
+                                    if(syousai_card.state[i]=="TOP_ACE"){
+                                        syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                                    }else if(syousai_card.state[i]=="ACE"){
+                                        syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                                    }
+                                    syousai_state+=" "+syousai_card.state[i];
+                                }
+                                text_kaigyou_hyouji(syousai_state, 560, 810,420,180,40,syousai_state_color);//x,yは左上指定だから注意だ！
+                                
+                                カードインデックス=編集中デッキ.card_list.indexOf(syousai_card);
+                                カードカウント=0;
+                                if(カードインデックス!=-1){
+                                    カードインデックス
+                                    for(let i=カードインデックス;i<編集中デッキ.card_list.length;i++){
+                                        if(編集中デッキ.card_list[i]==編集中デッキ.card_list[カードインデックス]){
+                                            カードカウント+=1;
+                                        }else{
+                                            break;
+                                        }
+                                    }
+                                }
+                                for(let i=0;i<所持カード.length;i++){
+                                    if(所持カード[i][0]==syousai_card){
+                                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                        ctx.fillStyle="rgb(0,0,0)";
+                                        ctx.fillText("デッキ："+カードカウント+"枚", 695, 780);
+                                        ctx.fillText("所持："+所持カード[i][1]+"枚", 700, 810);
+                                        break;
+                                    }
+                                }
+                            }
+                            if(hensyuu_phase=="カード移動"){//---------------------------------
+                                ctx.fillStyle="rgb(0,0,0,0.8)";
+                                ctx.fillRect(0,250,1000,490);
+
+                                ctx.fillStyle="rgb(255,255,255)";
+                                ctx.fillRect(90,490,150,220);
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.fillRect(98,498,134,204);
+                                ctx.drawImage(syousai_card.image,100,500);
+
+                                
+
+                                ctx.fillStyle="rgb(255,255,255)";
+                                ctx.fillRect(300,300,600,400);
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.fillText("デッキに入れる", 400, 370);
+                                ctx.fillText("デッキからはずす", 400, 600);
+                                ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                カードインデックス=編集中デッキ.card_list.indexOf(syousai_card);
+                                カードカウント=0;
+                                if(カードインデックス!=-1){
+                                    カードインデックス
+                                    for(let i=カードインデックス;i<編集中デッキ.card_list.length;i++){
+                                        if(編集中デッキ.card_list[i]==編集中デッキ.card_list[カードインデックス]){
+                                            カードカウント+=1;
+                                        }else{
+                                            break;
+                                        }
+                                    }
+                                }
+                                for(let i=0;i<所持カード.length;i++){
+                                    if(所持カード[i][0]==syousai_card){
+                                        ctx.fillText("デッキ："+カードカウント+"枚", 550, 450);
+                                        ctx.fillText("所持："+所持カード[i][1]+"枚", 550, 500);
+                                        これのデッキ枚数=カードカウント;
+                                        これの所持枚数=所持カード[i][1];
+                                        break;
+                                    }
+                                }
+                                ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("×：戻る", 750, 690);
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                if(cursor2==0){
+                                    ctx.drawImage(yubi,290,-390+4*Math.sin(time*Math.PI/8));
+                                }else{
+                                    ctx.drawImage(yubi,520,-390+4*Math.sin(time*Math.PI/8));
+                                }
+                                ctx.restore();
+                            }else if(hensyuu_phase=="メニュー"){//---------------------------------
+                                ctx.fillStyle="rgb(0,0,0,0.8)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(255,255,255)";
+                                ctx.fillText("デッキ編集に戻る", 400, 200);
+                                ctx.fillText("ACE編集", 400, 300);
+                                ctx.fillText("保存して終了", 400, 500);
+                                ctx.fillText("保存せず終了", 400, 600);
+                                ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("×：戻る", 750, 690);
+
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                if(cursor2==0){
+                                    ctx.drawImage(yubi,120,-390+4*Math.sin(time*Math.PI/8));
+                                }else if(cursor2==1){
+                                    ctx.drawImage(yubi,220,-390+4*Math.sin(time*Math.PI/8));
+                                }else if(cursor2==2){
+                                    ctx.drawImage(yubi,420,-390+4*Math.sin(time*Math.PI/8));
+                                }else if(cursor2==3){
+                                    ctx.drawImage(yubi,520,-390+4*Math.sin(time*Math.PI/8));
+                                }
+                                ctx.restore();
+                            }
+
+
+                        }else if(hensyuu_phase=="ACE編集" || hensyuu_phase=="deck選択" || hensyuu_phase=="ACE選択" || hensyuu_phase=="TOP_ACE選択"){
+                            //カード表示
+                            for(let i=0;i<9;i++){
+                                ctx.fillStyle="rgb(200,200,200)";
+                                if((i+scroll_x-1)>=0 && (i+scroll_x-1)<編集中デッキ.card_list.length){
+                                    ctx.fillRect(-130+140*i,10,140,220);
+                                    ctx.drawImage(編集中デッキ.card_list[i+scroll_x-1].image,-125+140*i,20);
+                                    if(編集中デッキ.TOP_ACE.indexOf(i+scroll_x-1)!=-1){
+                                        ctx.fillStyle="rgb(255,0,0)";
+                                        ctx.fillRect(-125+140*i-2,20,5,200);
+                                        ctx.fillRect(-125+140*i+128,20,5,200);
+                                        ctx.fillRect(-125+140*i,20,133,5);
+                                        ctx.fillRect(-125+140*i,20+195,133,5);
+                                    }
+                                    if(編集中デッキ.ACE.indexOf(i+scroll_x-1)!=-1){
+                                        ctx.fillStyle="rgb(255,255,0)";
+                                        ctx.fillRect(-125+140*i-2,20,5,200);
+                                        ctx.fillRect(-125+140*i+128,20,5,200);
+                                        ctx.fillRect(-125+140*i,20,133,5);
+                                        ctx.fillRect(-125+140*i,20+195,133,5);
+                                    }
+                                } 
+                            }
+
+                            ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            for(let i=-1;i<8;i++){
+                                if((i+scroll_x2)>=0 && (i+scroll_x2)<MAX_ACE){
+                                    ctx.fillStyle="rgb(255,255,0)";
+                                    ctx.fillRect(6+140*i,316,138,208);
+                                    if(編集中デッキ.ACE.length>(i+scroll_x2)){
+                                        ctx.drawImage(編集中デッキ.card_list[編集中デッキ.ACE[i+scroll_x2]].image,10+140*(i),320);
+                                    }else{
+                                        ctx.fillStyle="rgb(50,50,80)";
+                                        ctx.fillRect(10+140*i,320,130,200);
+                                    }
+                                }
+                                
+                            }
+                            for(let i=-1;i<8;i++){
+                                if((i+scroll_x2)>=0 && (i+scroll_x2)<MAX_TOPACE){
+                                    ctx.fillStyle="rgb(255,0,0)";
+                                    ctx.fillRect(6+140*i,526,138,208);
+                                    if(編集中デッキ.TOP_ACE.length>(i+scroll_x2)){
+                                        ctx.drawImage(編集中デッキ.card_list[編集中デッキ.TOP_ACE[i+scroll_x2]].image,10+140*(i),530);
+                                    }else{
+                                        ctx.fillStyle="rgb(50,50,80)";
+                                        ctx.fillRect(10+140*i,530,130,200);
+                                    }
+                                }
+                            }
+
+
+                            ctx.drawImage(yamahuda,5,250);
+                            ctx.fillStyle="rgb(200,200,200)";
+                            ctx.fillRect(80,250,400,60);
+                            ctx.fillRect(520,245,450,70);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText(編集中デッキ.card_list.length+"枚(最大"+MAX_deck+"枚)", 100, 300);
+                            ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillText("○：カード移動　×：メニュー", 530, 275);
+                            
+                            ctx.fillText("ACE:"+編集中デッキ.ACE.length+"/"+MAX_ACE+"枚　TOP_ACE:"+編集中デッキ.TOP_ACE.length+"/"+MAX_TOPACE+"枚", 530, 310);
+
+                            //  スクロール？
+                            ctx.fillStyle="rgb(100,100,100)";
+                            ctx.fillRect(50,225,900,20);
+                            ctx.fillRect(50,725,900,20);
+
+                            ctx.fillStyle="rgb(255,255,255)";
+                            
+                            if(編集中デッキ.card_list.length>7){
+                                ctx.fillRect(60+680*(scroll_x/(編集中デッキ.card_list.length-7)),227,200,16);
+                            }else{
+                                ctx.fillRect(60,227,880,16);
+                            }
+                            if(MAX_ACE>7 || MAX_TOPACE>7){
+                                ctx.fillRect(60+680*(scroll_x2/( Math.ceil(Math.max(MAX_ACE,MAX_TOPACE))-7)),727,200,16);
+                            }else{
+                                ctx.fillRect(60,727,880,16);
+                            }
+                            
+
+                            //  カーソル
+                            if(cursor_y==0){
+                                ctx.drawImage(yubi,20+cursor_x*140,150+4*Math.sin(time*Math.PI/8));
+                            }else if(cursor_y==1){
+                                ctx.drawImage(yubi,20+cursor_x*140,480+4*Math.sin(time*Math.PI/8));
+                            }else if(cursor_y==2){
+                                ctx.drawImage(yubi,20+cursor_x*140,690+4*Math.sin(time*Math.PI/8));
+                            }
+
+                            ctx.fillStyle="rgb(100,100,130)";
+                            ctx.fillRect(0,740,1000,260);
+                            ctx.fillStyle="rgb(55,55,55)";//詳細表示─
+                            ctx.fillRect(5,745,990,250);
+                            ctx.fillStyle="rgb(255,255,255)";
+                            ctx.fillRect(10,750,980,240);
+                            ctx.fillStyle="rgb(55,55,55)";
+                            ctx.fillRect(550,755,5,230);
                             if(cursor_y==0){
                                 if(cursor_x+scroll_x<編集中デッキ.card_list.length){
                                     syousai_card=編集中デッキ.card_list[cursor_x+scroll_x];
@@ -1176,128 +1706,118 @@
                                     syousai_card="";
                                 }
                                 
-                            }else if(cursor_y==1 || cursor_y==2){
-                                if(cursor_x*2+cursor_y+scroll_x2*2-1<所持カード.length){
-                                    syousai_card=所持カード[cursor_x*2+cursor_y+scroll_x2*2-1][0];
+                            }else if(cursor_y==1){
+                                if(scroll_x2+cursor_x<編集中デッキ.ACE.length){
+                                    syousai_card=編集中デッキ.card_list[編集中デッキ.ACE[cursor_x+scroll_x2]];
+                                }else{
+                                    syousai_card="";
+                                }
+                            }else if(cursor_y==2){
+                                if(scroll_x2+cursor_x<編集中デッキ.TOP_ACE.length){
+                                    syousai_card=編集中デッキ.card_list[編集中デッキ.TOP_ACE[cursor_x+scroll_x2]];
                                 }else{
                                     syousai_card="";
                                 }
                             }
-                        }
-                        
-                        if(syousai_card!=""){
-                            ctx.fillStyle="rgb(200,200,200)";
-                            ctx.fillRect(15,755,490,50);
-                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                            ctx.fillStyle="rgb(0,0,0)";
-                            ctx.fillText(syousai_card.name, 20, 798);
                             
+                            
+                            if(syousai_card!=""){
+                                ctx.fillStyle="rgb(200,200,200)";
+                                ctx.fillRect(15,755,490,50);
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.fillText(syousai_card.name, 20, 798);
+                                
 
-                            if(syousai_card.state.indexOf("モンスター")!=-1){
-                                ctx.drawImage(atk_plate,560,760);
-                                ctx.drawImage(def_plate,610,765);
-                                ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                                ctx.fillStyle="rgb(255,255,255)";
-                                if(syousai_card.ATK<10){
-                                    ctx.fillText(syousai_card.ATK, 574, 802);
-                                }else{
-                                    ctx.fillText(syousai_card.ATK, 564, 802);
-                                }
-                                if(syousai_card.HP<10){
-                                    ctx.fillText(syousai_card.HP, 624, 802);
-                                }else{
-                                    ctx.fillText(syousai_card.HP, 614, 802);
-                                }
-                            }
-                            ctx.fillStyle="rgb(0,0,0)";
-                            text_kaigyou_hyouji(syousai_card.text, 20, 810,520,180,40,syousai_card.text_iro);//x,yは左上指定だから注意だ！
-                        
-                            syousai_state_color=[];
-                            syousai_state="分類:";
-                            for(let i=0;i<syousai_card.state.length;i++){
-                                if(syousai_card.state[i]=="TOP_ACE"){
-                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
-                                }else if(syousai_card.state[i]=="ACE"){
-                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
-                                }
-                                syousai_state+=" "+syousai_card.state[i];
-                            }
-                            text_kaigyou_hyouji(syousai_state, 560, 810,420,180,40,syousai_state_color);//x,yは左上指定だから注意だ！
-                            
-                            カードインデックス=編集中デッキ.card_list.indexOf(syousai_card);
-                            カードカウント=0;
-                            if(カードインデックス!=-1){
-                                カードインデックス
-                                for(let i=カードインデックス;i<編集中デッキ.card_list.length;i++){
-                                    if(編集中デッキ.card_list[i]==編集中デッキ.card_list[カードインデックス]){
-                                        カードカウント+=1;
+                                if(syousai_card.state.indexOf("モンスター")!=-1){
+                                    ctx.drawImage(atk_plate,560,760);
+                                    ctx.drawImage(def_plate,610,765);
+                                    ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                    ctx.fillStyle="rgb(255,255,255)";
+                                    if(syousai_card.ATK<10){
+                                        ctx.fillText(syousai_card.ATK, 574, 802);
                                     }else{
+                                        ctx.fillText(syousai_card.ATK, 564, 802);
+                                    }
+                                    if(syousai_card.HP<10){
+                                        ctx.fillText(syousai_card.HP, 624, 802);
+                                    }else{
+                                        ctx.fillText(syousai_card.HP, 614, 802);
+                                    }
+                                }
+                                ctx.fillStyle="rgb(0,0,0)";
+                                text_kaigyou_hyouji(syousai_card.text, 20, 810,520,180,40,syousai_card.text_iro);//x,yは左上指定だから注意だ！
+                            
+                                syousai_state_color=[];
+                                syousai_state="分類:";
+                                for(let i=0;i<syousai_card.state.length;i++){
+                                    if(syousai_card.state[i]=="TOP_ACE"){
+                                        syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                                    }else if(syousai_card.state[i]=="ACE"){
+                                        syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(200,200,0)"];
+                                    }
+                                    syousai_state+=" "+syousai_card.state[i];
+                                }
+                                text_kaigyou_hyouji(syousai_state, 560, 810,420,180,40,syousai_state_color);//x,yは左上指定だから注意だ！
+                                
+                                カードインデックス=編集中デッキ.card_list.indexOf(syousai_card);
+                                カードカウント=0;
+                                if(カードインデックス!=-1){
+                                    カードインデックス
+                                    for(let i=カードインデックス;i<編集中デッキ.card_list.length;i++){
+                                        if(編集中デッキ.card_list[i]==編集中デッキ.card_list[カードインデックス]){
+                                            カードカウント+=1;
+                                        }else{
+                                            break;
+                                        }
+                                    }
+                                }
+                                for(let i=0;i<所持カード.length;i++){
+                                    if(所持カード[i][0]==syousai_card){
+                                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                        ctx.fillStyle="rgb(0,0,0)";
+                                        ctx.fillText("デッキ："+カードカウント+"枚", 695, 780);
+                                        ctx.fillText("所持："+所持カード[i][1]+"枚", 700, 810);
                                         break;
                                     }
                                 }
                             }
-                            for(let i=0;i<所持カード.length;i++){
-                                if(所持カード[i][0]==syousai_card){
-                                    ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                                    ctx.fillStyle="rgb(0,0,0)";
-                                    ctx.fillText("デッキ："+カードカウント+"枚", 695, 780);
-                                    ctx.fillText("所持："+所持カード[i][1]+"枚", 700, 810);
-                                    break;
+                            if(hensyuu_phase=="deck選択"){
+                                ctx.fillStyle="rgb(0,0,0,0.8)";
+                                if((scroll_x+7)<カードスワップ || scroll_x-1>カードスワップ){
+                                    ctx.fillRect(0,0,1000,250);
+                                }else if(scroll_x-1==カードスワップ){//うげ！なんかきもいけどこれが単純明快な実装なのでヨシ
+                                    ctx.fillRect(10,0,990,250);
+                                }else{
+                                    ctx.fillRect(0,0,10+140*(カードスワップ-scroll_x),250);
+                                    ctx.fillRect(10+140*(カードスワップ-scroll_x+1),0,1000,250);
+                                }
+                                    
+                                
+                            }else if(hensyuu_phase=="ACE選択"){
+                                ctx.fillStyle="rgb(0,0,0,0.8)";
+                                if((scroll_x2+7)<カードスワップ || scroll_x2-1>カードスワップ){
+                                    ctx.fillRect(0,315,1000,210);
+                                }else if(scroll_x2-1==カードスワップ){//うげ！なんかきもいけどこれが単純明快な実装なのでヨシ
+                                    ctx.fillRect(5,315,995,210);
+                                }else{
+                                    ctx.fillRect(0,315,5+140*(カードスワップ-scroll_x2),210);
+                                    ctx.fillRect(5+140*(カードスワップ-scroll_x2+1),315,1000,210);
+                                }
+
+                            }else if(hensyuu_phase=="TOP_ACE選択"){
+                                ctx.fillStyle="rgb(0,0,0,0.8)";
+                                if((scroll_x2+7)<カードスワップ || scroll_x2-1>カードスワップ){
+                                    ctx.fillRect(0,525,1000,220);
+                                }else if(scroll_x2-1==カードスワップ){//うげ！なんかきもいけどこれが単純明快な実装なのでヨシ
+                                    ctx.fillRect(5,525,995,220);
+                                }else{
+                                    ctx.fillRect(0,525,5+140*(カードスワップ-scroll_x2),220);
+                                    ctx.fillRect(5+140*(カードスワップ-scroll_x2+1),525,1000,220);
                                 }
                             }
+
                         }
-                        if(hensyuu_phase=="カード移動"){//---------------------------------
-                            ctx.fillStyle="rgb(0,0,0,0.8)";
-                            ctx.fillRect(0,250,1000,490);
-
-                            ctx.fillStyle="rgb(255,255,255)";
-                            ctx.fillRect(90,490,150,220);
-                            ctx.fillStyle="rgb(0,0,0)";
-                            ctx.fillRect(98,498,134,204);
-                            ctx.drawImage(syousai_card.image,100,500);
-
-                            
-
-                            ctx.fillStyle="rgb(255,255,255)";
-                            ctx.fillRect(300,300,600,400);
-                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                            ctx.fillStyle="rgb(0,0,0)";
-                            ctx.fillText("デッキに入れる", 400, 370);
-                            ctx.fillText("デッキからはずす", 400, 600);
-                            ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                            カードインデックス=編集中デッキ.card_list.indexOf(syousai_card);
-                            カードカウント=0;
-                            if(カードインデックス!=-1){
-                                カードインデックス
-                                for(let i=カードインデックス;i<編集中デッキ.card_list.length;i++){
-                                    if(編集中デッキ.card_list[i]==編集中デッキ.card_list[カードインデックス]){
-                                        カードカウント+=1;
-                                    }else{
-                                        break;
-                                    }
-                                }
-                            }
-                            for(let i=0;i<所持カード.length;i++){
-                                if(所持カード[i][0]==syousai_card){
-                                    ctx.fillText("デッキ："+カードカウント+"枚", 550, 450);
-                                    ctx.fillText("所持："+所持カード[i][1]+"枚", 550, 500);
-                                    これのデッキ枚数=カードカウント;
-                                    これの所持枚数=所持カード[i][1];
-                                    break;
-                                }
-                            }
-                            ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                            ctx.fillText("×：戻る", 750, 690);
-                            ctx.save();
-                            ctx.rotate(90 * Math.PI / 180);
-                            if(cursor2==0){
-                                ctx.drawImage(yubi,290,-390+4*Math.sin(time*Math.PI/8));
-                            }else{
-                                ctx.drawImage(yubi,520,-390+4*Math.sin(time*Math.PI/8));
-                            }
-                            ctx.restore();
-                        }
-                        
 
 
                     }else if(game_phase=="戦闘準備"){
