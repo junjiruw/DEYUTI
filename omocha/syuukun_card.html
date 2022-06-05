@@ -416,7 +416,7 @@
                         }
                     }
                     
-                    ACE=list.TOP_ACE;
+                    ACE=[...list.TOP_ACE];//スプレッド構文　...hoge はhogeの中身と同様になる。
                     for(let i=0;i<yamahuda.length;i++){//TOP_ACEを召喚…TOP_ACEは5枚以下でおねがします
                         for(let j=0;j<ACE.length;j++){
                             if(yamahuda[i].card==ACE[j]){//TOPを発見した
@@ -448,7 +448,7 @@
                         }
                     }
 
-                    ACE=list.ACE;
+                    ACE=[...list.ACE];//スプレッド構文　...hoge はhogeの中身と同様になる。
                     for(let i=0;i<yamahuda.length;i++){//ACEにACEstateをあげる
                         for(let j=0;j<ACE.length;j++){
                             if(yamahuda[i].card==ACE[j]){
@@ -956,6 +956,7 @@
                                         if(mini_stage==0){
                                             game_phase="戦闘準備";
                                             teki_deck_list=zako_list;
+                                            mini_stage=1;//クリアできたらこれが使われるってことさ。
                                         }else if(mini_stage==1){
                                         }else if(mini_stage==2){
                                         }else if(mini_stage==3){
@@ -2478,10 +2479,10 @@
 
                         my_haka=[];
                         teki_haka=[];
-
+                        
                         deck_initialize(deck_list,my_deck,my_yamahuda);
                         deck_initialize(teki_deck_list,teki_deck,teki_yamahuda);
-                        
+
                         pull_card(my_yamahuda,my_tehuda,3);
                         game_phase="戦闘";
 
@@ -2742,6 +2743,11 @@
                                         }else{
                                             duel_phase="自由";
                                         }
+                                    }else if(duel_phase=="俺勝ち"){
+                                        game_phase="挑戦";
+                                    }else if(duel_phase=="敵勝ち"){
+                                        game_phase="ステージ選択";
+                                        cursor=2;
                                     }
                                     
                                 }else if(key_input.charAt(i)=="×"){
