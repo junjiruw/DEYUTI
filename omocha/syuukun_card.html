@@ -74,6 +74,9 @@
             test.src="../images/omocha/syuukun_card/200130.png";
             var test_syuukun=new Image();
             test_syuukun.src="../images/omocha/syuukun_card/test_syuukun200130.png";
+            
+            var title_image =new Image();
+            title_image.src="../images/omocha/syuukun_card/syuukunkadotitele.png";
             var turn_end=new Image();
             turn_end.src="../images/omocha/syuukun_card/ta-nendman.png";
             var yamahuda=new Image();
@@ -111,7 +114,10 @@
             var HPup5_img=new Image();
             HPup5_img.src="../images/omocha/syuukun_card/HPup5.png";
 
-            
+            var henyamoti_title=new Image();
+            henyamoti_title.src="../images/omocha/syuukun_card/henyamotinsougen_title.png";
+            var henyamoti=new Image();
+            henyamoti.src="../images/omocha/syuukun_card/henyamotinsougen.png";
 
             //ここにゲームパラメータを置くとイイネ。
             var my_deck=[];
@@ -141,7 +147,7 @@
             var key_owarasete=0;
             var 長押し阻止=0;//決定ボタンを長押し連打するのはまずいのでは？となったので阻止します。
 
-            var game_phase="デッキ編集準備";
+            var game_phase="タイトル";
 
             //----------------------
 
@@ -179,6 +185,8 @@
 
             //---上デュエル系？　下デッキ系？
             var 所持カード=[];
+            var deck_list;
+            var teki_deck_list;
 
             var 編集中デッキ={card_list:[],ACE:[],TOP_ACE:[]};
             var カードカウント=0;
@@ -203,6 +211,9 @@
 
             var 編集中ACE=[];
             var 編集中TOP_ACE=[];
+            //---------ステージ？
+            var stage=1;
+            var mini_stage=0;
 
             onload = function(){
                 onload_functions();
@@ -820,7 +831,7 @@
 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
-                var deck_list=test_list;
+                deck_list=test_list;
                 var zako_list={card_list:[[HPup5,5],[powerup3,15],[ryuunoitigeki,5],[test_card,2],[test_card2,15]],ACE:[test_card,test_card,test_card2,test_card2],TOP_ACE:[test_card2,test_card2]};
                 
                 //初期所持カード
@@ -836,28 +847,161 @@
                     if(game_phase=="タイトル"){
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                             key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            game_phase="ステージ選択";
+                            長押し阻止=1;
+                        }
+                        ctx.drawImage(title_image,0,0);
+                        cursor=2;
+                        //game_phase="挑戦";
+                    }else if(game_phase=="ステージ選択"){
+                        if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
                             for(let i=0;i<key_input.length;i++){
                                 if(key_input.charAt(i)=="↑"){
+                                    if(cursor==2 || cursor==3){
+                                        cursor=0;
+                                    }else if(cursor==4){
+                                        cursor=1;
+                                    }
                                 }else if(key_input.charAt(i)=="←"){
+                                    if(cursor==1 || cursor==3 || cursor==4){
+                                        cursor-=1;
+                                    }
                                 }else if(key_input.charAt(i)=="→"){
+                                    if(cursor==0 || cursor==2 || cursor==3){
+                                        cursor+=1;
+                                    }
                                 }else if(key_input.charAt(i)=="↓"){
+                                    if(cursor==0){
+                                        cursor=2;
+                                    }else if(cursor==1){
+                                        cursor=4;
+                                    }
                                 }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                     長押し阻止=1;
-                                    game_phase="戦闘準備";
-                                }else if(key_input.charAt(i)=="×"){
+                                    if(cursor==2){
+                                        game_phase="デッキ編集準備";
+                                    }else if(cursor==3){
+                                        game_phase="挑戦";
+                                        mini_stage=0;
+                                    }
+                                }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
                                     長押し阻止=1;
                                 }
+                                
                             }
                             if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
                                 key_input="";
                                 key_interval=0;
                             }
+                            
                         }else if(key_interval>0){
                             key_interval=key_interval-1;//カウントダウン
                         }
-                        if(長押し阻止==1 && (key_input.indexOf("〇")==-1 || key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
+
+                        if(長押し阻止==1 && (key_input.indexOf("〇")==-1 && key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
                             長押し阻止=0; 
                         }
+                        ctx.drawImage(henyamoti_title,0,100);
+                        ctx.fillStyle="rgb(50,50,50)";
+                        ctx.fillRect(0,0,1000,100);
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillText("ステージ選択", 325, 70);
+                        ctx.fillText("▶", 750, 70);
+                        ctx.fillText("◀", 200, 70);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(0,800,1000,200);
+                        ctx.fillStyle="rgb(50,50,50)";
+                        ctx.fillRect(0,800,1000,5);
+                        ctx.fillRect(200,825,5,150);
+                        ctx.fillRect(800,825,5,150);
+                        ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillText("デッキ編集", 20, 880);
+                        ctx.drawImage(yamahuda,68,900);
+                        ctx.font = "100px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillText("挑戦", 400, 930);
+                        if(cursor==0){
+                            ctx.drawImage(yubi,150,80+4*Math.sin(time*Math.PI/8));
+                        }else if(cursor==1){
+                            ctx.drawImage(yubi,700,80+4*Math.sin(time*Math.PI/8));
+                        }else if(cursor==2){
+                            ctx.save();
+                            ctx.rotate(180 * Math.PI / 180);
+                            ctx.drawImage(yubi,-160,-850+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor==3){
+                            ctx.save();
+                            ctx.rotate(180 * Math.PI / 180);
+                            ctx.drawImage(yubi,-560,-850+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }else if(cursor==4){
+                            ctx.save();
+                            ctx.rotate(180 * Math.PI / 180);
+                            ctx.drawImage(yubi,-960,-850+4*Math.sin(time*Math.PI/8));
+                            ctx.restore();
+                        }
+
+                    }else if(game_phase=="挑戦"){
+                        if(stage==1){//へにゃもちん草原
+                            if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                                key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                                for(let i=0;i<key_input.length;i++){
+                                    if(key_input.charAt(i)=="↑"){
+                                    }else if(key_input.charAt(i)=="←"){
+                                    }else if(key_input.charAt(i)=="→"){
+                                    }else if(key_input.charAt(i)=="↓"){
+                                    }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                        if(mini_stage==0){
+                                            game_phase="戦闘準備";
+                                            teki_deck_list=zako_list;
+                                        }else if(mini_stage==1){
+                                        }else if(mini_stage==2){
+                                        }else if(mini_stage==3){
+                                        }else if(mini_stage==4){
+                                        }
+                                    }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                    }
+                                    
+                                }
+                                if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                                    key_input="";
+                                    key_interval=0;
+                                }
+                                
+                            }else if(key_interval>0){
+                                key_interval=key_interval-1;//カウントダウン
+                            }
+
+                            if(長押し阻止==1 && (key_input.indexOf("〇")==-1 && key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
+                                長押し阻止=0; 
+                            }
+                            
+                            ctx.drawImage(henyamoti,0,0);
+                            if(mini_stage==0){
+                                ctx.save();
+                                ctx.rotate(180 * Math.PI / 180);
+                                ctx.drawImage(yubi,-250,-800+4*Math.sin(time*Math.PI/8));
+                                ctx.restore();
+                            }else if(mini_stage==1){
+                                ctx.drawImage(yubi,400,750+4*Math.sin(time*Math.PI/8));
+                            }else if(mini_stage==2){
+                                ctx.drawImage(yubi,250,500+4*Math.sin(time*Math.PI/8));
+                            }else if(mini_stage==3){
+                                ctx.drawImage(yubi,550,500+4*Math.sin(time*Math.PI/8));
+                            }else if(mini_stage==4){
+                                ctx.drawImage(yubi,400,220+4*Math.sin(time*Math.PI/8));
+                            }
+                            
+                            
+                            
+                            
+                        }
+
+
+                        
                     }else if(game_phase=="デッキ編集準備"){
                         編集中デッキ={card_list:[],ACE:[],TOP_ACE:[]};
 
@@ -866,6 +1010,7 @@
                             for(let j=0;j<deck_list.card_list[i][1];j++){
                                 編集中デッキ.card_list[カードカウント]=deck_list.card_list[i][0];
                                 カードカウント+=1;
+                                
                             }
                         }
 
@@ -908,6 +1053,7 @@
                         編集中デッキ.ACE.sort(compare);
                         編集中デッキ.TOP_ACE.sort(compare);
                         game_phase="デッキ編集";
+                        hensyuu_phase="基本";
                     }else if(game_phase=="デッキ編集"){
 
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
@@ -1082,17 +1228,20 @@
                                                 カードカウント=1;
                                                 pre_カード=編集中デッキ.card_list[0];
                                                 deck_list.card_list=[];
-                                                for(let i=1;i<編集中デッキ.card_list.length;i++){//一枚目とばそう
-                                                    if(pre_カード==編集中デッキ.card_list[i]){
-                                                        カードカウント+=1;
-                                                    }else{
-                                                        deck_list.card_list[deck_list.card_list.length]=[pre_カード,カードカウント];
-                                                        pre_カード=編集中デッキ.card_list[i];
-                                                        カードカウント=1;
+                                                if(編集中デッキ.card_list.length!=0){
+                                                    for(let i=1;i<編集中デッキ.card_list.length;i++){//一枚目とばそう
+                                                        if(pre_カード==編集中デッキ.card_list[i]){
+                                                            カードカウント+=1;
+                                                        }else{
+                                                            deck_list.card_list[deck_list.card_list.length]=[pre_カード,カードカウント];
+                                                            pre_カード=編集中デッキ.card_list[i];
+                                                            カードカウント=1;
+                                                        }
                                                     }
+                                                    deck_list.card_list[deck_list.card_list.length]=[pre_カード,カードカウント];//最後抜けてたｗ
                                                 }
-                                                deck_list.card_list[deck_list.card_list.length]=[pre_カード,カードカウント];//最後抜けてたｗ
-                                                game_phase="戦闘準備";
+                                                
+                                                game_phase="ステージ選択";
                                             }else{
                                                 if(hensyuu_phase=="保存確認"){
                                                     hensyuu_phase="基本";
@@ -1102,7 +1251,7 @@
                                             }
                                         }else if(hensyuu_phase=="保存しない" || hensyuu_phase=="ACE保存しない"){
                                             if(cursor2==0){
-                                                game_phase="戦闘準備";
+                                                game_phase="ステージ選択";
                                             }else{
                                                 if(hensyuu_phase=="保存しない"){
                                                     hensyuu_phase="基本";
@@ -1147,14 +1296,14 @@
                                         }
                                     }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                         長押し阻止=1;
-                                        if(hensyuu_phase=="ACE編集"){
+                                        if(hensyuu_phase=="ACE編集" && 編集中デッキ.card_list.length!=0){
                                             if(cursor_y==0){
                                                 カードスワップ=cursor_x+scroll_x;
                                                 hensyuu_phase="deck選択";
-                                            }else if(cursor_y==1){
+                                            }else if(cursor_y==1 &&  MAX_ACE>cursor_x+scroll_x2){
                                                 カードスワップ=cursor_x+scroll_x2;
                                                 hensyuu_phase="ACE選択";
-                                            }else if(cursor_y==2){
+                                            }else if(cursor_y==2 &&  MAX_TOP_ACE>cursor_x+scroll_x2){
                                                 カードスワップ=cursor_x+scroll_x2;
                                                 hensyuu_phase="TOP_ACE選択";
                                             }
@@ -1171,78 +1320,82 @@
                                                     hensyuu_phase="ACE編集";
                                                 }
                                             }else if(cursor_y==1){
-                                                if(編集中デッキ.ACE.length>cursor_x+scroll_x2){
-                                                    pre_カード=編集中デッキ.ACE[cursor_x+scroll_x2];
-                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - ACE
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - ACE
-                                                        編集中デッキ.ACE[cursor_x+scroll_x2]=カードスワップ;
-                                                        編集中デッキ.TOP_ACE[編集中デッキ.TOP_ACE.indexOf(カードスワップ)]=pre_カード;
-                                                        
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                    }else{//NULL -ACE
-                                                        編集中デッキ.ACE[cursor_x+scroll_x2]=カードスワップ;
-                                                        
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
+                                                if(MAX_ACE>cursor_x+scroll_x2){
+                                                    if(編集中デッキ.ACE.length>cursor_x+scroll_x2){
+                                                        pre_カード=編集中デッキ.ACE[cursor_x+scroll_x2];
+                                                        if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - ACE
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                        }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - ACE
+                                                            編集中デッキ.ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                            編集中デッキ.TOP_ACE[編集中デッキ.TOP_ACE.indexOf(カードスワップ)]=pre_カード;
+                                                            
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                        }else{//NULL -ACE
+                                                            編集中デッキ.ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                            
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
 
-                                                    }
-                                                }else{//ACEのあいてるところだね
-                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - ACE
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - ACE
-                                                        編集中デッキ.ACE.push(カードスワップ);
-                                                        編集中デッキ.TOP_ACE.splice(編集中デッキ.TOP_ACE.indexOf(カードスワップ),1);//消しましょうね
-                                                        
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                    }else{//NULL -ACE
-                                                        編集中デッキ.ACE.push(カードスワップ);
-                                                        
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
+                                                        }
+                                                    }else{//ACEのあいてるところだね
+                                                        if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - ACE
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                        }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - ACE
+                                                            編集中デッキ.ACE.push(カードスワップ);
+                                                            編集中デッキ.TOP_ACE.splice(編集中デッキ.TOP_ACE.indexOf(カードスワップ),1);//消しましょうね
+                                                            
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                        }else{//NULL -ACE
+                                                            編集中デッキ.ACE.push(カードスワップ);
+                                                            
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
 
+                                                        }
                                                     }
                                                 }
                                             }else if(cursor_y==2){
-                                                if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){
-                                                    pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
-                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - TOP
-                                                        編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
-                                                        編集中デッキ.ACE[編集中デッキ.ACE.indexOf(カードスワップ)]=pre_カード;
+                                                if(MAX_TOP_ACE>cursor_x+scroll_x2){
+                                                    if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){
+                                                        pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
+                                                        if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - TOP
+                                                            編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                            編集中デッキ.ACE[編集中デッキ.ACE.indexOf(カードスワップ)]=pre_カード;
 
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - TOP
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                    }else{//NULL - TOP
-                                                        編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
-                                                        
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                        }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - TOP
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                        }else{//NULL - TOP
+                                                            編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                            
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
 
-                                                    }
-                                                }else{//TOP_ACEのあいてるところだね
-                                                    if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - TOP
-                                                        
-                                                        編集中デッキ.TOP_ACE.push(カードスワップ);
-                                                        編集中デッキ.ACE.splice(編集中デッキ.ACE.indexOf(カードスワップ),1);//消しましょうね
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                    }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - TOP
-                                                        
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                    }else{//NULL - TOP
-                                                        編集中デッキ.TOP_ACE.push(カードスワップ);
-                                                        
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
+                                                        }
+                                                    }else{//TOP_ACEのあいてるところだね
+                                                        if(編集中デッキ.ACE.indexOf(カードスワップ)!=-1){//ACE - TOP
+                                                            
+                                                            編集中デッキ.TOP_ACE.push(カードスワップ);
+                                                            編集中デッキ.ACE.splice(編集中デッキ.ACE.indexOf(カードスワップ),1);//消しましょうね
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                        }else if(編集中デッキ.TOP_ACE.indexOf(カードスワップ)!=-1){//TOP - TOP
+                                                            
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                        }else{//NULL - TOP
+                                                            編集中デッキ.TOP_ACE.push(カードスワップ);
+                                                            
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
 
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1280,23 +1433,25 @@
                                                         hensyuu_phase="ACE編集";
                                                     }
                                                 }else if(cursor_y==2){
-                                                    if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){//ACE - TOP 
-                                                        pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
-                                                        カードスワップ=編集中デッキ.ACE[カードスワップ];
-                                                        
-                                                        編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
-                                                        編集中デッキ.ACE[編集中デッキ.ACE.indexOf(カードスワップ)]=pre_カード;
+                                                    if(MAX_TOP_ACE>cursor_x+scroll_x2){
+                                                        if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){//ACE - TOP 
+                                                            pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
+                                                            カードスワップ=編集中デッキ.ACE[カードスワップ];
+                                                            
+                                                            編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                            編集中デッキ.ACE[編集中デッキ.ACE.indexOf(カードスワップ)]=pre_カード;
 
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                        
-                                                    }else{//TOP_ACEのあいてるところだね//ACE - TOP
-                                                        カードスワップ=編集中デッキ.ACE[カードスワップ];
-                                                        編集中デッキ.TOP_ACE.push(カードスワップ);
-                                                        編集中デッキ.ACE.splice(編集中デッキ.ACE.indexOf(カードスワップ),1);//消しましょうね
-                                                        カードスワップ=0;
-                                                        hensyuu_phase="ACE編集";
-                                                        
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                            
+                                                        }else{//TOP_ACEのあいてるところだね//ACE - TOP
+                                                            カードスワップ=編集中デッキ.ACE[カードスワップ];
+                                                            編集中デッキ.TOP_ACE.push(カードスワップ);
+                                                            編集中デッキ.ACE.splice(編集中デッキ.ACE.indexOf(カードスワップ),1);//消しましょうね
+                                                            カードスワップ=0;
+                                                            hensyuu_phase="ACE編集";
+                                                            
+                                                        }
                                                     }
                                                 }
                                             }else{//これACEの選択場所がNULLだ！
@@ -1324,10 +1479,10 @@
                                                         hensyuu_phase="ACE編集";
 
                                                     }
-                                                }else if(cursor_y==1){//キャンセル？
+                                                }else if(cursor_y==1 && MAX_ACE>cursor_x+scroll_x2){//キャンセル？
                                                         カードスワップ=0;
                                                         hensyuu_phase="ACE編集";
-                                                }else if(cursor_y==2){
+                                                }else if(cursor_y==2 && MAX_TOP_ACE>cursor_x+scroll_x2){
                                                     if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){//ACE - TOP 
                                                         pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
                                                         
@@ -1344,7 +1499,7 @@
                                                 }
                                             }
                                             
-                                        }else if(hensyuu_phase=="TOP_ACE選択"){//ここから下全部変えてね
+                                        }else if(hensyuu_phase=="TOP_ACE選択"){
                                             if(編集中デッキ.TOP_ACE.length>カードスワップ){
                                                 if(cursor_y==0){
                                                     if(編集中デッキ.ACE.indexOf(cursor_x+scroll_x)!=-1){//ACE - TOP
@@ -1370,7 +1525,7 @@
                                                         hensyuu_phase="ACE編集";
 
                                                     }
-                                                }else if(cursor_y==1){
+                                                }else if(cursor_y==1  && MAX_ACE>cursor_x+scroll_x2){
                                                     if(編集中デッキ.ACE.length>cursor_x+scroll_x2){//ACE - TOP 
                                                         pre_カード=編集中デッキ.ACE[cursor_x+scroll_x2];
                                                         カードスワップ=編集中デッキ.TOP_ACE[カードスワップ];
@@ -1389,7 +1544,7 @@
                                                         hensyuu_phase="ACE編集";
                                                         
                                                     }
-                                                }else if(cursor_y==2){
+                                                }else if(cursor_y==2 && MAX_TOP_ACE>cursor_x+scroll_x2){
                                                     if(カードスワップ==(cursor_x+scroll_x2)){//同じカードを選択…解除！
                                                         編集中デッキ.TOP_ACE.splice(cursor_x+scroll_x2,1);//消しましょうね
                                                         カードスワップ=0;
@@ -1420,7 +1575,7 @@
                                                         hensyuu_phase="ACE編集";
 
                                                     }
-                                                }else if(cursor_y==1){
+                                                }else if(cursor_y==1 && MAX_ACE>cursor_x+scroll_x2){
                                                     if(編集中デッキ.ACE.length>cursor_x+scroll_x2){//ACE - TOP 
                                                         pre_カード=編集中デッキ.ACE[cursor_x+scroll_x2];
                                                         
@@ -1434,7 +1589,7 @@
                                                         カードスワップ=0;
                                                         hensyuu_phase="ACE編集";
                                                     }
-                                                }else if(cursor_y==2){//キャンセル？
+                                                }else if(cursor_y==2 && MAX_TOP_ACE>cursor_x+scroll_x2){//キャンセル？
                                                         カードスワップ=0;
                                                         hensyuu_phase="ACE編集";
                                                     
@@ -2325,7 +2480,7 @@
                         teki_haka=[];
 
                         deck_initialize(deck_list,my_deck,my_yamahuda);
-                        deck_initialize(zako_list,teki_deck,teki_yamahuda);
+                        deck_initialize(teki_deck_list,teki_deck,teki_yamahuda);
                         
                         pull_card(my_yamahuda,my_tehuda,3);
                         game_phase="戦闘";
