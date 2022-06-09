@@ -139,6 +139,8 @@
             henyamoti_title.src="../images/omocha/syuukun_card/henyamotinsougen_title.png";
             var henyamoti=new Image();
             henyamoti.src="../images/omocha/syuukun_card/henyamotinsougen.png";
+            var henyamotin_kuria=new Image();
+            henyamotin_kuria.src="../images/omocha/syuukun_card/henyamotin_kuria.png";
 
             //ここにゲームパラメータを置くとイイネ。
             var my_deck=[];
@@ -205,6 +207,7 @@
 
             var get_card="";
             var card_count=0;
+            var new_card=0;
 
             var time=0;
 
@@ -245,6 +248,10 @@
 
             var 演出カウント=-1;
             var next_phase="";
+
+            var MAX_STAGE=1;
+
+            var 初回クリアメッセージフラグ=0;
 
             onload = function(){
                 onload_functions();
@@ -691,7 +698,19 @@
                     }
                     ctx.restore();
                 }
-               
+               function tokusyu_hyouji(x,y){
+                ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                ctx.fillStyle="rgb(0,0,0)";
+                for(let i=0;i<特殊状態.length;i++){
+                    if(特殊状態[i]=="攻撃+1"){
+                        ctx.drawImage(kougeki_1_32,x+64*i,y);
+                        ctx.fillText("1", x+35+64*i, y+27);
+                    }else if(特殊状態[i]=="体力+1"){
+                        ctx.drawImage(tairyoku_1_32,x+64*i,y);
+                        ctx.fillText("1", x+35+64*i, y+27);
+                    }
+                }
+               }
                 
                 var compare = function (a, b) {//sort()関数の引数にこの関数を渡すと、数字のソートが可能になる。
                     return a - b
@@ -940,6 +959,7 @@
                 
                 deck_list={card_list:[[HPup5,3],[powerup3,2],[syuukun,1],[hojorobo,2]],ACE:[hojorobo,powerup3],TOP_ACE:[syuukun]};
                 
+                
                 所持カード=[[HPup5,3],[powerup3,2],[syuukun,1],[hojorobo,2]];
                 
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
@@ -1074,7 +1094,8 @@
                         if(演出カウント>5){
                             game_phase=next_phase;
                             演出カウント=-1;
-                            mini_stage=2;
+                            //mini_stage=5;
+                            cursor2=0;
                             特殊状態=[];
                         }
 
@@ -1089,9 +1110,15 @@
                                         if(mini_stage==2 || mini_stage==3){
                                             mini_stage=(mini_stage+1)%2+2;
                                         }
+                                        if(mini_stage==5){
+                                            cursor2=(cursor2+1)%2;
+                                        }
                                     }else if(key_input.charAt(i)=="→"){
                                         if(mini_stage==2 || mini_stage==3){
                                             mini_stage=(mini_stage+1)%2+2;
+                                        }
+                                        if(mini_stage==5){
+                                            cursor2=(cursor2+1)%2;
                                         }
                                     }else if(key_input.charAt(i)=="↓"){
                                     }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
@@ -1120,6 +1147,17 @@
                                             teki_deck_list=henyamotin_list;//使用デッキ
                                             teki_pull=1;//ドロー枚数
                                             next_mini_stage=5;//クリアできたらこれが使われるってことさ。
+                                        }else if(mini_stage==5){
+                                            if(cursor2==0){
+                                                初回クリアメッセージフラグ=0;
+                                                next_phase="ステージ選択";
+                                                演出カウント=1;
+                                                cursor=2;
+                                            }else{
+                                                var URL_tweet_text="https://twitter.com/intent/tweet?text=へにゃもちんそうげんを突破した！%0A%0A"+document.title+"%0A"+document.URL+"&hashtags=Syuukun_Card";//%0Aで改行
+                                                window.open( URL_tweet_text, '_blank'); 
+                                            }
+                                            
                                         }
                                     }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
                                         長押し阻止=1;
@@ -1153,9 +1191,41 @@
                                 ctx.drawImage(yubi,550,500+4*Math.sin(time*Math.PI/8));
                             }else if(mini_stage==4){
                                 ctx.drawImage(yubi,400,220+4*Math.sin(time*Math.PI/8));
+                            }else if(mini_stage==5){//クリアだ。おめでとう。
+                                ctx.fillStyle="rgb(0,0,0,0.75)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(henyamotin_kuria,0,0);
+                                ctx.fillStyle="rgb(255,255,255)";
+                                ctx.fillRect(50,700,900,250);
+
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.fillText("ステージ選択へ", 200, 930);
+                                ctx.fillText("ツイート", 700, 930);
+
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                if(cursor2==0){
+                                    ctx.drawImage(yubi,850,-190+4*Math.sin(time*Math.PI/8));
+                                }else{
+                                    ctx.drawImage(yubi,850,-690+4*Math.sin(time*Math.PI/8));
+                                }
+                                ctx.restore();
+                             
+                                if(MAX_STAGE==1){
+                                    初回クリアメッセージフラグ=1;
+                                    MAX_STAGE=2;
+                                    MAX_ACE+=1;
+                                }
+                                if(初回クリアメッセージフラグ==1){
+                                    ctx.fillText("ACE設定可能数が1増えました！", 100, 780);
+                                }
                             }
                             
                         }
+                        ctx.scale(2, 2);
+                        tokusyu_hyouji(20,20);
+                        ctx.scale(0.5, 0.5);
 
                         if(演出カウント<0 && 演出カウント>-5){
                             演出カウント-=1;
@@ -2686,6 +2756,7 @@
                         yamahuda_damage=[0,0];//左が俺へのダメージで、右が相手へのダメージ描写
                         
                         get_card="";
+                        new_card=0;
                     }else if(game_phase=="戦闘"){
                         if(key_interval<=0 && key_input!="" && duel_phase!="相手"){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                             key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
@@ -2932,6 +3003,7 @@
                                     }else if(duel_phase=="俺勝ち"){
                                         next_phase="挑戦";
                                         演出カウント=1;
+                                        cursor=0;
                                     }else if(duel_phase=="敵勝ち"){
                                         next_phase="ステージ選択";
                                         演出カウント=1;
@@ -3242,15 +3314,8 @@
                             
                             ctx.fillText(teki_tehuda.length, 875, 41);
                         }
-                        for(let i=0;i<特殊状態.length;i++){
-                            if(特殊状態[i]=="攻撃+1"){
-                                ctx.drawImage(kougeki_1_32,390+64*i,46);
-                                ctx.fillText("1", 425+64*i, 73);
-                            }else if(特殊状態[i]=="体力+1"){
-                                ctx.drawImage(tairyoku_1_32,390+64*i,46);
-                                ctx.fillText("1", 425+64*i, 73);
-                            }
-                        }
+                        tokusyu_hyouji(390,46);
+                        
 
                         ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                         ctx.fillStyle="rgb(0,0,0)";
@@ -3643,13 +3708,13 @@
                                 
                                 //取得カード決定
                                 for(let i=0;i<所持カード.length;i++){
-                                    if(所持カード[i][0].name==get_card.name){
+                                    if(所持カード[i][0].name==get_card.name){//持ってる？このカード
                                         所持カード[i][1]+=1;
-                                        card_count=-1;//横着して関係ない変数を使うのをやめなさーい！！
+                                        new_card=1;//このカード持ってたわ
                                         break;
                                     }
                                 }
-                                if(card_count!=-1){
+                                if(new_card==0){//新規カードだ！
                                     所持カード[所持カード.length]=[get_card,1];
                                 }
                             }
