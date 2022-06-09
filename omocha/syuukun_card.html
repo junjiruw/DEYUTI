@@ -253,6 +253,8 @@
 
             var 初回クリアメッセージフラグ=0;
 
+            var URL_tweet_text="";
+
             onload = function(){
                 onload_functions();
                 const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
@@ -1154,7 +1156,8 @@
                                                 演出カウント=1;
                                                 cursor=2;
                                             }else{
-                                                var URL_tweet_text="https://twitter.com/intent/tweet?text=へにゃもちんそうげんを突破した！%0A%0A"+document.title+"%0A"+document.URL+"&hashtags=Syuukun_Card";//%0Aで改行
+                                                key_input="";//なんかこれないとボタン操作がいかれる
+                                                URL_tweet_text="https://twitter.com/intent/tweet?text=へにゃもちんそうげんを突破した！%0A%0A"+document.title+"%0A"+document.URL+"&hashtags=Syuukun_Card";//%0Aで改行
                                                 window.open( URL_tweet_text, '_blank'); 
                                             }
                                             
@@ -3705,7 +3708,7 @@
                                     }
                                 }
                                 
-                                
+                                new_card=0;
                                 //取得カード決定
                                 for(let i=0;i<所持カード.length;i++){
                                     if(所持カード[i][0].name==get_card.name){//持ってる？このカード
