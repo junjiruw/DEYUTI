@@ -1812,7 +1812,7 @@
                                     }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                         長押し阻止=1;
                                         if(hensyuu_phase=="ACE編集" && 編集中デッキ.card_list.length!=0){
-                                            if(cursor_y==0){
+                                            if(cursor_y==0 && syousai_card!=""){
                                                 カードスワップ=cursor_x+scroll_x;
                                                 hensyuu_phase="deck選択";
                                             }else if(cursor_y==1 &&  MAX_ACE>cursor_x+scroll_x2){
@@ -1916,7 +1916,7 @@
                                             }
                                         }else if(hensyuu_phase=="ACE選択"){
                                             if(編集中デッキ.ACE.length>カードスワップ){
-                                                if(cursor_y==0){
+                                                if(cursor_y==0  && syousai_card!=""){
                                                     if(編集中デッキ.ACE.indexOf(cursor_x+scroll_x)!=-1){//ACE - ACE
                                                         カードスワップ=0;
                                                         hensyuu_phase="ACE編集";
@@ -1970,7 +1970,7 @@
                                                     }
                                                 }
                                             }else{//これACEの選択場所がNULLだ！
-                                                if(cursor_y==0){
+                                                if(cursor_y==0  && syousai_card!=""){
                                                     if(編集中デッキ.ACE.indexOf(cursor_x+scroll_x)!=-1){//ACE - ACE
                                                         カードスワップ=0;
                                                         hensyuu_phase="ACE編集";
@@ -2016,7 +2016,7 @@
                                             
                                         }else if(hensyuu_phase=="TOP_ACE選択"){
                                             if(編集中デッキ.TOP_ACE.length>カードスワップ){
-                                                if(cursor_y==0){
+                                                if(cursor_y==0 && syousai_card!=""){
                                                     if(編集中デッキ.ACE.indexOf(cursor_x+scroll_x)!=-1){//ACE - TOP
                                                         pre_カード=cursor_x+scroll_x;
                                                         カードスワップ=編集中デッキ.TOP_ACE[カードスワップ];
@@ -2068,7 +2068,7 @@
                                                     
                                                 }
                                             }else{//これTOP_ACEの選択場所がNULLだ！
-                                                if(cursor_y==0){
+                                                if(cursor_y==0 && syousai_card!=""){
                                                     if(編集中デッキ.ACE.indexOf(cursor_x+scroll_x)!=-1){//ACE - TOP
                                                         pre_カード=cursor_x+scroll_x;
                                                         
