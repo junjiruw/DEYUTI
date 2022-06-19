@@ -180,11 +180,6 @@
             var my_tehuda=[];
             var teki_tehuda=[];
             var my_ba=["","","","",""];
-            /*
-                my_ba[i]=my_deck[i+5];
-                my_ba[i].position="my_ba_"+i;
-                my_ba[i].can_ATK=1;
-            */
 
             var teki_ba=["","","","",""];
             var death_my_ba=["","","","",""];//死亡時演出のためにカードを別の場所に移したい（場に残すとバグの温床になることは自明なので）
@@ -430,8 +425,8 @@
                         }else{
                             ctx.fillText(print_card.HP, x+3, y+188+of_y);
                         }
-                        if(print_card.can_ATK!=0){//攻撃可能モンスターにはマークを表示、複数攻撃マンが実装されたら変更してちょ
-                            ctx.drawImage(atk_circle,x+10+10*Math.sin(time*Math.PI/64),y+20+8*Math.sin(time*Math.PI/16)+of_y);
+                        for(let i=0;i<print_card.can_ATK;i++){//攻撃可能モンスターにはマークを表示,攻撃可能回数まで。
+                            ctx.drawImage(atk_circle,x+10+10*Math.sin(time*Math.PI/64)+i*30,y+20+8*Math.sin(time*Math.PI/16)+of_y+i*30);
                         }
                     }else{//魔法じゃん（ほんまか？）
                         ctx.fillStyle="rgb(0,200,0)";
@@ -467,7 +462,12 @@
                     var ba
                     ba=card;
                     ba.position=ba_name;
-                    ba.can_ATK=1;//召喚時効果によっては変わるかもね
+                    if(ba.state.indexOf("二回攻撃")!=-1){
+                        ba.can_ATK=2;
+                    }else{
+                        ba.can_ATK=1;
+                    }
+                    
                     ba.move=5;
                     if(ba_name.indexOf("my_ba")!=-1){
                         for(let i=0;i<特殊状態.length;i++){
@@ -477,7 +477,11 @@
                                 ba.HP+=1;
                             }
                         }
+                        ba.card.effect("召喚された",["my_ba",ba]);
+                    }else{
+                        ba.card.effect("召喚された",["teki_ba",ba]);
                     }
+                    
                     return ba;
                 }
 
@@ -528,10 +532,6 @@
                                 if(yamahuda[i].state.indexOf("モンスター")!=-1){//モンスターのTOP_ACEは召喚
                                     yamahuda[i].state[yamahuda[i].state.length]="TOP_ACE";
 
-                                    //ba[ba_haiti[ACE.length-1]]=yamahuda[i];
-                                    //ba[ba_haiti[ACE.length-1]].position=doko_syoukan+ba_haiti[ACE.length-1];
-                                    //ba[ba_haiti[ACE.length-1]].can_ATK=1;//召喚時効果によっては変わるかもね
-                                    //ba[ba_haiti[ACE.length-1]].move=5;
                                     ba[ba_haiti[ACE.length-1]]=syoukan(yamahuda[i],doko_syoukan+ba_haiti[ACE.length-1]);
 
                                     ACE.splice(j,1);
@@ -1263,8 +1263,90 @@
 
                 var henyamotin={name:"へにゃもちん",image:henyamotin_image,ATK:2,HP:1,state:["モンスター","へにゃもちん","ACE"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"彗星のごとく現れた、我らのヒーロー！へにゃもちん！いつだってACEさ！",text_iro:[[0,2,"rgb(200,200,0)"],[13,4,"rgb(200,200,0)"],[30,3,"rgb(200,200,0)"]]};
                 
+                var ponya_sutoraiku={name:"ぽにゃストライク",image:ponya_sutoraiku_image,ATK:2,HP:3,state:["モンスター","ぽにゃ"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i].state.indexOf("ぽにゃ")!=-1){
+                                    option[1].ATK+=2;
+                                }
+                            }
+                        }else{//敵
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && teki_ba[i].state.indexOf("ぽにゃ")!=-1){
+                                    option[1].ATK+=2;
+                                }
+                            }
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"召喚時、自分の場のぽにゃモンスターの数だけ攻撃力+2（自分は含めない）",text_iro:[]};
+                var ponya_big={name:"ぽにゃBIG",image:ponya_big_image,ATK:2,HP:15,state:["モンスター","ぽにゃ","BIG"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"でかいぽにゃ。このゲームでは攻撃力が低く、体力が多いモンスターは攻撃されにくいということを覚えておこう。",text_iro:[]};
+                var ponya_daburu={name:"ぽにゃダブル",image:ponya_daburu_image,ATK:2,HP:3,state:["モンスター","ぽにゃ","二回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"双子のぽにゃは1ターンに二度攻撃を行う！",text_iro:[]};
+                var ponya_rein={name:"ぽにゃレイン！",image:ponya_rein_image,state:["魔法","敵ダメージ"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i].state.indexOf("ぽにゃ")!=-1){//こちらの場にぽにゃがいる
+                                    for(let j=0;j<5;j++){
+                                        if(teki_ba[j]!=""){return true; }//敵が一人はいる→発動可能
+                                    }
+                                }
+                            }
+                        }else{ 
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && teki_ba[i].state.indexOf("ぽにゃ")!=-1){//敵の場にぽにゃがいる
+                                    for(let j=0;j<5;j++){
+                                        if(my_ba[j]!=""){return true; }//味方が一人はいる→発動可能
+                                    }
+                                }
+                            }
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            let ぽにゃカウント=0;
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i].state.indexOf("ぽにゃ")!=-1){//こちらの場にぽにゃがいる
+                                    ぽにゃカウント+=1;
+                                }
+                            }
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){//敵の場
+                                    teki_ba[i].HP-=ぽにゃカウント*2;
+                                    if(teki_ba[i].HP<=0){
+                                        teki_ba[i]=death_card(teki_ba[i],teki_haka,i);
+                                    }
+                                }
+                            }
+                        }else{
+                            let ぽにゃカウント=0;
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && teki_ba[i].state.indexOf("ぽにゃ")!=-1){//こちらの場にぽにゃがいる
+                                    ぽにゃカウント+=1;
+                                }
+                            }
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){//敵の場
+                                    my_ba[i].HP-=ぽにゃカウント*2;
+                                    if(my_ba[i].HP<=0){
+                                        my_ba[i]=death_card(my_ba[i],my_haka,i);
+                                    }
+                                }
+                            }
+                        }
+                        return false; 
+                    }
+                },AI:function(タイミング){
+                    return true;//まあ、使いたいときにつかえや😁
+                },text:"こちらの場のぽにゃモンスターの数×２のダメージを相手モンスターすべてに与える！「ぽにゃにゃにゃにゃにゃにゃにゃにゃにゃ！」",text_iro:[]};
+                
+                
                 //全てのカードを参照できる配列…手動で追加していってください。
-                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin];
+                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein];
 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
@@ -1274,7 +1356,7 @@
                 var kameisi_list={card_list:[[kameisi,6],[kametetu,1],[yakuso_3,3]],ACE:[kametetu],TOP_ACE:[kameisi]};
                 var henyamotin_list={card_list:[[henyamotin,15]],ACE:[],TOP_ACE:[]};
                 //パック
-                var ぽにゃパック=[test_card,test_card,test_card2,syuukun,ryuunoitigeki];
+                var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5];
                 
                 //ここからロード、なんで一個ずつやってるのかというと、開発中はバージョンによってセーブデータがあったりなかったりするから、バグる。
                 //全データ消去();
@@ -1314,9 +1396,12 @@
                 }else{
                     localStorage.setItem('お金',お金);//ゲームデータセーブ
                 }
-
-                //deck_list={card_list:[[test_card2,5]],ACE:[],TOP_ACE:[test_card2,test_card2,test_card2,test_card2]};
-                
+                /*
+                お金=99999;
+                deck_list={card_list:[[ponya_rein,5],[ponya_big,10]],ACE:[],TOP_ACE:[]};
+                ponya_list={card_list:[[ponya_big,3],[ponya_rein,3]],ACE:[],TOP_ACE:[]};
+                所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
+                */
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
                     time+=1;
@@ -1436,10 +1521,13 @@
                         ctx.fillText(お金, 860, 988);
                         ctx.drawImage(okane,820,960);
 
-                        ctx.save();
-                        ctx.scale(2,2);
-                        ctx.drawImage(omise_image,420,410);
-                        ctx.restore();
+                        if(MAX_STAGE>1){//お店は1をクリアしてから表示
+                            ctx.save();
+                            ctx.scale(2,2);
+                            ctx.drawImage(omise_image,420,410);
+                            ctx.restore();
+                        }
+                        
 
                         if(stage==1){
                             ctx.drawImage(henyamoti_title,0,100);
@@ -1880,7 +1968,7 @@
                                         }
                                         
                                     }else if(sub_phase=="パック詳細"){
-                                        if(cursor2==3 && お金>金額[cursor]*(購入数[0]*100+購入数[1]*10+購入数[2]) && 購入数[0]+購入数[1]+購入数[2]!=0){
+                                        if(cursor2==3 && お金>=金額[cursor]*(購入数[0]*100+購入数[1]*10+購入数[2]) && 購入数[0]+購入数[1]+購入数[2]!=0){
                                             //購入！
                                             出てきたカード=[];
                                             if(cursor==0){
@@ -4013,7 +4101,11 @@
                             }else if(aite_phase=="始まり"){
                                 for(let i=0;i<5;i++){
                                     if(my_ba[i]!=""){
-                                        my_ba[i].can_ATK=1;//効果によっては変わるかもね
+                                        if(my_ba[i].state.indexOf("二回攻撃")!=-1){
+                                            my_ba[i].can_ATK=2;
+                                        }else{
+                                            my_ba[i].can_ATK=1;
+                                        }
                                     }
                                 }
                                 pull_card(teki_yamahuda,teki_tehuda,teki_pull);//相手の手札枚数は右上のあそこに表示してあげるとやさしいと思うな。
@@ -4126,7 +4218,11 @@
                                 pull_card(my_yamahuda,my_tehuda,my_pull);
                                 for(let i=0;i<5;i++){
                                     if(teki_ba[i]!=""){
-                                        teki_ba[i].can_ATK=1;//効果によっては変わるかもね
+                                        if(teki_ba[i].state.indexOf("二回攻撃")!=-1){
+                                            teki_ba[i].can_ATK=2;
+                                        }else{
+                                            teki_ba[i].can_ATK=1;
+                                        }
                                     }
                                 }
                                 if(teki_yamahuda.length==0){//もう山札ないじゃん…
