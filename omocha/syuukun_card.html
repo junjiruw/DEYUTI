@@ -145,6 +145,18 @@
             ponya_rein_image.src="../images/omocha/syuukun_card/ponyarein.png";
             var ponya_daburu_image=new Image();
             ponya_daburu_image.src="../images/omocha/syuukun_card/ponyadaburu.png";
+
+            var sasori_image=new Image();
+            sasori_image.src="../images/omocha/syuukun_card/sasori.png";
+            var sasori_seitai_image=new Image();
+            sasori_seitai_image.src="../images/omocha/syuukun_card/sasori_seitai.png";
+
+            var ikkakudaija_atama_image=new Image();
+            ikkakudaija_atama_image.src="../images/omocha/syuukun_card/ikkakudaija_atama.png";
+            var ikkakudaija_hara_image=new Image();
+            ikkakudaija_hara_image.src="../images/omocha/syuukun_card/ikkakudaija_hara.png";
+            var ikkakudaija_yubi_image=new Image();
+            ikkakudaija_yubi_image.src="../images/omocha/syuukun_card/ikkakudaija_yubi.png";
             //--メニュー？
 
             var kuria=new Image();
@@ -239,7 +251,7 @@
             var time=0;
 
             var 特殊状態=[];
-
+            var 相手の降参=0;
             //---上デュエル系？　下デッキ系…？？？？？？？？
             var 所持カード=[];
             var deck_list;
@@ -462,7 +474,9 @@
                     var ba
                     ba=card;
                     ba.position=ba_name;
-                    if(ba.state.indexOf("二回攻撃")!=-1){
+                    if(ba.state.indexOf("三回攻撃")!=-1){
+                        ba.can_ATK=3;
+                    }else if(ba.state.indexOf("二回攻撃")!=-1){
                         ba.can_ATK=2;
                     }else{
                         ba.can_ATK=1;
@@ -526,14 +540,14 @@
                     }
                     
                     ACE=[...list.TOP_ACE];//スプレッド構文　...hoge はhogeの中身と同様になる。
+                    let ACE_count=0;
                     for(let i=0;i<yamahuda.length;i++){//TOP_ACEを召喚…TOP_ACEは5枚以下でおねがします
                         for(let j=0;j<ACE.length;j++){
                             if(yamahuda[i].card==ACE[j]){//TOPを発見した
                                 if(yamahuda[i].state.indexOf("モンスター")!=-1){//モンスターのTOP_ACEは召喚
                                     yamahuda[i].state[yamahuda[i].state.length]="TOP_ACE";
-
-                                    ba[ba_haiti[ACE.length-1]]=syoukan(yamahuda[i],doko_syoukan+ba_haiti[ACE.length-1]);
-
+                                    ba[ba_haiti[ACE_count]]=syoukan(yamahuda[i],doko_syoukan+ba_haiti[ACE_count]);//デッキの最初にいるやつから召喚していく
+                                    ACE_count+=1;
                                     ACE.splice(j,1);
                                     yamahuda.splice(i,1);//召喚したので山札減ります。
                                     i-=1;//場に出して消えたので
@@ -1344,9 +1358,31 @@
                     return true;//まあ、使いたいときにつかえや😁
                 },text:"こちらの場のぽにゃモンスターの数×２のダメージを相手モンスターすべてに与える！「ぽにゃにゃにゃにゃにゃにゃにゃにゃにゃ！」",text_iro:[]};
                 
+                var sasori={name:"サソリ",image:sasori_image,ATK:2,HP:5,state:["モンスター","二回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"二回攻撃。",text_iro:[]};
+                var sasori_seitai={name:"サソリ_成体",image:sasori_seitai_image,ATK:2,HP:5,state:["モンスター","三回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"三回攻撃。",text_iro:[]};
                 
-                //全てのカードを参照できる配列…手動で追加していってください。
-                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein];
+                var ikkakudaija_atama={name:"一角大蛇の頭",image:ikkakudaija_atama_image,ATK:0,HP:30,state:["モンスター","一角大蛇","一角大蛇の先端"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"炎の海を泳ぎ、蒼の角で貫く。獄海を支配する巨大な大蛇。",text_iro:[]};
+                var ikkakudaija_hara={name:"一角大蛇の腹",image:ikkakudaija_hara_image,ATK:0,HP:5,state:["モンスター","一角大蛇"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i].state.indexOf("一角大蛇の先端")!=-1){
+                                    option[1].ATK+=3;
+                                }
+                            }
+                        }else{//敵
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && teki_ba[i].state.indexOf("一角大蛇の先端")!=-1){
+                                    option[1].ATK+=3;
+                                }
+                            }
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"一角大蛇の99%。召喚時、先端の数×3の攻撃力を得る",text_iro:[]};
+                var ikkakudaija_yubi={name:"一角大蛇の指",image:ikkakudaija_yubi_image,ATK:5,HP:6,state:["モンスター","一角大蛇","一角大蛇の先端"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"一角大蛇の尾。獲物を指差す。",text_iro:[]};
+
+                //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
+                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi];
 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
@@ -1355,6 +1391,9 @@
                 var ponya_list={card_list:[[ponya,5],[ponya_ace,2],[yakuso_3,3]],ACE:[ponya_ace,ponya_ace],TOP_ACE:[ponya]};
                 var kameisi_list={card_list:[[kameisi,6],[kametetu,1],[yakuso_3,3]],ACE:[kametetu],TOP_ACE:[kameisi]};
                 var henyamotin_list={card_list:[[henyamotin,15]],ACE:[],TOP_ACE:[]};
+
+                var sasori_list={card_list:[[sasori,10],[sasori_seitai,4]],ACE:[sasori_seitai,sasori_seitai],TOP_ACE:[sasori]};
+                var ikkakudaija_list={card_list:[[ikkakudaija_atama,1],[ikkakudaija_hara,10],[ikkakudaija_yubi,1]],ACE:[ikkakudaija_yubi],TOP_ACE:[ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_hara]};
                 //パック
                 var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5];
                 
@@ -1729,7 +1768,7 @@
                                 }
                             }
                             
-                        }else if(stage==2){
+                        }else if(stage==2){//力の祭典
                             if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                                 key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
                                 for(let i=0;i<key_input.length;i++){
@@ -1746,17 +1785,26 @@
                                     }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                         長押し阻止=1;
                                         if(mini_stage==0){
-                                            next_phase="ステージ選択";
+                                            next_phase="戦闘準備";
                                             演出カウント=1;
-                                            cursor=2;
+                                            teki_deck_list=sasori_list;//使用デッキ
+                                            teki_pull=2;//ドロー枚数
+                                            next_mini_stage=1;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=30;//お金ー！
+
+                                            
                                         }else if(mini_stage==1){
                                             next_phase="戦闘準備";
                                             演出カウント=1;
-                                            teki_deck_list=ponya_list;//使用デッキ
+                                            teki_deck_list=ikkakudaija_list;//使用デッキ
                                             teki_pull=2;//ドロー枚数
-                                            next_mini_stage=1;//クリアできたらこれが使われるってことさ。
-                                            drop_gold=10;//お金ー！
+                                            next_mini_stage=2;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=50;//お金ー！
+
                                         }else if(mini_stage==2){
+                                            next_phase="ステージ選択";
+                                            演出カウント=1;
+                                            cursor=2;
                                         }else if(mini_stage==3){
                                         }else if(mini_stage==4){
                                         }else if(mini_stage==5){
@@ -1790,12 +1838,13 @@
                             if(長押し阻止==1 && (key_input.indexOf("〇")==-1 && key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
                                 長押し阻止=0; 
                             }
-                            
-                            ctx.drawImage(saiten,0,0);//変えて
+                            ctx.drawImage(saiten,0,0);
                             if(mini_stage==0){
                                 ctx.drawImage(yubi,800,770+4*Math.sin(time*Math.PI/8));
                             }else if(mini_stage==1){
+                                ctx.drawImage(yubi,750,370+4*Math.sin(time*Math.PI/8));
                             }else if(mini_stage==2){
+                                ctx.drawImage(yubi,250,850+4*Math.sin(time*Math.PI/8));
                             }else if(mini_stage==3){
                             }else if(mini_stage==4){
                             }else if(mini_stage==5){//クリアだ。おめでとう。
@@ -3805,6 +3854,7 @@
                         
                         get_card="";
                         new_card=0;
+                        相手の降参=0;
                     }else if(game_phase=="戦闘"){
                         if(key_interval<=0 && key_input!="" && duel_phase!="相手"){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                             key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
@@ -4101,7 +4151,9 @@
                             }else if(aite_phase=="始まり"){
                                 for(let i=0;i<5;i++){
                                     if(my_ba[i]!=""){
-                                        if(my_ba[i].state.indexOf("二回攻撃")!=-1){
+                                        if(my_ba[i].state.indexOf("三回攻撃")!=-1){
+                                            my_ba[i].can_ATK=3;
+                                        }else if(my_ba[i].state.indexOf("二回攻撃")!=-1){
                                             my_ba[i].can_ATK=2;
                                         }else{
                                             my_ba[i].can_ATK=1;
@@ -4218,7 +4270,9 @@
                                 pull_card(my_yamahuda,my_tehuda,my_pull);
                                 for(let i=0;i<5;i++){
                                     if(teki_ba[i]!=""){
-                                        if(teki_ba[i].state.indexOf("二回攻撃")!=-1){
+                                        if(teki_ba[i].state.indexOf("三回攻撃")!=-1){
+                                            teki_ba[i].can_ATK=3;
+                                        }else if(teki_ba[i].state.indexOf("二回攻撃")!=-1){
                                             teki_ba[i].can_ATK=2;
                                         }else{
                                             teki_ba[i].can_ATK=1;
@@ -4234,6 +4288,7 @@
                                     }
                                     if(teki_kougeki_sum==0){//攻撃力の合計も0！？これはもうダメみたいですね。
                                         duel_phase="俺勝ち";
+                                        相手の降参=1;
                                     }
                                 }
                             
@@ -4747,9 +4802,16 @@
                             ctx.fillStyle="rgb(255,255,255)";
                             ctx.fillRect(200,150,600,600);
 
-                            ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            
                             ctx.fillStyle="rgb(0,0,0)";
-                            ctx.fillText("勝った！", 250, 250);
+                            if(相手の降参==0){
+                                ctx.font = "80px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("勝った！", 250, 250);
+                            }else{
+                                ctx.font = "70px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("相手が降参した！", 250, 250);
+                            }
+                            
                             ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                             ctx.fillText("おめれと", 250, 350);
                             ctx.drawImage(kati_image,550,500);
