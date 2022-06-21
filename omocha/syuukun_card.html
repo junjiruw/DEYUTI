@@ -872,15 +872,18 @@
                             for(let k=0;k<一時_TOP_ACE.length;k++){
                                 if(一時_TOP_ACE[k]==card.card_list[i][0]){
                                     ctx.fillStyle="rgb(255,0,0)";
-                                     ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
-                                     一時_TOP_ACE.splice(1,k);
+                                    ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
+                                    一時_TOP_ACE.splice(k,1);
+                                    break;
                                 }
                             }
                             for(let k=0;k<一時_ACE.length;k++){
                                 if(一時_ACE[k]==card.card_list[i][0]){
                                     ctx.fillStyle="rgb(255,255,0)";
-                                     ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
-                                     一時_ACE.splice(1,k);
+                                    ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
+                                    console.log(一時_ACE);
+                                    一時_ACE.splice(k,1);
+                                    break;
                                 }
                             }
                             シンプルカード表示(card.card_list[i][0],x/kakudai+140*(count%x_maisuu),y/kakudai+210*(Math.floor(count/x_maisuu)));
