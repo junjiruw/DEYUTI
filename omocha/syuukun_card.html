@@ -145,6 +145,15 @@
             ponya_rein_image.src="../images/omocha/syuukun_card/ponyarein.png";
             var ponya_daburu_image=new Image();
             ponya_daburu_image.src="../images/omocha/syuukun_card/ponyadaburu.png";
+            
+            var kyuukoukasakusenki_image=new Image();
+            kyuukoukasakusenki_image.src="../images/omocha/syuukun_card/kyuukoukasakusenki.png";
+            var atakkumojuru_image=new Image();
+            atakkumojuru_image.src="../images/omocha/syuukun_card/atakkumojuru.png";
+            var kaihukumojuru_image=new Image();
+            kaihukumojuru_image.src="../images/omocha/syuukun_card/kaihukumojuru.png";
+            var sukurappudoro_image=new Image();
+            sukurappudoro_image.src="../images/omocha/syuukun_card/sukurappudoro.png";
 
             var sasori_image=new Image();
             sasori_image.src="../images/omocha/syuukun_card/sasori.png";
@@ -1368,17 +1377,19 @@
                             for(let i=0;i<5;i++){
                                 if(my_ba[i]!="" && my_ba[i].state.indexOf("一角大蛇の先端")!=-1){
                                     option[1].ATK+=3;
+                                    option[1].HP+=2;
                                 }
                             }
                         }else{//敵
                             for(let i=0;i<5;i++){
                                 if(teki_ba[i]!="" && teki_ba[i].state.indexOf("一角大蛇の先端")!=-1){
                                     option[1].ATK+=3;
+                                    option[1].HP+=2;
                                 }
                             }
                         }
                     }
-                },AI:function(タイミング){return true;},text:"一角大蛇の99%。召喚時、先端の数×3の攻撃力を得る",text_iro:[]};
+                },AI:function(タイミング){return true;},text:"一角大蛇の99%。召喚時、先端の数×3の攻撃力,×2のHPを得る",text_iro:[]};
                 var ikkakudaija_yubi={name:"一角大蛇の指",image:ikkakudaija_yubi_image,ATK:5,HP:6,state:["モンスター","一角大蛇","一角大蛇の先端"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"一角大蛇の尾。獲物を指差す。",text_iro:[]};
 
                 //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
@@ -1395,7 +1406,7 @@
                 var sasori_list={card_list:[[sasori,10],[sasori_seitai,4]],ACE:[sasori_seitai,sasori_seitai],TOP_ACE:[sasori]};
                 var ikkakudaija_list={card_list:[[ikkakudaija_atama,1],[ikkakudaija_hara,10],[ikkakudaija_yubi,1]],ACE:[ikkakudaija_yubi],TOP_ACE:[ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_hara]};
                 //パック
-                var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5];
+                var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5];
                 
                 //ここからロード、なんで一個ずつやってるのかというと、開発中はバージョンによってセーブデータがあったりなかったりするから、バグる。
                 //全データ消去();
@@ -1450,7 +1461,7 @@
 
                     if(game_phase=="タイトル"){
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                             
                             演出カウント+=1;
                             長押し阻止=1;
@@ -1469,7 +1480,7 @@
                         //game_phase="挑戦";
                     }else if(game_phase=="ステージ選択"){
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                             for(let i=0;i<key_input.length;i++){
                                 if(key_input.charAt(i)=="↑"){
                                     if(cursor==2 || cursor==3){
@@ -1642,7 +1653,7 @@
                         
                         if(stage==1){//へにゃもちん草原
                             if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                                key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                                key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                                 for(let i=0;i<key_input.length;i++){
                                     if(key_input.charAt(i)=="↑"){
                                     }else if(key_input.charAt(i)=="←"){
@@ -1770,7 +1781,7 @@
                             
                         }else if(stage==2){//力の祭典
                             if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                                key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                                key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                                 for(let i=0;i<key_input.length;i++){
                                     if(key_input.charAt(i)=="↑"){
                                     }else if(key_input.charAt(i)=="←"){
@@ -1905,7 +1916,7 @@
                         }
                     }else if(game_phase=="お店"){
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                             for(let i=0;i<key_input.length;i++){
                                 if(key_input.charAt(i)=="↑"){
                                     if(sub_phase=="基本"){
@@ -2395,7 +2406,7 @@
                     }else if(game_phase=="デッキ編集"){
 
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                             for(let i=0;i<key_input.length;i++){
                                 if(sub_phase=="基本"){
                                     if(key_input.charAt(i)=="↑"){
@@ -3857,7 +3868,7 @@
                         相手の降参=0;
                     }else if(game_phase=="戦闘"){
                         if(key_interval<=0 && key_input!="" && duel_phase!="相手"){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                            key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                            key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                             for(let i=0;i<key_input.length;i++){
                                 if(key_input.charAt(i)=="↑"){
                                     if(duel_phase=="自由"){
@@ -4957,7 +4968,7 @@
                             ctx.drawImage(yubi,870,-370+4*Math.sin(time*Math.PI/8));
                             ctx.restore();
                             if(key_interval<=0 && key_input!=""  && 長押し阻止==0){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
-                                key_interval=3;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                                key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                                 長押し阻止=1;
                                 if(key_input.indexOf("〇")!=-1 || key_input.indexOf("×")!=-1){
                                     teki_tehuda[tukau_card_num].card.effect("手札から");
