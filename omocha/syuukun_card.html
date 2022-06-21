@@ -651,16 +651,19 @@
                         dare_yamahuda_damage=atk;
                         duel_phase=dare_kati;
                     }
+                    let deck_top;
                     for(let i=0;i<atk;i++){
-                        if(yamahuda[yamahuda.length-1].state.indexOf("ACE")!=-1 || yamahuda[yamahuda.length-1].state.indexOf("TOP_ACE")!=-1){//ACEモンスター来た！
-                            if(yamahuda[yamahuda.length-1].state.indexOf("モンスター")!=-1){
+                        deck_top=yamahuda[yamahuda.length-1];
+                        yamahuda.splice(-1,1);
+                        if(deck_top.state.indexOf("ACE")!=-1 || deck_top.state.indexOf("TOP_ACE")!=-1){//ACEモンスター来た！
+                            if(deck_top.state.indexOf("モンスター")!=-1){
                                 for(let j=0;j<5;j++){
                                     if(ba[ba_haiti[j]]==""){
-                                        ba[ba_haiti[j]]=syoukan(yamahuda[yamahuda.length-1],doko_syoukan+ba_haiti[j]);
+                                        ba[ba_haiti[j]]=syoukan(deck_top,doko_syoukan+ba_haiti[j]);
                                         break;
                                     }
                                     if(j==4){//召喚できなかった（笑）→手札へ
-                                        tehuda[tehuda.length]=yamahuda[yamahuda.length-1];
+                                        tehuda[tehuda.length]=deck_top;
                                         tehuda[tehuda.length-1].position=doko_tehuda+(tehuda.length-1+i);
                                     }
                                 }
@@ -671,18 +674,16 @@
                                     duel_phase="相手";
                                 }
                             }else{//召喚できなかった（笑）→手札へ
-                                tehuda[tehuda.length]=yamahuda[yamahuda.length-1];
+                                tehuda[tehuda.length]=deck_top;
                                 tehuda[tehuda.length-1].position=doko_tehuda+(tehuda.length-1+i);
 
                             }
-                            
-                            
                         }else{
-                            haka[haka.length]=yamahuda[yamahuda.length-1];
+                            haka[haka.length]=deck_top;
                             haka[haka.length-1].position=doko_haka;
                         }
                         
-                        yamahuda.splice(-1,1);
+                       
                     }
                 }
                 function ba_mons_num(ba){
