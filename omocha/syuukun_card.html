@@ -1367,6 +1367,99 @@
                     return true;//まあ、使いたいときにつかえや😁
                 },text:"こちらの場のぽにゃモンスターの数×２のダメージを相手モンスターすべてに与える！「ぽにゃにゃにゃにゃにゃにゃにゃにゃにゃ！」",text_iro:[]};
                 
+                var kyuukoukasakusenki={name:"急降下作戦機",image:kyuukoukasakusenki_image,ATK:1,HP:2,state:["モンスター","機械"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方
+                            pull_card(my_yamahuda,my_tehuda,1);
+                        }else{//敵
+                            pull_card(teki_yamahuda,teki_tehuda,1);
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"召喚時1ドロー。これより本機は作戦を開始する！",text_iro:[]};
+                var atakkumojuru={name:"アタックモジュール",image:atakkumojuru_image,ATK:1,HP:2,state:["モンスター","機械","ドロー"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){
+                                    my_ba[i].ATK+=1;
+                                }
+                            }
+                        }else{//敵
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    teki_ba[i].ATK+=1;
+                                }
+                            }
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"召喚時、自分以外の場のモンスターの攻撃力+1",text_iro:[]};
+                var kaihukumojuru={name:"回復モジュール",image:kaihukumojuru_image,ATK:1,HP:2,state:["モンスター","機械"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){
+                                    my_ba[i].HP+=3;
+                                }
+                            }
+                        }else{//敵
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    teki_ba[i].HP+=3;
+                                }
+                            }
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"召喚時、自分以外の場のモンスターの体力+3",text_iro:[]};
+                var sukurappudoro={name:"スクラップ・ドロー",image:sukurappudoro_image,state:["魔法","ドロー"],effect_req:function(タイミング){
+                    let 機械の数=0;
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<my_haka.length;i++){
+                                if(my_haka[i].state.indexOf("機械")!=-1){//墓地にいる機械
+                                    機械の数+=1;
+                                }
+                            }
+                            if(Math.floor(機械の数/3)>=1){
+                                return true;//1ドローはできなら発動可能で。
+                            }
+                        }else{ 
+                            for(let i=0;i<teki_haka.length;i++){
+                                if(teki_haka[i].state.indexOf("機械")!=-1){//墓地にいる機械
+                                    機械の数+=1;
+                                }
+                            }
+                            if(Math.floor(機械の数/3)>=1){
+                                return true;//1ドローはできなら発動可能で。
+                            }
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    let 機械の数=0;
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<my_haka.length;i++){
+                                if(my_haka[i].state.indexOf("機械")!=-1){//墓地にいる機械
+                                    機械の数+=1;
+                                }
+                            }
+                            pull_card(my_yamahuda,my_tehuda,Math.floor(機械の数/3));
+                        }else{ 
+                            for(let i=0;i<teki_haka.length;i++){
+                                if(teki_haka[i].state.indexOf("機械")!=-1){//墓地にいる機械
+                                    機械の数+=1;
+                                }
+                            }
+                            pull_card(teki_yamahuda,teki_tehuda,Math.floor(機械の数/3));
+                        }
+                    } 
+                },AI:function(タイミング){
+                    return true;//使えるなら使っとけ
+                },text:"自分の墓地に眠る機械モンスターの数/3（切り捨て）だけドローする。",text_iro:[]};
+
+
                 var sasori={name:"サソリ",image:sasori_image,ATK:2,HP:5,state:["モンスター","二回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"二回攻撃。",text_iro:[]};
                 var sasori_seitai={name:"サソリ_成体",image:sasori_seitai_image,ATK:2,HP:5,state:["モンスター","三回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"三回攻撃。",text_iro:[]};
                 
@@ -1393,7 +1486,7 @@
                 var ikkakudaija_yubi={name:"一角大蛇の指",image:ikkakudaija_yubi_image,ATK:5,HP:6,state:["モンスター","一角大蛇","一角大蛇の先端"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"一角大蛇の尾。獲物を指差す。",text_iro:[]};
 
                 //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
-                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi];
+                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro];
 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
@@ -1406,7 +1499,7 @@
                 var sasori_list={card_list:[[sasori,10],[sasori_seitai,4]],ACE:[sasori_seitai,sasori_seitai],TOP_ACE:[sasori]};
                 var ikkakudaija_list={card_list:[[ikkakudaija_atama,1],[ikkakudaija_hara,10],[ikkakudaija_yubi,1]],ACE:[ikkakudaija_yubi],TOP_ACE:[ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_hara]};
                 //パック
-                var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5];
+                var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,atakkumojuru,atakkumojuru,kaihukumojuru,kaihukumojuru,sukurappudoro,sukurappudoro];
                 
                 //ここからロード、なんで一個ずつやってるのかというと、開発中はバージョンによってセーブデータがあったりなかったりするから、バグる。
                 //全データ消去();
@@ -1446,12 +1539,12 @@
                 }else{
                     localStorage.setItem('お金',お金);//ゲームデータセーブ
                 }
-                /*
-                お金=99999;
-                deck_list={card_list:[[ponya_rein,5],[ponya_big,10]],ACE:[],TOP_ACE:[]};
-                ponya_list={card_list:[[ponya_big,3],[ponya_rein,3]],ACE:[],TOP_ACE:[]};
-                所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
-                */
+                
+                //お金=99999;
+                //deck_list={card_list:[[sukurappudoro,2],[atakkumojuru,10]],ACE:[],TOP_ACE:[]};
+                //ponya_list={card_list:[[sukurappudoro,4],[kaihukumojuru,5]],ACE:[],TOP_ACE:[]};
+                //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
+                
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
                     time+=1;
