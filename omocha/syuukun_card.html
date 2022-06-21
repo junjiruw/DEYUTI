@@ -3352,9 +3352,9 @@
                                             ctx.fillRect(95+140*(i/2),425,40,40);
                                             ctx.fillStyle="rgb(100,0,0)";
                                             if(カードカウント<10){
-                                                ctx.fillText(カードカウント, 105+140*(i/2), 460);
+                                                ctx.fillText(カードカウント, 105+140*(i/2), 460,40);
                                             }else{
-                                                ctx.fillText(カードカウント, 95+140*(i/2), 460);
+                                                ctx.fillText(カードカウント, 95+140*(i/2), 460,40);
                                             }
                                             
                                         }
@@ -3364,9 +3364,9 @@
                                         ctx.fillRect(95+140*(i/2),475,40,40);
                                         ctx.fillStyle="rgb(255,255,255)";
                                         if(所持カード[i+scroll_x2*2][1]<10){
-                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*(i/2), 510);
+                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*(i/2), 510,40);
                                         }else{
-                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*(i/2), 510);
+                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*(i/2), 510,40);
                                         }
                                     }else{
                                         ctx.drawImage(所持カード[i+scroll_x2*2][0].image,10+140*((i-1)/2),530);
@@ -3397,9 +3397,9 @@
                                             ctx.fillRect(95+140*((i-1)/2),635,40,40);
                                             ctx.fillStyle="rgb(100,0,0)";
                                             if(カードカウント<10){
-                                                ctx.fillText(カードカウント, 105+140*((i-1)/2), 670);
+                                                ctx.fillText(カードカウント, 105+140*((i-1)/2), 670,40);
                                             }else{
-                                                ctx.fillText(カードカウント, 95+140*((i-1)/2), 670);
+                                                ctx.fillText(カードカウント, 95+140*((i-1)/2), 670,40);
                                             }
                                         }
                                         ctx.fillStyle="rgb(0,0,0)";
@@ -3408,9 +3408,9 @@
                                         ctx.fillRect(95+140*((i-1)/2),685,40,40);
                                         ctx.fillStyle="rgb(255,255,255)";
                                         if(所持カード[i+scroll_x2*2][1]<10){
-                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*((i-1)/2), 720);
+                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 105+140*((i-1)/2), 720,40);
                                         }else{
-                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*((i-1)/2), 720);
+                                            ctx.fillText(所持カード[i+scroll_x2*2][1], 95+140*((i-1)/2), 720,40);
                                         }
                                     }
                                 }
