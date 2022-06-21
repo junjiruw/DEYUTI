@@ -845,6 +845,51 @@
                     }
                     ctx.restore();
                 }
+                //deck_list={card_list:[[sukurappudoro,2],[atakkumojuru,10]],ACE:[],TOP_ACE:[]};
+                function デッキ表示(card,x,y,x_haba,y_haba){
+                    var kakudai;
+                    var x_maisuu;
+                    var hyouji_maisuu=0;
+                    var count=0;
+
+                    for(let i=0;i<card.card_list.length;i++){
+                        hyouji_maisuu+=card.card_list[i][1];                        
+                    }
+
+                    kakudai=1;
+                    while(hyouji_maisuu>Math.floor(x_haba/(kakudai*140))*Math.floor(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
+                        kakudai-=0.05;
+                    }
+
+                    x_maisuu=Math.floor(x_haba/(kakudai*140));
+                    ctx.save();
+                    ctx.scale(kakudai,kakudai);
+
+                    var 一時_ACE=[...card.ACE];
+                    var 一時_TOP_ACE=[...card.TOP_ACE];
+                    for(let i=0;i<card.card_list.length;i++){
+                        for(let j=0;j<card.card_list[i][1];j++){
+                            for(let k=0;k<一時_TOP_ACE.length;k++){
+                                if(一時_TOP_ACE[k]==card.card_list[i][0]){
+                                    ctx.fillStyle="rgb(255,0,0)";
+                                     ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
+                                     一時_TOP_ACE.splice(1,k);
+                                }
+                            }
+                            for(let k=0;k<一時_ACE.length;k++){
+                                if(一時_ACE[k]==card.card_list[i][0]){
+                                    ctx.fillStyle="rgb(255,255,0)";
+                                     ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
+                                     一時_ACE.splice(1,k);
+                                }
+                            }
+                            シンプルカード表示(card.card_list[i][0],x/kakudai+140*(count%x_maisuu),y/kakudai+210*(Math.floor(count/x_maisuu)));
+                            count+=1;
+                        }
+                        
+                    }
+                    ctx.restore();
+                }
                 function tokusyu_hyouji(x,y){
                     ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                     ctx.fillStyle="rgb(0,0,0)";
@@ -1048,6 +1093,24 @@
                     localStorage.removeItem('MAX_ACE');
                     localStorage.removeItem('お金');
                 }
+
+                function デッキの画像ダウンロード(){
+                    ctx.fillStyle="rgb(50,50,80)";
+                    ctx.fillRect(0,0,1000,1000);
+                    ctx.fillStyle="rgb(255,255,255)";
+                    ctx.fillRect(5,5,990,990);
+                    ctx.fillStyle="rgb(50,50,80)";
+                    ctx.fillRect(10,10,980,980);
+
+                    デッキ表示(deck_list,15,15,970,970);
+                    var 今= new Date();
+                    var 今_文字=今.getDate()+""+今.getHours()+""+今.getMinutes()+""+今.getSeconds();
+                    var DL_URL = document.createElement('a');
+                    DL_URL.href=cnvs.toDataURL("image/png");
+                    DL_URL.download = 'mydeck'+ 今_文字+ '.png';//ファイル名決めてる
+                    DL_URL.click();//強制クリック
+                }
+                document.getElementById('download_button').addEventListener("click", デッキの画像ダウンロード);
 
                 var compare = function (a, b) {//sort()関数の引数にこの関数を渡すと、数字のソートが可能になる。
                     return a - b
@@ -5143,6 +5206,7 @@
                 </div>
             </div>
             
+            <input id="download_button" type="button" value="デッキの画像保存ができるすげえボタン">
 
             <footer>
                 <ul id="footul">
