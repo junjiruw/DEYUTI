@@ -868,25 +868,31 @@
 
                     var 一時_ACE=[...card.ACE];
                     var 一時_TOP_ACE=[...card.TOP_ACE];
+                    var もう枠描いたので無視してください=0;
                     for(let i=0;i<card.card_list.length;i++){
                         for(let j=0;j<card.card_list[i][1];j++){
+                            もう枠描いたので無視してください=0;
                             for(let k=0;k<一時_TOP_ACE.length;k++){
                                 if(一時_TOP_ACE[k]==card.card_list[i][0]){
                                     ctx.fillStyle="rgb(255,0,0)";
                                     ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
                                     一時_TOP_ACE.splice(k,1);
+                                    もう枠描いたので無視してください=1;
                                     break;
                                 }
                             }
-                            for(let k=0;k<一時_ACE.length;k++){
-                                if(一時_ACE[k]==card.card_list[i][0]){
-                                    ctx.fillStyle="rgb(255,255,0)";
-                                    ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
-                                    console.log(一時_ACE);
-                                    一時_ACE.splice(k,1);
-                                    break;
+                            if(もう枠描いたので無視してください==0){
+                                for(let k=0;k<一時_ACE.length;k++){
+                                    if(一時_ACE[k]==card.card_list[i][0]){
+                                        ctx.fillStyle="rgb(255,255,0)";
+                                        ctx.fillRect(x/kakudai+140*(count%x_maisuu)-4,y/kakudai+210*(Math.floor(count/x_maisuu))-4,138,208);
+                                        console.log(一時_ACE);
+                                        一時_ACE.splice(k,1);
+                                        break;
+                                    }
                                 }
                             }
+                            
                             シンプルカード表示(card.card_list[i][0],x/kakudai+140*(count%x_maisuu),y/kakudai+210*(Math.floor(count/x_maisuu)));
                             count+=1;
                         }
@@ -1449,34 +1455,46 @@
                             for(let i=0;i<5;i++){
                                 if(my_ba[i]!=""){
                                     my_ba[i].ATK+=1;
+                                    if(my_ba[i].state.indexOf("機械")!=-1){//機械
+                                        my_ba[i].ATK+=1;
+                                    }
                                 }
                             }
                         }else{//敵
                             for(let i=0;i<5;i++){
                                 if(teki_ba[i]!=""){
                                     teki_ba[i].ATK+=1;
+                                    if(teki_ba[i].state.indexOf("機械")!=-1){//機械
+                                        teki_ba[i].ATK+=1;
+                                    }
                                 }
                             }
                         }
                     }
-                },AI:function(タイミング){return true;},text:"召喚時、自分以外の場のモンスターの攻撃力+1",text_iro:[]};
+                },AI:function(タイミング){return true;},text:"召喚時、自分以外の場のモンスターの攻撃力+1(機械は+2)",text_iro:[]};
                 var kaihukumojuru={name:"回復モジュール",image:kaihukumojuru_image,ATK:1,HP:2,state:["モンスター","機械"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
                     if(タイミング=="召喚された"){
                         if(option[0]=="my_ba"){//味方
                             for(let i=0;i<5;i++){
                                 if(my_ba[i]!=""){
-                                    my_ba[i].HP+=3;
+                                    my_ba[i].HP+=1;
+                                    if(my_ba[i].state.indexOf("機械")!=-1){//機械
+                                        my_ba[i].HP+=2;
+                                    }
                                 }
                             }
                         }else{//敵
                             for(let i=0;i<5;i++){
                                 if(teki_ba[i]!=""){
-                                    teki_ba[i].HP+=3;
+                                    teki_ba[i].HP+=1;
+                                    if(teki_ba[i].state.indexOf("機械")!=-1){//機械
+                                        teki_ba[i].HP+=2;
+                                    }
                                 }
                             }
                         }
                     }
-                },AI:function(タイミング){return true;},text:"召喚時、自分以外の場のモンスターの体力+3",text_iro:[]};
+                },AI:function(タイミング){return true;},text:"召喚時、自分以外の場のモンスターの体力+1(機械は+3)",text_iro:[]};
                 var sukurappudoro={name:"スクラップ・ドロー",image:sukurappudoro_image,state:["魔法","ドロー"],effect_req:function(タイミング){
                     let 機械の数=0;
                     if(タイミング=="手札から"){
@@ -1486,7 +1504,7 @@
                                     機械の数+=1;
                                 }
                             }
-                            if(Math.floor(機械の数/3)>=1){
+                            if(Math.floor(機械の数/2)>=1){
                                 return true;//1ドローはできなら発動可能で。
                             }
                         }else{ 
@@ -1495,7 +1513,7 @@
                                     機械の数+=1;
                                 }
                             }
-                            if(Math.floor(機械の数/3)>=1){
+                            if(Math.floor(機械の数/2)>=1){
                                 return true;//1ドローはできなら発動可能で。
                             }
                         }
@@ -1512,19 +1530,19 @@
                                     機械の数+=1;
                                 }
                             }
-                            pull_card(my_yamahuda,my_tehuda,Math.floor(機械の数/3));
+                            pull_card(my_yamahuda,my_tehuda,Math.floor(機械の数/2));
                         }else{ 
                             for(let i=0;i<teki_haka.length;i++){
                                 if(teki_haka[i].state.indexOf("機械")!=-1){//墓地にいる機械
                                     機械の数+=1;
                                 }
                             }
-                            pull_card(teki_yamahuda,teki_tehuda,Math.floor(機械の数/3));
+                            pull_card(teki_yamahuda,teki_tehuda,Math.floor(機械の数/2));
                         }
                     } 
                 },AI:function(タイミング){
                     return true;//使えるなら使っとけ
-                },text:"自分の墓地に眠る機械モンスターの数/3（切り捨て）だけドローする。",text_iro:[]};
+                },text:"自分の墓地に眠る機械モンスターの数/2（切り捨て）だけドローする。",text_iro:[]};
 
 
                 var sasori={name:"サソリ",image:sasori_image,ATK:2,HP:5,state:["モンスター","二回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"二回攻撃。",text_iro:[]};
@@ -5210,7 +5228,7 @@
                 </div>
             </div>
             
-            <input id="download_button" type="button" value="デッキの画像保存ができるすげえボタン">
+            <input id="download_button" type="button" value="デッキの画像が保存ができるすげえボタン">
 
             <footer>
                 <ul id="footul">
