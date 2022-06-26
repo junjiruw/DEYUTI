@@ -177,6 +177,18 @@
             raihudaiya_image.src="../images/omocha/syuukun_card/raihudaiya.png";
             var seiretu_image=new Image();
             seiretu_image.src="../images/omocha/syuukun_card/seiretu.png";
+
+            var kyuusainote_image=new Image();
+            kyuusainote_image.src="../images/omocha/syuukun_card/kyuusainote.png";
+            var kenrounarusoukou_image=new Image();
+            kenrounarusoukou_image.src="../images/omocha/syuukun_card/kenrounarukata.png";
+            var zettainotamasii_image=new Image();
+            zettainotamasii_image.src="../images/omocha/syuukun_card/zettainotamasii.png";
+
+            var kyousinja_image=new Image();
+            kyousinja_image.src="../images/omocha/syuukun_card/kyousinja.png";
+            var hametunokami_image=new Image();
+            hametunokami_image.src="../images/omocha/syuukun_card/hametunokami.png";
             //--メニュー？
 
             var kuria=new Image();
@@ -203,7 +215,11 @@
             saiten_title.src="../images/omocha/syuukun_card/tikaranosaiten_title.png";
             var saiten=new Image();
             saiten.src="../images/omocha/syuukun_card/tikaranosaiten.png";
+            var saiten_kuria=new Image();
+            saiten_kuria.src="../images/omocha/syuukun_card/tikaranosaiten_kuria.png";
 
+            var burakku_title=new Image();
+            burakku_title.src="../images/omocha/syuukun_card/burakku_title.png";
             //ここにゲームパラメータを置くとイイネ。
             var my_deck=[];
             var teki_deck=[];
@@ -1800,8 +1816,76 @@
                 },text:"整列ー！体力が高い者は上へ！体力が低い物は下へ並べ！敵？敵は逆順にでも並べておけい！",text_iro:[]};
 
 
+                var kyuusainote={name:"救済の手",image:kyuusainote_image,ATK:0,HP:10,state:["モンスター","回復"],effect_req:function(タイミング){
+                    if(タイミング=="ターンエンド"){
+                        return true;
+                    }
+                    return false;
+                },effect:function(タイミング,option){
+                    if(タイミング=="ターンエンド"){
+                        if(option[0]=="自ターン"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){
+                                    my_ba[i].HP+=2;
+                                }
+                            }
+                            my_ba[option[1]].move=-3;
+                        }else{//敵ターン
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    teki_ba[i].HP+=2;
+                                }
+                            }
+                            teki_ba[option[1]].move=-3;
+                        }
+                    }
+                    return false;
+                },AI:function(タイミング){return true;},text:"力ある者を救済する手。自ターンの終わりに自分の場のすべてのモンスターのHP+2",text_iro:[]};
+                var kenrounarusoukou={name:"堅牢なる装甲",image:kenrounarusoukou_image,ATK:0,HP:20,state:["モンスター","ブロック"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"力ある者を守る装甲。ブロック持ち",text_iro:[]};
+                var zettainotamasii={name:"絶対の魂",image:zettainotamasii_image,ATK:0,HP:15,state:["モンスター"],effect_req:function(タイミング){
+                    if(タイミング=="ターンエンド"){
+                        return true;
+                    }
+                    return false;
+                },effect:function(タイミング,option){
+                    if(タイミング=="ターンエンド"){
+                        if(option[0]=="自ターン"){
+                            my_ba[option[1]].ATK+=2;
+                        }else{//敵ターン
+                            teki_ba[option[1]].ATK+=2;
+                        }
+                    }
+                    return false;
+                },AI:function(タイミング){return true;},text:"救済の手、堅牢なる装甲、絶対の魂、力の祭典。自ターンの終わりに攻撃力+2",text_iro:[]};
+                
+                var kyousinja={name:"狂信者",image:kyousinja_image,ATK:0,HP:1,state:["モンスター"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"祈りを届けるため、多くの命が捧げられていく",text_iro:[]};
+                var hametunokami={name:"破滅の神",image:hametunokami_image,ATK:20,HP:99,state:["モンスター","しゅうくん"],effect_req:function(タイミング){
+                    if(タイミング=="ターンエンド"){//ちゃんと条件渡してもいいけどまあ、いいかとなった
+                        return true;
+                    }
+                    return false;
+                },effect:function(タイミング,option){
+                    if(タイミング=="ターンエンド"){
+                        if(option[0]=="自ターン"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" &&i!=option[1]){
+                                    my_ba[i]=death_card(my_ba[i],my_haka,i);
+                                }
+                            }
+                        }else{//敵ターン
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && i!=option[1]){
+                                    teki_ba[i]=death_card(teki_ba[i],teki_haka,i);
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                },AI:function(タイミング){return true;},text:"全ての命を無へ。自ターンの終わりにこのカード以外の自分の場のモンスターを全て滅する",text_iro:[]};
+                
+
                 //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
-                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro,buiwa,raihudaiya,seiretu];
+                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro,buiwa,raihudaiya,seiretu,kyuusainote,kenrounarusoukou,zettainotamasii,kyousinja,hametunokami];
 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
@@ -1814,6 +1898,8 @@
                 var sasori_list={card_list:[[sasori,10],[sasori_seitai,4]],ACE:[sasori_seitai,sasori_seitai],TOP_ACE:[sasori]};
                 var ikkakudaija_list={card_list:[[ikkakudaija_atama,1],[ikkakudaija_hara,10],[ikkakudaija_yubi,1]],ACE:[ikkakudaija_yubi],TOP_ACE:[ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_hara]};
                 var buiwa_list={card_list:[[buiwa,5],[raihudaiya,3],[seiretu,10],[ryuunoitigeki,3]],ACE:[],TOP_ACE:[buiwa,buiwa,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu]};
+                var zettainotamasii_list={card_list:[[zettainotamasii,1],[kenrounarusoukou,2],[kyuusainote,2]],ACE:[],TOP_ACE:[zettainotamasii,kenrounarusoukou,kenrounarusoukou,kyuusainote,kyuusainote]};
+                var hametu_list={card_list:[[kyousinja,15],[hametunokami,1]],ACE:[hametunokami],TOP_ACE:[kyousinja,kyousinja,kyousinja,kyousinja,kyousinja]};
                 //パック
                 var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,atakkumojuru,atakkumojuru,kaihukumojuru,kaihukumojuru,sukurappudoro,sukurappudoro];
                 
@@ -1862,15 +1948,29 @@
                 }else{
                     localStorage.setItem('お金',お金);//ゲームデータセーブ
                 }
+
+                if(localStorage.getItem('MAX_deck')){//セーブデータがあるね
+                    MAX_deck=localStorage.getItem('MAX_deck');
+                    MAX_deck=Number(MAX_deck);
+                }else{
+                    localStorage.setItem("MAX_deck",MAX_deck);//ゲームデータセーブ
+                }
+
+                if(localStorage.getItem('my_pull')){//セーブデータがあるね
+                    my_pull=localStorage.getItem('my_pull');
+                    my_pull=Number(my_pull);
+                }else{
+                    localStorage.setItem('my_pull',my_pull);//ゲームデータセーブ
+                }
                 
                 //お金=99999;
-                //deck_list={card_list:[[buiwa,5],[seiretu,4],[raihudaiya,4]],ACE:[],TOP_ACE:[]};
-                //ponya_list={card_list:[[ponya,4],[syuukun,2],[raihudaiya,4]],ACE:[],TOP_ACE:[]};
+                //deck_list={card_list:[[kyousinja,5],[hametunokami,4]],ACE:[],TOP_ACE:[]};
+                //ponya_list={card_list:[[kyousinja,5],[hametunokami,4]],ACE:[],TOP_ACE:[]};
                 //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
                 //game_phase="デッキ編集";
                 //sub_phase="デッキリスト";
                 //cursor=1;
-                //mini_stage=1;
+                //mini_stage=4;
                 //game_phase="挑戦";
                 //stage=2;
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
@@ -1928,7 +2028,7 @@
                                     if(cursor==2){
                                         next_phase="デッキ編集準備";
                                         演出カウント=-20;
-                                    }else if(cursor==3){
+                                    }else if(cursor==3 && stage!=3){
                                         next_phase="挑戦";
                                         演出カウント=1;
                                         mini_stage=0;
@@ -2004,6 +2104,8 @@
                             ctx.drawImage(henyamoti_title,0,100);
                         }else if(stage==2){
                             ctx.drawImage(saiten_title,0,100);
+                        }else if(stage==3){
+                            ctx.drawImage(burakku_title,0,100);
                         }
                         
                         if(stage<MAX_STAGE){
@@ -2065,7 +2167,6 @@
                         if(演出カウント==6 || 演出カウント==-16 || 演出カウント==-26 ){
                             game_phase=next_phase;
                             演出カウント=-1;
-                            //mini_stage=5;//テスト用
                             cursor2=0;
                             特殊状態=[];
                         }
@@ -2241,10 +2342,19 @@
                                             next_mini_stage=3;//クリアできたらこれが使われるってことさ。
                                             drop_gold=70;//お金ー！
                                         }else if(mini_stage==3){
-                                            next_phase="ステージ選択";
+                                            next_phase="戦闘準備";
                                             演出カウント=1;
-                                            cursor=2;
+                                            teki_deck_list=zettainotamasii_list;//使用デッキ
+                                            teki_pull=1;//ドロー枚数
+                                            next_mini_stage=4;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=100;//お金ー！
                                         }else if(mini_stage==4){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=hametu_list;//使用デッキ
+                                            teki_pull=0;//ドロー枚数
+                                            next_mini_stage=5;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=200;//お金ー！
                                         }else if(mini_stage==5){
                                             if(cursor2==0){
                                                 初回クリアメッセージフラグ=0;
@@ -2286,10 +2396,11 @@
                             }else if(mini_stage==3){
                                 ctx.drawImage(yubi,300,400+4*Math.sin(time*Math.PI/8));
                             }else if(mini_stage==4){
+                                ctx.drawImage(yubi,20,170+4*Math.sin(time*Math.PI/8));
                             }else if(mini_stage==5){//クリアだ。おめでとう。
                                 ctx.fillStyle="rgb(0,0,0,0.75)";
                                 ctx.fillRect(0,0,1000,1000);
-                                ctx.drawImage(henyamotin_kuria,0,0);//変えて
+                                ctx.drawImage(saiten_kuria,0,0);
                                 ctx.fillStyle="rgb(255,255,255)";
                                 ctx.fillRect(50,700,900,250);
 
@@ -2307,12 +2418,17 @@
                                 }
                                 ctx.restore();
                              
-                                if(MAX_STAGE==1){
+                                if(MAX_STAGE==2){
                                     初回クリアメッセージフラグ=1;
                                     MAX_STAGE=3;
                                     localStorage.setItem('MAX_STAGE',MAX_STAGE);//ゲームデータセーブ
+                                    MAX_deck=30;
+                                    my_pull=3;
+                                    localStorage.setItem('MAX_deck',MAX_deck);//ゲームデータセーブ
+                                    localStorage.setItem('my_pull',my_pull);//ゲームデータセーブ
                                 }
                                 if(初回クリアメッセージフラグ==1){
+                                    ctx.fillText("デッキの上限枚数+10 ドロー枚数+1", 100, 780);
                                 }
                             }
                         }
@@ -4686,7 +4802,7 @@
                         if(duel_phase=="相手"){
                             if(aite_delay>0){
                                 aite_delay-=1;
-                            }else if(aite_phase=="始まり"){
+                            }else if(aite_phase=="始まり"){//自ターンの終わり処理はここ
                                 for(let i=0;i<5;i++){
                                     if(my_ba[i]!=""){
                                         if(my_ba[i].state.indexOf("三回攻撃")!=-1){
@@ -4695,6 +4811,9 @@
                                             my_ba[i].can_ATK=2;
                                         }else{
                                             my_ba[i].can_ATK=1;
+                                        }
+                                        if(my_ba[i].card.effect_req("ターンエンド")){//発動条件確認！
+                                            my_ba[i].card.effect("ターンエンド",["自ターン",i]);
                                         }
                                     }
                                 }
@@ -4811,7 +4930,7 @@
                                     aite_delay=3;
                                 }
                             
-                            }else if(aite_phase=="終わり"){
+                            }else if(aite_phase=="終わり"){//敵ターンの終わり処理
                                 duel_phase="自由";
                                 pull_card(my_yamahuda,my_tehuda,my_pull);
                                 for(let i=0;i<5;i++){
@@ -4822,6 +4941,9 @@
                                             teki_ba[i].can_ATK=2;
                                         }else{
                                             teki_ba[i].can_ATK=1;
+                                        }
+                                        if(teki_ba[i].card.effect_req("ターンエンド")){//発動条件確認！
+                                            teki_ba[i].card.effect("ターンエンド",["敵ターン",i]);
                                         }
                                     }
                                 }
@@ -4841,7 +4963,11 @@
                             }
                             
                         }
+
                         ctx.fillStyle="rgb(130,255,170)";
+                        if(stage==2 && mini_stage>3){
+                            ctx.fillStyle="rgb(130,10,0)";
+                        }
                         ctx.fillRect(0,0,1000,1000);
                         ctx.drawImage(card_basyo,0,0);
 
