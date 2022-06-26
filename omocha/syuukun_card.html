@@ -65,6 +65,10 @@
                 text-align: center;
                 width: 50%;
             }
+            #omake_div{
+                text-align: right;
+            } 
+            
 
         </style>
         <script src="../js/public.js"></script>
@@ -166,6 +170,13 @@
             ikkakudaija_hara_image.src="../images/omocha/syuukun_card/ikkakudaija_hara.png";
             var ikkakudaija_yubi_image=new Image();
             ikkakudaija_yubi_image.src="../images/omocha/syuukun_card/ikkakudaija_yubi.png";
+
+            var buiwa_image=new Image();
+            buiwa_image.src="../images/omocha/syuukun_card/buiwa.png";
+            var raihudaiya_image=new Image();
+            raihudaiya_image.src="../images/omocha/syuukun_card/raihudaiya.png";
+            var seiretu_image=new Image();
+            seiretu_image.src="../images/omocha/syuukun_card/seiretu.png";
             //--メニュー？
 
             var kuria=new Image();
@@ -226,6 +237,7 @@
             var pre_cursor;
             var ba_haiti=[2,1,3,0,4];
             var cursor2=0;
+            var cursor_lock=0;//プレイヤーの選択を向こうにしたいときに0以外を入れる。予定。
 
             var duel_phase="自由";
             var aite_phase=0;//相手のターンに動かしたい。
@@ -1624,8 +1636,172 @@
                 },AI:function(タイミング){return true;},text:"一角大蛇の99%。召喚時、先端の数×3の攻撃力,×2のHPを得る",text_iro:[]};
                 var ikkakudaija_yubi={name:"一角大蛇の指",image:ikkakudaija_yubi_image,ATK:5,HP:6,state:["モンスター","一角大蛇","一角大蛇の先端"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"一角大蛇の尾。獲物を指差す。",text_iro:[]};
 
+                var buiwa={name:"ブ・岩",image:buiwa_image,ATK:2,HP:15,state:["モンスター","ブロック"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"ブロックモンスターがいるとき、ブロックモンスターにしか攻撃できない（そのなかでも一番上にいるやつに攻撃する）",text_iro:[]};
+                var raihudaiya={name:"ライフダイヤ",image:raihudaiya_image,state:["魔法","味方選択","体力上昇"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){for(let i=0;i<5;i++){if(my_ba[i]!=""){return true;}}
+                        }else{ for(let i=0;i<5;i++){if(teki_ba[i]!=""){return true; }}
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){if(my_ba[cursor2]!=""){my_ba[cursor2].HP+=10;return true;}
+                            return false; 
+                        }else{var 一番元気なカードの数値=0;for(let i=0;i<5;i++){if(teki_ba[i]!=""){if(一番元気なカードの数値<teki_ba[i].ATK){ 一番元気なカードの数値=teki_ba[i].ATK;cursor2=i;} }}teki_ba[cursor2].HP+=10;
+                        }
+                    }
+                },AI:function(タイミング){
+                    return true;//強いキャラがいないと使わないってほうが賢い気もするが、気にするな！
+                },text:"生命ダイヤモンド、胸に当てて祈る。HP+10",text_iro:[]};
+                var seiretu={name:"整列！",image:seiretu_image,state:["魔法"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){
+                                    for(let j=i+1;j<5;j++){
+                                        if(my_ba[j]!="" && my_ba[i].HP<my_ba[j].HP){//なんか下のほうに体力が多いヤツがいる
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    for(let j=i+1;j<5;j++){
+                                        if(teki_ba[j]!="" && teki_ba[i].HP>teki_ba[j].HP){//なんか下のほうに体力が少ないヤツがいる
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+
+                        }else{ 
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){
+                                    for(let j=i+1;j<5;j++){
+                                        if(my_ba[j]!="" && my_ba[i].HP>my_ba[j].HP){//なんか下のほうに体力が少ないヤツがいる
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    for(let j=i+1;j<5;j++){
+                                        if(teki_ba[j]!="" && teki_ba[i].HP<teki_ba[j].HP){//なんか下のほうに体力が多いヤツがいる
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        let 一時的なba=["","","","",""];
+                        let 一番元気なカードの数値=-1;
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){
+                                for(let j=0;j<5;j++){
+                                    if(my_ba[j]!="" && 一番元気なカードの数値==-1){
+                                            一番元気なカードの数値=j;
+                                    }
+                                    if(my_ba[j]!="" && my_ba[j].HP>my_ba[一番元気なカードの数値].HP){
+                                            一番元気なカードの数値=j;
+                                    }
+                                }//場にある一番体力が多いカードを見つける
+                                if(一番元気なカードの数値!=-1){
+                                    一時的なba[i]=my_ba[一番元気なカードの数値];
+                                    my_ba[一番元気なカードの数値]="";
+                                    一番元気なカードの数値=-1;
+                                }
+                            }
+                            for(let i=0;i<5;i++){
+                                my_ba[i]= 一時的なba[i];
+                                my_ba[i].position="my_ba_"+i;
+                                my_ba[i].move=5;
+                            }
+                            一時的なba=["","","","",""];
+                            for(let i=0;i<5;i++){
+                                for(let j=0;j<5;j++){
+                                    if(teki_ba[j]!="" && 一番元気なカードの数値==-1){
+                                            一番元気なカードの数値=j;
+                                    }
+                                    if(teki_ba[j]!="" && teki_ba[j].HP<teki_ba[一番元気なカードの数値].HP){
+                                            一番元気なカードの数値=j;
+                                    }
+                                }//場にある一番体力が低いカードを見つける
+                                if(一番元気なカードの数値!=-1){
+                                    一時的なba[i]=teki_ba[一番元気なカードの数値];
+                                    teki_ba[一番元気なカードの数値]="";
+                                    一番元気なカードの数値=-1;
+                                }
+                            }
+                            for(let i=0;i<5;i++){
+                                teki_ba[i]= 一時的なba[i];
+                                teki_ba[i].position="teki_ba_"+i;
+                                teki_ba[i].move=5;
+                            }
+                        }else{
+
+                            for(let i=0;i<5;i++){
+                                for(let j=0;j<5;j++){
+                                    if(my_ba[j]!="" && 一番元気なカードの数値==-1){
+                                            一番元気なカードの数値=j;
+                                    }
+                                    if(my_ba[j]!="" && my_ba[j].HP<my_ba[一番元気なカードの数値].HP){
+                                            一番元気なカードの数値=j;
+                                    }
+                                }//場にある一番体力が多いカードを見つける
+                                if(一番元気なカードの数値!=-1){
+                                    一時的なba[i]=my_ba[一番元気なカードの数値];
+                                    my_ba[一番元気なカードの数値]="";
+                                    一番元気なカードの数値=-1;
+                                }
+                            }
+                            for(let i=0;i<5;i++){
+                                my_ba[i]= 一時的なba[i];
+                                my_ba[i].position="my_ba_"+i;
+                                my_ba[i].move=5;
+                            }
+                            一時的なba=["","","","",""];
+                            for(let i=0;i<5;i++){
+                                for(let j=0;j<5;j++){
+                                    if(teki_ba[j]!="" && 一番元気なカードの数値==-1){
+                                            一番元気なカードの数値=j;
+                                    }
+                                    if(teki_ba[j]!="" && teki_ba[j].HP>teki_ba[一番元気なカードの数値].HP){
+                                            一番元気なカードの数値=j;
+                                    }
+                                }//場にある一番体力が低いカードを見つける
+                                if(一番元気なカードの数値!=-1){
+                                    一時的なba[i]=teki_ba[一番元気なカードの数値];
+                                    teki_ba[一番元気なカードの数値]="";
+                                    一番元気なカードの数値=-1;
+                                }
+                            }
+                            for(let i=0;i<5;i++){
+                                teki_ba[i]= 一時的なba[i];
+                                teki_ba[i].position="teki_ba_"+i;
+                                teki_ba[i].move=5;
+                            }
+                        }
+                        return false; 
+                    }
+                },AI:function(タイミング){
+                    return true;//どうせ大量にデッキに投入するのでいつでも使っておけ
+                },text:"整列ー！体力が高い者は上へ！体力が低い物は下へ並べ！敵？敵は逆順にでも並べておけい！",text_iro:[]};
+
+
                 //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
-                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro];
+                all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro,buiwa,raihudaiya,seiretu];
 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
@@ -1637,6 +1813,7 @@
 
                 var sasori_list={card_list:[[sasori,10],[sasori_seitai,4]],ACE:[sasori_seitai,sasori_seitai],TOP_ACE:[sasori]};
                 var ikkakudaija_list={card_list:[[ikkakudaija_atama,1],[ikkakudaija_hara,10],[ikkakudaija_yubi,1]],ACE:[ikkakudaija_yubi],TOP_ACE:[ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_hara]};
+                var buiwa_list={card_list:[[buiwa,5],[raihudaiya,3],[seiretu,10],[ryuunoitigeki,3]],ACE:[],TOP_ACE:[buiwa,buiwa,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu,seiretu]};
                 //パック
                 var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,atakkumojuru,atakkumojuru,kaihukumojuru,kaihukumojuru,sukurappudoro,sukurappudoro];
                 
@@ -1687,12 +1864,15 @@
                 }
                 
                 //お金=99999;
-                //deck_list={card_list:[[sukurappudoro,2],[atakkumojuru,10]],ACE:[],TOP_ACE:[]};
-                //ponya_list={card_list:[[sukurappudoro,4],[kaihukumojuru,5]],ACE:[],TOP_ACE:[]};
+                //deck_list={card_list:[[buiwa,5],[seiretu,4],[raihudaiya,4]],ACE:[],TOP_ACE:[]};
+                //ponya_list={card_list:[[ponya,4],[syuukun,2],[raihudaiya,4]],ACE:[],TOP_ACE:[]};
                 //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
                 //game_phase="デッキ編集";
                 //sub_phase="デッキリスト";
                 //cursor=1;
+                //mini_stage=1;
+                //game_phase="挑戦";
+                //stage=2;
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
                     time+=1;
@@ -2054,10 +2234,16 @@
                                             drop_gold=50;//お金ー！
 
                                         }else if(mini_stage==2){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=buiwa_list;//使用デッキ
+                                            teki_pull=1;//ドロー枚数
+                                            next_mini_stage=3;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=70;//お金ー！
+                                        }else if(mini_stage==3){
                                             next_phase="ステージ選択";
                                             演出カウント=1;
                                             cursor=2;
-                                        }else if(mini_stage==3){
                                         }else if(mini_stage==4){
                                         }else if(mini_stage==5){
                                             if(cursor2==0){
@@ -2098,6 +2284,7 @@
                             }else if(mini_stage==2){
                                 ctx.drawImage(yubi,250,850+4*Math.sin(time*Math.PI/8));
                             }else if(mini_stage==3){
+                                ctx.drawImage(yubi,300,400+4*Math.sin(time*Math.PI/8));
                             }else if(mini_stage==4){
                             }else if(mini_stage==5){//クリアだ。おめでとう。
                                 ctx.fillStyle="rgb(0,0,0,0.75)";
@@ -4210,7 +4397,7 @@
                                         }else if(cursor>=16){
                                             cursor=10;
                                         }
-                                    }else if(duel_phase=="攻撃"){
+                                    }else if(duel_phase=="攻撃" && cursor_lock==0){
                                         if(cursor!=3){//山札への攻撃じゃないなら
                                             cursor-=1;
                                             if(cursor<=10){
@@ -4272,7 +4459,7 @@
                                         }else{
                                             cursor=-1;
                                         }
-                                    }else if(duel_phase=="攻撃"){
+                                    }else if(duel_phase=="攻撃" && cursor_lock==0){
                                         if(cursor!=3){//山札への攻撃じゃないなら
                                             cursor+=1;
                                             if(cursor>=16){
@@ -4304,17 +4491,32 @@
                                             atk_card=my_ba[cursor-6];//こちらの攻撃カード
                                             if(atk_card.can_ATK>=1){
                                                 duel_phase="攻撃";
+                                                cursor_lock=0;//特殊な敵がいるならカーソルをロックする。
+
                                                 if(ba_mons_num(teki_ba)==0){
                                                     cursor=3;//敵がいない場合は山札にカーソル合わせてほしいな
                                                 }else{
                                                     cursor=11;
                                                     for(let i=0;i<5;i++){//敵がいるところにカーソル合わせようぜ。
+                                                        if(teki_ba[cursor-11]=="" || teki_ba[cursor-11].state.indexOf("ブロック")==-1){
+                                                            cursor+=1;
+                                                        }else{
+                                                            cursor_lock=cursor;//変なモンスターがいたからロックさせてもらうぜ！
+                                                            break;
+                                                        }
+                                                    }
+                                                    if(cursor_lock==0){//変なモンスターはいなかったぜ！
+                                                        cursor=11;
+                                                        for(let i=0;i<5;i++){//敵がいるところにカーソル合わせようぜ。
                                                         if(teki_ba[cursor-11]==""){
                                                             cursor+=1;
                                                         }else{
                                                             break;
                                                         }
                                                     }
+
+                                                    }
+                                                    
                                                 }
                                                 
                                             }
@@ -4535,16 +4737,24 @@
                                         atk_card=teki_ba[aite_nayami];
                                         aite_nayami="悩むぜ！";
 
-                                        for(let i=0;i<5;i++){//体力とか攻撃力を加味して攻撃相手を決めたいぜ！
-                                            if(my_ba[i]!=""){
-                                                if(aite_nayami=="悩むぜ！"){
-                                                    aite_nayami=i;
-                                                }else if(my_ba[aite_nayami].ATK/Math.ceil(my_ba[aite_nayami].HP/atk_card.ATK)<my_ba[i].ATK/Math.ceil(my_ba[i].HP/atk_card.ATK)){//なんか殺しやすくて強いやつを殴ろう
-                                                    aite_nayami=i;
+                                        
+                                        for(let i=0;i<5;i++){//ブロックモンスターとかいたらそいつをなぐるぜ！
+                                            if(my_ba[i]!="" && my_ba[i].state.indexOf("ブロック")!=-1){
+                                                aite_nayami=i;//特殊敵がいたから殺すぜ！
+                                                break;
+                                            }
+                                        }
+                                        if(aite_nayami=="悩むぜ！"){//特殊敵はいなかったぜ！
+                                            for(let i=0;i<5;i++){//体力とか攻撃力を加味して攻撃相手を決めたいぜ！
+                                                if(my_ba[i]!=""){
+                                                    if(aite_nayami=="悩むぜ！"){
+                                                        aite_nayami=i;
+                                                    }else if(my_ba[aite_nayami].ATK/Math.ceil(my_ba[aite_nayami].HP/atk_card.ATK)<my_ba[i].ATK/Math.ceil(my_ba[i].HP/atk_card.ATK)){//なんか殺しやすくて強いやつを殴ろう
+                                                        aite_nayami=i;
+                                                    }
                                                 }
                                             }
                                         }
-
                                         if(aite_nayami=="悩むぜ！"){//俺の場がガラ空きだぁ
                                             atk_yamahuda(atk_card.ATK,my_yamahuda,my_haka,my_ba,my_tehuda);
                                             if(duel_phase!="相手"){
@@ -4615,7 +4825,7 @@
                                         }
                                     }
                                 }
-                                if(teki_yamahuda.length==0){//もう山札ないじゃん…
+                                if(teki_yamahuda.length==0 && teki_tehuda.length==0){//もう山札も手札もないじゃん…
                                     teki_kougeki_sum=0;
                                     for(let i=0;i<5;i++){//場の攻撃力が…
                                         if(teki_ba[i]!=""){
@@ -4766,7 +4976,7 @@
                             ctx.fillText(my_tehuda.length, 425, 41);
                         }
                         if(teki_tehuda.length>0){
-                            ctx.drawImage(tehuda32,890,14);
+                            ctx.drawImage(tehuda32,840,14);
                             
                             ctx.fillText(teki_tehuda.length, 875, 41);
                         }
@@ -5374,8 +5584,10 @@
                     <input type="button" class="key_button" value="×">
                 </div>
             </div>
+            <div id="omake_div">
+                <input id="download_button" type="button" value="デッキの画像が保存ができるすげえボタン">
+            </div>
             
-            <input id="download_button" type="button" value="デッキの画像が保存ができるすげえボタン">
 
             <footer>
                 <ul id="footul">
