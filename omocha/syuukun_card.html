@@ -5071,6 +5071,11 @@
                         for(let i=0;i<5;i++){
                             if(death_my_ba[i]!=""){
                                 card_draw(death_my_ba[i],105+135*i+(death_my_ba[i].move%2)*10,-225+(Math.abs(2-i)*10)+(10-death_my_ba[i].move)*30);
+
+                                ctx.drawImage(def_plate,105+135*i+(death_my_ba[i].move%2)*10,-225+(Math.abs(2-i)*10)+(10-death_my_ba[i].move)*30+152);
+                                ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(255,255,255)";
+                                ctx.fillText(0, 105+135*i+(death_my_ba[i].move%2)*10+13, -225+(Math.abs(2-i)*10)+(10-death_my_ba[i].move)*30+188,42);
                             }
                             if(death_my_ba[i].move>0){
                                 death_my_ba[i].move-=1;
@@ -5087,6 +5092,13 @@
                         for(let i=0;i<5;i++){
                             if(death_teki_ba[i]!=""){
                                 card_draw(death_teki_ba[i],-235-135*i+(death_teki_ba[i].move%2)*10,775+(Math.abs(2-i)*10)+(10-death_teki_ba[i].move)*30);
+                             
+                                ctx.drawImage(def_plate,-235-135*i+(death_teki_ba[i].move%2)*10,775+(Math.abs(2-i)*10)+(10-death_teki_ba[i].move)*30+152);
+                                ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(255,255,255)";
+                                ctx.fillText(0, -235-135*i+(death_teki_ba[i].move%2)*10+13, 775+(Math.abs(2-i)*10)+(10-death_teki_ba[i].move)*30+188,42);
+                                       
+                                    
                             }
                             if(death_teki_ba[i].move>0){
                                 death_teki_ba[i].move-=1;
