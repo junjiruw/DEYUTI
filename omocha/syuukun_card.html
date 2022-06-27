@@ -265,6 +265,9 @@
             var tukau_card_num;
 
             var my_pull=2;
+            var my_deck_pull=my_pull;
+            var my_deck_pull_編集中=my_deck_pull;
+            var my_now_pull=my_pull;
             var teki_pull=2;
 
             var syousai_card;
@@ -1963,6 +1966,15 @@
                     localStorage.setItem('my_pull',my_pull);//ゲームデータセーブ
                 }
                 
+                if(localStorage.getItem('my_deck_pull')){//セーブデータがあるね
+                    my_deck_pull=localStorage.getItem('my_deck_pull');
+                    my_deck_pull=Number(my_deck_pull);
+                }else{
+                    my_deck_pull=my_pull;
+                    localStorage.setItem('my_deck_pull',my_deck_pull);//ゲームデータセーブ
+                }
+
+                
                 //お金=99999;
                 //deck_list={card_list:[[kyousinja,5],[hametunokami,4]],ACE:[],TOP_ACE:[]};
                 //ponya_list={card_list:[[kyousinja,5],[hametunokami,4]],ACE:[],TOP_ACE:[]};
@@ -2424,8 +2436,10 @@
                                     localStorage.setItem('MAX_STAGE',MAX_STAGE);//ゲームデータセーブ
                                     MAX_deck=30;
                                     my_pull=3;
+                                    my_deck_pull=my_pull;
                                     localStorage.setItem('MAX_deck',MAX_deck);//ゲームデータセーブ
                                     localStorage.setItem('my_pull',my_pull);//ゲームデータセーブ
+                                    localStorage.setItem('my_deck_pull',my_deck_pull);//ゲームデータセーブ
                                 }
                                 if(初回クリアメッセージフラグ==1){
                                     ctx.fillText("デッキの上限枚数+10 ドロー枚数+1", 100, 780);
@@ -2951,6 +2965,7 @@
                         sub_phase="基本";
                         scroll_x=0;
                         scroll_x2=0;
+                        my_deck_pull_編集中=my_deck_pull;
                     }else if(game_phase=="デッキ編集"){
 
                         if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
@@ -3063,13 +3078,27 @@
                                     if(key_input.charAt(i)=="↑"){
                                         cursor2-=1;
                                         if(cursor2==-1){
-                                            cursor2=4;
+                                            cursor2=5;
                                         }
                                     }else if(key_input.charAt(i)=="←"){
+                                        if(cursor2==3){
+                                            if(my_deck_pull_編集中==0){
+                                                my_deck_pull_編集中=my_pull;
+                                            }else{
+                                                my_deck_pull_編集中-=1;
+                                            }
+                                        }
                                     }else if(key_input.charAt(i)=="→"){
+                                        if(cursor2==3){
+                                            if(my_deck_pull_編集中==my_pull){
+                                                my_deck_pull_編集中=0;
+                                            }else{
+                                                my_deck_pull_編集中+=1;
+                                            }
+                                        }
                                     }else if(key_input.charAt(i)=="↓"){
                                         cursor2+=1;
-                                        if(cursor2==5){
+                                        if(cursor2==6){
                                             cursor2=0;
                                         }
                                     }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
@@ -3080,6 +3109,15 @@
                                             sub_phase="ACE編集";
                                             scroll_x2=0;
                                         }else if(cursor2==2){
+                                            sub_phase="デッキリスト";
+                                            cursor=1;
+                                            cursor2=0;
+
+                                        }else if(cursor2==3){
+                                            
+                                            //ないです。
+                                            
+                                        }else if(cursor2==4){
                                             if(MAX_deck>=編集中デッキ.card_list.length){
                                                 sub_phase="保存確認";
                                             }else{
@@ -3087,12 +3125,8 @@
                                             }
                                             cursor2=0;
 
-                                        }else if(cursor2==3){
+                                        }else if(cursor2==5){
                                             sub_phase="保存しない";
-                                            cursor2=0;
-                                        }else if(cursor2==4){
-                                            sub_phase="デッキリスト";
-                                            cursor=1;
                                             cursor2=0;
                                         }
                                     }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
@@ -3141,9 +3175,12 @@
                                                     }
                                                     deck_list.card_list[deck_list.card_list.length]=[pre_カード,カードカウント];//最後抜けてたｗ
                                                 }
+                                                my_deck_pull=my_deck_pull_編集中;
+                                                localStorage.setItem('my_deck_pull',my_deck_pull);//ゲームデータセーブ
                                                 デッキのセーブ();
                                                 next_phase="ステージ選択";
                                                 演出カウント=1;
+
                                             }else{
                                                 if(sub_phase=="保存確認"){
                                                     sub_phase="基本";
@@ -3643,18 +3680,20 @@
                                             sub_phase="ACE編集";
                                             scroll_x2=0;
                                         }else if(cursor2==3){
+                                            sub_phase="デッキリスト";
+                                            cursor=1;
+                                            cursor2=0;
+
+                                        }else if(cursor2==4){
+                                            
                                             if(MAX_deck>=編集中デッキ.card_list.length){
                                                 sub_phase="ACE保存確認";
                                             }else{
                                                 sub_phase="ACE枚数エラー";
                                             }
                                             cursor2=0;
-                                        }else if(cursor2==4){
-                                            sub_phase="ACE保存しない";
-                                            cursor2=0;
                                         }else if(cursor2==5){
-                                            sub_phase="デッキリスト";
-                                            cursor=1;
+                                            sub_phase="ACE保存しない";
                                             cursor2=0;
                                         }
                                     }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
@@ -4039,11 +4078,13 @@
                                 ctx.fillStyle="rgb(255,255,255)";
                                 ctx.fillText("デッキ編集に戻る", 400, 200);
                                 ctx.fillText("ACE編集", 400, 300);
-                                ctx.fillText("保存して終了", 400, 500);
-                                ctx.fillText("保存せず終了", 400, 600);
-                                ctx.fillText("デッキリスト", 400, 800);
+                                ctx.fillText("デッキリスト", 400, 500);
+                                ctx.fillText("ドロー枚数:", 400, 600);
+                                ctx.fillText("◀ "+my_deck_pull_編集中+" ▶", 700, 600);
+                                ctx.fillText("保存して終了", 400, 800);
+                                ctx.fillText("保存せず終了", 400, 900);
                                 ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                                ctx.fillText("×：戻る", 750, 690);
+                                ctx.fillText("×：戻る", 750, 950);
 
                                 ctx.save();
                                 ctx.rotate(90 * Math.PI / 180);
@@ -4057,6 +4098,8 @@
                                     ctx.drawImage(yubi,520,-390+4*Math.sin(time*Math.PI/8));
                                 }else if(cursor2==4){
                                     ctx.drawImage(yubi,720,-390+4*Math.sin(time*Math.PI/8));
+                                }else if(cursor2==5){
+                                    ctx.drawImage(yubi,820,-390+4*Math.sin(time*Math.PI/8));
                                 }
                                 ctx.restore();
                             }else if(sub_phase=="保存確認"){
@@ -4337,12 +4380,12 @@
                                 ctx.fillStyle="rgb(255,255,255)";
                                 ctx.fillText("デッキ編集に戻る", 400, 200);
                                 ctx.fillText("ACE編集", 400, 300);
-                                ctx.fillText("ACEをソート", 400, 400);
-                                ctx.fillText("保存して終了", 400, 600);
-                                ctx.fillText("保存せず終了", 400, 700);
-                                ctx.fillText("デッキリスト", 400, 900);
+                                ctx.fillText("ACEをソート", 400, 500);
+                                ctx.fillText("デッキリスト", 400, 600);
+                                ctx.fillText("保存して終了", 400, 800);
+                                ctx.fillText("保存せず終了", 400, 900);
                                 ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                                ctx.fillText("×：戻る", 750, 790);
+                                ctx.fillText("×：戻る", 750, 950);
 
                                 ctx.save();
                                 ctx.rotate(90 * Math.PI / 180);
@@ -4351,11 +4394,11 @@
                                 }else if(cursor2==1){
                                     ctx.drawImage(yubi,220,-390+4*Math.sin(time*Math.PI/8));
                                 }else if(cursor2==2){
-                                    ctx.drawImage(yubi,320,-390+4*Math.sin(time*Math.PI/8));
+                                    ctx.drawImage(yubi,420,-390+4*Math.sin(time*Math.PI/8));
                                 }else if(cursor2==3){
                                     ctx.drawImage(yubi,520,-390+4*Math.sin(time*Math.PI/8));
                                 }else if(cursor2==4){
-                                    ctx.drawImage(yubi,620,-390+4*Math.sin(time*Math.PI/8));
+                                    ctx.drawImage(yubi,720,-390+4*Math.sin(time*Math.PI/8));
                                 }else if(cursor2==5){
                                     ctx.drawImage(yubi,820,-390+4*Math.sin(time*Math.PI/8));
                                 }
@@ -4423,10 +4466,11 @@
                             ctx.fillStyle="rgb(20,20,50)";
                             ctx.fillRect(10,10,800,980);
                             ctx.fillRect(880,470,60,60);
-                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                             ctx.fillStyle="rgb(255,255,555)";
                             ctx.fillText("▶", 970, 520);
                             ctx.fillText("◀", 830, 520);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                             ctx.fillText(cursor2+1, 900, 520);
                             ctx.fillText("読み込み", 820, 720,180);
                             ctx.fillText("上書き", 840, 300,140);
@@ -4476,7 +4520,8 @@
                         deck_initialize(deck_list,my_deck,my_yamahuda);
                         deck_initialize(teki_deck_list,teki_deck,teki_yamahuda);
 
-                        pull_card(my_yamahuda,my_tehuda,my_pull);
+                        my_now_pull=my_deck_pull;//場合によってはここで増やしてもいいと、でゆっちは思うよ
+                        pull_card(my_yamahuda,my_tehuda,my_now_pull);
                         game_phase="戦闘";
 
                         cursor=16;
@@ -4934,7 +4979,7 @@
                             
                             }else if(aite_phase=="終わり"){//敵ターンの終わり処理
                                 duel_phase="自由";
-                                pull_card(my_yamahuda,my_tehuda,my_pull);
+                                pull_card(my_yamahuda,my_tehuda,my_now_pull);
                                 for(let i=0;i<5;i++){
                                     if(teki_ba[i]!=""){
                                         if(teki_ba[i].state.indexOf("三回攻撃")!=-1){
