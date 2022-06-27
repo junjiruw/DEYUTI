@@ -1187,6 +1187,10 @@
                     localStorage.removeItem('MAX_STAGE');
                     localStorage.removeItem('MAX_ACE');
                     localStorage.removeItem('お金');
+                    localStorage.removeItem('MAX_deck');
+                    localStorage.removeItem('my_pull');
+                    localStorage.removeItem('my_deck_pull');
+                    
                 }
 
                 function デッキの画像ダウンロード(){
@@ -2238,7 +2242,6 @@
                                             if(cursor2==0){
                                                 初回クリアメッセージフラグ=0;
                                                 next_phase="ステージ選択";
-                                                stage=MAX_STAGE;
                                                 演出カウント=1;
                                                 cursor=2;
                                             }else{
@@ -2371,7 +2374,6 @@
                                             if(cursor2==0){
                                                 初回クリアメッセージフラグ=0;
                                                 next_phase="ステージ選択";
-                                                stage=MAX_STAGE;
                                                 演出カウント=1;
                                                 cursor=2;
                                             }else{
