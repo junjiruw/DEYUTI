@@ -220,6 +220,8 @@
 
             var burakku_title=new Image();
             burakku_title.src="../images/omocha/syuukun_card/burakku_title.png";
+            var burakku_manga=new Image();
+            burakku_manga.src="../images/omocha/syuukun_card/burakku_manga.png";
             //ここにゲームパラメータを置くとイイネ。
             var my_deck=[];
             var teki_deck=[];
@@ -1450,23 +1452,30 @@
                 
                 var ponya_sutoraiku={name:"ぽにゃストライク",image:ponya_sutoraiku_image,ATK:2,HP:3,state:["モンスター","ぽにゃ"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
                     if(タイミング=="召喚された"){
+                        let ponya_数=0;
                         if(option[0]=="my_ba"){//味方
                             for(let i=0;i<5;i++){
                                 if(my_ba[i]!="" && my_ba[i].state.indexOf("ぽにゃ")!=-1){
-                                    option[1].ATK+=2;
+                                    ponya_数=my_ba[i].state.filter(function(state){
+                                        return state=="ぽにゃ";     //要素を一個ずつ見て、条件と一致するものを要素にもつ配列を生成する
+                                    }).length;                      //できた配列の長さをそれとする
+                                    option[1].ATK+=2*ponya_数;
                                 }
                             }
                         }else{//敵
                             for(let i=0;i<5;i++){
                                 if(teki_ba[i]!="" && teki_ba[i].state.indexOf("ぽにゃ")!=-1){
-                                    option[1].ATK+=2;
+                                    ponya_数=teki_ba[i].state.filter(function(state){
+                                        return state=="ぽにゃ";     //要素を一個ずつ見て、条件と一致するものを要素にもつ配列を生成する
+                                    }).length;                      //できた配列の長さをそれとする
+                                    option[1].ATK+=2*ponya_数;
                                 }
                             }
                         }
                     }
                 },AI:function(タイミング){return true;},text:"召喚時、自分の場のぽにゃモンスターの数だけ攻撃力+2（自分は含めない）",text_iro:[]};
                 var ponya_big={name:"ぽにゃBIG",image:ponya_big_image,ATK:1,HP:15,state:["モンスター","ぽにゃ","BIG"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"でかいぽにゃ。このゲームでは攻撃力が低く、体力が多いモンスターは攻撃されにくいということを覚えておこう。",text_iro:[]};
-                var ponya_daburu={name:"ぽにゃダブル",image:ponya_daburu_image,ATK:2,HP:3,state:["モンスター","ぽにゃ","二回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"双子のぽにゃは1ターンに二度攻撃を行う！",text_iro:[]};
+                var ponya_daburu={name:"ぽにゃダブル",image:ponya_daburu_image,ATK:2,HP:3,state:["モンスター","ぽにゃ","ぽにゃ","二回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){},AI:function(タイミング){return true;},text:"双子のぽにゃは1ターンに二度攻撃を行う！しかもぽにゃ二体分だ！",text_iro:[]};
                 var ponya_rein={name:"ぽにゃレイン！",image:ponya_rein_image,state:["魔法","敵ダメージ"],effect_req:function(タイミング){
                     if(タイミング=="手札から"){
                         if(duel_phase!="相手"){
@@ -1492,11 +1501,15 @@
                     }  
                 },effect:function(タイミング){
                     if(タイミング=="手札から"){
+                        let ponya_数=0;
+                        let ぽにゃカウント=0;
                         if(duel_phase!="相手"){
-                            let ぽにゃカウント=0;
                             for(let i=0;i<5;i++){
                                 if(my_ba[i]!="" && my_ba[i].state.indexOf("ぽにゃ")!=-1){//こちらの場にぽにゃがいる
-                                    ぽにゃカウント+=1;
+                                    ponya_数=my_ba[i].state.filter(function(state){
+                                        return state=="ぽにゃ";     //要素を一個ずつ見て、条件と一致するものを要素にもつ配列を生成する
+                                    }).length;                      //できた配列の長さをそれとする
+                                    ぽにゃカウント+=ponya_数;
                                 }
                             }
                             for(let i=0;i<5;i++){
@@ -1508,10 +1521,12 @@
                                 }
                             }
                         }else{
-                            let ぽにゃカウント=0;
                             for(let i=0;i<5;i++){
                                 if(teki_ba[i]!="" && teki_ba[i].state.indexOf("ぽにゃ")!=-1){//こちらの場にぽにゃがいる
-                                    ぽにゃカウント+=1;
+                                    ponya_数=teki_ba[i].state.filter(function(state){
+                                        return state=="ぽにゃ";     //要素を一個ずつ見て、条件と一致するものを要素にもつ配列を生成する
+                                    }).length;                      //できた配列の長さをそれとする
+                                    ぽにゃカウント+=ponya_数;
                                 }
                             }
                             for(let i=0;i<5;i++){
@@ -1981,7 +1996,7 @@
                 
                 //お金=99999;
                 //deck_list={card_list:[[kyousinja,5],[hametunokami,4]],ACE:[],TOP_ACE:[]};
-                //ponya_list={card_list:[[kyousinja,5],[hametunokami,4]],ACE:[],TOP_ACE:[]};
+                //ponya_list={card_list:[[ponya_rein,5],[ponya_big,4],[ponya_daburu,2]],ACE:[],TOP_ACE:[]};
                 //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
                 //game_phase="デッキ編集";
                 //sub_phase="デッキリスト";
@@ -2044,7 +2059,7 @@
                                     if(cursor==2){
                                         next_phase="デッキ編集準備";
                                         演出カウント=-20;
-                                    }else if(cursor==3 && stage!=3){
+                                    }else if(cursor==3 && stage<=2){
                                         next_phase="挑戦";
                                         演出カウント=1;
                                         mini_stage=0;
@@ -2445,6 +2460,91 @@
                                 }
                                 if(初回クリアメッセージフラグ==1){
                                     ctx.fillText("デッキの上限枚数+10 ドロー枚数+1", 100, 780);
+                                }
+                            }
+                        }else if(stage==3){//vsブラックしゅうくん
+                            if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                                key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                                for(let i=0;i<key_input.length;i++){
+                                    if(key_input.charAt(i)=="↑"){
+                                    }else if(key_input.charAt(i)=="←"){
+                                    }else if(key_input.charAt(i)=="→"){
+                                    }else if(key_input.charAt(i)=="↓"){
+                                    }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                        if(mini_stage==0){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=sasori_list;//使用デッキ
+                                            teki_pull=2;//ドロー枚数
+                                            next_mini_stage=1;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=30;//お金ー！
+                                            
+                                        }else if(mini_stage==1){
+                                            if(cursor2==0){
+                                                初回クリアメッセージフラグ=0;
+                                                next_phase="ステージ選択";
+                                                演出カウント=1;
+                                                cursor=2;
+                                            }else{
+                                                key_input="";//なんかこれないとボタン操作がいかれる
+                                                URL_tweet_text="https://twitter.com/intent/tweet?text=ブラックしゅうくんをブッ飛ばした！%0A%0A"+document.title+"%0A"+document.URL+"&hashtags=Syuukun_Card";//%0Aで改行
+                                                window.open( URL_tweet_text, '_blank'); 
+                                            }
+                                            
+                                        }
+                                    }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                    }
+                                    
+                                }
+                                if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                                    key_input="";
+                                    key_interval=0;
+                                }
+                                
+                            }else if(key_interval>0){
+                                key_interval=key_interval-1;//カウントダウン
+                            }
+
+                            if(長押し阻止==1 && (key_input.indexOf("〇")==-1 && key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
+                                長押し阻止=0; 
+                            }
+                            ctx.drawImage(burakku_manga,0,0);
+                            if(mini_stage==0){
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                ctx.drawImage(yubi,810,-70+4*Math.sin(time*Math.PI/8));
+                                
+                                ctx.restore();
+                            }else if(mini_stage==1){//クリアだ。おめでとう。
+                                ctx.fillStyle="rgb(0,0,0,0.75)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(saiten_kuria,0,0);//変えること。ー－－－－－－－－－－－－－－－－－－－－－－－－－－
+                                ctx.fillStyle="rgb(255,255,255)";
+                                ctx.fillRect(50,700,900,250);
+
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.fillText("ステージ選択へ", 200, 930);
+                                ctx.fillText("ツイート", 700, 930);
+
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                if(cursor2==0){
+                                    ctx.drawImage(yubi,850,-190+4*Math.sin(time*Math.PI/8));
+                                }else{
+                                    ctx.drawImage(yubi,850,-690+4*Math.sin(time*Math.PI/8));
+                                }
+                                ctx.restore();
+                             
+                                if(MAX_STAGE==2){
+                                    初回クリアメッセージフラグ=1;
+                                    MAX_STAGE=4;
+                                    //localStorage.setItem('MAX_STAGE',MAX_STAGE);//ゲームデータセーブ
+                                }
+                                if(初回クリアメッセージフラグ==1){
+                                    ctx.fillText("クリア特典", 100, 780);
                                 }
                             }
                         }
