@@ -857,7 +857,7 @@
                     var x_maisuu;
                     kakudai=1;
                     while(card.length>Math.floor(x_haba/(kakudai*140))*Math.floor(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
-                        kakudai-=0.05;
+                        kakudai-=0.01;
                     }
                     x_maisuu=Math.floor(x_haba/(kakudai*140));
                     ctx.save();
@@ -908,7 +908,7 @@
 
                     kakudai=1;
                     while(hyouji_maisuu>Math.floor(x_haba/(kakudai*140))*Math.floor(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
-                        kakudai-=0.05;
+                        kakudai-=0.01;
                     }
                     x_maisuu=Math.floor(x_haba/(kakudai*140));
                     ctx.save();
@@ -931,7 +931,7 @@
 
                     kakudai=1;
                     while(card.length>Math.floor(x_haba/(kakudai*140))*Math.floor(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
-                        kakudai-=0.05;
+                        kakudai-=0.01;
                     }
                     x_maisuu=Math.floor(x_haba/(kakudai*140));
                     ctx.save();
@@ -955,7 +955,7 @@
 
                     kakudai=1;
                     while(hyouji_maisuu>Math.floor(x_haba/(kakudai*140))*Math.floor(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
-                        kakudai-=0.05;
+                        kakudai-=0.01;
                     }
 
                     x_maisuu=Math.floor(x_haba/(kakudai*140));
@@ -1002,7 +1002,7 @@
 
                     kakudai=1;
                     while(card.card_list.length>Math.floor(x_haba/(kakudai*140))*Math.floor(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
-                        kakudai-=0.05;
+                        kakudai-=0.01;
                     }
 
                     x_maisuu=Math.floor(x_haba/(kakudai*140));
@@ -2317,7 +2317,7 @@
                 var zettainotamasii_list={card_list:[[zettainotamasii,1],[kenrounarusoukou,2],[kyuusainote,2]],ACE:[],TOP_ACE:[zettainotamasii,kenrounarusoukou,kenrounarusoukou,kyuusainote,kyuusainote]};
                 var hametu_list={card_list:[[kyousinja,15],[hametunokami,1]],ACE:[hametunokami],TOP_ACE:[kyousinja,kyousinja,kyousinja,kyousinja,kyousinja]};
                 
-                var burakku_list={card_list:[[burakkusyuukun,1],[hojoseki,2],[yamika,1],[zerozonbizu,1],[doragonburesu,2],[musyounoai,4],[sinennoai,2],[nitouryuukengi,3],[tyoubusou,2]],ACE:[zerozonbizu,tyoubusou],TOP_ACE:[burakkusyuukun,hojoseki,hojoseki,yamika,musyounoai,sinennoai,tyoubusou]};
+                var burakku_list={card_list:[[burakkusyuukun,1],[hojoseki,3],[yamika,1],[zerozonbizu,1],[doragonburesu,2],[musyounoai,4],[sinennoai,2],[nitouryuukengi,3],[tyoubusou,2]],ACE:[zerozonbizu,tyoubusou,hojoseki],TOP_ACE:[burakkusyuukun,hojoseki,hojoseki,yamika,musyounoai,sinennoai,tyoubusou]};
                 //パック
                 var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,atakkumojuru,atakkumojuru,kaihukumojuru,kaihukumojuru,sukurappudoro,sukurappudoro,henyamotin,henyamotin,henyamotin,henyamotin];
                 
