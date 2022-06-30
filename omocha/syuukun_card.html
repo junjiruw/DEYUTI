@@ -2872,7 +2872,13 @@
                                 for(let i=0;i<key_input.length;i++){
                                     if(key_input.charAt(i)=="↑"){
                                     }else if(key_input.charAt(i)=="←"){
+                                        if(mini_stage==1){
+                                            cursor2=(cursor2+1)%2;
+                                        }
                                     }else if(key_input.charAt(i)=="→"){
+                                        if(mini_stage==1){
+                                            cursor2=(cursor2+1)%2;
+                                        }
                                     }else if(key_input.charAt(i)=="↓"){
                                     }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                         長押し阻止=1;
