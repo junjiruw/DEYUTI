@@ -712,15 +712,29 @@
                         yamahuda[i]=yamahuda[j];
                         yamahuda[j]=swap;
                     }
+                    //TOP_ACEの召喚順もランダムにしとこ　→　戦略性が減らない？　→だって召喚順操るのにめんどくさい操作を強いることになるんだもん…
+                    for(let i=TOPの一時保管.length-1;i>0;i--){//デッキのケツから…
+                        var j = Math.floor(Math.random() * (i + 1));//ケツ以下の番号の札をランダムに選び
+                        swap =TOPの一時保管[i];//iとjでスワップする。
+                        TOPの一時保管[i]=TOPの一時保管[j];
+                        TOPの一時保管[j]=swap;
+                    }
 
                     //シャッフルが終わったらTOP_ACEを召喚していくぜ！
                     let ACE_count=0;//召喚数見ます
                     for(let i=0;i< TOPの一時保管.length;i++){
                         if(TOPの一時保管[i].state.indexOf("モンスター")!=-1 && ACE_count!=5){//モンスターのTOP_ACEは召喚
-                            
-                            syoukan(TOPの一時保管[i],doko_syoukan,ba_haiti[ACE_count]);//デッキの最初にいるやつから召喚していく
-                            ACE_count+=1;
-                            
+                            for(let j=ACE_count;j<5;j++){
+                                if(ba[ba_haiti[j]]==""){
+                                    syoukan(TOPの一時保管[i],doko_syoukan,ba_haiti[j]);//デッキの最初にいるやつから召喚していく
+                                    ACE_count=j+1;
+                                    break;
+                                }else if(j==4){//なんかしらねえが場が埋まってて召喚できなかったぜ！
+                                    ACE_count=5;
+                                    tehuda[tehuda.length]=TOPの一時保管[i];
+                                    tehuda[tehuda.length-1].position=doko_tehuda;
+                                }
+                            }
                         }else{//魔法は手札に…もしくは召喚しすぎたモンスター
                             tehuda[tehuda.length]=TOPの一時保管[i];
                             tehuda[tehuda.length-1].position=doko_tehuda;
@@ -1189,6 +1203,45 @@
                         ctx.fillRect(x+125,y+5,40,2);
                     }
                     
+                }
+
+                function 不浄の森(){
+                    if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                        key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                        for(let i=0;i<key_input.length;i++){
+                            if(key_input.charAt(i)=="↑"){
+                            }else if(key_input.charAt(i)=="←"){
+                            }else if(key_input.charAt(i)=="→"){
+                            }else if(key_input.charAt(i)=="↓"){
+                            }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                長押し阻止=1;
+                                if(mini_stage==1){
+                                    next_phase="戦闘準備";
+                                    演出カウント=1;
+                                    teki_deck_list=ponya_list;//使用デッキ
+                                    teki_pull=2;//ドロー枚数
+                                    next_mini_stage=1;//クリアできたらこれが使われるってことさ。
+                                    drop_gold=10;//お金ー！
+                                }
+                            }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
+                                長押し阻止=1;
+                            }
+                            
+                        }
+                        if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                            key_input="";
+                            key_interval=0;
+                        }
+                        
+                    }else if(key_interval>0){
+                        key_interval=key_interval-1;//カウントダウン
+                    }
+
+                    if(長押し阻止==1 && (key_input.indexOf("〇")==-1 && key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
+                        長押し阻止=0; 
+                    }
+                            
+
                 }
 
                 function 所持カードのセーブ(){
@@ -2828,7 +2881,7 @@
 
                 
                 //お金=99999;
-                //deck_list={card_list:[[sukurappubirudo,5],[sukurappugoremu,4]],ACE:[],TOP_ACE:[]};
+                //deck_list={card_list:[],ACE:[],TOP_ACE:[]};
                 //ponya_list={card_list:[[ponyaaidoru,10],[ponya,10],[ponya_big,10]],ACE:[],TOP_ACE:[]};
                 //ponya_list=deck_list;
                 //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
@@ -3168,7 +3221,9 @@
                                     ctx.fillText("ACE設定可能数が1増えました！", 100, 780);
                                 }
                             }
-                            
+                            ctx.scale(2, 2);
+                            tokusyu_hyouji(20,20);
+                            ctx.scale(0.5, 0.5);
                         }else if(stage==2){//力の祭典
                             if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                                 key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
@@ -3393,10 +3448,10 @@
                                     ctx.fillText("TOP_ACE設定可能数+1", 100, 780);
                                 }
                             }
+                        }else if(stage==4){//不浄の森
+                            不浄の森();
                         }
-                        ctx.scale(2, 2);
-                        tokusyu_hyouji(20,20);
-                        ctx.scale(0.5, 0.5);
+                        
 
                         if(演出カウント<0 && 演出カウント>-5){
                             演出カウント-=1;
