@@ -110,7 +110,8 @@
             kougeki_1_32.src="../images/omocha/syuukun_card/kougeki1_32.png";
             var tairyoku_1_32=new Image();
             tairyoku_1_32.src="../images/omocha/syuukun_card/tairyoku1_32.png";
-
+            var ponya_32=new Image();
+            ponya_32.src="../images/omocha/syuukun_card/ponya_32.png";
             //--下がカード？
 
             var card_syuukun=new Image();
@@ -268,9 +269,13 @@
             burakku_manga.src="../images/omocha/syuukun_card/burakku_manga.png";
             var burakku_kuria=new Image();
             burakku_kuria.src="../images/omocha/syuukun_card/burakku_kuria.png";
-
+                //森
             var hujounomori_title=new Image();
             hujounomori_title.src="../images/omocha/syuukun_card/hujounomori_title.png";
+            var hujounomori_kakoi=new Image();
+            hujounomori_kakoi.src="../images/omocha/syuukun_card/hujou_kakoi.png";
+
+                //森
 
             var junbityuu_title=new Image();
             junbityuu_title.src="../images/omocha/syuukun_card/junbityuu.png";
@@ -712,13 +717,8 @@
                         yamahuda[i]=yamahuda[j];
                         yamahuda[j]=swap;
                     }
-                    //TOP_ACEの召喚順もランダムにしとこ　→　戦略性が減らない？　→だって召喚順操るのにめんどくさい操作を強いることになるんだもん…
-                    for(let i=TOPの一時保管.length-1;i>0;i--){//デッキのケツから…
-                        var j = Math.floor(Math.random() * (i + 1));//ケツ以下の番号の札をランダムに選び
-                        swap =TOPの一時保管[i];//iとjでスワップする。
-                        TOPの一時保管[i]=TOPの一時保管[j];
-                        TOPの一時保管[j]=swap;
-                    }
+                    //TOP_ACEの召喚順もランダムに…すると演出が終わるからやめろ
+                   
 
                     //シャッフルが終わったらTOP_ACEを召喚していくぜ！
                     let ACE_count=0;//召喚数見ます
@@ -1240,8 +1240,88 @@
                     if(長押し阻止==1 && (key_input.indexOf("〇")==-1 && key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
                         長押し阻止=0; 
                     }
-                            
+                    
+                    if(mini_stage==0){
+                        my_deck=[];//初期化初期化ー！って初期化しなくて良いヤツも初期化してる気がする。まあいいか
+                        
+                        my_yamahuda=[];
+                        my_tehuda=[];
+                        my_ba=["","","","",""];
+                        death_my_ba=["","","","",""];//死亡時演出のためにカードを別の場所に移したい（場に残すとバグの温床になることは自明なので）
+                        tukau_mahou=[];//魔法つかった瞬間に消えるのよくないと思った。
+                        my_haka=[];
 
+                        
+                        deck_initialize(deck_list,my_deck,my_yamahuda);
+
+                        my_now_pull=my_deck_pull;//場合によってはここで増やしてもいいと、でゆっちは思うよ
+                        pull_card(my_yamahuda,my_tehuda,my_now_pull);
+
+                        mini_stage=1;//これを基準世界とする
+                    }else if(mini_stage==1){
+
+                        
+                    }else if(mini_stage==2){
+                        teki_deck=[];
+                        teki_yamahuda=[];
+                        teki_tehuda=[];
+                        teki_ba=["","","","",""];
+                        death_teki_ba=["","","","",""];
+                        teki_haka=[];
+                        
+                        deck_initialize(teki_deck_list,teki_deck,teki_yamahuda);
+
+                        my_now_pull=my_deck_pull;//場合によってはここで増やしてもいいと、でゆっちは思うよ
+                        game_phase="戦闘";
+
+                        cursor=16;
+                        cursor2=0;
+                        duel_phase="自由";
+                        aite_phase=0;//相手のターンに動かしたい。
+                       
+                        aite_delay=0;//お前高速で動きすぎ！
+
+                        my_kougeki_sum=0;//AI用
+                        teki_kougeki_sum=0;//降参にも使ってる
+
+                        zuba=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]//zuba64を表示するタイマー
+                        yamahuda_damage=[0,0,0,0];//左が俺へのダメージで、右が相手へのダメージ描写
+                        
+                        get_card="";
+                        new_card=0;
+                        相手の降参=0;
+                    }
+
+
+
+
+
+
+                    ctx.drawImage(hujounomori_kakoi,0,0);
+                    ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
+                        ctx.fillRect(105,5,440,90);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(110,10,430,80);
+                        ctx.fillStyle="rgb(150,200,255)";
+                        ctx.fillRect(388,12,150,76);
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.drawImage(yamahuda,110,20);
+                        ctx.fillText(my_yamahuda.length, 174, 70,70);
+                        ctx.drawImage(hakaba,250,20);
+                        ctx.fillText(my_haka.length, 308, 70,70);
+                        ctx.font = "32px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        if(my_tehuda.length>0){
+                            ctx.drawImage(tehuda32,390,14);
+                            ctx.fillText(my_tehuda.length, 425, 41);
+                        }
+                        if(ba_mons_num(my_ba)>0){
+                            ctx.drawImage(ponya_32,460,14);
+                            ctx.fillText(ba_mons_num(my_ba), 495, 41);
+                        }
+                        tokusyu_hyouji(390,46);
+                    
                 }
 
                 function 所持カードのセーブ(){
@@ -2891,6 +2971,7 @@
                 //mini_stage=0;
                 //game_phase="挑戦";
                 //stage=1;
+                //MAX_TOP_ACE=5;
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
                     time+=1;
@@ -4162,10 +4243,10 @@
                                         cursor2=(cursor2+1)%2;
                                     }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                         長押し阻止=1;
-                                        if(sub_phase=="保存確認" || sub_phase=="ACE保存確認"){
+                                        if(sub_phase=="保存確認" || sub_phase=="ACE保存確認"){//TOP_ACEの召喚順番をソートしちゃうのよくない気がするんだけど、でゆっちめんどくちゃいよ
                                             if(cursor2==0){
                                                 編集中デッキ.ACE.sort(compare);
-                                                編集中デッキ.TOP_ACE.sort(compare);
+                                                //編集中デッキ.TOP_ACE.sort(compare);
                                                 //同種カード内でのソートしてほしい
                                                 編集中ACE=[];
                                                 編集中TOP_ACE=[];
@@ -4200,7 +4281,7 @@
                                                 デッキのセーブ();
                                                 next_phase="ステージ選択";
                                                 演出カウント=1;
-
+                                                console.log(deck_list);
                                             }else{
                                                 if(sub_phase=="保存確認"){
                                                     sub_phase="基本";
@@ -4585,7 +4666,7 @@
                                         長押し阻止=1;
                                         if(cursor2==0){
                                             編集中デッキ.ACE.sort(compare);
-                                            編集中デッキ.TOP_ACE.sort(compare);
+                                            //編集中デッキ.TOP_ACE.sort(compare);
                                             //同種カード内でのソートしてほしい
                                             編集中ACE=[];
                                             編集中TOP_ACE=[];
@@ -6141,13 +6222,13 @@
                         ctx.fillStyle="rgb(0,0,0)";
                         ctx.drawImage(turn_end,5,5);
                         ctx.drawImage(yamahuda,110,20);
-                        ctx.fillText(my_yamahuda.length+yamahuda_damage[0], 174, 70);
+                        ctx.fillText(my_yamahuda.length+yamahuda_damage[0], 174, 70,70);
                         ctx.drawImage(yamahuda,560,20);
-                        ctx.fillText(teki_yamahuda.length+yamahuda_damage[1], 624, 70);
-                        ctx.drawImage(hakaba,274,20);
-                        ctx.fillText(my_haka.length-yamahuda_damage[2], 338, 70);
-                        ctx.drawImage(hakaba,724,20);
-                        ctx.fillText(teki_haka.length-yamahuda_damage[3], 788, 70);
+                        ctx.fillText(teki_yamahuda.length+yamahuda_damage[1], 624, 70,70);
+                        ctx.drawImage(hakaba,250,20);
+                        ctx.fillText(my_haka.length-yamahuda_damage[2], 308, 70,70);
+                        ctx.drawImage(hakaba,700,20);
+                        ctx.fillText(teki_haka.length-yamahuda_damage[3], 758, 70,70);
                         for (let i=0;i<4;i++){
                             if(yamahuda_damage[i]>0){
                                 if(time%3==0){
