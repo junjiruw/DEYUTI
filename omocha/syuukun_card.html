@@ -369,6 +369,7 @@
 
             var カードインデックス=0;
             var カードスワップ=0;
+            var カードスワップ_カード=0;//お前が全部グローバルな変数で解決するせいでバグりまくりだぜ！
             var これのデッキ枚数=0;
             var これの所持枚数=0;
 
@@ -680,14 +681,14 @@
                     
                     let TOPの一時保管=[];//いったんTOP_ACEを隔離しないとダメだと思った
 
-                    for(let i=0;i<yamahuda.length;i++){//TOP_ACEを抜き出す
-                        for(let j=0;j<ACE.length;j++){
+                    for(let j=0;j<ACE.length;j++){//なんでjがiより先にあるかだって？知らないほうがいいことも…あるんだよ
+                         for(let i=0;i<yamahuda.length;i++){//TOP_ACEを抜き出す
                             if(yamahuda[i].card==ACE[j]){//TOPを発見した
                                 yamahuda[i].state[yamahuda[i].state.length]="TOP_ACE";
                                 TOPの一時保管[TOPの一時保管.length]=yamahuda[i];
                                 ACE.splice(j,1);
                                 yamahuda.splice(i,1);//召喚したので山札減ります。
-                                i-=1;//取り出したので
+                                j-=1;//取り出したので
                                 break;
                             }
                         }
@@ -2971,7 +2972,7 @@
                 //mini_stage=0;
                 //game_phase="挑戦";
                 //stage=1;
-                //MAX_TOP_ACE=5;
+                //MAX_TOP_ACE=15;
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
                     time+=1;
@@ -4023,18 +4024,23 @@
                                 
                             }
                         }
-
-                        カードカウント=0;//TOP_ACEの登録
-                        pre_カード="";
-                        for(let i=0;i<deck_list.TOP_ACE.length;i++){
-                            if(deck_list.TOP_ACE[i]==pre_カード){
-                                カードカウント+=1;
-                                編集中デッキ.TOP_ACE[i]=編集中デッキ.card_list.indexOf(deck_list.TOP_ACE[i])+カードカウント;
-                            }else{
-                                編集中デッキ.TOP_ACE[i]=編集中デッキ.card_list.indexOf(deck_list.TOP_ACE[i]);
-                                カードカウント=0;
+                                
+                        
+                        for(let i=0;i<deck_list.TOP_ACE.length;i++){//TOP_ACEの登録
+                            カードインデックス=編集中デッキ.card_list.indexOf(deck_list.TOP_ACE[i]);
+                            カードカウント=0;
+                            for(let j=カードインデックス+1;j<編集中デッキ.card_list.length;j++){
+                                if(編集中デッキ.card_list[j]==編集中デッキ.card_list[カードインデックス]){
+                                    カードカウント+=1;
+                                }else{
+                                    break;
+                                }
+                                
                             }
-                            pre_カード=deck_list.TOP_ACE[i];
+                            編集中デッキ.TOP_ACE[i]=編集中デッキ.TOP_ACE.filter(function(TOP_index){
+                                    return TOP_index>=カードインデックス && TOP_index<=カードインデックス+カードカウント;     //要素を一個ずつ見て、条件と一致するものを要素にもつ配列を生成する
+                                }).length+カードインデックス;            
+                            
                         }
 
                         カードカウント=0;//ACEの登録
@@ -4061,7 +4067,7 @@
                         }
                         
                         編集中デッキ.ACE.sort(compare);
-                        編集中デッキ.TOP_ACE.sort(compare);
+                        //編集中デッキ.TOP_ACE.sort(compare);
                         game_phase="デッキ編集";
                         sub_phase="基本";
                         scroll_x=0;
@@ -4374,7 +4380,7 @@
                                                             カードスワップ=0;
                                                             sub_phase="ACE編集";
                                                         }else{//NULL -ACE
-                                                            編集中デッキ.ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                            編集中デッキ.ACE.push(カードスワップ);
                                                             
                                                             カードスワップ=0;
                                                             sub_phase="ACE編集";
@@ -4413,7 +4419,7 @@
                                                             カードスワップ=0;
                                                             sub_phase="ACE編集";
                                                         }else{//NULL - TOP
-                                                            編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
+                                                            編集中デッキ.TOP_ACE.push(カードスワップ);
                                                             
                                                             カードスワップ=0;
                                                             sub_phase="ACE編集";
@@ -4590,6 +4596,22 @@
                                                         編集中デッキ.TOP_ACE.splice(cursor_x+scroll_x2,1);//消しましょうね
                                                         カードスワップ=0;
                                                         sub_phase="ACE編集";
+                                                    }else{//スワップしちゃうのです！
+                                                        if(編集中デッキ.TOP_ACE.length>cursor_x+scroll_x2){//ACE - TOP 
+                                                            pre_カード=編集中デッキ.TOP_ACE[cursor_x+scroll_x2];
+                                                        
+                                                            カードスワップ_カード=編集中デッキ.TOP_ACE[カードスワップ];
+                                                            
+                                                            編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ_カード;
+                                                            編集中デッキ.TOP_ACE[カードスワップ]=pre_カード;
+
+                                                            カードスワップ=0;
+                                                            sub_phase="ACE編集";
+                                                            
+                                                        }else{//あいてるところだね
+                                                            
+                                                        }
+                                                        
                                                     }
                                                     
                                                 }
@@ -4682,18 +4704,25 @@
                                             編集中デッキ.ACE=[];
                                             編集中デッキ.TOP_ACE=[];
 
-                                            カードカウント=0;//TOP_ACEの登録
-                                            pre_カード="";
-                                            for(let i=0;i<編集中TOP_ACE.length;i++){
-                                                if(編集中TOP_ACE[i]==pre_カード){
-                                                    カードカウント+=1;
-                                                    編集中デッキ.TOP_ACE[i]=編集中デッキ.card_list.indexOf(編集中TOP_ACE[i])+カードカウント;
-                                                }else{
-                                                    編集中デッキ.TOP_ACE[i]=編集中デッキ.card_list.indexOf(編集中TOP_ACE[i]);
-                                                    カードカウント=0;
+                                            console.log(編集中TOP_ACE);
+                                            for(let i=0;i<編集中TOP_ACE.length;i++){//TOP_ACEの登録
+                                                カードインデックス=編集中デッキ.card_list.indexOf(編集中TOP_ACE[i]);
+                                                console.log(カードインデックス);
+                                                カードカウント=0;
+                                                for(let j=カードインデックス+1;j<編集中デッキ.card_list.length;j++){
+                                                    if(編集中デッキ.card_list[j]==編集中デッキ.card_list[カードインデックス]){
+                                                        カードカウント+=1;
+                                                    }else{
+                                                        break;
+                                                    }
+                                                    
                                                 }
-                                                pre_カード=編集中TOP_ACE[i];
+                                                編集中デッキ.TOP_ACE[i]=編集中デッキ.TOP_ACE.filter(function(TOP_index){
+                                                        return TOP_index>=カードインデックス && TOP_index<=カードインデックス+カードカウント;     //要素を一個ずつ見て、条件と一致するものを要素にもつ配列を生成する
+                                                    }).length+カードインデックス;            
+                                                
                                             }
+                                            console.log(編集中デッキ.TOP_ACE);
 
                                             カードカウント=0;//ACEの登録
                                             pre_カード="";
@@ -5445,7 +5474,7 @@
                                 ctx.fillStyle="rgb(0,0,0,0.8)";
                                 if((scroll_x+7)<カードスワップ || scroll_x-1>カードスワップ){
                                     ctx.fillRect(0,0,1000,250);
-                                }else if(scroll_x-1==カードスワップ){//うげ！なんかきもいけどこれが単純明快な実装なのでヨシ
+                                }else if(scroll_x-1==カードスワップ){//左端にちょっとはみ出てる うげ！なんかきもいけどこれが単純明快な実装なのでヨシ
                                     ctx.fillRect(10,0,990,250);
                                 }else{
                                     ctx.fillRect(0,0,10+140*(カードスワップ-scroll_x),250);
@@ -5457,7 +5486,7 @@
                                 ctx.fillStyle="rgb(0,0,0,0.8)";
                                 if((scroll_x2+7)<カードスワップ || scroll_x2-1>カードスワップ){
                                     ctx.fillRect(0,315,1000,210);
-                                }else if(scroll_x2-1==カードスワップ){//うげ！なんかきもいけどこれが単純明快な実装なのでヨシ
+                                }else if(scroll_x2-1==カードスワップ){//左端にちょっとはみ出てる うげ！なんかきもいけどこれが単純明快な実装なのでヨシ
                                     ctx.fillRect(5,315,995,210);
                                 }else{
                                     ctx.fillRect(0,315,5+140*(カードスワップ-scroll_x2),210);
@@ -5465,14 +5494,31 @@
                                 }
 
                             }else if(sub_phase=="TOP_ACE選択"){
-                                ctx.fillStyle="rgb(0,0,0,0.8)";
-                                if((scroll_x2+7)<カードスワップ || scroll_x2-1>カードスワップ){
-                                    ctx.fillRect(0,525,1000,220);
-                                }else if(scroll_x2-1==カードスワップ){//うげ！なんかきもいけどこれが単純明快な実装なのでヨシ
-                                    ctx.fillRect(5,525,995,220);
+                                ctx.fillStyle="rgb(0,0,0,0.3)";
+                                
+                                ctx.fillRect(0,315,1000,210);
+                                ctx.fillRect(0,0,1000,250);
+
+                                if((scroll_x2+7)<カードスワップ || scroll_x2-1>カードスワップ){//選択した物が画面外
+                                    ctx.fillRect(0,525,1000,210);
                                 }else{
-                                    ctx.fillRect(0,525,5+140*(カードスワップ-scroll_x2),220);
-                                    ctx.fillRect(5+140*(カードスワップ-scroll_x2+1),525,1000,220);
+                                    console.log("--");
+                                    console.log(編集中デッキ.TOP_ACE);
+                                    console.log(カードスワップ-scroll_x2);
+                                    
+                                    if(編集中デッキ.TOP_ACE.length>カードスワップ){
+                                        ctx.fillRect(0,525,1000,210);
+                                        ctx.fillStyle="rgb(0,0,0,0.8)";
+                                        ctx.fillRect(6+140*(カードスワップ-scroll_x2),525,138,201);
+                                        ctx.fillStyle="rgb(255,0,0)";
+                                        ctx.fillRect(6+140*(カードスワップ-scroll_x2),526-50,138,208);
+                                        ctx.drawImage(編集中デッキ.card_list[編集中デッキ.TOP_ACE[カードスワップ]].image,10+140*(カードスワップ-scroll_x2),530-50);
+                                    }else{
+                                        ctx.fillRect(0,525,5+140*(カードスワップ-scroll_x2),220);
+                                        ctx.fillRect(5+140*(カードスワップ-scroll_x2+1),525,1000,220);
+                                    }
+                                    
+                                    
                                 }
                             }else if(sub_phase=="ACEメニュー"){//---------------------------------
                                 ctx.fillStyle="rgb(0,0,0,0.8)";
