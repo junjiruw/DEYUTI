@@ -1263,21 +1263,30 @@
                     
                 }
                 function 光(x,y,bairitu){
-                    let iro_pixel=ctx.getImageData(x*bairitu,y*bairitu,bairitu,bairitu);
+                    ctx.globalCompositeOperation = "lighter";
+                    /*
+                    let iro_pixel=ctx.getImageData(x*bairitu,y*bairitu,1,1);
+                    
                     let iro_heikin;
                     iro_heikin=(iro_pixel.data[0]+iro_pixel.data[1]+iro_pixel.data[2])/150;//平均じゃないじゃん→そうだね
                     iro_pixel.data[0]=iro_pixel.data[0]+((iro_pixel.data[0]/iro_heikin));
                     iro_pixel.data[1]=iro_pixel.data[1]+((iro_pixel.data[1]/iro_heikin));
                     iro_pixel.data[2]=iro_pixel.data[2]+((iro_pixel.data[2]/iro_heikin));
-                    
-                    for(let i=4;i<bairitu*bairitu*4;i+=4){
+
+                    let iro_pixel2=new ImageData(bairitu,bairitu);
+                    for(let i=0;i<bairitu*bairitu*4;i+=4){
                         
-                        iro_pixel.data[0+i]=iro_pixel.data[0];
-                        iro_pixel.data[1+i]=iro_pixel.data[1];
-                        iro_pixel.data[2+i]=iro_pixel.data[2];
+                        iro_pixel2.data[0+i]=iro_pixel.data[0];
+                        iro_pixel2.data[1+i]=iro_pixel.data[1];
+                        iro_pixel2.data[2+i]=iro_pixel.data[2];
+                        iro_pixel2.data[3+i]=255;
                         
                     }
-                    ctx.putImageData(iro_pixel, x*bairitu, y*bairitu);
+                    ctx.putImageData(iro_pixel2, x*bairitu, y*bairitu);
+                    */
+                    ctx.fillStyle="rgb(255,255,230,0.3)";
+                    ctx.fillRect(x*bairitu,y*bairitu,bairitu,bairitu);
+                    ctx.globalCompositeOperation = "source-over";
                 }
                 function 森イベント(ID){
                     if(ID==6){
