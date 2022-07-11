@@ -448,6 +448,7 @@
             var syuukun_muki=0;
 
             var 光デカさ=3;
+            var 光あふれる世界;
 
             var 木漏れ日=[[[]]];
             var 雲=[[]];
@@ -1264,25 +1265,15 @@
                     }
                     
                 }
-                function begin光() { // 光をはじめよう
-                    iro_data = ctx2.getImageData(0,0,100,100);
-                }
-                function 光(x,y){
+                
+                function 光(x,y){//偉大なる先生により与えられた光です。大切にしましょう。
                     let iro_index = (y * 100 + x) * 4;
                     let iro_heikin;
-                    iro_heikin=(iro_data.data[iro_index + 0]+iro_data.data[iro_index + 1]+iro_data.data[iro_index + 2])/150;//平均じゃないじゃん→そうだね
-                    iro_data.data[iro_index + 0]=iro_data.data[iro_index + 0]+((iro_data.data[iro_index + 0]/iro_heikin));
-                    iro_data.data[iro_index + 1]=iro_data.data[iro_index + 1]+((iro_data.data[iro_index + 1]/iro_heikin));
-                    iro_data.data[iro_index + 2]=iro_data.data[iro_index + 2]+((iro_data.data[iro_index + 2]/iro_heikin));
+                    iro_heikin=(光あふれる世界.data[iro_index + 0]+光あふれる世界.data[iro_index + 1]+光あふれる世界.data[iro_index + 2])/150;//平均じゃないじゃん→そうだね
+                    光あふれる世界.data[iro_index + 0]=光あふれる世界.data[iro_index + 0]+((光あふれる世界.data[iro_index + 0]/iro_heikin));
+                    光あふれる世界.data[iro_index + 1]=光あふれる世界.data[iro_index + 1]+((光あふれる世界.data[iro_index + 1]/iro_heikin));
+                    光あふれる世界.data[iro_index + 2]=光あふれる世界.data[iro_index + 2]+((光あふれる世界.data[iro_index + 2]/iro_heikin));
                     
-                    //ctx2.globalCompositeOperation = "overlay";
-                    
-                    //ctx2.fillStyle="rgb(255,255,255,1)";
-                    //ctx2.fillRect(x,y,1,1);
-                    //ctx2.globalCompositeOperation = "source-over";
-                }
-                function end光() { // 光おわり
-                    ctx2.putImageData(iro_data,0,0);
                 }
                 function 森イベント(ID){
                     if(ID==6){
@@ -1581,7 +1572,7 @@
 
                     
 
-                    begin光();
+                    光あふれる世界 = ctx2.getImageData(0,0,100,100);
                     for(let i=0;i<木漏れ日[(stage_x+stage_y)%2].length;i++){
                         if(木漏れ日[(stage_x+stage_y)%2][i][2]==0){
                             光(木漏れ日[(stage_x+stage_y)%2][i][0]+Math.floor(Math.abs(time%300-150)/51),木漏れ日[(stage_x+stage_y)%2][i][1]);
@@ -1589,7 +1580,7 @@
                             光(木漏れ日[(stage_x+stage_y)%2][i][0],木漏れ日[(stage_x+stage_y)%2][i][1]+Math.floor(Math.abs((time+50)%400-200)/101));
                         }
                     }
-                    end光();
+                    ctx2.putImageData(光あふれる世界,0,0);
                     
 
 
