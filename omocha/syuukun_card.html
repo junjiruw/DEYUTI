@@ -447,6 +447,8 @@
             var syuukun_move=[0,0];
             var syuukun_muki=0;
 
+            var 光デカさ=3;
+
             var 木漏れ日=[[[]]];
             var 雲=[[]];
             //------------セーブ
@@ -1263,11 +1265,21 @@
                     
                 }
                 function 光(x,y){
-                    ctx2.globalCompositeOperation = "overlay";
+                    let iro_pixel=ctx2.getImageData(x,y,1,1);
                     
-                    ctx2.fillStyle="rgb(255,255,255,1)";
-                    ctx2.fillRect(x,y,1,1);
-                    ctx2.globalCompositeOperation = "source-over";
+                    let iro_heikin;
+                    iro_heikin=(iro_pixel.data[0]+iro_pixel.data[1]+iro_pixel.data[2])/150;//平均じゃないじゃん→そうだね
+                    iro_pixel.data[0]=iro_pixel.data[0]+((iro_pixel.data[0]/iro_heikin));
+                    iro_pixel.data[1]=iro_pixel.data[1]+((iro_pixel.data[1]/iro_heikin));
+                    iro_pixel.data[2]=iro_pixel.data[2]+((iro_pixel.data[2]/iro_heikin));
+                    
+                    ctx2.putImageData(iro_pixel, x, y);
+                    
+                    //ctx2.globalCompositeOperation = "overlay";
+                    
+                    //ctx2.fillStyle="rgb(255,255,255,1)";
+                    //ctx2.fillRect(x,y,1,1);
+                    //ctx2.globalCompositeOperation = "source-over";
                 }
                 function 森イベント(ID){
                     if(ID==6){
@@ -1379,74 +1391,75 @@
                         mori_stage[1][0]=[[1,1,0,1,1],[1,0,0,0,1],[1,0,6,0,1],[1,0,0,0,1],[1,1,1,1,1]];
                         
                         木漏れ日[0]=[[]];//x,y,揺れる方向
-                        for(let i=0;i<16;i++){
-                            木漏れ日[0].push([44+i%4,90+Math.floor(i/4),0]);
-                            木漏れ日[0].push([14+i%4,10+Math.floor(i/4),0]);
-                            木漏れ日[0].push([17+i%4,12+Math.floor(i/4),0]);
-                            木漏れ日[0].push([20+i%4,9+Math.floor(i/4),0]);
-                            木漏れ日[0].push([39+i%4,47+Math.floor(i/4),0]);
-                            木漏れ日[0].push([39+i%4,52+Math.floor(i/4),0]);
-                            木漏れ日[0].push([43+i%4,52+Math.floor(i/4),0]);
-                            木漏れ日[0].push([47+i%4,51+Math.floor(i/4),0]);
-                            木漏れ日[0].push([51+i%4,52+Math.floor(i/4),0]);
-                            木漏れ日[0].push([43+i%4,48+Math.floor(i/4),0]);
-                            木漏れ日[0].push([47+i%4,47+Math.floor(i/4),0]);
-                            木漏れ日[0].push([51+i%4,46+Math.floor(i/4),0]);
+                        光デカさ=4;
+                        for(let i=0;i<光デカさ*光デカさ;i++){
+                            木漏れ日[0].push([44+i%光デカさ,90+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([14+i%光デカさ,10+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([17+i%光デカさ,12+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([20+i%光デカさ,9+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([39+i%光デカさ,47+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([39+i%光デカさ,52+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([43+i%光デカさ,52+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([47+i%光デカさ,51+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([51+i%光デカさ,52+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([43+i%光デカさ,48+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([47+i%光デカさ,47+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([51+i%光デカさ,46+Math.floor(i/光デカさ),0]);
 
-                            木漏れ日[0].push([84+i%4,28+Math.floor(i/4),0]);
-                            木漏れ日[0].push([88+i%4,58+Math.floor(i/4),0]);
-                            木漏れ日[0].push([85+i%4,57+Math.floor(i/4),0]);
+                            木漏れ日[0].push([84+i%光デカさ,28+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([88+i%光デカさ,58+Math.floor(i/光デカさ),0]);
+                            木漏れ日[0].push([85+i%光デカさ,57+Math.floor(i/光デカさ),0]);
 
-                            木漏れ日[0].push([45+i%4,40+Math.floor(i/4),1]);
-                            木漏れ日[0].push([49+i%4,41+Math.floor(i/4),1]);
-                            木漏れ日[0].push([53+i%4,41+Math.floor(i/4),1]);
-                            木漏れ日[0].push([57+i%4,41+Math.floor(i/4),1]);
-                            木漏れ日[0].push([53+i%4,45+Math.floor(i/4),1]);
-                            木漏れ日[0].push([57+i%4,45+Math.floor(i/4),1]);
-                            木漏れ日[0].push([57+i%4,37+Math.floor(i/4),1]);
-                            木漏れ日[0].push([61+i%4,39+Math.floor(i/4),1]);
+                            木漏れ日[0].push([45+i%光デカさ,40+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([49+i%光デカさ,41+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([53+i%光デカさ,41+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([57+i%光デカさ,41+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([53+i%光デカさ,45+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([57+i%光デカさ,45+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([57+i%光デカさ,37+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([61+i%光デカさ,39+Math.floor(i/光デカさ),1]);
 
-                            木漏れ日[0].push([68+i%4,4+Math.floor(i/4),1]);
-                            木漏れ日[0].push([67+i%4,1+Math.floor(i/4),1]);
-                            木漏れ日[0].push([17+i%4,70+Math.floor(i/4),1]);
-                            木漏れ日[0].push([12+i%4,73+Math.floor(i/4),1]);
-                            木漏れ日[0].push([19+i%4,66+Math.floor(i/4),1]);
-                            木漏れ日[0].push([89+i%4,76+Math.floor(i/4),1]);
+                            木漏れ日[0].push([68+i%光デカさ,4+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([67+i%光デカさ,1+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([17+i%光デカさ,70+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([12+i%光デカさ,73+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([19+i%光デカさ,66+Math.floor(i/光デカさ),1]);
+                            木漏れ日[0].push([89+i%光デカさ,76+Math.floor(i/光デカさ),1]);
                         }
                         木漏れ日[1]=[];
                         for(let i=0;i<16;i++){
-                            木漏れ日[1].push([44+i%4,90+Math.floor(i/4),0]);
-                            木漏れ日[1].push([47+i%4,92+Math.floor(i/4),0]);
-                            木漏れ日[1].push([17+i%4,12+Math.floor(i/4),0]);
-                            木漏れ日[1].push([27+i%4,15+Math.floor(i/4),0]);
-                            木漏れ日[1].push([77+i%4,42+Math.floor(i/4),0]);
-                            木漏れ日[1].push([78+i%4,43+Math.floor(i/4),0]);
-                            木漏れ日[1].push([81+i%4,38+Math.floor(i/4),0]);
-                            木漏れ日[1].push([88+i%4,3+Math.floor(i/4),0]);
-                            木漏れ日[1].push([6+i%4,88+Math.floor(i/4),0]);
-                            木漏れ日[1].push([10+i%4,86+Math.floor(i/4),0]);
-                            木漏れ日[1].push([1+i%4,79+Math.floor(i/4),0]);
+                            木漏れ日[1].push([44+i%光デカさ,90+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([47+i%光デカさ,92+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([17+i%光デカさ,12+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([27+i%光デカさ,15+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([77+i%光デカさ,42+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([78+i%光デカさ,43+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([81+i%光デカさ,38+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([88+i%光デカさ,3+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([6+i%光デカさ,88+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([10+i%光デカさ,86+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([1+i%光デカさ,79+Math.floor(i/光デカさ),0]);
 
-                            木漏れ日[1].push([48+i%4,14+Math.floor(i/4),1]);
-                            木漏れ日[1].push([69+i%4,11+Math.floor(i/4),1]);
-                            木漏れ日[1].push([67+i%4,50+Math.floor(i/4),1]);
-                            木漏れ日[1].push([82+i%4,53+Math.floor(i/4),1]);
-                            木漏れ日[1].push([29+i%4,76+Math.floor(i/4),1]);
-                            木漏れ日[1].push([69+i%4,16+Math.floor(i/4),1]);
+                            木漏れ日[1].push([48+i%光デカさ,14+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([69+i%光デカさ,11+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([67+i%光デカさ,50+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([82+i%光デカさ,53+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([29+i%光デカさ,76+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([69+i%光デカさ,16+Math.floor(i/光デカさ),1]);
 
-                            木漏れ日[1].push([82+i%4,79+Math.floor(i/4),0]);
-                            木漏れ日[1].push([88+i%4,79+Math.floor(i/4),0]);
-                            木漏れ日[1].push([92+i%4,79+Math.floor(i/4),0]);
-                            木漏れ日[1].push([88+i%4,83+Math.floor(i/4),0]);
-                            木漏れ日[1].push([90+i%4,75+Math.floor(i/4),0]);
+                            木漏れ日[1].push([82+i%光デカさ,79+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([88+i%光デカさ,79+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([92+i%光デカさ,79+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([88+i%光デカさ,83+Math.floor(i/光デカさ),0]);
+                            木漏れ日[1].push([90+i%光デカさ,75+Math.floor(i/光デカさ),0]);
 
-                            木漏れ日[1].push([88+i%4,74+Math.floor(i/4),1]);
-                            木漏れ日[1].push([84+i%4,74+Math.floor(i/4),1]);
-                            木漏れ日[1].push([92+i%4,74+Math.floor(i/4),1]);
-                            木漏れ日[1].push([87+i%4,70+Math.floor(i/4),1]);
-                            木漏れ日[1].push([91+i%4,70+Math.floor(i/4),1]);
+                            木漏れ日[1].push([88+i%光デカさ,74+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([84+i%光デカさ,74+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([92+i%光デカさ,74+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([87+i%光デカさ,70+Math.floor(i/光デカさ),1]);
+                            木漏れ日[1].push([91+i%光デカさ,70+Math.floor(i/光デカさ),1]);
 
-                            木漏れ日[1].push([87+i%4,80+Math.floor(i/4),1]);
+                            木漏れ日[1].push([87+i%光デカさ,80+Math.floor(i/光デカさ),1]);
                         }
                         雲=[];
                         for(let i=0;i<5;i++){
