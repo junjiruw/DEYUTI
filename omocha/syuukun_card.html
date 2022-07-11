@@ -4689,7 +4689,7 @@
                                                             カードスワップ=0;
                                                             sub_phase="ACE編集";
                                                         }else{//NULL -ACE
-                                                            編集中デッキ.ACE.push(カードスワップ);
+                                                            編集中デッキ.ACE[cursor_x+scroll_x2]=カードスワップ;
                                                             
                                                             カードスワップ=0;
                                                             sub_phase="ACE編集";
@@ -4728,7 +4728,7 @@
                                                             カードスワップ=0;
                                                             sub_phase="ACE編集";
                                                         }else{//NULL - TOP
-                                                            編集中デッキ.TOP_ACE.push(カードスワップ);
+                                                            編集中デッキ.TOP_ACE[cursor_x+scroll_x2]=カードスワップ;
                                                             
                                                             カードスワップ=0;
                                                             sub_phase="ACE編集";
