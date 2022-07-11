@@ -1263,8 +1263,8 @@
                     
                 }
                 function 光(x,y,bairitu){
-                    ctx.globalCompositeOperation = "overlay";
-                    ctx.fillStyle="rgb(255,255,255,1)";
+                    ctx.globalCompositeOperation = "lighter";
+                    ctx.fillStyle="rgb(255,255,255,0.2)";
                     //ctx.fillRect(x*bairitu,y*bairitu,bairitu,bairitu);
                     ctx.fillRect(x*bairitu,y*bairitu,bairitu,bairitu);
                     ctx.globalCompositeOperation = "source-over";
