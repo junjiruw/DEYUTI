@@ -1263,10 +1263,12 @@
                     
                 }
                 function 光(x,y,bairitu){
+                    ctx.imageSmoothingEnabled = false;
                     ctx.globalCompositeOperation = "lighter";
-                    ctx.fillStyle="rgb(255,255,255,0.2)";
+                    ctx.drawImage(cnvs,x*bairitu,y*bairitu,1,1,x*bairitu,y*bairitu,bairitu,bairitu)
+                    
+                    //ctx.fillStyle="rgb(255,255,255,0.2)";
                     //ctx.fillRect(x*bairitu,y*bairitu,bairitu,bairitu);
-                    ctx.fillRect(x*bairitu,y*bairitu,bairitu,bairitu);
                     ctx.globalCompositeOperation = "source-over";
                 }
                 function 森イベント(ID){
