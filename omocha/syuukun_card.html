@@ -1274,17 +1274,6 @@
                     }
                     ctx.putImageData(iro_pixel, x*bairitu, y*bairitu);
                 }
-                function 雲描きこみ(){
-                    let iro_pixel=ctx.getImageData(0,0,1000,1000);
-                    let iro_pixel2=ctx2.getImageData(0,0,1000,1000);
-                    for(let i=0;i<1000000*4;i+=4){
-                        iro_pixel.data[0+i]=iro_pixel.data[0+i]-(255-iro_pixel2.data[0+i])*0.1;
-                        iro_pixel.data[1+i]=iro_pixel.data[1+i]-(255-iro_pixel2.data[1+i])*0.1;
-                        iro_pixel.data[2+i]=iro_pixel.data[2+i]-(255-iro_pixel2.data[2+i])*0.1;
-                    }
-                    
-                    ctx.putImageData(iro_pixel,0,0);
-                }
                 function 森イベント(ID){
                     if(ID==6){
                         演出カウント=1;
@@ -1589,21 +1578,18 @@
                         }
                     }
 
-                    ctx2.save();
-                    ctx2.scale(3,3);
-                    ctx2.fillStyle="rgb(255,255,255,1)";
-                    ctx2.fillRect(0,0,1000,1000);//白リセット
+                    ctx.save();
+                    ctx.scale(3,3);
                     for(let i=0;i<5;i++){
-                        ctx2.drawImage(kumo_mori[i],雲[i][0],雲[i][1]);
+                        ctx.drawImage(kumo_mori[i],雲[i][0],雲[i][1]);
                         雲[i][0]-=雲[i][2];
                         if(雲[i][0]<-200){
                             雲[i]=[Math.random()*300+334,Math.random()*330,Math.random()+0.5];
                         }
                     }
                     
-                    ctx2.restore();
+                    ctx.restore();
 
-                    雲描きこみ();
 
 
                     
