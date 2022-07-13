@@ -310,14 +310,18 @@
 
             var sasori_hujou_20=[sasori_hujou_0,sasori_hujou_1];
 
+            var kurosyuukun_20=new Image();
+            kurosyuukun_20.src="../images/omocha/syuukun_card/kurosyuukun_20.png";
+
+            var kaiwa_window=new Image();
+            kaiwa_window.src="../images/omocha/syuukun_card/kaiwa_window.png";
+
             var morikabe_1_0=new Image();
             morikabe_1_0.src="../images/omocha/syuukun_card/morikabe_1_0.png";
             var morikabe_1_1=new Image();
             morikabe_1_1.src="../images/omocha/syuukun_card/morikabe_1_1.png";
 
             var morikabe_1=[morikabe_1_0,morikabe_1_1];
-
-
                 //森
 
             var junbityuu_title=new Image();
@@ -452,6 +456,11 @@
 
             var 木漏れ日=[[[]]];
             var 雲=[[]];
+
+            var セリフ="";
+            var セリフ_ピ=0;
+            var セリフダダダ=0;
+            var pre_セリフダダダ=0;
             //------------セーブ
             var save_所持カード=[];
             var save_deck_list={card_list:[],ACE:[],TOP_ACE:[]};
@@ -1267,7 +1276,7 @@
                 }
                 
                 function 光(x,y){//偉大なる先生により与えられた光です。大切にしましょう。
-                    let iro_index = (y * 100 + x) * 4;
+                    let iro_index = (y * 100 + x) * 4;//100っていうのはキャンバスが100だからさ
                     let iro_heikin;
                     iro_heikin=(光あふれる世界.data[iro_index + 0]+光あふれる世界.data[iro_index + 1]+光あふれる世界.data[iro_index + 2])/150;//平均じゃないじゃん→そうだね
                     光あふれる世界.data[iro_index + 0]=光あふれる世界.data[iro_index + 0]+((光あふれる世界.data[iro_index + 0]/iro_heikin));
@@ -1278,12 +1287,81 @@
                 function 森イベント(ID){
                     if(ID==6){
                         演出カウント=1;
-                        mini_stage=2;
+                        mini_stage=2;//戦闘モード
                         next_mini_stage=1;
                         teki_deck_list=sasori_list;//使用デッキ あれ？宣言箇所下のほうだけどいいのかな、いいか
                         teki_pull=2;//ドロー枚数
                         drop_gold=0;//お金ー！
+                    }else if(ID==7){
+                        mini_stage=3;//会話モード
+                        セリフ="気が付いているか？この森に入った時点で戦闘が開始されている…誰と戦ってるんだ？………………そこらへんの敵を倒しても戦闘が終わらねえ、無駄に戦闘を重ねるとデッキがなくなるぞ";
+                        セリフ_ピ=0;
+                        セリフダダダ=0;
                     }
+                }
+                function セリフ表示(x,y,x_haba,文字サイズ,改行数){
+                    let txt=[""];
+                    let セリフ改行先頭=セリフ_ピ;//ピが表示する先頭なのでもらってください。
+
+                    
+                    ctx.font = 文字サイズ+"px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                    ctx.fillStyle="rgb(255,255,255)";//白文字に限定すなー！☝汗汗
+                    
+                    for(let i=0; i<改行数;i++){//表示する文だけまわす
+                        if(セリフ改行先頭>=セリフ.length){//これ以上表示するものないぜ
+                            break;
+                        }
+                        for(let j=0;j<セリフ.length-セリフ改行先頭+1;j++){
+                            if(ctx.measureText(セリフ.substr(セリフ改行先頭,j)).width>x_haba){//超えちまったぜ…！一線をな…！
+                                if(セリフダダダ-セリフ改行先頭<j-1){
+                                    txt[i]=セリフ.substr(セリフ改行先頭,セリフダダダ-セリフ改行先頭);//ダダダ中は途中までで切ってくらさい
+                                }else{
+                                    txt[i]=セリフ.substr(セリフ改行先頭,j-1);//ダダダ越え
+                                }                                
+                                セリフ改行先頭+=j-1;
+                                break;
+                            }
+                            if(j==セリフ.length-セリフ改行先頭){//文章終わった
+                                if(セリフダダダ-セリフ改行先頭<j){
+                                    txt[i]=セリフ.substr(セリフ改行先頭,セリフダダダ-セリフ改行先頭);//ダダダ中は途中までで切ってくらさい
+                                }else{
+                                    txt[i]=セリフ.substr(セリフ改行先頭,j);//ダダダ越え
+                                }        
+                                セリフ改行先頭+=j;
+                            }
+                        }
+                        
+                        //ctx.fillText(txt[i], x, y+i*(文字サイズ+2)+文字サイズ+セリフダダダ%2*5);//表示するぜ！ダダダしてるとなんか縦に揺れるの読みにくいぜ！
+                        ctx.fillText(txt[i], x, y+i*(文字サイズ+2)+文字サイズ);//揺れねえほうがいいぜ！
+                    }
+                    if(pre_セリフダダダ==-1){//ボタンをおすとこれになって
+                        セリフダダダ=セリフ改行先頭;//ダダダが加速してセリフが全部表示される
+                    }
+                    pre_セリフダダダ=セリフダダダ;//ダダダが終わっているとpreに変化が起きないってわけサ　←オイ！マシな実装をしろ　←帰って
+                    if(セリフダダダ<セリフ改行先頭){
+                        セリフダダダ+=1;//ダダダ
+                    }else{   
+                        if(セリフ.length>セリフダダダ){
+                            ctx.fillText("▼",x+x_haba-文字サイズ, y+(改行数-0.5)*(文字サイズ+2)+文字サイズ-Math.floor(time%30/15)*10);//こうさ、続きがあることがわかるとユーザーは感謝するんだ
+                        }   
+                    }
+                }
+                function 二十ドット表示(x,y,ID,キャンバス,倍率){//二十というのはドットの大きさが20×20だからです。　まずい！2^n警察がきた！　この子だけは！この子だけは！
+                    x=x/倍率;
+                    y=y/倍率;
+                    ctx.save();
+                    ctx.imageSmoothingEnabled = false;//画像を拡大してもぼやけない！えらいぞ～
+                    ctx.scale(倍率,倍率);
+                    if(ID==1){
+                        キャンバス.drawImage(morikabe_1[(x+y)/20%2],x,y);
+                    }else if(ID==6){
+                        キャンバス.drawImage(sasori_hujou_20[Math.floor(time%30/20)],x,y);
+                    }else if(ID==7){
+                        キャンバス.drawImage(kurosyuukun_20,x,y);
+                    }
+                    
+                    ctx.restore();
+                    
                 }
                 function 不浄の森(){
                     if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
@@ -1344,8 +1422,30 @@
                             }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
                                 長押し阻止=1;
                                 if(mini_stage==1){
+                                }else if(mini_stage==3){
+                                    if(pre_セリフダダダ==セリフダダダ){
+                                        if(セリフ.length>セリフダダダ){
+                                            セリフ_ピ=セリフダダダ;
+                                        }else{
+                                            mini_stage=1;
+                                        }
+                                    }else{
+                                        pre_セリフダダダ=-1;
+                                    }
                                 }
                             }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
+                                if(mini_stage==1){
+                                }else if(mini_stage==3){
+                                    if(pre_セリフダダダ==セリフダダダ){
+                                        if(セリフ.length>セリフダダダ){
+                                            セリフ_ピ=セリフダダダ+1;
+                                        }else{
+                                            mini_stage=1;
+                                        }
+                                    }else{
+                                        pre_セリフダダダ=-1;
+                                    }
+                                }
                                 長押し阻止=1;
                             }
                             
@@ -1380,7 +1480,7 @@
 
                         mini_stage=1;//これを基準世界とする
                         mori_stage[0]=[];
-                        mori_stage[0][0]=[[1,1,1,1,1],[1,1,0,1,1],[1,0,0,0,1],[1,1,0,1,1],[1,1,0,1,1]];//xy-xyの四次元になると思う！0:歩ける　1:壁…5:壁　6~:モンスターとか…イベント系…かも…
+                        mori_stage[0][0]=[[1,1,1,1,1],[1,1,7,1,1],[1,0,0,0,1],[1,1,0,1,1],[1,1,0,1,1]];//xy-xyの四次元になると思う！0:歩ける　1:壁…5:壁　6~:モンスターとか…イベント系…かも…
                         mori_stage[1]=[];
                         mori_stage[1][0]=[[1,1,0,1,1],[1,0,0,0,1],[1,0,6,0,1],[1,0,0,0,1],[1,1,1,1,1]];
                         
@@ -1513,7 +1613,7 @@
                         get_card="";
                         new_card=0;
                         相手の降参=0;
-                    }
+                    }//mini_stage==3は下のほうにある
 
                     
 
@@ -1522,11 +1622,7 @@
                     
                     for(let i=0;i<5;i++){//フィールドを描こう
                         for(let j=0;j<5;j++){
-                            if(mori_stage[stage_x][stage_y][i][j]==1){
-                                ctx2.drawImage(morikabe_1[(i+j)%2],i*20,j*20);
-                            }else if(mori_stage[stage_x][stage_y][i][j]==6){
-                                ctx2.drawImage(sasori_hujou_20[Math.floor(time%30/20)],i*20,j*20);
-                            }
+                            二十ドット表示(i*20,j*20,mori_stage[stage_x][stage_y][i][j],ctx2,1);
                         }
                     }
 
@@ -1611,7 +1707,13 @@
                     ctx.restore();
 
 
-
+                    if(mini_stage==3){//会話モード
+                        ctx.drawImage(kaiwa_window,10,690);
+                        セリフ表示(40,700,940,50,5);
+                        ctx.fillStyle="rgb(100,100,100)";
+                        ctx.fillRect(35,485,210,210);
+                        二十ドット表示(40,490,mori_stage[stage_x][stage_y][syuukun_x][syuukun_y],ctx,10);
+                    }
                     
 
                     ctx.fillStyle="rgb(0,0,0)";//上のほうを描いてます。
@@ -6468,12 +6570,22 @@
                             
                         }
 
-                        ctx.fillStyle="rgb(130,255,170)";
+                        
                         if(stage==2 && mini_stage>3){
                             ctx.fillStyle="rgb(130,10,0)";
+                            ctx.fillRect(0,0,1000,1000);
+                        }else if(stage==4){
+                            ctx.drawImage(hujounomori_kakoi,0,0);
+                           
+                        }else{
+                            ctx.fillStyle="rgb(130,255,170)";
+                            ctx.fillRect(0,0,1000,1000);
                         }
-                        ctx.fillRect(0,0,1000,1000);
                         ctx.drawImage(card_basyo,0,0);
+                        
+                        
+
+                        
 
                         //ここで自分のフィールドにカードを並べる
                         ctx.save();
@@ -6907,6 +7019,25 @@
                             }
                             text_kaigyou_hyouji(syousai_state, 260, 610,480,160,40,syousai_state_color);//x,yは左上指定だから注意だ！
                             
+                        }
+
+                        if(stage==4){
+                            ctx.fillStyle="rgb(255,255,255,0.1)";
+                            ctx.fillRect(0,0,1000,1000);//ぼんやりとした光
+                            ctx.fillStyle="rgb(0,0,0,0.2)";
+                            ctx.fillRect(0,0,1000,1000);//ぼんやりとした影
+                            
+                            ctx.save();
+                            ctx.scale(3,3);
+                            for(let i=0;i<5;i++){
+                                ctx.drawImage(kumo_mori[i],雲[i][0],雲[i][1]);
+                                雲[i][0]-=雲[i][2];
+                                if(雲[i][0]<-200){
+                                    雲[i]=[Math.random()*300+334,Math.random()*330,Math.random()+0.5];
+                                }
+                            }
+                            
+                            ctx.restore();
                         }
 
                         if(duel_phase=="召喚"){//今なんの状態なんだよっていうお客様の声にお答えする形になった
