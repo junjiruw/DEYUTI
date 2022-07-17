@@ -72,6 +72,13 @@
             #omake_div{
                 text-align: right;
             } 
+            label.button_lable{
+                background-color: #FFFFFF;
+                color: #000;
+                padding: 2px;
+                padding-right: 5px;
+                padding-left: 5px;
+            }
             
 
         </style>
@@ -2269,9 +2276,8 @@
                     localStorage.setItem('所持カード',JSON.stringify(save_所持カード));//ゲームデータセーブ
                 }
                 
-                function 所持カードのロード(){
-                    所持カード=localStorage.getItem('所持カード');//ゲームデータロード
-                    所持カード=JSON.parse(所持カード);
+                function 所持カードのロード(txt){
+                    所持カード=JSON.parse(txt);
                     for(let i=0;i<所持カード.length;i++){
                         for(let j=0;j<all_card.length;j++){
                             if(all_card[j].name==所持カード[i][0]){//全カードから名前を検索してカードに置き換える
@@ -2299,9 +2305,8 @@
                     localStorage.setItem('deck_list',JSON.stringify(save_deck_list));//ゲームデータセーブ
                 }
 
-                function デッキのロード(){
-                    deck_list=localStorage.getItem('deck_list');//ゲームデータロード
-                    deck_list=JSON.parse(deck_list);
+                function デッキのロード(txt){
+                    deck_list=JSON.parse(txt);
                     for(let i=0;i<deck_list.card_list.length;i++){
                         for(let j=0;j<all_card.length;j++){
                             if(all_card[j].name==deck_list.card_list[i][0]){//全カードから名前を検索してカードに置き換える
@@ -2339,9 +2344,8 @@
                     }
                     localStorage.setItem('保存デッキ',JSON.stringify(保存_変換));
                 }
-                function 保存デッキの読み込み(){
-                    保存デッキ=localStorage.getItem('保存デッキ');//ゲームデータロード
-                    保存デッキ=JSON.parse(保存デッキ);
+                function 保存デッキの読み込み(txt){
+                    保存デッキ=JSON.parse(txt);
                     for(let i=0;i<5;i++){
                         for(let j=0;j<保存デッキ[i].card_list.length;j++){
                             for(let k=0;k<all_card.length;k++){
@@ -2385,6 +2389,112 @@
                     DL_URL.click();//強制クリック
                 }
                 document.getElementById('download_button').addEventListener("click", デッキの画像ダウンロード);
+                
+                function 外部セーブ(){
+                    let 保存データ_一部;
+                    let 保存データ_全体="これはしゅうくんカードのセーブデータなのです。";
+
+                    保存データ_一部=[];
+                    for(let i=0;i<所持カード.length;i++){
+                        保存データ_一部[i]=[所持カード[i][0].name,所持カード[i][1]];
+                    }
+                    保存データ_全体+="\\"+JSON.stringify(保存データ_一部);
+                    
+                    保存データ_一部={card_list:[[]],ACE:[],TOP_ACE:[]};
+                    if(deck_list.card_list.length!=0){
+                        for(let i=0;i<deck_list.card_list.length;i++){
+                            保存データ_一部.card_list[i]=[deck_list.card_list[i][0].name,deck_list.card_list[i][1]];
+                        }
+                        for(let i=0;i<deck_list.ACE.length;i++){
+                            保存データ_一部.ACE[i]=deck_list.ACE[i].name;
+                        }
+                        for(let i=0;i<deck_list.TOP_ACE.length;i++){
+                            保存データ_一部.TOP_ACE[i]=deck_list.TOP_ACE[i].name;
+                        }
+                    }
+                    
+                    保存データ_全体+="\\"+JSON.stringify(保存データ_一部);
+
+                    保存データ_一部=[{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]}];;
+                    for(let i=0;i<5;i++){
+                        for(let j=0;j<保存デッキ[i].card_list.length;j++){
+                            保存データ_一部[i].card_list[j]= 保存デッキ[i].card_list[j].name;
+                        }
+                        保存データ_一部[i].ACE=[...保存デッキ[i].ACE];
+                        保存データ_一部[i].TOP_ACE=[...保存デッキ[i].TOP_ACE];
+                    }
+                    保存データ_全体+="\\"+JSON.stringify(保存データ_一部);
+
+                    保存データ_全体+="\\"+JSON.stringify(MAX_STAGE);
+                    保存データ_全体+="\\"+JSON.stringify(MAX_ACE);
+                    保存データ_全体+="\\"+JSON.stringify(MAX_TOP_ACE);
+                    保存データ_全体+="\\"+JSON.stringify(お金);
+                    保存データ_全体+="\\"+JSON.stringify(MAX_deck);
+                    保存データ_全体+="\\"+JSON.stringify(my_pull);
+                    保存データ_全体+="\\"+JSON.stringify(my_deck_pull);
+                
+
+                    let blob = new Blob([保存データ_全体], {type:'text/plain'});
+
+                    var 今= new Date();
+                    var 今_文字=今.getDate()+""+今.getHours()+""+今.getMinutes()+""+今.getSeconds();
+                    var DL_URL = document.createElement('a');
+                    DL_URL.href=URL.createObjectURL(blob);
+                    DL_URL.download = 'しゅうくんカードセーブデータ'+ 今_文字+ '.txt';//ファイル名決めてる
+                    DL_URL.click();//強制クリック
+                    
+                }
+                document.getElementById('save_button').addEventListener("click", 外部セーブ);
+
+                function 外部ロード(){
+                    let 保存データ_一部="";
+                    let 保存データ_全体="";
+                    let txt読むマン = new FileReader();
+                    txt読むマン.readAsText(this.files[0]);//ファイルを読むマンに解読してもらい、文字列にする
+                    txt読むマン.onload = ()=> {//読み終わったら
+                        保存データ_全体=txt読むマン.result;
+                        保存データ_全体=保存データ_全体.split("\\");
+                        if(保存データ_全体[0]=="これはしゅうくんカードのセーブデータなのです。"){
+                            所持カードのロード(保存データ_全体[1]);
+                            所持カードのセーブ();
+
+                            デッキのロード(保存データ_全体[2]);
+                            デッキのセーブ();
+                        
+                            保存デッキの読み込み(保存データ_全体[3]);
+                            保存デッキの保存();//ゲームデータセーブ
+                        
+                            MAX_STAGE=Number(保存データ_全体[4]);
+                            localStorage.setItem('MAX_STAGE',MAX_STAGE);//ゲームデータセーブ
+
+                            MAX_ACE=Number(保存データ_全体[5]);
+                            localStorage.setItem('MAX_ACE',MAX_ACE);//ゲームデータセーブ
+
+                            MAX_TOP_ACE=Number(保存データ_全体[6]);
+                            localStorage.setItem('MAX_TOP_ACE',MAX_TOP_ACE);//ゲームデータセーブ
+
+                            お金=Number(保存データ_全体[7]);
+                            localStorage.setItem('お金',お金);//ゲームデータセーブ
+
+                            MAX_deck=Number(保存データ_全体[8]);
+                            localStorage.setItem("MAX_deck",MAX_deck);//ゲームデータセーブ
+
+                            my_pull=Number(保存データ_全体[9]);
+                            localStorage.setItem('my_pull',my_pull);//ゲームデータセーブ
+                        
+                            my_deck_pull=Number(保存データ_全体[10]);
+                            localStorage.setItem('my_deck_pull',my_deck_pull);//ゲームデータセーブ
+
+                            location.reload();
+                        }else{
+                            alert("なんか読み込めないファイルだった！");
+                        }
+                        
+                    }
+                }
+                document.getElementById('load_button').addEventListener('change', 外部ロード);
+
+
 
                 var compare = function (a, b) {//sort()関数の引数にこの関数を渡すと、数字のソートが可能になる。
                     return a - b
@@ -4050,14 +4160,14 @@
                 //ここからロード、なんで一個ずつやってるのかというと、開発中はバージョンによってセーブデータがあったりなかったりするから、バグる。
                 //全データ消去();
                 if(localStorage.getItem('所持カード')){//セーブデータがあるね
-                    所持カードのロード();
+                    所持カードのロード(localStorage.getItem('所持カード'));
                 }else{
                     所持カード=[[HPup5,3],[powerup3,2],[syuukun,1],[hojorobo,2]];
                     所持カードのセーブ();
                 }
 
                 if(localStorage.getItem('deck_list')){//セーブデータがあるね
-                    デッキのロード();
+                    デッキのロード(localStorage.getItem('deck_list'));
                 }else{
                     //初期所持カード
                     deck_list={card_list:[[HPup5,3],[powerup3,2],[syuukun,1],[hojorobo,2]],ACE:[hojorobo,powerup3],TOP_ACE:[syuukun]};
@@ -4065,7 +4175,7 @@
                 }
                 
                 if(localStorage.getItem('保存デッキ')){//セーブデータがあるね
-                    保存デッキの読み込み();
+                    保存デッキの読み込み(localStorage.getItem('保存デッキ'));
                 }else{
                     保存デッキの保存();//ゲームデータセーブ
                 }
@@ -8164,6 +8274,24 @@
                         <a href="#top" id="totop"> 
                             ページ上部に移動
                         </a>
+                    </li>
+                    <li>
+                        <label class="button_lable">
+                            <input id="save_button" type="button" style="display:none;">
+                            外部セーブ
+                        </label>
+                        
+                    </li>
+                    <li>
+                        <label class="button_lable">
+                            <input type="file" id="load_button" accept=".txt" style="display:none;">
+                            外部ロード
+                        </label>
+                    </li>
+                    <li>
+                        <label class="button_lable">
+                            <a href="../images/omocha/syuukun_card/しゅうくんカードセーブデータ初期データ.txt" download="しゅうくんカードセーブデータ初期データ.txt">最初から</a>
+                        </label>
                     </li>
                 </ul>
             </footer>
