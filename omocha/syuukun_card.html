@@ -3926,20 +3926,20 @@
                         if(duel_phase!="相手"){
                             for(let i=0;i<5;i++){
                                 if(my_ba[i]!=""&& my_ba[i].state.indexOf("毒")!=-1){
-                                    my_ba[i].HP+=my_ba[i].state[my_ba[i].state.indexOf("毒")+1]*5;
+                                    my_ba[i].HP+=my_ba[i].state[my_ba[i].state.indexOf("毒")+1]*3;
                                 }
                             } 
                         }else{
                             for(let i=0;i<5;i++){
                                 if(teki_ba[i]!=""&& teki_ba[i].state.indexOf("毒")!=-1){
-                                    teki_ba[i].HP+=teki_ba[i].state[teki_ba[i].state.indexOf("毒")+1]*5;
+                                    teki_ba[i].HP+=teki_ba[i].state[teki_ba[i].state.indexOf("毒")+1]*3;
                                 }
                             } 
                         }
                     }
                 },AI:function(タイミング){
                     return true;//上位召喚したら弱くなるとかありそうだが気にすんな！
-                },text:"毒状態の味方は毒の数値×５回復する。…うむ！うまい。",text_iro:[]};
+                },text:"毒状態の味方は毒の数値×３回復する。…うむ！うまい。",text_iro:[]};
                 var kinkyuujitai3={name:"緊急事態─３─",image:kinkyuujitai3_image,state:["魔法","毒付与"],effect_req:function(タイミング){
                     if(タイミング=="手札から"){
                         if(duel_phase!="相手"){
@@ -4041,7 +4041,7 @@
                 var dokuhakinoko_list={card_list:[[dokuhakinoko,5]],ACE:[],TOP_ACE:[dokuhakinoko,dokuhakinoko,dokuhakinoko,dokuhakinoko,dokuhakinoko]};
                 var karamaruito_list={card_list:[[karamaruito,10],[sasori_hujou,3],[kinkyuujitai3,3]],ACE:[karamaruito,karamaruito,karamaruito,karamaruito],TOP_ACE:[karamaruito]};
                 var ookametake_list={card_list:[[ookametake,3],[dokuhakinoko,5],[kinkyuujitai3,2]],ACE:[ookametake],TOP_ACE:[ookametake]};
-                var kankyouseihagoremu_list={card_list:[[kankyouseihagoremu,3],[moukyodokudaitake,6]],ACE:[],TOP_ACE:[kankyouseihagoremu,moukyodokudaitake,moukyodokudaitake]};
+                var kankyouseihagoremu_list={card_list:[[kankyouseihagoremu,3],[moukyodokudaitake,6],[gurumesinjidai,3]],ACE:[],TOP_ACE:[kankyouseihagoremu,moukyodokudaitake,moukyodokudaitake]};
                 var rozusyuu_list={card_list:[[rozusyuu,1],[kankyouseihagoremu,2],[karamaruito,2],[dokuhakinoko,2],[sasori_hujou,2],[miryousuruhitomi,3],[musyounoai,2],[moukyodokudaitake,2]],ACE:[],TOP_ACE:[rozusyuu,kankyouseihagoremu,kankyouseihagoremu,musyounoai,musyounoai]};
                 var kanbansan_list={card_list:[[kanbansan,15]],ACE:[kanbansan,kanbansan],TOP_ACE:[kanbansan]};
                 //パック
