@@ -6300,7 +6300,9 @@
                                             if(scroll_x!=0){
                                                 scroll_x-=1;
                                             }else{
-                                                scroll_x=編集中デッキ.card_list.length-7;
+                                                if(編集中デッキ.card_list.length-7>0){
+                                                    scroll_x=編集中デッキ.card_list.length-7;
+                                                }
                                                 cursor_x=6;
                                             }
                                             
@@ -6308,7 +6310,9 @@
                                             if(scroll_x2!=0){
                                                 scroll_x2-=1;
                                             }else{
-                                                scroll_x2=Math.ceil(所持カード.length/2)-7;
+                                                if(Math.ceil(所持カード.length/2)-7>0){
+                                                    scroll_x2=Math.ceil(所持カード.length/2)-7;
+                                                }
                                                 cursor_x=6;
                                             }
                                             
@@ -6555,21 +6559,49 @@
                                     }else if(key_input.charAt(i)=="←"){
                                         if(cursor_x>0){
                                             cursor_x-=1;
-                                        }else if(cursor_y==0 && scroll_x!=0){
-                                            scroll_x-=1;
-                                        }else if((cursor_y==1 || cursor_y==2) && scroll_x2!=0){
-                                            scroll_x2-=1;
+                                        }else if(cursor_y==0){
+                                            if(scroll_x!=0){
+                                                scroll_x-=1;
+                                            }else{
+                                                if(編集中デッキ.card_list.length-7>0){
+                                                    scroll_x=編集中デッキ.card_list.length-7; 
+                                                }
+                                                cursor_x=6;
+                                            }
+                                            
+                                        }else if((cursor_y==1 || cursor_y==2)){
+                                            if(scroll_x2!=0){
+                                                scroll_x2-=1;
+                                            }else{
+                                                if(Math.max(MAX_ACE,MAX_TOP_ACE)-7>0){
+                                                    scroll_x2=Math.max(MAX_ACE,MAX_TOP_ACE)-7;
+                                                }
+                                                cursor_x=6;
+                                            }
+                                            
                                         }
                                         
                                     }else if(key_input.charAt(i)=="→"){
                                         if(cursor_x<6){
                                             cursor_x+=1;
-                                        }else if(cursor_y==0 && scroll_x<編集中デッキ.card_list.length-7){
-                                            scroll_x+=1;
-                                        }else if((cursor_y==1 || cursor_y==2) && scroll_x2<Math.max(MAX_ACE,MAX_TOP_ACE)-7){
-                                            scroll_x2+=1;
+                                        }else if(cursor_y==0){
+                                            if(scroll_x<編集中デッキ.card_list.length-7){
+                                                scroll_x+=1;
+                                            }else{
+                                                scroll_x=0;
+                                                cursor_x=0;
+                                            }
+                                            
+                                        }else if((cursor_y==1 || cursor_y==2)){
+                                            if(scroll_x2<Math.max(MAX_ACE,MAX_TOP_ACE)-7){
+                                                scroll_x2+=1;
+                                            }else{
+                                                scroll_x2=0;
+                                                cursor_x=0;
+                                            }
+                                            
                                         }
-                                        
+
                                     }else if(key_input.charAt(i)=="↓"){
                                         if(cursor_y<2){
                                             cursor_y+=1;
@@ -7880,6 +7912,7 @@
                         }
                         if(演出カウント>5){
                             game_phase=next_phase;
+                            cursor=2;
                             演出カウント=-11;
                         }
 
