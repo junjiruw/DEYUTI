@@ -299,6 +299,19 @@
             akaoni_image.src="../images/omocha/syuukun_card/akaoni.png";
             var ikaribakuhatu_image=new Image();
             ikaribakuhatu_image.src="../images/omocha/syuukun_card/ikaribakuhatu.png";
+
+            var nezumi_image=new Image();
+            nezumi_image.src="../images/omocha/syuukun_card/nezumi.png";
+            var tyuunezumi_image=new Image();
+            tyuunezumi_image.src="../images/omocha/syuukun_card/tyuunezumi.png";
+            var dekanezumi_image=new Image();
+            dekanezumi_image.src="../images/omocha/syuukun_card/dekanezumi.png";
+            var dokunezumi_image=new Image();
+            dokunezumi_image.src="../images/omocha/syuukun_card/dokunezumi.png";
+            var tamanezumi_image=new Image();
+            tamanezumi_image.src="../images/omocha/syuukun_card/tamanezumi.png";
+            var tatujinnezumi_image=new Image();
+            tatujinnezumi_image.src="../images/omocha/syuukun_card/tatujinnezumi.png";
             //--メニュー？
 
             var kuria=new Image();
@@ -311,10 +324,18 @@
 
             var sakyura_omise=new Image();
             sakyura_omise.src="../images/omocha/syuukun_card/sakyura_omise.png";
+
             var ponya_pack=new Image();
             ponya_pack.src="../images/omocha/syuukun_card/ponyapakku.png";
             var jouisyoukanpakku=new Image();
             jouisyoukanpakku.src="../images/omocha/syuukun_card/jouisyoukanpakku.png";
+
+            var zakopakku=new Image();
+            zakopakku.src="../images/omocha/syuukun_card/zakopakku.png";
+            var mahopakku=new Image();
+            mahopakku.src="../images/omocha/syuukun_card/mahoupakku.png";
+            var kyoupakku=new Image();
+            kyoupakku.src="../images/omocha/syuukun_card/kyoupakku.png";
             //--ステージ？
             var henyamoti_title=new Image();
             henyamoti_title.src="../images/omocha/syuukun_card/henyamotinsougen_title.png";
@@ -441,7 +462,34 @@
             var syuukungari_kuria=new Image();
             syuukungari_kuria.src="../images/omocha/syuukun_card/syuukungari_kuria.png";
 
+                //デッキ盗難
+            var dekkitounan_title=new Image();
+            dekkitounan_title.src="../images/omocha/syuukun_card/dekkitounan_title.png";
+            var nezumi500=new Image();
+            nezumi500.src="../images/omocha/syuukun_card/nezumi500.png";
+            var dekanezumi500=new Image();
+            dekanezumi500.src="../images/omocha/syuukun_card/dekanezumi500.png";
+            
+            var zako500=new Image();
+            zako500.src="../images/omocha/syuukun_card/zako500.png";
+            var maho500=new Image();
+            maho500.src="../images/omocha/syuukun_card/maho500.png";
+            var kyou500=new Image();
+            kyou500.src="../images/omocha/syuukun_card/kyou500.png";
+            
+            var dokunezumi500=new Image();
+            dokunezumi500.src="../images/omocha/syuukun_card/dokunezumi500.png";
+            var tamanezumi500=new Image();
+            tamanezumi500.src="../images/omocha/syuukun_card/tamanezumi500.png";
+            var tatujinnezumi500=new Image();
+            tatujinnezumi500.src="../images/omocha/syuukun_card/tatujinnezumi500.png";
 
+            var ken500=new Image();
+            ken500.src="../images/omocha/syuukun_card/ken500.png";
+            var tairyoku500=new Image();
+            tairyoku500.src="../images/omocha/syuukun_card/tairyoku500.png";
+            
+                //デッキ盗難
             var junbityuu_title=new Image();
             junbityuu_title.src="../images/omocha/syuukun_card/junbityuu.png";
             //ここにゲームパラメータを置くとイイネ。
@@ -586,6 +634,12 @@
 
             var 討伐数=0;
             var 目標討伐数=1000;
+
+                //デッキ盗難
+            var 今回のデッキ={card_list:[],ACE:[],TOP_ACE:[]};
+            var 今回のデッキ_表示={card_list:[],ACE:[],TOP_ACE:[]};
+
+            var get_mode=0;
             //------------セーブ
             var save_所持カード=[];
             var save_deck_list={card_list:[],ACE:[],TOP_ACE:[]};
@@ -596,7 +650,7 @@
             var パック売るよ=-1;
             //パックの定義は…カードが定義されてないと…できない
             var 購入数=[0,0,0];
-            var 金額=[10,75,0,0,0,0,0,0,0];
+            var 金額=[10,75,100,100,10000,0,0,0,0];
             var 出てきたカード=[];
             var 出てきたカード_ソート=[];
             
@@ -1447,7 +1501,21 @@
                     }
                     
                 }
-                
+                function カードゲット(card){//パックでの入手は毎回セーブ走っちゃうのもアレだし放置で　←対応すればいいだけでは？　←絶対バグるからヤダ
+                    let new_card=0;
+                    //取得カード決定
+                    for(let i=0;i<所持カード.length;i++){
+                        if(所持カード[i][0].name==card.name){//持ってる？このカード
+                            所持カード[i][1]+=1;
+                            new_card=1;//このカード持ってたわ
+                            break;
+                        }
+                    }
+                    if(new_card==0){//新規カードだ！
+                        所持カード[所持カード.length]=[card,1];
+                    }
+                    所持カードのセーブ();
+                }
                 function 光(x,y){//偉大なる先生により与えられた光です。大切にしましょう。
                     let iro_index = (y * 100 + x) * 4;//100っていうのはキャンバスが100だからさ
                     let iro_heikin;
@@ -2158,7 +2226,6 @@
                         yamahuda_damage=[0,0,0,0];//左が俺へのダメージで、右が相手へのダメージ描写
                         
                         get_card="";
-                        new_card=0;
                         相手の降参=0;
 
                         atk_card="";
@@ -2328,20 +2395,7 @@
                             MAX_STAGE=5;
                             localStorage.setItem('MAX_STAGE',MAX_STAGE);//ゲームデータセーブ
                             
-                            //取得
-                            new_card=0;
-                            get_card=rozusyuu;
-                            for(let i=0;i<所持カード.length;i++){
-                                if(所持カード[i][0].name==get_card.name){//持ってる？このカード
-                                    所持カード[i][1]+=1;
-                                    new_card=1;//このカード持ってたわ
-                                    break;
-                                }
-                            }
-                            if(new_card==0){//新規カードだ！
-                                所持カード[所持カード.length]=[get_card,1];
-                            }
-                            所持カードのセーブ();
+                            カードゲット(rozusyuu);
                         }
                         if(初回クリアメッセージフラグ==1){
                             ctx.fillText("ローズしゅうくん", 100, 780);
@@ -2349,6 +2403,669 @@
                         }
                     }
                     
+                }
+                function デッキ盗難(){
+                    if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                        key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                        for(let i=0;i<key_input.length;i++){
+                            if(get_mode==0){
+                                if(key_input.charAt(i)=="↑"){
+                                    cursor_y=(cursor_y+1)%2;
+                                    cursor_x=0;
+                                    セリフダダダ=0;
+                                }else if(key_input.charAt(i)=="←"){
+                                    
+                                    if(mini_stage==18){//クリア画面
+                                        cursor2=(cursor2+1)%2;
+                                    }else{
+                                        
+                                        if(cursor_y==0){
+                                            if(cursor_x>0){
+                                                cursor_x-=1;
+                                            }else if(scroll_x!=0){
+                                                scroll_x-=1;
+                                            }else{
+                                                if(今回のデッキ_表示.card_list.length-7>0){
+                                                    scroll_x=今回のデッキ_表示.card_list.length-7;
+                                                }
+                                                cursor_x=6;
+                                            }
+                                            
+                                        }else if(mini_stage%2==0){
+                                            cursor_x=(cursor_x+1)%2;
+                                        }
+                                        
+
+                                    }
+                                }else if(key_input.charAt(i)=="→"){
+                                    if(mini_stage==18){//クリア画面
+                                        cursor2=(cursor2+1)%2;
+                                    }else{
+                                        if(cursor_y==0){
+                                            if(cursor_x<6){
+                                                cursor_x+=1;
+                                            }else if(scroll_x<今回のデッキ_表示.card_list.length-7){
+                                                scroll_x+=1;
+                                            }else{
+                                                scroll_x=0;
+                                                cursor_x=0;
+                                            }
+                                            
+                                        }else if(mini_stage%2==0){
+                                            cursor_x=(cursor_x+1)%2;
+                                        }
+                                    }
+                                }else if(key_input.charAt(i)=="↓"){
+                                    cursor_y=(cursor_y+1)%2;
+                                    cursor_x=0;
+                                    セリフダダダ=0;
+                                }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                    長押し阻止=1;
+                                    if(cursor_y==1){
+                                        if(mini_stage==0){
+                                        }else if(mini_stage==1){
+                                            演出カウント=1;
+                                            mini_stage=-1;//戦闘モード
+                                            next_mini_stage=2;
+                                            teki_deck_list=nezumi_list;//使用デッキ あれ？宣言箇所下のほうだけどいいのかな、いいか
+                                            teki_pull=2;//ドロー枚数
+                                            drop_gold=300;//お金ー！
+
+                                            セリフ="どちらかのカードを拾えそうだ";
+                                            セリフガガガ=0;
+                                            セリフ_ピ=0;
+                                            セリフダダダ=0;
+                                            cursor_x=0;
+                                        }else if(mini_stage==2){
+                                            出てきたカード=[];
+                                            if(cursor_x==0){
+                                                for(i=0;i<2;i++){
+                                                        出てきたカード[i]=雑魚パック[Math.floor(Math.random()*雑魚パック.length)];
+                                                }
+                                            }else if(cursor_x==1){
+                                                for(i=0;i<3;i++){
+                                                        出てきたカード[i]=魔法パック[Math.floor(Math.random()*魔法パック.length)];
+                                                }
+                                            }
+                                            for(i=0;i<出てきたカード.length;i++){
+                                                カードゲット(出てきたカード[i]);
+                                                for(j=0;j<今回のデッキ.card_list.length;j++){
+                                                    if(今回のデッキ.card_list[j][0]==出てきたカード[i]){
+                                                        今回のデッキ.card_list[j][1]+=1;
+                                                        break;
+                                                    }
+                                                    if(j==今回のデッキ.card_list.length-1){
+                                                        今回のデッキ.card_list.push([出てきたカード[i],1]);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            カードカウント=0;
+                                            for(let i=0;i<今回のデッキ.card_list.length;i++){
+                                                for(let j=0;j<今回のデッキ.card_list[i][1];j++){
+                                                    今回のデッキ_表示.card_list[カードカウント]=今回のデッキ.card_list[i][0];
+                                                    カードカウント+=1;
+                                                }
+                                            }
+
+                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]];
+                                            get_mode=3;
+                                            
+                                        }else if(mini_stage==3){
+                                            演出カウント=1;
+                                            mini_stage=-1;//戦闘モード
+                                            next_mini_stage=4;
+                                            teki_deck_list=dekanezumi_list;//使用デッキ あれ？宣言箇所下のほうだけどいいのかな、いいか
+                                            teki_pull=2;//ドロー枚数
+                                            drop_gold=500;//お金ー！
+
+                                            セリフ="どちらかのカードを拾えそうだ";
+                                            セリフガガガ=0;
+                                            セリフ_ピ=0;
+                                            セリフダダダ=0;
+                                            cursor_x=0;
+                                        }else if(mini_stage==4){
+                                            出てきたカード=[];
+                                            if(cursor_x==0){
+                                                for(i=0;i<2;i++){
+                                                        出てきたカード[i]=雑魚パック[Math.floor(Math.random()*雑魚パック.length)];
+                                                }
+                                                for(i=0;i<3;i++){
+                                                        出てきたカード[i+2]=魔法パック[Math.floor(Math.random()*魔法パック.length)];
+                                                }
+                                            }else if(cursor_x==1){
+                                                for(i=0;i<1;i++){
+                                                        出てきたカード[i]=強パック[Math.floor(Math.random()*強パック.length)];
+                                                }
+                                            }
+
+                                            for(i=0;i<出てきたカード.length;i++){
+                                                カードゲット(出てきたカード[i]);
+                                                for(j=0;j<今回のデッキ.card_list.length;j++){
+                                                    if(今回のデッキ.card_list[j][0]==出てきたカード[i]){
+                                                        今回のデッキ.card_list[j][1]+=1;
+                                                        break;
+                                                    }
+                                                    if(j==今回のデッキ.card_list.length-1){
+                                                        今回のデッキ.card_list.push([出てきたカード[i],1]);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            カードカウント=0;
+                                            for(let i=0;i<今回のデッキ.card_list.length;i++){
+                                                for(let j=0;j<今回のデッキ.card_list[i][1];j++){
+                                                    今回のデッキ_表示.card_list[カードカウント]=今回のデッキ.card_list[i][0];
+                                                    カードカウント+=1;
+                                                }
+                                            }
+
+                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]];
+                                            get_mode=5;
+                                            
+                                        }else if(mini_stage==5){
+                                            演出カウント=1;
+                                            mini_stage=-1;//戦闘モード
+                                            next_mini_stage=6;
+                                            teki_deck_list=dokunezumi_list;//使用デッキ あれ？宣言箇所下のほうだけどいいのかな、いいか
+                                            teki_pull=3;//ドロー枚数
+                                            drop_gold=500;//お金ー！
+
+                                            セリフ="攻撃力か体力を上昇できそうだ";
+                                            セリフガガガ=0;
+                                            セリフ_ピ=0;
+                                            セリフダダダ=0;
+                                            cursor_x=0;
+                                        }else if(mini_stage==6){
+                                            if(cursor_x==0){
+                                                特殊状態.push("攻撃");
+                                                特殊状態.push(1);
+
+                                            }else{
+                                                特殊状態.push("体力");
+                                                特殊状態.push(3);
+                                            }
+                                            mini_stage=7;
+                                            セリフ="玉ねずみが現れた！";
+                                            セリフガガガ=0;
+                                            セリフ_ピ=0;
+                                            セリフダダダ=0;
+                                            cursor_x=0;
+                                        }else if(mini_stage==7){
+                                            演出カウント=1;
+                                            mini_stage=-1;//戦闘モード
+                                            next_mini_stage=8;
+                                            teki_deck_list=tamanezumi_list;//使用デッキ あれ？宣言箇所下のほうだけどいいのかな、いいか
+                                            teki_pull=1;//ドロー枚数
+                                            drop_gold=500;//お金ー！
+
+                                            セリフ="どちらかのカードを拾えそうだ";
+                                            セリフガガガ=0;
+                                            セリフ_ピ=0;
+                                            セリフダダダ=0;
+                                            cursor_x=0;
+                                        }else if(mini_stage==8){
+                                            出てきたカード=[];
+                                            if(cursor_x==0){
+                                                for(i=0;i<2;i++){
+                                                        出てきたカード[i]=雑魚パック[Math.floor(Math.random()*雑魚パック.length)];
+                                                }
+                                                for(i=0;i<5;i++){
+                                                        出てきたカード[i+2]=魔法パック[Math.floor(Math.random()*魔法パック.length)];
+                                                }
+                                            }else if(cursor_x==1){
+                                                for(i=0;i<1;i++){
+                                                        出てきたカード[i]=強パック[Math.floor(Math.random()*強パック.length)];
+                                                }
+                                            }
+
+                                            for(i=0;i<出てきたカード.length;i++){
+                                                カードゲット(出てきたカード[i]);
+                                                for(j=0;j<今回のデッキ.card_list.length;j++){
+                                                    if(今回のデッキ.card_list[j][0]==出てきたカード[i]){
+                                                        今回のデッキ.card_list[j][1]+=1;
+                                                        break;
+                                                    }
+                                                    if(j==今回のデッキ.card_list.length-1){
+                                                        今回のデッキ.card_list.push([出てきたカード[i],1]);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            カードカウント=0;
+                                            for(let i=0;i<今回のデッキ.card_list.length;i++){
+                                                for(let j=0;j<今回のデッキ.card_list[i][1];j++){
+                                                    今回のデッキ_表示.card_list[カードカウント]=今回のデッキ.card_list[i][0];
+                                                    カードカウント+=1;
+                                                }
+                                            }
+
+                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]];
+                                            get_mode=9;
+                                        }else if(mini_stage==9){
+                                            演出カウント=1;
+                                            mini_stage=-1;//戦闘モード
+                                            next_mini_stage=10;
+                                            teki_deck_list=tatujinnezumi_list;//使用デッキ あれ？宣言箇所下のほうだけどいいのかな、いいか
+                                            teki_pull=2;//ドロー枚数
+                                            drop_gold=500;//お金ー！
+
+                                            セリフ="どちらかのカードを拾えそうだ";
+                                            セリフガガガ=0;
+                                            セリフ_ピ=0;
+                                            セリフダダダ=0;
+                                            cursor_x=0;
+                                        }
+
+                                        
+                                    }
+                                    if(mini_stage==18){
+                                        if(cursor2==0){
+                                            初回クリアメッセージフラグ=0;
+                                            next_phase="ステージ選択";
+                                            演出カウント=1;
+                                            cursor=2;
+                                        }else{
+                                            key_input="";//なんかこれないとボタン操作がいかれる
+                                            URL_tweet_text="https://twitter.com/intent/tweet?text=ブラックしゅうくんを取り戻した！%0A%0A"+document.title+"%0A"+document.URL+"&hashtags=Syuukun_Card";//%0Aで改行
+                                            window.open( URL_tweet_text, '_blank'); 
+                                        }
+                                        
+                                    }
+                                }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
+                                    長押し阻止=1;
+                                }
+                            }else{
+                                if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                    長押し阻止=1;
+                                    mini_stage=get_mode;
+                                    get_mode=0;
+                                    if(mini_stage==3){
+                                        セリフ="デカねずみが現れた！";
+                                    }else if(mini_stage==5){
+                                        セリフ="毒ねずみが現れた！";
+                                    }else if(mini_stage==8){
+                                        セリフ="達人ねずみが現れた！";
+                                    }
+                                    セリフガガガ=0;
+                                    セリフ_ピ=0;
+                                    セリフダダダ=0;
+                                    cursor_x=0;
+                                }
+                            }
+                            
+                            
+                        }
+                        if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                            key_input="";
+                            key_interval=0;
+                        }
+                        
+                    }else if(key_interval>0){
+                        key_interval=key_interval-1;//カウントダウン
+                    }
+
+                    if(長押し阻止==1 && (key_input.indexOf("〇")==-1 && key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
+                        長押し阻止=0; 
+                    }
+                    
+                    ctx.fillStyle="rgb(20,20,60)";
+                    ctx.fillRect(0,0,1000,1000);
+                    ctx.fillStyle="rgb(255,255,255)";
+                    ctx.fillRect(240,240,520,520);
+                    
+                    ctx.fillStyle="rgb(200,200,200)";
+                    ctx.fillRect(0,760,1000,250);
+                    ctx.fillStyle="rgb(30,30,30)";
+                    ctx.fillRect(10,770,980,220);
+                    
+                    if(mini_stage==0){//初期化だぜー！
+                        今回のデッキ={card_list:[[syuukun,1],[burakkusyuukun,1],[rozusyuu,1],[ikaribakuhatu,1]],ACE:[],TOP_ACE:[syuukun,burakkusyuukun,rozusyuu,ikaribakuhatu]};
+                        今回のデッキ_表示={card_list:[],ACE:[],TOP_ACE:[0,1,2]};
+                        
+                        カードカウント=0;
+                        for(let i=0;i<今回のデッキ.card_list.length;i++){
+                            for(let j=0;j<今回のデッキ.card_list[i][1];j++){
+                                今回のデッキ_表示.card_list[カードカウント]=今回のデッキ.card_list[i][0];
+                                カードカウント+=1;
+                            }
+                        }
+                        scroll_x=0;
+                        cursor_x=0;
+                        cursor_y=1;
+                        mini_stage=2;//ここをかえると調整が楽でいいよね！え？誰向けのコメント？
+                        get_mode=0;
+                        
+                        セリフ="ネズミが現れた！";
+                        セリフガガガ=0;
+                        セリフ_ピ=0;
+                        セリフダダダ=0;
+                    }else if(mini_stage==1){
+                        
+                        セリフ表示(20,780,960,50,4)
+
+                        ctx.fillStyle="rgb(30,30,30)";
+                        ctx.fillRect(250,250,500,500);
+                        ctx.drawImage(nezumi500,250,250);
+                    }else if(mini_stage==2){
+                        
+                        セリフ表示(20,780,960,50,4)
+                        ctx.fillStyle="rgb(155,155,155)";
+                        ctx.fillRect(300,250,150,500);
+                        ctx.fillRect(550,250,150,500);
+                        ctx.drawImage(zako500,300,250);
+                        ctx.drawImage(maho500,550,250);
+
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(325,600,100,100);
+                        ctx.fillRect(575,600,100,100);
+
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText("+2", 350, 670,50);
+                        ctx.fillText("+3", 600, 670,50);
+
+                    }else if(mini_stage==3){
+                        
+                        セリフ表示(20,780,960,50,4)
+
+                        ctx.fillStyle="rgb(30,30,30)";
+                        ctx.fillRect(250,250,500,500);
+                        ctx.drawImage(dekanezumi500,250,250);
+                    }else if(mini_stage==4){
+                        
+                        セリフ表示(20,780,960,50,4)
+                        ctx.fillStyle="rgb(155,155,155)";
+                        ctx.fillRect(250,250,150,500);
+                        ctx.drawImage(zako500,250,250);
+                        ctx.fillRect(400,250,150,500);
+                        ctx.drawImage(maho500,400,250);
+                        ctx.fillRect(600,250,150,500);
+                        ctx.drawImage(kyou500,600,250);
+
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(275,600,250,100);
+                        ctx.fillRect(625,600,100,100);
+
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText("+2", 300, 670,50);
+                        ctx.fillText("+3", 450, 670,50);
+                        ctx.fillText("+1", 650, 670,50);
+
+                    }else if(mini_stage==5){
+                        
+                        セリフ表示(20,780,960,50,4)
+
+                        ctx.fillStyle="rgb(30,30,30)";
+                        ctx.fillRect(250,250,500,500);
+                        ctx.drawImage(dokunezumi500,250,250);
+                    }else if(mini_stage==6){
+                        
+                        セリフ表示(20,780,960,50,4)
+                        ctx.fillStyle="rgb(155,155,155)";
+                        ctx.fillRect(300,250,150,500);
+                        ctx.fillRect(550,250,150,500);
+                        ctx.drawImage(ken500,300,250);
+                        ctx.drawImage(tairyoku500,550,250);
+
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(325,600,100,100);
+                        ctx.fillRect(575,600,100,100);
+
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText("+1", 350, 670,50);
+                        ctx.fillText("+3", 600, 670,50);
+                    }else if(mini_stage==7){
+                        
+                        セリフ表示(20,780,960,50,4)
+
+                        ctx.fillStyle="rgb(30,30,30)";
+                        ctx.fillRect(250,250,500,500);
+                        ctx.drawImage(tamanezumi500,250,250);
+                    }else if(mini_stage==8){
+                        
+                        セリフ表示(20,780,960,50,4)
+                        ctx.fillStyle="rgb(155,155,155)";
+                        ctx.fillRect(250,250,150,500);
+                        ctx.drawImage(zako500,250,250);
+                        ctx.fillRect(400,250,150,500);
+                        ctx.drawImage(maho500,400,250);
+                        ctx.fillRect(600,250,150,500);
+                        ctx.drawImage(kyou500,600,250);
+
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(275,600,250,100);
+                        ctx.fillRect(625,600,100,100);
+
+                        ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                        ctx.fillStyle="rgb(0,0,0)";
+                        ctx.fillText("+2", 300, 670,50);
+                        ctx.fillText("+5", 450, 670,50);
+                        ctx.fillText("+1", 650, 670,50);
+                    }else if(mini_stage==9){
+                        
+                        セリフ表示(20,780,960,50,4)
+
+                        ctx.fillStyle="rgb(30,30,30)";
+                        ctx.fillRect(250,250,500,500);
+                        ctx.drawImage(tatujinnezumi500,250,250);
+                    }else if(mini_stage==-1){//戦闘準備ー！
+                        my_deck=[];//初期化初期化ー！って初期化しなくて良いヤツも初期化してる気がする。まあいいか
+                        teki_deck=[];
+                        my_yamahuda=[];
+                        teki_yamahuda=[];
+                        my_tehuda=[];
+                        teki_tehuda=[];
+                        my_ba=["","","","",""];
+                        teki_ba=["","","","",""];
+                        death_my_ba=["","","","",""];//死亡時演出のためにカードを別の場所に移したい（場に残すとバグの温床になることは自明なので）
+                        death_teki_ba=["","","","",""];
+                        tukau_mahou=[];//魔法つかった瞬間に消えるのよくないと思った。
+
+                        my_haka=[];
+                        teki_haka=[];
+                        
+                        deck_initialize(今回のデッキ,my_deck,my_yamahuda);
+                        deck_initialize(teki_deck_list,teki_deck,teki_yamahuda);
+
+                        my_now_pull=3+my_stage_pull;//ステージドロー
+                        pull_card(my_yamahuda,my_tehuda,my_now_pull);
+                        一時的なドロー枚数=[my_now_pull,teki_pull];
+                        next_phase="戦闘";
+
+                        cursor=16;
+                        cursor2=0;
+
+                        duel_phase="自由";
+                        aite_phase=0;//相手のターンに動かしたい。
+                       
+                        aite_delay=0;//お前高速で動きすぎ！
+
+                        my_kougeki_sum=0;//AI用
+                        teki_kougeki_sum=0;//降参にも使ってる
+
+                        zuba=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]//zuba64を表示するタイマー
+                        yamahuda_damage=[0,0,0,0];//左が俺へのダメージで、右が相手へのダメージ描写
+                        
+                        get_card="";
+                        相手の降参=0;
+
+                        atk_card="";
+                        def_card="";
+                    }
+
+                    //カード表示
+                    ctx.fillStyle="rgb(100,100,100)";
+                    ctx.fillRect(5,5,990,230);
+
+                    for(let i=0;i<9;i++){
+                        ctx.fillStyle="rgb(200,200,200)";
+                        if((i+scroll_x-1)>=0 && (i+scroll_x-1)<今回のデッキ_表示.card_list.length){
+                            ctx.fillRect(-130+140*i,10,140,220);
+                            ctx.drawImage(今回のデッキ_表示.card_list[i+scroll_x-1].image,-125+140*i,20);
+                            if(今回のデッキ_表示.TOP_ACE.indexOf(i+scroll_x-1)!=-1){
+                                ctx.fillStyle="rgb(255,0,0)";
+                                ctx.fillRect(-125+140*i-2,20,5,200);
+                                ctx.fillRect(-125+140*i+128,20,5,200);
+                                ctx.fillRect(-125+140*i,20,133,5);
+                                ctx.fillRect(-125+140*i,20+195,133,5);
+                            }
+                            if(今回のデッキ_表示.ACE.indexOf(i+scroll_x-1)!=-1){
+                                ctx.fillStyle="rgb(255,255,0)";
+                                ctx.fillRect(-125+140*i-2,20,5,200);
+                                ctx.fillRect(-125+140*i+128,20,5,200);
+                                ctx.fillRect(-125+140*i,20,133,5);
+                                ctx.fillRect(-125+140*i,20+195,133,5);
+                            }
+                        } 
+                    }
+
+                    //  スクロール？
+                    ctx.fillStyle="rgb(100,100,100)";
+                    ctx.fillRect(50,225,900,20);
+
+                    ctx.fillStyle="rgb(255,255,255)";
+                    
+                    if(今回のデッキ_表示.card_list.length>7){
+                        ctx.fillRect(60+680*(scroll_x/(今回のデッキ_表示.card_list.length-7)),227,200,16);
+                    }else{
+                        ctx.fillRect(60,227,880,16);
+                    }
+
+
+                    //  カーソル
+                    if(cursor_y==0){
+                        ctx.drawImage(yubi,20+cursor_x*140,150+4*Math.sin(time*Math.PI/8));
+                    }else if(cursor_y==1){
+                        if(mini_stage%2==1){
+                            ctx.drawImage(yubi,440,700+4*Math.sin(time*Math.PI/8));
+                        }else if(mini_stage==2 || mini_stage==6){
+                            if(cursor_x==0){
+                                ctx.drawImage(yubi,300,700+4*Math.sin(time*Math.PI/8));
+                            }else if(cursor_x==1){
+                                ctx.drawImage(yubi,590,700+4*Math.sin(time*Math.PI/8));
+                            }
+                        }else if(mini_stage==4 || mini_stage==8){
+                            if(cursor_x==0){
+                                ctx.drawImage(yubi,350,700+4*Math.sin(time*Math.PI/8));
+                            }else if(cursor_x==1){
+                                ctx.drawImage(yubi,610,700+4*Math.sin(time*Math.PI/8));
+                            }
+                        }
+                        
+                    }
+
+                    
+                    if(cursor_y==0){
+                        ctx.fillStyle="rgb(100,100,130)";
+                        ctx.fillRect(0,740,1000,260);
+                        ctx.fillStyle="rgb(55,55,55)";//詳細表示─
+                        ctx.fillRect(5,745,990,250);
+                        ctx.fillStyle="rgb(255,255,255)";
+                        ctx.fillRect(10,750,980,240);
+                        ctx.fillStyle="rgb(55,55,55)";
+                        ctx.fillRect(550,755,5,230);
+                        if(cursor_x+scroll_x<今回のデッキ_表示.card_list.length){
+                            syousai_card=今回のデッキ_表示.card_list[cursor_x+scroll_x];
+                        }else{
+                            syousai_card="";
+                        }
+                        
+                        if(syousai_card!=""){
+                            ctx.fillStyle="rgb(200,200,200)";
+                            ctx.fillRect(15,755,490,50);
+                            ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText(syousai_card.name, 20, 798,480);
+                            
+
+                            if(syousai_card.state.indexOf("モンスター")!=-1){
+                                ctx.drawImage(atk_plate,560,760);
+                                ctx.drawImage(def_plate,610,765);
+                                ctx.font = "40px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(255,255,255)";
+                                if(syousai_card.ATK<10){
+                                    ctx.fillText(syousai_card.ATK, 574, 802,42);
+                                }else{
+                                    ctx.fillText(syousai_card.ATK, 564, 802,42);
+                                }
+                                if(syousai_card.HP<10){
+                                    ctx.fillText(syousai_card.HP, 624, 802,42);
+                                }else{
+                                    ctx.fillText(syousai_card.HP, 614, 802,42);
+                                }
+                            }
+                            ctx.fillStyle="rgb(0,0,0)";
+                            text_kaigyou_hyouji(syousai_card.text, 20, 810,520,180,40,syousai_card.text_iro);//x,yは左上指定だから注意だ！
+                        
+                            syousai_state_color=[];
+                            syousai_state="分類:";
+                            for(let i=0;i<syousai_card.state.length;i++){
+                                if(syousai_card.state[i]=="TOP_ACE"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,7,"rgb(255,0,0)"];
+                                }else if(syousai_card.state[i]=="ACE"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,3,"rgb(200,200,0)"];
+                                }else if(syousai_card.state[i]=="毒:"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,1,"rgb(200,0,200)"];
+                                }else if(syousai_card.state[i]=="防御:"){
+                                    syousai_state_color[syousai_state_color.length]=[syousai_state.length+1,2,"rgb(0,0,200)"];
+                                }
+                                syousai_state+=" "+syousai_card.state[i];
+                            }
+                            text_kaigyou_hyouji(syousai_state, 560, 810,420,180,40,syousai_state_color);//x,yは左上指定だから注意だ！
+                            
+                            カードインデックス=今回のデッキ_表示.card_list.indexOf(syousai_card);
+                            カードカウント=0;
+                            if(カードインデックス!=-1){
+                                カードインデックス
+                                for(let i=カードインデックス;i<今回のデッキ_表示.card_list.length;i++){
+                                    if(今回のデッキ_表示.card_list[i]==今回のデッキ_表示.card_list[カードインデックス]){
+                                        カードカウント+=1;
+                                    }else{
+                                        break;
+                                    }
+                                }
+                            }
+                            ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                            ctx.fillStyle="rgb(0,0,0)";
+                            ctx.fillText("デッキ："+カードカウント+"枚", 695, 800);
+                            
+                        }
+                    }//ここまで詳細
+
+                    if(get_mode!=0){
+                        ctx.fillStyle="rgb(0,0,0,0.6)";
+                        ctx.fillRect(0,0,1000,1000);
+                        ctx.fillStyle="rgb(200,200,200)";
+                        if(出てきたカード.length==1){
+                            ctx.fillText(出てきたカード[0].name, 430,395+4*Math.sin(time*Math.PI/8),140,210,140);
+                            ctx.fillRect(430,395+4*Math.sin(time*Math.PI/8),140,210);
+                            ctx.drawImage(出てきたカード[0].image,435,400+4*Math.sin(time*Math.PI/8));
+                        }else if(出てきたカード.length<6){
+                            for(i=0;i<出てきたカード.length;i++){
+                                ctx.fillText(出てきたカード[i].name, 500-75*出てきたカード.length+i*150-5,395+4*Math.sin(time*Math.PI/8),140,210,140);
+                                ctx.fillRect(500-75*出てきたカード.length+i*150-5,395+4*Math.sin(time*Math.PI/8),140,210);
+                                ctx.drawImage(出てきたカード[i].image,500-75*出てきたカード.length+i*150,400+4*Math.sin(time*Math.PI/8));
+                            }
+                        }else{
+                            for(i=0;i<出てきたカード.length;i++){
+                                ctx.fillText(出てきたカード[i].name, 45+i/(出てきたカード.length-1)*770,395+4*Math.sin(time*Math.PI/8),140,210,140);
+                                ctx.fillRect(45+i/(出てきたカード.length-1)*770,395+4*Math.sin(time*Math.PI/8),140,210);
+                                ctx.drawImage(出てきたカード[i].image,50+i/(出てきたカード.length-1)*770,400+4*Math.sin(time*Math.PI/8));
+                            }
+                        }
+                        
+                    }
+
+                    ctx.fillStyle="rgb(255,255,255)";
+                    ctx.fillRect(10,270,220,74);
+                    
+                    ctx.scale(2, 2);
+                    tokusyu_hyouji(10,140);
+                    ctx.scale(0.5, 0.5);
+
                 }
 
                 function 所持カードのセーブ(){
@@ -4834,10 +5551,27 @@
                 },AI:function(タイミング){
                     return true;//強いキャラがいないと使わないってほうが賢い気もするが、気にするな！
                 },text:"自分の場のブラックしゅうくんを選んでATK+5。さらに3回目のターンエンド時に手札に闇化を得る。「もーしゅうくん怒ったからねー！！！」",text_iro:[]};
+
+                var nezumi={name:"ねずみ",image:nezumi_image,ATK:1,HP:1,state:["モンスター","ネズミ"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ぽにゃより弱いモンスターっていたんだ",text_iro:[]};
+                var tyuunezumi={name:"中ねずみ",image:tyuunezumi_image,ATK:3,HP:5,state:["モンスター","ネズミ"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ﾁｭｰ…ねずみ",text_iro:[]};
+                var dekanezumi={name:"デカねずみ",image:dekanezumi_image,ATK:3,HP:15,state:["モンスター","ネズミ"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ネズミしてはでかい。",text_iro:[]};
+                var dokunezumi={name:"毒ねずみ",image:dokunezumi_image,ATK:1,HP:3,state:["モンスター","ネズミ","毒付与"],effect_req:function(タイミング){return false;},effect:function(タイミング){
+                    if(タイミング=="攻撃した"){
+                        if(def_card.state.indexOf("毒:")!=-1){//毒状態ですかぁ？
+                            def_card.state[def_card.state.indexOf("毒:")+1]+=3;//追加だ
+                        }else{
+                            def_card.state.push("毒:");
+                            def_card.state.push(3);
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"噛みついた相手に毒+3。ﾁｭｰ毒になっちゃう！",text_iro:[]};
+                var tamanezumi={name:"玉ねずみ",image:tamanezumi_image,ATK:0,HP:20,state:["モンスター","ネズミ","ブロック"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ﾁｭｰ目の的！？",text_iro:[]};
+                var tatujinnezumi={name:"達人ねずみ",image:tatujinnezumi_image,ATK:3,HP:10,state:["モンスター","ネズミ","二回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"炸裂！ﾁｭｰ極拳法！二連パンチ！！",text_iro:[]};
+
                 //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
                 all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro,buiwa,raihudaiya,seiretu,kyuusainote,kenrounarusoukou,zettainotamasii,kyousinja,hametunokami,burakkusyuukun,hojoseki,musyounoai,nitouryuukengi,sinennoai,tyoubusou,yamiryuusyuu,yamika,doragonburesu,zerozonbizu,ponyaaidoru,aidorukourin,hametunosinkou,sentanseisei,ikkakudaija_2,ittouryoudan,ponyasyoukansi,zousyoku,sukurappugoremu,sukurappubirudo,sasori_hujou,dokuhakinoko,karamaruito,ookametake,moukyodokudaitake,rozusyuu,kanbansan,gurumesinjidai,kinkyuujitai3,miryousuruhitomi,kankyouseihagoremu];
                 all_card.push(...[dokuzomenaihu,tizomenaihu,muzomenaihu,naihuzomeotoko,sabitayari,kantuuya,sabitataiken,ueponsarubeji,hokakusuneku,isseihokaku,aooni,akaoni,sunattidoragon,touryuuzannosiren,ryuukon,ikaribakuhatu]);
-                
+                all_card.push(...[nezumi,tyuunezumi,dekanezumi,dokunezumi,tamanezumi,tatujinnezumi]);
                 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
@@ -4868,9 +5602,18 @@
                 var hokaku_list={card_list:[[hokakusuneku,15],[sabitataiken,10],[isseihokaku,10]],ACE:[hokakusuneku,hokakusuneku],TOP_ACE:[hokakusuneku,sabitataiken,hokakusuneku,sabitataiken]};
                 var aooni_list={card_list:[[aooni,1],[akaoni,1],[touryuuzannosiren,1],[ryuukon,1],[isseihokaku,4],[buiwa,5],[zerozonbizu,1]],ACE:[buiwa,buiwa],TOP_ACE:[aooni,akaoni,touryuuzannosiren,ryuukon,buiwa,zerozonbizu]};
                 
+                var nezumi_list={card_list:[[nezumi,5],[tyuunezumi,5],[dekanezumi,1]],ACE:[dekanezumi],TOP_ACE:[nezumi]};
+                var dekanezumi_list={card_list:[[nezumi,2],[tyuunezumi,5],[dekanezumi,3]],ACE:[dekanezumi],TOP_ACE:[dekanezumi]};
+                var dokunezumi_list={card_list:[[nezumi,15],[dokunezumi,5]],ACE:[dokunezumi,dokunezumi,dokunezumi],TOP_ACE:[nezumi,nezumi,nezumi,nezumi,nezumi]};
+                var tamanezumi_list={card_list:[[tamanezumi,5],[tyuunezumi,3],[dokunezumi,5]],ACE:[tamanezumi],TOP_ACE:[tamanezumi,tyuunezumi,tyuunezumi]};
+                var tatujinnezumi_list={card_list:[[tatujinnezumi,10],[tamanezumi,5],[dekanezumi,5]],ACE:[dekanezumi,tamanezumi,tatujinnezumi],TOP_ACE:[dekanezumi]};
                 //パック
                 var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,atakkumojuru,atakkumojuru,kaihukumojuru,kaihukumojuru,sukurappudoro,sukurappudoro,henyamotin,henyamotin,henyamotin,henyamotin];
                 var 上位召喚パック=[aidorukourin,aidorukourin,aidorukourin,zousyoku,zousyoku,ponyasyoukansi,ponyasyoukansi,hametunosinkou,kyousinja,kyousinja,kyousinja,sentanseisei,sentanseisei,sentanseisei,ittouryoudan,ittouryoudan,ikkakudaija_hara,ikkakudaija_hara,ikkakudaija_hara,ikkakudaija_hara,sukurappubirudo,sukurappubirudo,sukurappubirudo,raihudaiya,raihudaiya,raihudaiya,raihudaiya];
+ 
+                var 雑魚パック=[syuukun,hojorobo,ponya,ponya_ace,kameisi,kametetu,henyamotin,ponya_big,ponya_daburu,sasori,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,buiwa,kyuusainote,kenrounarusoukou,zettainotamasii,kyousinja,burakkusyuukun,hojoseki,ponyasyoukansi,sasori_hujou,dokuhakinoko,karamaruito,moukyodokudaitake,rozusyuu,dokuzomenaihu,muzomenaihu,naihuzomeotoko];
+                var 魔法パック=[ryuunoitigeki,powerup3,HPup5,yakuso_3,sukurappudoro,raihudaiya,seiretu,musyounoai,nitouryuukengi,tyoubusou,yamika,doragonburesu,aidorukourin,hametunosinkou,sentanseisei,ittouryoudan,zousyoku,sukurappubirudo,gurumesinjidai,kinkyuujitai3,miryousuruhitomi,kantuuya,ueponsarubeji,isseihokaku,touryuuzannosiren,ryuukon,ikaribakuhatu];
+                var 強パック=[kinkyuujitai5,ponya_sutoraiku,ponya_rein,sasori_seitai,ikkakudaija_atama,zerozonbizu,ookametake,kanbansan,kankyouseihagoremu,tizomenaihu,sabitayari,sabitataiken,hokakusuneku,aooni,akaoni];
                 //ここからロード、なんで一個ずつやってるのかというと、開発中はバージョンによってセーブデータがあったりなかったりするから、バグる。
                 //全データ消去();
                 if(localStorage.getItem('所持カード')){//セーブデータがあるね
@@ -4947,15 +5690,16 @@
                 
                 //お金=99999;
                 //deck_list={card_list:[[burakkusyuukun,1],[ikaribakuhatu,4]],ACE:[],TOP_ACE:[]};
-                //ponya_list={card_list:[[burakkusyuukun,10]],ACE:[],TOP_ACE:[]};
+                //ponya_list={card_list:[[burakkusyuukun,1]],ACE:[],TOP_ACE:[]};
                 //ponya_list=deck_list;
                 //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
                 //game_phase="デッキ編集";
                 //sub_phase="デッキリスト";
                 //cursor=1;
-                //mini_stage=8;
-                //game_phase="挑戦";
-                //stage=5;
+                //MAX_STAGE=4;
+                mini_stage=0;
+                game_phase="挑戦";
+                stage=6;
                 //MAX_TOP_ACE=15;
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
@@ -5012,7 +5756,7 @@
                                     if(cursor==2){
                                         next_phase="デッキ編集準備";
                                         演出カウント=-20;
-                                    }else if(cursor==3 && stage<=5){//実装済みステージ数より大きくしないこと。
+                                    }else if(cursor==3 && stage<=6){//実装済みステージ数より大きくしないこと。
                                         next_phase="挑戦";
                                         演出カウント=1;
                                         mini_stage=0;
@@ -5094,6 +5838,8 @@
                             ctx.drawImage(hujounomori_title,0,100);
                         }else if(stage==5){
                             ctx.drawImage(syuukungari_title,0,100);
+                        }else if(stage==6){
+                            ctx.drawImage(dekkitounan_title,0,100);
                         }else{
                             ctx.drawImage(junbityuu_title,0,100);
                         }
@@ -5687,33 +6433,9 @@
                                     MAX_STAGE=6;
                                     localStorage.setItem('MAX_STAGE',MAX_STAGE);//ゲームデータセーブ
                                     
-                                    //取得
-                                    new_card=0;
-                                    get_card=burakkusyuukun;
-                                    for(let i=0;i<所持カード.length;i++){
-                                        if(所持カード[i][0].name==get_card.name){//持ってる？このカード
-                                            所持カード[i][1]+=1;
-                                            new_card=1;//このカード持ってたわ
-                                            break;
-                                        }
-                                    }
-                                    if(new_card==0){//新規カードだ！
-                                        所持カード[所持カード.length]=[get_card,1];
-                                    }
-                                    new_card=0;
-                                    get_card=ikaribakuhatu;
-                                    for(let i=0;i<所持カード.length;i++){
-                                        if(所持カード[i][0].name==get_card.name){//持ってる？このカード
-                                            所持カード[i][1]+=1;
-                                            new_card=1;//このカード持ってたわ
-                                            break;
-                                        }
-                                    }
-                                    if(new_card==0){//新規カードだ！
-                                        所持カード[所持カード.length]=[get_card,1];
-                                    }
-
-                                    所持カードのセーブ();
+                                    カードゲット(burakkusyuukun);
+                                    カードゲット(ikaribakuhatu);
+                                    
                                 }
                                 if(初回クリアメッセージフラグ==1){
                                     ctx.fillText("・ブラックしゅうくん", 100, 780);
@@ -5741,6 +6463,8 @@
                             }
                             
                             ctx.scale(0.5, 0.5);
+                        }else if(stage==6){//デッキ盗難
+                            デッキ盗難();
                         }
                         
 
@@ -5766,8 +6490,10 @@
                         cursor=0;
                         if(MAX_STAGE==2){
                             パック売るよ=0;
-                        }else if(MAX_STAGE>=4){
+                        }else if(MAX_STAGE>=4 && MAX_STAGE<=6){
                             パック売るよ=1;
+                        }else if(MAX_STAGE>=7){
+                            パック売るよ=4;
                         }else{
                             パック売るよ=0;
                         }
@@ -5897,6 +6623,18 @@
                                                 for(i=0;i<3*(購入数[0]*100+購入数[1]*10+購入数[2]);i++){
                                                     出てきたカード[i]=上位召喚パック[Math.floor(Math.random()*上位召喚パック.length)];
                                                 }
+                                            }else if(cursor==2){
+                                                for(i=0;i<3*(購入数[0]*100+購入数[1]*10+購入数[2]);i++){
+                                                    出てきたカード[i]=雑魚パック[Math.floor(Math.random()*雑魚パック.length)];
+                                                }
+                                            }else if(cursor==3){
+                                                for(i=0;i<3*(購入数[0]*100+購入数[1]*10+購入数[2]);i++){
+                                                    出てきたカード[i]=魔法パック[Math.floor(Math.random()*魔法パック.length)];
+                                                }
+                                            }else if(cursor==4){
+                                                for(i=0;i<3*(購入数[0]*100+購入数[1]*10+購入数[2]);i++){
+                                                    出てきたカード[i]=強パック[Math.floor(Math.random()*強パック.length)];
+                                                }
                                             }
 
                                             お金-=金額[cursor]*(購入数[0]*100+購入数[1]*10+購入数[2]);
@@ -5918,7 +6656,7 @@
                                                 get_card={...出てきたカード_ソート[i]};
                                                 new_card=0;
                                                 カードインデックス=0;
-                                                //取得カード決定
+                                                //カードゲット();…しないほうがいいか？いいか。うん、まあ、いいか
                                                 for(let j=0;j<所持カード.length;j++){
                                                     if(所持カード[j][0].name==get_card.name){//持ってる？このカード
                                                         所持カード[j][1]+=1;
@@ -6008,7 +6746,7 @@
                             }
                             
                             if(パック売るよ>=2){
-                                パック陳列 (550,50,ponya_pack,cursor==2);
+                                パック陳列 (550,50,zakopakku,cursor==2);
                                 ctx.fillStyle="rgb(0,0,0)";
                                 ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                                 ctx.fillText(金額[2], 630, 320);
@@ -6016,7 +6754,7 @@
                             }
                             
                             if(パック売るよ>=3){
-                                パック陳列 (50,350,ponya_pack,cursor==3);
+                                パック陳列 (50,350,mahopakku,cursor==3);
                                 ctx.fillStyle="rgb(0,0,0)";
                                 ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                                 ctx.fillText(金額[3], 130, 620);
@@ -6024,7 +6762,7 @@
                             }
                             
                             if(パック売るよ>=4){
-                                パック陳列 (300,350,ponya_pack,cursor==4);
+                                パック陳列 (300,350,kyoupakku,cursor==4);
                                 ctx.fillStyle="rgb(0,0,0)";
                                 ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                                 ctx.fillText(金額[4], 380, 620);
@@ -6111,8 +6849,24 @@
                                 カードパック(50,50,jouisyoukanpakku);
                                 パックの中身(上位召喚パック,50,300,700,600);
                             
-                            }else{
-
+                            }else if(cursor==2){
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("雑魚パック", 200, 100);
+                                カードパック(50,50,zakopakku);
+                                パックの中身(雑魚パック,50,300,700,600);
+                            }else if(cursor==3){
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("魔法パック", 200, 100);
+                                カードパック(50,50,mahopakku);
+                                パックの中身(魔法パック,50,300,700,600);
+                            }else if(cursor==4){
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("強パック", 200, 100);
+                                カードパック(50,50,kyoupakku);
+                                パックの中身(強パック,50,300,700,600);
                             }
 
                             ctx.fillStyle="rgb(0,0,0)";
@@ -7955,7 +8709,6 @@
                         yamahuda_damage=[0,0,0,0];//左が俺へのダメージで、右が相手へのダメージ描写
                         
                         get_card="";
-                        new_card=0;
                         相手の降参=0;
 
                         atk_card="";
@@ -9121,19 +9874,7 @@
                                     }
                                 }
                                 
-                                new_card=0;
-                                //取得カード決定
-                                for(let i=0;i<所持カード.length;i++){
-                                    if(所持カード[i][0].name==get_card.name){//持ってる？このカード
-                                        所持カード[i][1]+=1;
-                                        new_card=1;//このカード持ってたわ
-                                        break;
-                                    }
-                                }
-                                if(new_card==0){//新規カードだ！
-                                    所持カード[所持カード.length]=[get_card,1];
-                                }
-                                所持カードのセーブ();
+                                カードゲット(get_card);
                                 お金+=drop_gold;
                                 localStorage.setItem('お金',お金);
                             }
