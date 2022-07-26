@@ -2826,7 +2826,7 @@
                     ctx.fillRect(10,770,980,220);
                     
                     if(mini_stage==0){//初期化だぜー！
-                        今回のデッキ={card_list:[[syuukun,1],[burakkusyuukun,1],[rozusyuu,1],[ikaribakuhatu,1]],ACE:[],TOP_ACE:[syuukun,burakkusyuukun,rozusyuu,ikaribakuhatu]};
+                        今回のデッキ={card_list:[[syuukun,1],[burakkusyuukun,1],[rozusyuu,1],[ikaribakuhatu,1]],ACE:[],TOP_ACE:[syuukun,burakkusyuukun,rozusyuu]};
                         今回のデッキ_表示={card_list:[],ACE:[],TOP_ACE:[0,1,2]};
                         
                         カードカウント=0;
@@ -3008,7 +3008,7 @@
                         ctx.fillStyle="rgb(30,30,30)";
                         ctx.fillRect(250,250,500,500);
                         ctx.drawImage(tyuukun500,250,250);
-                    }else if(mini_stage==-1){//戦闘準備ー！
+                    }else if(mini_stage==-1){//戦闘準備ー！ これn回動いてない？（笑）
                         my_deck=[];//初期化初期化ー！って初期化しなくて良いヤツも初期化してる気がする。まあいいか
                         teki_deck=[];
                         my_yamahuda=[];
@@ -3026,6 +3026,7 @@
                         
                         deck_initialize(今回のデッキ,my_deck,my_yamahuda);
                         deck_initialize(teki_deck_list,teki_deck,teki_yamahuda);
+                        
 
                         my_now_pull=3+my_stage_pull;//ステージドロー
                         pull_card(my_yamahuda,my_tehuda,my_now_pull);
