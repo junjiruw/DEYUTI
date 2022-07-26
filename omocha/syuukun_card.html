@@ -2524,7 +2524,7 @@
                                                 }
                                             }
 
-                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]];
+                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]+今回のデッキ.card_list[2][1]];
                                             get_mode=3;
                                             
                                         }else if(mini_stage==3){
@@ -2576,7 +2576,7 @@
                                                 }
                                             }
 
-                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]];
+                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]+今回のデッキ.card_list[2][1]];
                                             get_mode=5;
                                             
                                         }else if(mini_stage==5){
@@ -2656,7 +2656,7 @@
                                                 }
                                             }
 
-                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]];
+                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]+今回のデッキ.card_list[2][1]];
                                             get_mode=9;
                                         }else if(mini_stage==9){
                                             演出カウント=1;
@@ -2707,7 +2707,7 @@
                                                 }
                                             }
 
-                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]];
+                                            今回のデッキ_表示.TOP_ACE=[0,今回のデッキ.card_list[0][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1],今回のデッキ.card_list[0][1]+今回のデッキ.card_list[1][1]+今回のデッキ.card_list[2][1]];
                                             get_mode=11;
                                         }else if(mini_stage==11){
                                             演出カウント=1;
@@ -2826,8 +2826,8 @@
                     ctx.fillRect(10,770,980,220);
                     
                     if(mini_stage==0){//初期化だぜー！
-                        今回のデッキ={card_list:[[syuukun,1],[burakkusyuukun,1],[rozusyuu,1],[ikaribakuhatu,1]],ACE:[],TOP_ACE:[syuukun,burakkusyuukun,rozusyuu]};
-                        今回のデッキ_表示={card_list:[],ACE:[],TOP_ACE:[0,1,2]};
+                        今回のデッキ={card_list:[[syuukun,1],[burakkusyuukun,1],[rozusyuu,1],[ikaribakuhatu,1]],ACE:[],TOP_ACE:[syuukun,burakkusyuukun,rozusyuu,ikaribakuhatu]};
+                        今回のデッキ_表示={card_list:[],ACE:[],TOP_ACE:[0,1,2,3]};
                         
                         カードカウント=0;
                         for(let i=0;i<今回のデッキ.card_list.length;i++){
