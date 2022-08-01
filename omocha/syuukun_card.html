@@ -349,6 +349,23 @@
             var ou_image=new Image();
             ou_image.src="../images/omocha/syuukun_card/ou.png";
 
+            var buppinhanbai_image=new Image();
+            buppinhanbai_image.src="../images/omocha/syuukun_card/buppinhanbai.png";
+            var daijanotukai_image=new Image();
+            daijanotukai_image.src="../images/omocha/syuukun_card/daijanotukai.png";
+            var hametuwomatumono_image=new Image();
+            hametuwomatumono_image.src="../images/omocha/syuukun_card/hametuwomatumono.png";
+            var kameko_image=new Image();
+            kameko_image.src="../images/omocha/syuukun_card/kameko.png";
+            var operobo_image=new Image();
+            operobo_image.src="../images/omocha/syuukun_card/operobo.png";
+            var sasori_musume_image=new Image();
+            sasori_musume_image.src="../images/omocha/syuukun_card/sasori_musume.png";
+            var sourugadona_image=new Image();
+            sourugadona_image.src="../images/omocha/syuukun_card/sourugadona.png";
+            var zerozerozero_image=new Image();
+            zerozerozero_image.src="../images/omocha/syuukun_card/zerozerozero.png";
+
             //--メニュー？
 
             var kuria=new Image();
@@ -373,6 +390,9 @@
             mahopakku.src="../images/omocha/syuukun_card/mahoupakku.png";
             var kyoupakku=new Image();
             kyoupakku.src="../images/omocha/syuukun_card/kyoupakku.png";
+
+            var musumepakku=new Image();
+            musumepakku.src="../images/omocha/syuukun_card/musumepakku.png";
             //--ステージ？
             var henyamoti_title=new Image();
             henyamoti_title.src="../images/omocha/syuukun_card/henyamotinsougen_title.png";
@@ -701,7 +721,7 @@
             var パック売るよ=-1;
             //パックの定義は…カードが定義されてないと…できない
             var 購入数=[0,0,0];
-            var 金額=[10,75,100,100,10000,0,0,0,0];
+            var 金額=[10,75,100,100,10000,7500,0,0,0];
             var 出てきたカード=[];
             var 出てきたカード_ソート=[];
             
@@ -872,7 +892,10 @@
                     //shi_card.state=shi_card.card.state;
                     shi_card.can_ATK=0;//攻撃不可
                     
-                    haka.push(shi_card);//GO墓場…なんでここだけpush使ってるんだろ
+                    if(shi_card.state.indexOf("消滅")==-1){
+                        haka.push(shi_card);//GO墓場
+                    }
+                    
                     
                     return "";//場から除去するためにこいつをba_i[n]に代入しておいてくれ。
                     
@@ -903,6 +926,11 @@
                     
                     ba.move=5;
                     if(ba_name=="my_ba"){
+                        for(let i=0;i<5;i++){//破滅持ちは死ぬ
+                            if(my_ba[i]!=="" && my_ba[i].state.indexOf("破滅")!=-1){
+                                my_ba[i]=death_card(my_ba[i],my_haka,i);
+                            }
+                        }
                         for(let i=0;i<特殊状態.length;i++){
                             if(特殊状態[i]=="攻撃"){
                                 ba.ATK+=特殊状態[i+1];
@@ -921,6 +949,11 @@
                         my_ba[num]=ba;
                         my_ba[num].card.effect("召喚された",["my_ba",my_ba[num]]);
                     }else{
+                        for(let i=0;i<5;i++){//破滅持ちは死ぬ
+                            if(teki_ba[i]!=="" && teki_ba[i].state.indexOf("破滅")!=-1){
+                                teki_ba[i]=death_card(teki_ba[i],teki_haka,i);
+                            }
+                        }
                         teki_ba[num]=ba;
                         teki_ba[num].card.effect("召喚された",["teki_ba",teki_ba[num]]);
                     }
@@ -1080,8 +1113,7 @@
                     
                 }
                 function atk_mons(){//体力減らすところまでしかない。このあとに殺してる。…どうなんだ
-                    //防御側のスキルなどが発動
-                    def_card.card.effect("攻撃された");//攻撃カードとか渡したくないですか？→どうせグローバル変数にあるから渡さんでええ！（なるほど～）
+                    
                     if(def_card.state.indexOf("防御:")!=-1){
                         if(def_card.state[def_card.state.indexOf("防御:")+1]>atk_card.ATK){
                             def_card.HP+=atk_card.ATK;
@@ -1089,6 +1121,9 @@
                             def_card.HP+=def_card.state[def_card.state.indexOf("防御:")+1];
                         }
                     }
+                    //防御計算を先に行う理由は防御計算が先に行われるといい感じだからです。
+                    //防御側のスキルなどが発動
+                    def_card.card.effect("攻撃された");//攻撃カードとか渡したくないですか？→どうせグローバル変数にあるから渡さんでええ！（なるほど～）
 
                     //攻撃側のスキルが発動
                     atk_card.card.effect("攻撃した");//攻撃カードの効果が後なのは、なんか防御カードが死んで…いや、待て、攻撃カードが死ぬ可能性もあるな、そんなもん実装するなバーカ
@@ -6484,11 +6519,220 @@
                     
                 },text:"墓地に名前がへにゃもちんのカードが10枚以上あるとき、手札のへにゃもちんを全て捨て、我らの王が戦場を支配する！",text_iro:[]};
 
+                var buppinhanbai={name:"物品販売",image:buppinhanbai_image,state:["魔法","墓地回収","消滅"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i].card.name=="ぽにゃアイドル♪"){
+                                    for(let j=0;j<my_haka.length;j++){
+                                        if(my_haka[j].state.indexOf("魔法")!=-1){
+                                            return true;
+                                        }
+                                    }   
+                                }
+                            }
+                        }else{ 
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && teki_ba[i].card.name=="ぽにゃアイドル♪"){
+                                    for(let j=0;j<teki_haka.length;j++){
+                                        if(teki_haka[j].state.indexOf("魔法")!=-1){
+                                            return true;
+                                        }
+                                    }   
+                                }
+                            }
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        let 魔法数=0;
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<my_haka.length;i++){
+                                if(my_haka[i].state.indexOf("魔法")!=-1){
+                                    魔法数++;
+                                    my_tehuda.push(my_haka[i]);
+                                    my_haka.splice(i,1);
+                                    i-=1;
+                                    if(魔法数==3){
+                                        break;
+                                    }
+                                }
+                            }   
+                        }else{
+                            for(let i=0;i<teki_haka.length;i++){
+                                if(teki_haka[i].state.indexOf("魔法")!=-1){
+                                    魔法数++;
+                                    teki_tehuda.push(teki_haka[i]);
+                                    teki_haka.splice(i,1);
+                                    i-=1;
+                                    if(魔法数==3){
+                                        break;
+                                    }
+                                }
+                            }  
+                        }
+                    }
+                },AI:function(タイミング){
+                    return true; 
+                },text:"ぽにゃアイドルが自分の場にいるとき、墓地から魔法を3枚得る。このカードはどっか行く",text_iro:[]};
+                var kameko={name:"亀子",image:kameko_image,ATK:2,HP:10,state:["モンスター","防御:",10],effect_req:function(タイミング){
+                    return true;  
+                },effect:function(タイミング){
+                    if(タイミング=="攻撃された"){
+                        if(def_card.state.indexOf("防御:")!=-1){//防御ある？
+                            def_card.state[def_card.state.indexOf("防御:")+1]-=2;
+                            if(def_card.state[def_card.state.indexOf("防御:")+1]==0){
+                                def_card.state.splice(def_card.state.indexOf("防御:"),2);
+                            }
+                        }else{
+                            def_card.state.push("防御:");
+                            def_card.state.push(-2);
+                        }
+                    }
+                },AI:function(タイミング){
+                    return true;
+                },text:"硬い甲羅は脆い鎧。あまりいじめられると甲羅が割れちゃいます～！＞＜（攻撃されるたびに防御-2）",text_iro:[]};
+                var sasori_musume={name:"サソリ_娘",image:sasori_musume_image,ATK:5,HP:8,state:["モンスター","二回攻撃"],effect_req:function(タイミング){return true;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"二回斬撃。",text_iro:[]};
+                var operobo={name:"オペレーションロボット",image:operobo_image,ATK:0,HP:2,state:["モンスター","機械","消滅"],effect_req:function(タイミング){return true;
+                },effect:function(タイミング,option){
+                    let 機械数=0;
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方 
+                            for(let i=0;i<my_haka.length;i++){
+                                if(my_haka[i].state.indexOf("機械")!=-1){
+                                    機械数++;
+                                    my_tehuda.push(my_haka[i]);
+                                    my_haka.splice(i,1);
+                                    i-=1;
+                                    if(機械数==2){
+                                        break;
+                                    }
+                                }
+                            }   
+                        }else{
+                            for(let i=0;i<teki_haka.length;i++){
+                                if(teki_haka[i].state.indexOf("機械")!=-1){
+                                    機械数++;
+                                    teki_tehuda.push(teki_haka[i]);
+                                    teki_haka.splice(i,1);
+                                    i-=1;
+                                    if(機械数==2){
+                                        break;
+                                    }
+                                }
+                            }  
+                            
+                        }
+                    }
+                },AI:function(タイミング){ return true;},text:"召喚時、墓地から機械モンスターを２枚手札へ加える。死亡時、このカードはどっかへ行く。",text_iro:[]};
+                var daijanotukai={name:"大蛇の使い",image:daijanotukai_image,ATK:0,HP:2,state:["モンスター"],effect_req:function(タイミング){return true;
+                },effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方 
+                            for(let i=0;i<my_haka.length;i++){
+                                if(my_haka[i].card.name=="一角大蛇の腹"){
+                                    
+                                    my_tehuda.push(my_haka[i]);
+                                    my_haka.splice(i,1);
+
+                                    break;
+                                    
+                                }
+                            }   
+                        }else{
+                            for(let i=0;i<teki_haka.length;i++){
+                                if(teki_haka[i].card.name=="一角大蛇の腹"){
+
+                                    teki_tehuda.push(teki_haka[i]);
+                                    teki_haka.splice(i,1);
+
+                                      break;
+                                    
+                                }
+                            }  
+                            
+                        }
+                    }
+                },AI:function(タイミング){ return true;},text:"召喚時、墓地から一角大蛇の腹を一枚取り出し手札に加える。",text_iro:[]};
+                var sourugadona={name:"ソウル・ガードナー",image:sourugadona_image,ATK:0,HP:1,state:["モンスター","ガード","体力奪取"],effect_req:function(タイミング){
+                    return false;},effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i]!=option[1]){
+                                    option[1].HP+=my_ba[i].HP-1;
+                                    my_ba[i].HP=1;
+                                }
+                            }
+                        }else{//敵
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && teki_ba[i]!=option[1]){
+                                    option[1].HP+=teki_ba[i].HP-1;
+                                    teki_ba[i].HP=1;
+                                }
+                            }
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"召喚時、味方の体力を1になるまで吸い尽くし、最強の盾と化す。",text_iro:[]};
+                var hametuwomatumono={name:"破滅を待つ者",image:hametuwomatumono_image,ATK:0,HP:50,state:["モンスター","破滅"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                    if(タイミング=="死んだ"){
+                        if(option.position=="my_ba"){
+                            デッキカード追加(my_deck,hametunosinkou,"my_tehuda")
+                            my_tehuda.push(my_deck[my_deck.length-1]);
+                        }else{
+                            デッキカード追加(teki_deck,hametunosinkou,"teki_tehuda")
+                            teki_tehuda.push(teki_deck[teki_deck.length-1]);
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"自分の場にモンスターが召喚されたときこのカードは死に、その祈りは手札に届く。「嬉しいんです。私の残り少ない命が私たちの神の役に立つんですから。」",text_iro:[]};
+                var zerozerozero={name:"ゼロ、ゼロ！ゼロォ！！",image:zerozerozero_image,ATK:0,HP:10,state:["モンスター","復活"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方
+                            for(let i=0;i<my_haka.length;i++){
+                                if(my_haka[i].state.indexOf("モンスター")!=-1 && my_haka[i].card.ATK==0){//墓地にもともとの攻撃力0のモンスターがいる
+                                    for(let j=0;j<5;j++){//空いてる場を探す
+                                        if(my_ba[j]==""){
+                                            蘇生(my_ba,j,my_haka,i);
+                                            i-=1;
+                                            break;
+                                        }
+                                    }            
+                                    if(ba_mons_num(my_ba)==5){//これ以上増えない
+                                        break;
+                                    }                    
+                                }
+                            }
+                                    
+                            
+                        }else{
+                            for(let i=0;i<teki_haka.length;i++){
+                                if(teki_haka[i].state.indexOf("モンスター")!=-1 && teki_haka[i].card.ATK==0){//墓地にもともとの攻撃力0のモンスターがいる
+                                    for(let j=0;j<5;j++){//空いてる場を探す
+                                        if(teki_ba[j]==""){
+                                            蘇生(teki_ba,j,teki_haka,i);
+                                            i-=1;
+                                            break;
+                                        }
+                                    }            
+                                    if(ba_mons_num(teki_ba)==5){//これ以上増えない
+                                        break;
+                                    }                    
+                                }
+                            }
+                        
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"ぜろ！ぜろ！ぜろぞんびたちよ、よみがえれ！ぜろ！ぜろ！ぜろ！さあ！こうげきりょくしかない脳無しにこうげきりょくがない脳腐りがくらいつく！（召喚時、元々の攻撃力が0のモンスターを蘇らせまくる）",text_iro:[]};
+
                 //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
                 all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro,buiwa,raihudaiya,seiretu,kyuusainote,kenrounarusoukou,zettainotamasii,kyousinja,hametunokami,burakkusyuukun,hojoseki,musyounoai,nitouryuukengi,sinennoai,tyoubusou,yamiryuusyuu,yamika,doragonburesu,zerozonbizu,ponyaaidoru,aidorukourin,hametunosinkou,sentanseisei,ikkakudaija_2,ittouryoudan,ponyasyoukansi,zousyoku,sukurappugoremu,sukurappubirudo,sasori_hujou,dokuhakinoko,karamaruito,ookametake,moukyodokudaitake,rozusyuu,kanbansan,gurumesinjidai,kinkyuujitai3,miryousuruhitomi,kankyouseihagoremu];
                 all_card.push(...[dokuzomenaihu,tizomenaihu,muzomenaihu,naihuzomeotoko,sabitayari,kantuuya,sabitataiken,ueponsarubeji,hokakusuneku,isseihokaku,aooni,akaoni,sunattidoragon,touryuuzannosiren,ryuukon,ikaribakuhatu]);
                 all_card.push(...[nezumi,tyuunezumi,dekanezumi,dokunezumi,tamanezumi,tatujinnezumi,kyuusonekowokamu,tamanezumi,tamanoridokunezumi,tamanori,tyuukun]);
                 all_card.push(...[motinreddo,motinburuu,motingurin,motinpinku,motiniero,hirobakutan,motinkosumo,gingapawa,motinburakku,yamiyonokage,ou,ekken]);
+                all_card.push(...[buppinhanbai,kameko,sasori_musume,operobo,daijanotukai,sourugadona,hametuwomatumono,zerozerozero]);
                 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
@@ -6535,6 +6779,8 @@
                 var 雑魚パック=[syuukun,hojorobo,ponya,ponya_ace,kameisi,kametetu,henyamotin,ponya_big,ponya_daburu,sasori,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,buiwa,kyuusainote,kenrounarusoukou,zettainotamasii,kyousinja,burakkusyuukun,hojoseki,ponyasyoukansi,sasori_hujou,dokuhakinoko,karamaruito,moukyodokudaitake,rozusyuu,dokuzomenaihu,muzomenaihu,naihuzomeotoko];
                 var 魔法パック=[ryuunoitigeki,powerup3,HPup5,yakuso_3,sukurappudoro,raihudaiya,seiretu,musyounoai,nitouryuukengi,tyoubusou,yamika,doragonburesu,aidorukourin,hametunosinkou,sentanseisei,ittouryoudan,zousyoku,sukurappubirudo,gurumesinjidai,kinkyuujitai3,miryousuruhitomi,kantuuya,ueponsarubeji,isseihokaku,touryuuzannosiren,ryuukon,ikaribakuhatu];
                 var 強パック=[kinkyuujitai5,ponya_sutoraiku,ponya_rein,sasori_seitai,ikkakudaija_atama,zerozonbizu,ookametake,kanbansan,kankyouseihagoremu,tizomenaihu,sabitayari,sabitataiken,hokakusuneku,aooni,akaoni];
+                
+                var 娘パック=[aidorukourin,aidorukourin,aidorukourin,aidorukourin,aidorukourin,buppinhanbai,kameko,sasori_musume,operobo,daijanotukai,sourugadona,hametuwomatumono,zerozerozero];
                 //ここからロード、なんで一個ずつやってるのかというと、開発中はバージョンによってセーブデータがあったりなかったりするから、バグる。
                 //全データ消去();
                 if(localStorage.getItem('所持カード')){//セーブデータがあるね
@@ -6610,7 +6856,7 @@
 
                 
                 //お金=99999;
-                //eck_list={card_list:[[henyamotin,55],[ekken,1]],ACE:[],TOP_ACE:[ekken]};
+                //deck_list={card_list:[[zerozerozero,4],[yamiryuusyuu,1]],ACE:[],TOP_ACE:[]};
                 //ponya_list={card_list:[[tamanezumi,4],[kyuusonekowokamu,3]],ACE:[],TOP_ACE:[tamanezumi]};
                 //ponya_list=deck_list;
                 //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
@@ -6620,7 +6866,7 @@
                 //MAX_STAGE=4;
                 //mini_stage=0;
                 //game_phase="挑戦";
-                //stage=7;
+                //stage=1;
                 //MAX_TOP_ACE=15;
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
                 setInterval(function(){//1秒にn回動くぞ！
@@ -7508,8 +7754,10 @@
                             パック売るよ=0;
                         }else if(MAX_STAGE>=4 && MAX_STAGE<=6){
                             パック売るよ=1;
-                        }else if(MAX_STAGE>=7){
+                        }else if(MAX_STAGE==7){
                             パック売るよ=4;
+                        }else if(MAX_STAGE>=8){
+                            パック売るよ=5;
                         }else{
                             パック売るよ=0;
                         }
@@ -7651,6 +7899,10 @@
                                                 for(i=0;i<3*(購入数[0]*100+購入数[1]*10+購入数[2]);i++){
                                                     出てきたカード[i]=強パック[Math.floor(Math.random()*強パック.length)];
                                                 }
+                                            }else if(cursor==5){
+                                                for(i=0;i<3*(購入数[0]*100+購入数[1]*10+購入数[2]);i++){
+                                                    出てきたカード[i]=娘パック[Math.floor(Math.random()*娘パック.length)];
+                                                }
                                             }
 
                                             お金-=金額[cursor]*(購入数[0]*100+購入数[1]*10+購入数[2]);
@@ -7786,7 +8038,7 @@
                             }
                             
                             if(パック売るよ>=5){
-                                パック陳列 (550,350,ponya_pack,cursor==5);
+                                パック陳列 (550,350,musumepakku,cursor==5);
                                 ctx.fillStyle="rgb(0,0,0)";
                                 ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                                 ctx.fillText(金額[5], 630, 620);
@@ -7883,6 +8135,12 @@
                                 ctx.fillText("強パック", 200, 100);
                                 カードパック(50,50,kyoupakku);
                                 パックの中身(強パック,50,300,700,600);
+                            }else if(cursor==5){
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("kawaiiパック・前半", 200, 100);
+                                カードパック(50,50,musumepakku);
+                                パックの中身(娘パック,50,300,700,600);
                             }
 
                             ctx.fillStyle="rgb(0,0,0)";
@@ -9963,8 +10221,12 @@
                                         if(cursor2==0){//発動するってなら
                                             my_tehuda[tukau_card_num].card.effect("手札から");
                                             tukau_mahou[tukau_mahou.length]=[my_tehuda[tukau_card_num],50+card_kankaku*tukau_card_num,780,10];
-                                            my_tehuda[tukau_card_num].position="my_haka";
-                                            my_haka.push(my_tehuda[tukau_card_num]);
+                                            
+                                            if(my_tehuda[tukau_card_num].state.indexOf("消滅")==-1){
+                                                my_tehuda[tukau_card_num].position="my_haka";
+                                                my_haka.push(my_tehuda[tukau_card_num]);
+                                            }
+                                            
 
                                             my_tehuda.splice(tukau_card_num,1);
                                             if(cursor!=16 && cursor==(my_tehuda.length+16)){
@@ -9977,9 +10239,10 @@
                                         if(my_tehuda[tukau_card_num].card.effect("手札から")){//効果がないときはfalseが返ってくるぜ！
                                             
                                             tukau_mahou[tukau_mahou.length]=[my_tehuda[tukau_card_num],50+card_kankaku*tukau_card_num,780,10];
-                                            my_tehuda[tukau_card_num].position="my_haka";
-                                            my_haka.push(my_tehuda[tukau_card_num]);
-
+                                            if(my_tehuda[tukau_card_num].state.indexOf("消滅")==-1){
+                                                my_tehuda[tukau_card_num].position="my_haka";
+                                                my_haka.push(my_tehuda[tukau_card_num]);
+                                            }
                                             my_tehuda.splice(tukau_card_num,1);
                                             if(cursor!=16 && cursor==(my_tehuda.length+16)){
                                                 cursor-=1;//カーソルがそのままだとはみ出るから…さ。
@@ -11013,10 +11276,13 @@
                             if(key_interval<=0 && key_input!=""  && 長押し阻止==0){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
                                 key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                                 長押し阻止=1;
-                                if(key_input.indexOf("〇")!=-1 || key_input.indexOf("×")!=-1){
+                                if(key_input.indexOf("〇")!=-1 || key_input.indexOf("×")!=-1){//なんでこんなとこにいるんだよ！
                                     teki_tehuda[tukau_card_num].card.effect("手札から");
-                                    teki_tehuda[tukau_card_num].position="teki_haka";
-                                    teki_haka.push(teki_tehuda[tukau_card_num]);
+                                    if(teki_tehuda[tukau_card_num].state.indexOf("消滅")==-1){
+                                        teki_tehuda[tukau_card_num].position="teki_haka";
+                                        teki_haka.push(teki_tehuda[tukau_card_num]);
+                                    }
+                                    
                                     aite_delay=5;
                                     teki_tehuda.splice(tukau_card_num,1);
                                     aite_phase="攻撃";
