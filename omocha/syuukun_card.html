@@ -3429,7 +3429,7 @@
                 }
                 function 保存デッキの読み込み(txt){
                     保存デッキ=JSON.parse(txt);
-                    for(let i=0;i<10;i++){
+                    for(let i=0;i<保存デッキ.length;i++){//古いデータだと長さ足りないので長さだけループ
                         for(let j=0;j<保存デッキ[i].card_list.length;j++){
                             for(let k=0;k<all_card.length;k++){
                                 if(all_card[k].name==保存デッキ[i].card_list[j]){//全カードから名前を検索してカードに置き換える
@@ -3545,8 +3545,8 @@
                     
                     保存データ_全体+="\\"+JSON.stringify(保存データ_一部);
 
-                    保存データ_一部=[{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]}];;
-                    for(let i=0;i<5;i++){
+                    保存データ_一部=[{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]}];
+                    for(let i=0;i<10;i++){
                         for(let j=0;j<保存デッキ[i].card_list.length;j++){
                             保存データ_一部[i].card_list[j]= 保存デッキ[i].card_list[j].name;
                         }
@@ -3592,6 +3592,11 @@
                             デッキのセーブ();
                         
                             保存デッキの読み込み(保存データ_全体[3]);
+                            if(保存デッキ.length<10){//昔はデッキリストが5つだったので、古いデータを持っている人はここで加算します。10より増やすなら修正箇所が地味に多いので気を付けてくらさい。
+                                for(let i=保存デッキ.length;i<10;i++){
+                                    保存デッキ.push({card_list:[],ACE:[],TOP_ACE:[]});
+                                }
+                            }
                             保存デッキの保存();//ゲームデータセーブ
                         
                             MAX_STAGE=Number(保存データ_全体[4]);
