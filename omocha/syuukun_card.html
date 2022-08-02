@@ -561,6 +561,10 @@
             var henyamotinkingudamu_kuria=new Image();
             henyamotinkingudamu_kuria.src="../images/omocha/syuukun_card/henyamotinkingudamu_kuria.png";
 
+            var tengoku_title=new Image();
+            tengoku_title.src="../images/omocha/syuukun_card/tengoku_title.png";
+
+
             var junbityuu_title=new Image();
             junbityuu_title.src="../images/omocha/syuukun_card/junbityuu.png";
             //ここにゲームパラメータを置くとイイネ。
@@ -3471,7 +3475,50 @@
                     DL_URL.download = 'mydeck'+ 今_文字+ '.png';//ファイル名決めてる
                     DL_URL.click();//強制クリック
                 }
-                document.getElementById('download_button').addEventListener("click", デッキの画像ダウンロード);
+                document.getElementById('download_button').addEventListener("click", デッキの画像ダウンロード);//ボタンに機能割り当て
+
+                /*　封印！
+                function 全カード表示(card,x,y,x_haba,y_haba){
+                    var kakudai;
+                    var x_maisuu;
+                    var hyouji_maisuu=card.length;
+                    var count=0;
+
+                    kakudai=1;
+                    while(hyouji_maisuu>Math.ceil(x_haba/(kakudai*140))*Math.ceil(y_haba/(kakudai*210))){//拡大率を下げてカードが全部枠に入るように調整する
+                        kakudai-=0.001;
+                    }
+
+                    x_maisuu=Math.ceil(x_haba/(kakudai*140));
+                    ctx.save();
+                    ctx.scale(kakudai,kakudai);
+
+                    for(let i=0;i<card.length;i++){
+                        
+                            
+                        シンプルカード表示(card[i],x/kakudai+140*(count%x_maisuu),y/kakudai+210*(Math.floor(count/x_maisuu)));
+                        count+=1;
+                        
+                        
+                    }
+                    ctx.restore();
+                }
+
+                function 全画像ダウンロード(){
+                    ctx.fillStyle="rgb(50,50,80)";
+                    ctx.fillRect(0,0,1000,1000);
+                    全カード表示(all_card.slice(2,all_card.length-1),-50,-50,1050,1250);
+                    
+                        
+                    var 今= new Date();
+                    var 今_文字=今.getDate()+""+今.getHours()+""+今.getMinutes()+""+今.getSeconds();
+                    var DL_URL = document.createElement('a');
+                    DL_URL.href=cnvs.toDataURL("image/png");
+                    DL_URL.download = 'mydeck'+ 今_文字+ '.png';//ファイル名決めてる
+                    DL_URL.click();//強制クリック
+                }
+                document.getElementById('download_button').addEventListener("click", 全画像ダウンロード);//ボタンに機能割り当て
+                */
                 
                 function 外部セーブ(){
                     let 保存データ_一部;
@@ -7016,6 +7063,8 @@
                             ctx.drawImage(dekkitounan_title,0,100);
                         }else if(stage==7){
                             ctx.drawImage(henyamotinkingudamu_title,0,100);
+                        }else if(stage==8){
+                            ctx.drawImage(tengoku_title,0,100);
                         }else{
                             ctx.drawImage(junbityuu_title,0,100);
                         }
