@@ -6688,7 +6688,7 @@
                         }
                     }
                 },AI:function(タイミング){return true;},text:"自分の場にモンスターが召喚されたときこのカードは死に、その祈りは手札に届く。「嬉しいんです。私の残り少ない命が私たちの神の役に立つんですから。」",text_iro:[]};
-                var zerozerozero={name:"ゼロ、ゼロ！ゼロォ！！",image:zerozerozero_image,ATK:0,HP:10,state:["モンスター","復活"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                var zerozerozero={name:"ゼロ、ゼロ！ゼロォ！！",image:zerozerozero_image,ATK:0,HP:10,state:["モンスター","復活","毒付与"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
                     if(タイミング=="召喚された"){
                         if(option[0]=="my_ba"){//味方
                             for(let i=0;i<my_haka.length;i++){
@@ -6724,8 +6724,15 @@
                             }
                         
                         }
+                    }else if(タイミング=="攻撃した"){
+                        if(def_card.state.indexOf("毒:")!=-1){//毒状態ですかぁ？
+                            def_card.state[def_card.state.indexOf("毒:")+1]+=1;//追加だ
+                        }else{
+                            def_card.state.push("毒:");
+                            def_card.state.push(1);
+                        }
                     }
-                },AI:function(タイミング){return true;},text:"ぜろ！ぜろ！ぜろぞんびたちよ、よみがえれ！ぜろ！ぜろ！ぜろ！さあ！こうげきりょくしかない脳無しにこうげきりょくがない脳腐りがくらいつく！（召喚時、元々の攻撃力が0のモンスターを蘇らせまくる）",text_iro:[]};
+                },AI:function(タイミング){return true;},text:"ぜろ！ぜろ！ぜろぞんびたちよ、よみがえれ！ぜろ！ぜろ！ぜろ！さあ！こうげきりょくしかない脳無しにこうげきりょくがない脳腐りがくらいつく！（召喚時、元々の攻撃力が0のモンスターを蘇らせまくる）(あとこいつ毒+1持ち)",text_iro:[]};
 
                 //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
                 all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro,buiwa,raihudaiya,seiretu,kyuusainote,kenrounarusoukou,zettainotamasii,kyousinja,hametunokami,burakkusyuukun,hojoseki,musyounoai,nitouryuukengi,sinennoai,tyoubusou,yamiryuusyuu,yamika,doragonburesu,zerozonbizu,ponyaaidoru,aidorukourin,hametunosinkou,sentanseisei,ikkakudaija_2,ittouryoudan,ponyasyoukansi,zousyoku,sukurappugoremu,sukurappubirudo,sasori_hujou,dokuhakinoko,karamaruito,ookametake,moukyodokudaitake,rozusyuu,kanbansan,gurumesinjidai,kinkyuujitai3,miryousuruhitomi,kankyouseihagoremu];
