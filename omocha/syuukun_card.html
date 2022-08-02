@@ -3417,8 +3417,8 @@
                 }
                 //保存デッキ=[{card_list:[***,***,***],ACE:[1,2,3],TOP_ACE:[5]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]}];
                 function 保存デッキの保存(){
-                    let 保存_変換=[{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]}];;
-                    for(let i=0;i<5;i++){
+                    let 保存_変換=[{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]}];
+                    for(let i=0;i<10;i++){
                         for(let j=0;j<保存デッキ[i].card_list.length;j++){
                             保存_変換[i].card_list[j]= 保存デッキ[i].card_list[j].name;
                         }
@@ -3429,7 +3429,7 @@
                 }
                 function 保存デッキの読み込み(txt){
                     保存デッキ=JSON.parse(txt);
-                    for(let i=0;i<5;i++){
+                    for(let i=0;i<10;i++){
                         for(let j=0;j<保存デッキ[i].card_list.length;j++){
                             for(let k=0;k<all_card.length;k++){
                                 if(all_card[k].name==保存デッキ[i].card_list[j]){//全カードから名前を検索してカードに置き換える
@@ -6853,6 +6853,15 @@
                 
                 if(localStorage.getItem('保存デッキ')){//セーブデータがあるね
                     保存デッキの読み込み(localStorage.getItem('保存デッキ'));
+                    //保存デッキ=[{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]},{card_list:[],ACE:[],TOP_ACE:[]}];
+                    
+                    if(保存デッキ.length<10){//昔はデッキリストが5つだったので、古いデータを持っている人はここで加算します。10より増やすなら修正箇所が地味に多いので気を付けてくらさい。
+                        for(let i=保存デッキ.length;i<10;i++){
+                            保存デッキ.push({card_list:[],ACE:[],TOP_ACE:[]});
+                        }
+                        保存デッキの保存();//ゲームデータセーブ
+                    }
+                    
                 }else{
                     保存デッキの保存();//ゲームデータセーブ
                 }
@@ -9185,13 +9194,13 @@
                                         if(cursor==1){
                                             cursor2-=1;
                                             if(cursor2==-1){
-                                                cursor2=4;
+                                                cursor2=9;
                                             }
                                         }
                                     }else if(key_input.charAt(i)=="→"){
                                         if(cursor==1){
                                             cursor2+=1;
-                                            if(cursor2==5){
+                                            if(cursor2==10){
                                                 cursor2=0;
                                             }
                                         }
@@ -9969,7 +9978,12 @@
                             ctx.fillText("▶", 970, 520);
                             ctx.fillText("◀", 830, 520);
                             ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
-                            ctx.fillText(cursor2+1, 900, 520);
+                            if(cursor2+1<10){
+                                ctx.fillText(cursor2+1, 900, 520);
+                            }else{
+                                ctx.fillText(cursor2+1, 885, 520,80);
+                            }
+                            
                             ctx.fillText("読み込み", 820, 720,180);
                             ctx.fillText("上書き", 840, 300,140);
                             ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
