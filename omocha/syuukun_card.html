@@ -6657,7 +6657,7 @@
                         }
                     }
                 },AI:function(タイミング){ return true;},text:"召喚時、墓地から一角大蛇の腹を一枚取り出し手札に加える。",text_iro:[]};
-                var sourugadona={name:"ソウル・ガードナー",image:sourugadona_image,ATK:0,HP:1,state:["モンスター","ガード","体力奪取"],effect_req:function(タイミング){
+                var sourugadona={name:"ソウル・ガードナー",image:sourugadona_image,ATK:0,HP:1,state:["モンスター","ブロック","体力奪取"],effect_req:function(タイミング){
                     return false;},effect:function(タイミング,option){
                     if(タイミング=="召喚された"){
                         if(option[0]=="my_ba"){//味方
