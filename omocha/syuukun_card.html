@@ -366,6 +366,41 @@
             var zerozerozero_image=new Image();
             zerozerozero_image.src="../images/omocha/syuukun_card/zerozerozero.png";
 
+
+            var happisukoru_image=new Image();
+            happisukoru_image.src="../images/omocha/syuukun_card/happisukoru.png";
+            var pantingukuraudo_image=new Image();
+            pantingukuraudo_image.src="../images/omocha/syuukun_card/pantingukuraudo.png";
+            var pupukuraudo_image=new Image();
+            pupukuraudo_image.src="../images/omocha/syuukun_card/pupukuraudo.png";
+            
+            var hitujikuraudo_image=new Image();
+            hitujikuraudo_image.src="../images/omocha/syuukun_card/hitujikuraudo.png";
+            var daburukuraudo_image=new Image();
+            daburukuraudo_image.src="../images/omocha/syuukun_card/daburukuraudo.png";
+            var hikoukigumo_image=new Image();
+            hikoukigumo_image.src="../images/omocha/syuukun_card/hikoukigumo.png";
+
+            var amakuraudo_image=new Image();
+            amakuraudo_image.src="../images/omocha/syuukun_card/amakuraudo.png";
+            var poizunkuraudo_image=new Image();
+            poizunkuraudo_image.src="../images/omocha/syuukun_card/poizunkuraudo.png";
+            var biribirikuraudo_image=new Image();
+            biribirikuraudo_image.src="../images/omocha/syuukun_card/biribirikuraudo.png";
+
+            var enjerukuraudo_image=new Image();
+            enjerukuraudo_image.src="../images/omocha/syuukun_card/enjerukuraudo.png";
+            var kuraudo_image=new Image();
+            kuraudo_image.src="../images/omocha/syuukun_card/kuraudo.png";
+            var detaappurodo_image=new Image();
+            detaappurodo_image.src="../images/omocha/syuukun_card/detaappurodo.png";
+            
+            var taihuu0gou_image=new Image();
+            taihuu0gou_image.src="../images/omocha/syuukun_card/taihuu0gou.png";
+            /*
+            var _image=new Image();
+            _image.src="../images/omocha/syuukun_card/.png";
+            */
             //--メニュー？
 
             var kuria=new Image();
@@ -563,7 +598,21 @@
 
             var tengoku_title=new Image();
             tengoku_title.src="../images/omocha/syuukun_card/tengoku_title.png";
-
+            var tengoku_0=new Image();
+            tengoku_0.src="../images/omocha/syuukun_card/tengoku_0000.png";
+            var tengoku_1=new Image();
+            tengoku_1.src="../images/omocha/syuukun_card/tengoku_0001.png";
+            var tengoku_2=new Image();
+            tengoku_2.src="../images/omocha/syuukun_card/tengoku_0002.png";
+            var tengoku_3=new Image();
+            tengoku_3.src="../images/omocha/syuukun_card/tengoku_0003.png";
+            var tengoku_4=new Image();
+            tengoku_4.src="../images/omocha/syuukun_card/tengoku_0004.png";
+            var tengoku_5=new Image();
+            tengoku_5.src="../images/omocha/syuukun_card/tengoku_0005.png";
+            var tengoku=[tengoku_0,tengoku_1,tengoku_2,tengoku_3,tengoku_4,tengoku_5];
+            var tengoku_kuria=new Image();
+            tengoku_kuria.src="../images/omocha/syuukun_card/tengoku_kuria.png";
 
             var junbityuu_title=new Image();
             junbityuu_title.src="../images/omocha/syuukun_card/junbityuu.png";
@@ -700,7 +749,9 @@
 
             var 木漏れ日=[[[]]];
             var 雲=[[]];
-
+            for(let i=0;i<5;i++){
+                雲.push([Math.random()*300+334,Math.random()*330,Math.random()+0.5]);
+            }
             var セリフ="";
             var セリフ_ピ=0;
             var セリフダダダ=0;
@@ -1132,7 +1183,26 @@
                     //攻撃側のスキルが発動
                     atk_card.card.effect("攻撃した");//攻撃カードの効果が後なのは、なんか防御カードが死んで…いや、待て、攻撃カードが死ぬ可能性もあるな、そんなもん実装するなバーカ
                     
-                    if(atk_card.state.indexOf("貫通")!=-1){
+                    if(def_card.state.indexOf("雲")!=-1){//雲ちゃんだ
+                        if(def_card.HP<=atk_card.ATK){//ダメージもりもりちゃんです…
+                            if(duel_phase!="相手"){//俺のターンだから相手への攻撃だぜ！
+                                if(atk_card.ATK-def_card.HP<=teki_yamahuda.length && teki_yamahuda.length!=0){//デッキ許容ダメージだぜ
+                                    atk_yamahuda(atk_card.ATK-def_card.HP,teki_yamahuda,teki_haka,teki_ba,teki_tehuda);//貫通分のダメージを負ってもらうぜ！
+                                    def_card.HP=atk_card.ATK+1;//延命さ
+                                }else{
+                                    //このあと大ダメージにより死になさい
+                                }
+                            }else{
+                                if(atk_card.ATK-def_card.HP<=my_yamahuda.length && my_yamahuda.length!=0){//デッキ許容ダメージだぜ
+                                    atk_yamahuda(atk_card.ATK-def_card.HP,my_yamahuda,my_haka,my_ba,my_tehuda);//貫通分のダメージを負ってもらうぜ！
+                                    def_card.HP=atk_card.ATK+1;//延命さ
+                                }else{
+                                    //このあと大ダメージにより死になさい
+                                }
+                            }
+                            
+                        }
+                    }else if(atk_card.state.indexOf("貫通")!=-1){//貫通で雲攻撃したときに二重で減らすのは鬼畜の所業なのでelseにしてます。
                         if(atk_card.ATK-def_card.HP>0){//貫通してますね…
                             if(duel_phase!="相手"){//俺のターンだから相手への攻撃だぜ！
                                 if(atk_card.ATK-def_card.HP>teki_yamahuda.length){//貫通しすぎだ！
@@ -1151,6 +1221,7 @@
                             }
                         }
                     }
+
 
                     //ダメージ計算
                     def_card.HP-=atk_card.ATK;
@@ -3761,8 +3832,8 @@
                             var 一番元気なカードの数値=0;
                             for(let i=0;i<5;i++){
                                 if(teki_ba[i]!=""){
-                                    if(一番元気なカードの数値<teki_ba[i].HP){
-                                        一番元気なカードの数値=teki_ba[i].HP;
+                                    if(一番元気なカードの数値<teki_ba[i].HP*teki_ba[i].can_ATK){
+                                        一番元気なカードの数値=teki_ba[i].HP*teki_ba[i].can_ATK;
                                         cursor2=i;
                                     } 
                                 }
@@ -3772,7 +3843,12 @@
                         
                     }
                 },AI:function(タイミング){
-                    return true;//体力多いキャラがいないと使わないってほうが賢い気もするが、気にするな！
+                    for(let i=0;i<5;i++){
+                        if(teki_ba[i]!="" && teki_ba[i].can_ATK>0){//攻撃できない奴しかいないのに発動しても意味ないねん
+                            return true; 
+                        }
+                    }
+                    return false;
                 },text:"味方モンスター1体の攻撃力+3！これで君もモテモテだ！",text_iro:[]};
                 var HPup5={name:"体力アップ5",image:HPup5_img,state:["魔法","味方選択","体力上昇"],effect_req:function(タイミング){
                     if(タイミング=="手札から"){
@@ -6786,12 +6862,317 @@
                     }
                 },AI:function(タイミング){return true;},text:"ぜろ！ぜろ！ぜろぞんびたちよ、よみがえれ！ぜろ！ぜろ！ぜろ！さあ！こうげきりょくしかない脳無しにこうげきりょくがない脳腐りがくらいつく！（召喚時、元々の攻撃力が0のモンスターを蘇らせまくる）(あとこいつ毒+1持ち)",text_iro:[]};
 
+                var pupukuraudo={name:"ぷーぷーくらうど",image:pupukuraudo_image,ATK:3,HP:10,state:["モンスター","雲"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"雲（攻撃によって死なない。体力を上回ったダメージだけデッキを減らす。デッキが足りないときはさすがに死ぬ。）",text_iro:[]};
+                var pantingukuraudo={name:"ぱんちんぐくらうど",image:pantingukuraudo_image,ATK:5,HP:15,state:["モンスター","雲"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ちょっと暴力が得意な雲",text_iro:[]};
+                var happisukoru={name:"ハッピー❤スコール",image:happisukoru_image,state:["魔法","体力上昇"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i].state.indexOf("雲")!=-1){return true;}
+                            }
+                        }else{ for(let i=0;i<5;i++){if(teki_ba[i]!=""&& teki_ba[i].state.indexOf("雲")!=-1){return true; }}
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""&& my_ba[i].state.indexOf("雲")!=-1){
+                                    my_ba[i].HP+=7;
+                                }
+                            } 
+                        }else{var 一番元気なカードの数値=-1;
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""&& teki_ba[i].state.indexOf("雲")!=-1){
+                                    teki_ba[i].HP+=7;
+                                }
+                            } 
+                        }
+                    }
+                },AI:function(タイミング){
+
+                    for(let i=0;i<5;i++){
+                        if(teki_ba[i]!=""&& teki_ba[i].state.indexOf("雲")!=-1){
+                            if(teki_ba[i].HP<=10){
+                                return true;
+                            }
+                            
+                        }
+                    } 
+                    return false;
+                    
+                    
+                },text:"自分の場の雲たちのHP+7。今日の天気は曇り時々しあわせ！",text_iro:[]};
+                var hitujikuraudo={name:"ひつじくらうど",image:hitujikuraudo_image,ATK:1,HP:15,state:["モンスター","雲","防御:",2],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ふわふわでカチカチな防御２の雲",text_iro:[]};
+                var daburukuraudo={name:"だぶるくらうど",image:daburukuraudo_image,ATK:1,HP:10,state:["モンスター","雲","二回攻撃"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ふわふわとふわふわでふわふわふわふわ",text_iro:[]}; 
+                var hikoukigumo={name:"ひこうきぐも",image:hikoukigumo_image,state:["魔法","味方選択","ドロー"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i].state.indexOf("雲")!=-1){return true;}
+                            }
+                        }else{ for(let i=0;i<5;i++){if(teki_ba[i]!=""&& teki_ba[i].state.indexOf("雲")!=-1){return true; }}
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        let 継承state=[];
+                        if(duel_phase!="相手"){
+                            if(my_ba[cursor2]!=""&& my_ba[cursor2].state.indexOf("雲")!=-1){
+                                my_ba[cursor2].can_ATK=0;
+                                my_yamahuda.unshift(my_ba[cursor2]);//山札の底へ
+                                my_ba[cursor2]="";
+                                pull_card(my_yamahuda,my_tehuda,2);
+
+                                return true;//選択系魔法は正しく動いたらtrueを返すこと！ 
+                            }
+                            return false; 
+                        }else{
+                            let 死にそうなヤツ=[999,-1];
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""&& teki_ba[i].state.indexOf("雲")!=-1){
+                                    if(死にそうなヤツ[1]==-1){
+                                        死にそうなヤツ=[teki_ba[i].HP,i];
+                                    }else{
+                                        if(死にそうなヤツ[0]>teki_ba[i].HP){
+                                            死にそうなヤツ=[teki_ba[i].HP,i];
+                                        }
+                                    }
+                                }
+                            }
+                            teki_ba[死にそうなヤツ[1]].can_ATK=10;
+                            teki_yamahuda.unshift(teki_ba[死にそうなヤツ[1]]);
+                            teki_ba[死にそうなヤツ[1]]="";
+                            pull_card(teki_yamahuda,teki_tehuda,2);
+
+                            return true;
+                        }
+                    }
+                },AI:function(タイミング){
+                    for(let i=0;i<5;i++){
+                        if(teki_ba[i]!=""&& teki_ba[i].state.indexOf("雲")!=-1){
+                            if(teki_ba[i].HP<=5){//ちょっと体力減ってるやつオル
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                },text:"自分の雲を1枚選んでデッキの底に戻し、2ドロー",text_iro:[]};
+                var amakuraudo={name:"あまくらうど",image:amakuraudo_image,ATK:1,HP:10,state:["モンスター","雲","体力上昇"],effect_req:function(タイミング){
+                    if(タイミング=="ターンエンド"){
+                        return true;//なんでかターンエンドは条件見てる、なんで
+                    }
+                    return false;},effect:function(タイミング,option){
+                    if(タイミング=="ターンエンド"){
+                        if(option[0]=="自ターン"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){
+                                    if(my_ba[i].state.indexOf("雲")!=-1){//雲？
+                                        my_ba[i].HP+=3;
+                                    }
+                                }
+                            }
+                            my_ba[option[1]].move=-3;
+                        }else{//敵ターン
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    if(teki_ba[i].state.indexOf("雲")!=-1){//ACE？
+                                        teki_ba[i].HP+=3;
+                                    }
+                                }
+                            }
+                            teki_ba[option[1]].move=-3;
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"ターンエンド時、自分の場の雲モンスターの体力+3。しゃわーですっきり！",text_iro:[]};
+                var poizunkuraudo={name:"ぽいずんくらうど",image:poizunkuraudo_image,ATK:0,HP:10,state:["モンスター","雲","毒付与"],effect_req:function(タイミング){
+                    if(タイミング=="ターンエンド"){
+                        return true;//なんでかターンエンドは条件見てる、なんで
+                    }
+                    return false;
+                },effect:function(タイミング,option){
+                    if(タイミング=="ターンエンド"){
+                        if(option[0]=="自ターン"){
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""){
+                                    if(teki_ba[i].state.indexOf("毒:")!=-1){//毒状態ですかぁ？
+                                        teki_ba[i].state[teki_ba[i].state.indexOf("毒:")+1]+=1;//追加だ
+                                    }else{
+                                        teki_ba[i].state.push("毒:");
+                                        teki_ba[i].state.push(1);
+                                    }
+                                }
+                            }
+                            my_ba[option[1]].move=-3;
+                        }else{//敵ターン
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!=""){
+                                    if(my_ba[i].state.indexOf("毒:")!=-1){//毒状態ですかぁ？
+                                        my_ba[i].state[my_ba[i].state.indexOf("毒:")+1]+=1;//追加だ
+                                    }else{
+                                        my_ba[i].state.push("毒:");
+                                        my_ba[i].state.push(1);
+                                    }
+                                }
+                            }
+                            teki_ba[option[1]].move=-3;
+                        }
+                    }
+                    return false;
+                },AI:function(タイミング){return true;},text:"自ターンの終わりに相手のモンスター全体に毒+1の毒ガスをおとどけ",text_iro:[]};
+                var biribirikuraudo={name:"びりびりくらうど",image:biribirikuraudo_image,ATK:1,HP:10,state:["モンスター","雲","攻撃制限"],effect_req:function(タイミング){return false;},effect:function(タイミング){
+                    if(タイミング=="攻撃した"){
+                        if(def_card.can_ATK>0){//攻撃可能なら
+                            def_card.can_ATK-=1;
+                        }else{
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"びりびり。攻撃した相手をびりびりさせて次ターン攻撃可能数を1減らす。びりびり。",text_iro:[]};
+                var enjerukuraudo={name:"えんじぇるくらうど",image:enjerukuraudo_image,ATK:5,HP:1,state:["モンスター","雲","貫通"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"貫くか貫かれるか！恋ってのは殺るか殺られるかなんジャア！",text_iro:[]};
+                var kuraudo={name:"クラウド",image:kuraudo_image,ATK:0,HP:1,state:["モンスター","ブロック"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
+                    if(タイミング=="召喚された"){
+                        if(option[0]=="my_ba"){//味方 
+                            option[1].HP+=3*(my_haka.length);
+                        }else{//敵
+                            option[1].HP+=3*(teki_haka.length);
+                        }
+                    }
+                },AI:function(タイミング){return true;},text:"召喚時、自分の墓地の枚数だけスケールアップし、HP+3。言うまでもないが、雲ではない。",text_iro:[]};
+                var detaappurodo={name:"↑データアップロード↑",image:detaappurodo_image,state:["魔法","上位召喚","味方選択"],effect_req:function(タイミング){
+                    if(タイミング=="手札から"){
+                        let へにゃもちんカウント=-1;//名前がよくありませんでしてよ！
+                        if(duel_phase!="相手"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" && my_ba[i].state.indexOf("雲")!=-1){
+                                    へにゃもちんカウント=0;
+                                }
+                            }
+                            if(へにゃもちんカウント==-1){
+                                return false;
+                            }
+                            for(let i=0;i<my_haka.length;i++){
+                                if(my_haka[i].state.indexOf("雲")!=-1){
+                                    へにゃもちんカウント+=1;
+                                    if(へにゃもちんカウント==10){
+                                        return true;
+                                    }
+                                }
+                            }
+                            return false;
+                        }else{
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && teki_ba[i].state.indexOf("雲")!=-1){
+                                    へにゃもちんカウント=0;
+                                }
+                            }
+                            if(へにゃもちんカウント==-1){
+                                return false;
+                            }
+                            for(let i=0;i<teki_haka.length;i++){
+                                if(teki_haka[i].state.indexOf("雲")!=-1){
+                                    へにゃもちんカウント+=1;
+                                    if(へにゃもちんカウント==10){
+                                        return true;
+                                    }
+                                }
+                            }
+                            return false;
+                            
+                        }
+                        return false;  
+                    }else{
+                        return false;  
+                    }  
+                },effect:function(タイミング){
+                    if(タイミング=="手札から"){
+                        let 継承state=[];
+                        if(duel_phase!="相手"){
+                            if(my_ba[cursor2]!=""&& my_ba[cursor2].state.indexOf("雲")!=-1){
+                                if(my_ba[cursor2].state.indexOf("TOP_ACE")!=-1){
+                                    継承state=["TOP_ACE"];
+                                }else if(my_ba[cursor2].state.indexOf("ACE")!=-1){
+                                    継承state=["ACE"];
+                                }
+                                継承state.push("上位召喚");
+                                my_ba[cursor2]=death_card(my_ba[cursor2],my_haka,cursor2);
+                                上位召喚(kuraudo,my_deck,cursor2,継承state);//カードの追加、召喚を行います。いいですね？マスター
+
+                                return true;//選択系魔法は正しく動いたらtrueを返すこと！ 
+                            }
+                            return false; 
+                        }else{
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!=""&& teki_ba[i].state.indexOf("雲")!=-1){
+                                    if(teki_ba[i].state.indexOf("TOP_ACE")!=-1){
+                                        継承state=["TOP_ACE"];
+                                    }else if(teki_ba[i].state.indexOf("ACE")!=-1){
+                                        継承state=["ACE"];
+                                    }
+                                    継承state.push("上位召喚");
+                                    teki_ba[i]=death_card(teki_ba[i],teki_haka,i);
+                                    上位召喚(kuraudo,teki_deck,i,継承state);//カードの追加、召喚を行います。いいですね？マスター
+
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                },AI:function(タイミング){
+                    if(teki_haka.length>15){
+                        return true;//あんますくなくてもね
+                    }else{
+                        return false;
+                    }
+                    
+                },text:"墓地に雲が10枚以上あるとき、それらのデータを自分の場の雲に集約、管理、分析、最高のソリューションの提案を行う。もちろん、月々の使用料を心配する必要はありませんよ。",text_iro:[]};
+                var taihuu0gou={name:"台風0号",image:taihuu0gou_image,ATK:0,HP:1,state:["モンスター","雲"],effect_req:function(タイミング){
+                    if(タイミング=="ターンエンド"){//ちゃんと条件渡してもいいけどまあ、いいかとなった
+                        return true;
+                    }
+                    return false;
+                },effect:function(タイミング,option){
+                    if(タイミング=="ターンエンド"){
+                        if(option[0]=="自ターン"){
+                            for(let i=0;i<5;i++){
+                                if(my_ba[i]!="" &&i!=option[1]){
+                                    if(my_ba[i].state.indexOf("雲")!=-1){
+                                        my_ba[option[1]].ATK+=my_ba[i].ATK;
+                                        my_ba[option[1]].HP+=my_ba[i].HP;
+                                    }
+                                    my_ba[i]=death_card(my_ba[i],my_haka,i);
+                                }
+                            }
+                        }else{//敵ターン
+                            for(let i=0;i<5;i++){
+                                if(teki_ba[i]!="" && i!=option[1]){
+                                    if(teki_ba[i].state.indexOf("雲")!=-1){
+                                        teki_ba[option[1]].ATK+=teki_ba[i].ATK;
+                                        teki_ba[option[1]].HP+=teki_ba[i].HP;
+                                    }
+                                    teki_ba[i]=death_card(teki_ba[i],teki_haka,i);
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                },AI:function(タイミング){return true;},text:"自ターンの終わりに自分の場のモンスターをすべて破壊する。雲は取り込み自分をさらに巨大に変える。「天国は0号の中心に位置し、0号の存在に気が付くことは天国の終わりを意味する。」",text_iro:[]};
+
+
+
                 //全てのカードを参照できる配列…手動で追加していってください。!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇
                 all_card=[test_card,test_card2,syuukun,hojorobo,kinkyuujitai5,ryuunoitigeki,powerup3,HPup5,ponya,ponya_ace,yakuso_3,kameisi,kametetu,henyamotin,ponya_sutoraiku,ponya_big,ponya_daburu,ponya_rein,sasori,sasori_seitai,ikkakudaija_atama,ikkakudaija_hara,ikkakudaija_yubi,kyuukoukasakusenki,atakkumojuru,kaihukumojuru,sukurappudoro,buiwa,raihudaiya,seiretu,kyuusainote,kenrounarusoukou,zettainotamasii,kyousinja,hametunokami,burakkusyuukun,hojoseki,musyounoai,nitouryuukengi,sinennoai,tyoubusou,yamiryuusyuu,yamika,doragonburesu,zerozonbizu,ponyaaidoru,aidorukourin,hametunosinkou,sentanseisei,ikkakudaija_2,ittouryoudan,ponyasyoukansi,zousyoku,sukurappugoremu,sukurappubirudo,sasori_hujou,dokuhakinoko,karamaruito,ookametake,moukyodokudaitake,rozusyuu,kanbansan,gurumesinjidai,kinkyuujitai3,miryousuruhitomi,kankyouseihagoremu];
                 all_card.push(...[dokuzomenaihu,tizomenaihu,muzomenaihu,naihuzomeotoko,sabitayari,kantuuya,sabitataiken,ueponsarubeji,hokakusuneku,isseihokaku,aooni,akaoni,sunattidoragon,touryuuzannosiren,ryuukon,ikaribakuhatu]);
                 all_card.push(...[nezumi,tyuunezumi,dekanezumi,dokunezumi,tamanezumi,tatujinnezumi,kyuusonekowokamu,tamanezumi,tamanoridokunezumi,tamanori,tyuukun]);
                 all_card.push(...[motinreddo,motinburuu,motingurin,motinpinku,motiniero,hirobakutan,motinkosumo,gingapawa,motinburakku,yamiyonokage,ou,ekken]);
                 all_card.push(...[buppinhanbai,kameko,sasori_musume,operobo,daijanotukai,sourugadona,hametuwomatumono,zerozerozero]);
+                all_card.push(...[pupukuraudo,pantingukuraudo,happisukoru,hitujikuraudo,daburukuraudo,hikoukigumo,amakuraudo,poizunkuraudo,biribirikuraudo,enjerukuraudo,kuraudo,detaappurodo,taihuu0gou]);
                 
                 //デッキ組もうぜ！
                 var test_list={card_list:[[HPup5,1],[powerup3,2],[test_card2,4],[syuukun,1]],ACE:[test_card2,test_card2],TOP_ACE:[syuukun]};
@@ -6831,6 +7212,14 @@
                 var tyuukun_list={card_list:[[tyuukun,1],[musyounoai,1],[kyuusonekowokamu,3],[tamanezumi,5],[dokunezumi,3],[nezumi,1],[tyuunezumi,3],[seiretu,5],[tatujinnezumi,3],[dekanezumi,5]],ACE:[tamanezumi],TOP_ACE:[tyuukun,tamanezumi,tamanezumi,seiretu,musyounoai,kyuusonekowokamu]};
                 
                 var ou_list={card_list:[[henyamotin,50],[hirobakutan,1],[gingapawa,1],[ekken,1],[yamiyonokage,3]],ACE:[yamiyonokage,yamiyonokage,yamiyonokage],TOP_ACE:[hirobakutan,gingapawa,ekken]};
+                
+                var pupu_list={card_list:[[pupukuraudo,15],[pantingukuraudo,2],[happisukoru,5],[powerup3,20]],ACE:[happisukoru],TOP_ACE:[pantingukuraudo,happisukoru,pupukuraudo,pupukuraudo,powerup3,powerup3]};
+                var hituji_list={card_list:[[hitujikuraudo,10],[daburukuraudo,10],[hikoukigumo,5],[powerup3,10]],ACE:[hitujikuraudo,hitujikuraudo,hitujikuraudo],TOP_ACE:[hitujikuraudo,hikoukigumo]};
+                var ama_list={card_list:[[amakuraudo,10],[poizunkuraudo,8],[biribirikuraudo,7],[happisukoru,10]],ACE:[happisukoru,happisukoru],TOP_ACE:[amakuraudo,biribirikuraudo,poizunkuraudo]};
+                var enjeru_list={card_list:[[enjerukuraudo,45],[detaappurodo,1]],ACE:[],TOP_ACE:[detaappurodo,enjerukuraudo]};
+                var taihuu_list={card_list:[[taihuu0gou,1],[pupukuraudo,6],[pantingukuraudo,6],[happisukoru,6],[hitujikuraudo,6],[daburukuraudo,6],[amakuraudo,6],[poizunkuraudo,6],[biribirikuraudo,6],[enjerukuraudo,6]],ACE:[],TOP_ACE:[pupukuraudo,daburukuraudo,hitujikuraudo,poizunkuraudo,taihuu0gou]};
+
+                //={card_list:[[henyamotin,15]],ACE:[],TOP_ACE:[]};
                 //パック
                 var ぽにゃパック=[ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya,ponya_ace,ponya_ace,ponya_ace,ponya_ace,ponya_sutoraiku,ponya_sutoraiku,ponya_big,ponya_big,ponya_daburu,ponya_daburu,ponya_rein,ponya_rein,HPup5,HPup5,powerup3,ryuunoitigeki,ryuunoitigeki,ryuunoitigeki,kinkyuujitai5,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,kyuukoukasakusenki,atakkumojuru,atakkumojuru,kaihukumojuru,kaihukumojuru,sukurappudoro,sukurappudoro,henyamotin,henyamotin,henyamotin,henyamotin];
                 var 上位召喚パック=[aidorukourin,aidorukourin,aidorukourin,zousyoku,zousyoku,ponyasyoukansi,ponyasyoukansi,hametunosinkou,kyousinja,kyousinja,kyousinja,sentanseisei,sentanseisei,sentanseisei,ittouryoudan,ittouryoudan,ikkakudaija_hara,ikkakudaija_hara,ikkakudaija_hara,ikkakudaija_hara,sukurappubirudo,sukurappubirudo,sukurappubirudo,raihudaiya,raihudaiya,raihudaiya,raihudaiya];
@@ -6924,7 +7313,7 @@
 
                 
                 //お金=99999;
-                //deck_list={card_list:[[zerozerozero,4],[yamiryuusyuu,1]],ACE:[],TOP_ACE:[]};
+                //deck_list={card_list:[[enjerukuraudo,4],[syuukun,20],[taihuu0gou,1]],ACE:[],TOP_ACE:[taihuu0gou]};
                 //ponya_list={card_list:[[tamanezumi,4],[kyuusonekowokamu,3]],ACE:[],TOP_ACE:[tamanezumi]};
                 //ponya_list=deck_list;
                 //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
@@ -6932,8 +7321,10 @@
                 //sub_phase="デッキリスト";
                 //cursor=1;
                 //MAX_STAGE=4;
-                //mini_stage=0;
+                //mini_stage=6;
                 //game_phase="挑戦";
+                //stage=8;
+                //mini_stage=0;
                 //stage=1;
                 //MAX_TOP_ACE=15;
                 //--------------------------------------------------------------------------------------------------------/--------------------------------------------------------------------------------------------------------
@@ -6991,7 +7382,7 @@
                                     if(cursor==2){
                                         next_phase="デッキ編集準備";
                                         演出カウント=-20;
-                                    }else if(cursor==3 && stage<=7){//実装済みステージ数より大きくしないこと。
+                                    }else if(cursor==3 && stage<=8){//実装済みステージ数より大きくしないこと。
                                         next_phase="挑戦";
                                         演出カウント=1;
                                         mini_stage=0;
@@ -7797,6 +8188,308 @@
                                     ctx.fillText("ACE設定可能数+2", 100, 780);
                                 }
                             }
+                        }else if(stage==8){//天国
+                            if(key_interval<=0 && key_input!=""){//キーが長押しされている場合はkey_intervalが0になってて、キー操作が飛んできたら
+                                key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
+                                for(let i=0;i<key_input.length;i++){
+                                    if(key_input.charAt(i)=="↑"){
+                                    }else if(key_input.charAt(i)=="←"){
+                                        if(mini_stage==6){
+                                            cursor2=(cursor2+1)%2;
+                                        }
+                                    }else if(key_input.charAt(i)=="→"){
+                                        if(mini_stage==6){
+                                            cursor2=(cursor2+1)%2;
+                                        }
+                                    }else if(key_input.charAt(i)=="↓"){
+                                    }else if(key_input.charAt(i)=="〇" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                        if(mini_stage==0){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=pupu_list;//使用デッキ
+                                            teki_pull=5;//ドロー枚数
+                                            next_mini_stage=1;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=2000;//お金ー！
+                                        }else if(mini_stage==1){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=hituji_list;//使用デッキ
+                                            teki_pull=4;//ドロー枚数
+                                            next_mini_stage=2;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=3000;//お金ー！
+                                        }else if(mini_stage==2){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=ama_list;//使用デッキ
+                                            teki_pull=4;//ドロー枚数
+                                            next_mini_stage=3;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=4000;//お金ー！
+                                        }else if(mini_stage==3){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=enjeru_list;//使用デッキ
+                                            teki_pull=4;//ドロー枚数
+                                            next_mini_stage=4;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=5000;//お金ー！
+                                        }else if(mini_stage==4){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=deck_list;//使用デッキ
+                                            teki_pull=4;//ドロー枚数
+                                            next_mini_stage=5;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=10000;//お金ー！
+                                        }else if(mini_stage==5){
+                                            next_phase="戦闘準備";
+                                            演出カウント=1;
+                                            teki_deck_list=taihuu_list;//使用デッキ
+                                            teki_pull=4;//ドロー枚数
+                                            next_mini_stage=6;//クリアできたらこれが使われるってことさ。
+                                            drop_gold=10000;//お金ー！
+                                        }else if(mini_stage==6){
+                                            if(cursor2==0){
+                                                初回クリアメッセージフラグ=0;
+                                                next_phase="ステージ選択";
+                                                演出カウント=1;
+                                                cursor=2;
+                                            }else{
+                                                key_input="";//なんかこれないとボタン操作がいかれる
+                                                URL_tweet_text="https://twitter.com/intent/tweet?text=天国を抜けた…%0A%0A"+document.title+"%0A"+document.URL+"&hashtags=Syuukun_Card";//%0Aで改行
+                                                window.open( URL_tweet_text, '_blank'); 
+                                            }
+                                            
+                                        }
+                                    }else if(key_input.charAt(i)=="×" && 長押し阻止==0){
+                                        長押し阻止=1;
+                                    }
+                                    
+                                }
+                                if(key_owarasete==1){//もうボタン押してない。押してないときはイベントくんで検知するんだけど、実行よりも先にイベントが呼ばれてたらしかたないのでこいつで止める
+                                    key_input="";
+                                    key_interval=0;
+                                }
+                                
+                            }else if(key_interval>0){
+                                key_interval=key_interval-1;//カウントダウン
+                            }
+
+                            if(長押し阻止==1 && (key_input.indexOf("〇")==-1 && key_input.indexOf("×")==-1)){//〇×ボタンの長押し連打阻止。
+                                長押し阻止=0; 
+                            }
+                            
+                            ctx.drawImage(tengoku[5],-100,-100);
+                            ctx.drawImage(tengoku[4],-100,-100+Math.sin(time*Math.PI/100)*20);
+
+                            if(mini_stage==0){              
+                                ctx.save();
+                                ctx.scale(0.5,0.5);
+                                ctx.drawImage(HPup5.image,750,1000+Math.sin(time*Math.PI/100)*50);
+                                ctx.restore();
+                                
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[3],-100,-100+Math.sin(time*Math.PI/250)*30);
+
+                                ctx.drawImage(ponya.image,450,450+Math.sin((time/100-1/2)*Math.PI)*50);
+
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[2],-100,-100+Math.sin(time*Math.PI/250)*20);
+                                
+                                
+                                ctx.save();
+                                ctx.scale(2,2);
+                                ctx.drawImage(powerup3.image,350,250+Math.cos(time*Math.PI/100)*50);
+                                ctx.restore();
+
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[1],-100,-100+Math.cos(time*Math.PI/500)*40);
+
+                                ctx.drawImage(yubi,460,700+4*Math.sin(time*Math.PI/8));
+                                ctx.drawImage(tengoku[0],-100,-100+Math.sin(time*Math.PI/250)*50);
+                            }else if(mini_stage==1){              
+                                ctx.save();
+                                ctx.scale(0.5,0.5);
+                                ctx.drawImage(kyuukoukasakusenki.image,950,1000+Math.sin(time*Math.PI/100)*50);
+                                ctx.restore();
+                                
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[3],-100,-100+Math.sin(time*Math.PI/250)*30);
+
+                                ctx.drawImage(kameisi.image,650,450+Math.sin((time/100-1/2)*Math.PI)*50);
+
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[2],-100,-100+Math.sin(time*Math.PI/250)*20);
+                                
+                                
+                                ctx.save();
+                                ctx.scale(2,2);
+                                ctx.drawImage(ponya_daburu.image,40,350+Math.cos(time*Math.PI/100)*50);
+                                ctx.restore();
+
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[1],-100,-100+Math.cos(time*Math.PI/500)*40);
+
+                                ctx.drawImage(yubi,460,700+4*Math.sin(time*Math.PI/8));   
+                                ctx.drawImage(tengoku[0],-100,-100+Math.sin(time*Math.PI/250)*50);                           
+                            }else if(mini_stage==2){              
+                                ctx.save();
+                                ctx.scale(0.5,0.5);
+                                ctx.drawImage(kyuusainote.image,1250,1200+Math.sin(time*Math.PI/100)*50);
+                                ctx.restore();
+                                
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[3],-100,-100+Math.sin(time*Math.PI/250)*30);
+
+                                ctx.drawImage(karamaruito.image,350,450+Math.sin((time/100-1/2)*Math.PI)*50);
+
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[2],-100,-100+Math.sin(time*Math.PI/250)*20);
+                                
+                                
+                                ctx.save();
+                                ctx.scale(2,2);
+                                ctx.drawImage(moukyodokudaitake.image,240,350+Math.cos(time*Math.PI/100)*50);
+                                ctx.restore();
+
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[1],-100,-100+Math.cos(time*Math.PI/500)*40);
+
+                                ctx.drawImage(yubi,460,700+4*Math.sin(time*Math.PI/8));       
+                                ctx.drawImage(tengoku[0],-100,-100+Math.sin(time*Math.PI/250)*50);
+                            }else if(mini_stage==3){              
+                                ctx.save();
+                                ctx.scale(0.5,0.5);
+                                ctx.drawImage(ou.image,1250,800+Math.sin(time*Math.PI/100)*50);
+                                ctx.restore();
+                                
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[3],-100,-100+Math.sin(time*Math.PI/250)*30);
+
+                                //ctx.drawImage(karamaruito.image,350,450+Math.sin((time/100-1/2)*Math.PI)*50);
+
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[2],-100,-100+Math.sin(time*Math.PI/250)*20);
+                                
+                                
+                                ctx.save();
+                                ctx.scale(2,2);
+                                ctx.drawImage(sabitayari.image,140,100+Math.cos(time*Math.PI/100)*50);
+                                ctx.restore();
+
+                                ctx.fillStyle="rgb(200,200,255,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[1],-100,-100+Math.cos(time*Math.PI/500)*40);
+
+                                ctx.drawImage(yubi,460,700+4*Math.sin(time*Math.PI/8));   
+                                ctx.drawImage(tengoku[0],-100,-100+Math.sin(time*Math.PI/250)*50);
+                            }else if(mini_stage==4){              
+                                //ctx.save();
+                                //ctx.scale(0.5,0.5);
+                                //ctx.drawImage(ou.image,1250,800+Math.sin(time*Math.PI/100)*50);
+                                //ctx.restore();
+                                
+                                ctx.fillStyle="rgb(255,200,200,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[3],-100,-100+Math.sin(time*Math.PI/250)*30);
+
+                                
+
+                                ctx.fillStyle="rgb(255,200,200,0.3)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[2],-100,-100+Math.sin(time*Math.PI/250)*20);
+                                
+                                ctx.drawImage(syuukun.image,450,450+Math.sin((time/100-1/2)*Math.PI)*50);
+                                //ctx.save();
+                                //ctx.scale(2,2);
+                                //ctx.drawImage(sabitayari.image,140,100+Math.cos(time*Math.PI/100)*50);
+                                //ctx.restore();
+
+                                ctx.fillStyle="rgb(255,200,200,0.4)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[1],-100,-100+Math.cos(time*Math.PI/500)*40);
+
+                                ctx.drawImage(yubi,460,700+4*Math.sin(time*Math.PI/8));      
+                                ctx.drawImage(tengoku[0],-100,-100+Math.sin(time*Math.PI/250)*50);
+                            }else if(mini_stage==5){              
+                                ctx.save();
+                                ctx.scale(0.5,0.5);
+                                ctx.drawImage(pantingukuraudo.image,650,1400+Math.sin(time*Math.PI/100)*50);
+                                ctx.drawImage(happisukoru.image,850,1300+Math.sin(time*Math.PI/100+Math.PI)*50);
+                                ctx.drawImage(daburukuraudo.image,750,1100+Math.cos(time*Math.PI/100)*50);
+                                ctx.drawImage(biribirikuraudo.image,1250,1300+Math.cos(time*Math.PI/100+Math.PI)*50);
+                                ctx.drawImage(poizunkuraudo.image,1150,900+Math.sin(time*Math.PI/100+Math.PI*3/2)*50);
+                                ctx.restore();
+                                
+                                ctx.fillStyle="rgb(200,100,100,0.3)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[3],-100,-100+Math.sin(time*Math.PI/250)*30);
+
+                                ctx.drawImage(taihuu0gou.image,450,450+Math.sin((time/100-1/2)*Math.PI)*50);
+
+                                ctx.fillStyle="rgb(200,100,100,0.2)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[2],-100,-100+Math.sin(time*Math.PI/250)*20);
+                                
+                                
+                                ctx.save();
+                                ctx.scale(2,2);
+                                ctx.drawImage(pupukuraudo.image,340,350+Math.cos(time*Math.PI/100)*50);
+                                ctx.drawImage(hitujikuraudo.image,20,400+Math.sin(time*Math.PI/100)*50);
+                                ctx.drawImage(amakuraudo.image,240,20+Math.cos(time*Math.PI/100+Math.PI/5)*50);
+                                ctx.drawImage(enjerukuraudo.image,20,50+Math.sin(time*Math.PI/100+Math.PI)*50);
+                                ctx.restore();
+
+                                ctx.fillStyle="rgb(200,100,100,0.1)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku[1],-100,-100+Math.cos(time*Math.PI/500)*40);
+
+                                ctx.drawImage(yubi,460,700+4*Math.sin(time*Math.PI/8));  
+                                ctx.drawImage(tengoku[0],-100,-100+Math.sin(time*Math.PI/250)*50);
+                            }else if(mini_stage==6){//クリアだ。おめでとう。
+                                ctx.drawImage(tengoku[3],-100,-100+Math.sin(time*Math.PI/250)*30);
+                                ctx.drawImage(tengoku[2],-100,-100+Math.sin(time*Math.PI/250)*30);
+                                ctx.drawImage(tengoku[1],-100,-100+Math.sin(time*Math.PI/250)*30);
+                                ctx.drawImage(tengoku[0],-100,-100+Math.sin(time*Math.PI/250)*50);
+                                ctx.fillStyle="rgb(0,0,0,0.75)";
+                                ctx.fillRect(0,0,1000,1000);
+                                ctx.drawImage(tengoku_kuria,0,0);//変えること。ー－－－－－－－－－－－－－－－－－－－－－－－－－－
+                                ctx.fillStyle="rgb(255,255,255)";
+                                ctx.fillRect(50,700,900,250);
+
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.fillText("ステージ選択へ", 200, 930);
+                                ctx.fillText("ツイート", 700, 930);
+
+                                ctx.save();
+                                ctx.rotate(90 * Math.PI / 180);
+                                if(cursor2==0){
+                                    ctx.drawImage(yubi,850,-190+4*Math.sin(time*Math.PI/8));
+                                }else{
+                                    ctx.drawImage(yubi,850,-690+4*Math.sin(time*Math.PI/8));
+                                }
+                                ctx.restore();
+                             
+                                if(MAX_STAGE==8){
+                                    初回クリアメッセージフラグ=1;
+                                    MAX_STAGE=9;
+                                    localStorage.setItem('MAX_STAGE',MAX_STAGE);//ゲームデータセーブ
+                                }
+                                if(初回クリアメッセージフラグ==1){
+                                    //ctx.fillText("ACE設定可能数+2", 100, 780);
+                                }
+                            }
+                            
                         }
                         
 
@@ -10671,7 +11364,16 @@
                             ctx.fillRect(0,0,1000,1000);
                         }else if(stage==4){
                             ctx.drawImage(hujounomori_kakoi,0,0);
-                           
+                        }else if(stage==8){
+                            if(mini_stage<5){
+                                ctx.fillStyle="rgb(150,230,255)";
+                            }else if(mini_stage==5){
+                                ctx.fillStyle="rgb(170,200,235)";
+                            }else{
+                                ctx.fillStyle="rgb(110,90,100)";
+                            }
+
+                            ctx.fillRect(0,0,1000,1000);
                         }else{
                             ctx.fillStyle="rgb(130,255,170)";
                             ctx.fillRect(0,0,1000,1000);
@@ -11120,11 +11822,14 @@
                             
                         }
 
-                        if(stage==4){
-                            ctx.fillStyle="rgb(255,255,255,0.1)";
-                            ctx.fillRect(0,0,1000,1000);//ぼんやりとした光
-                            ctx.fillStyle="rgb(0,0,0,0.2)";
-                            ctx.fillRect(0,0,1000,1000);//ぼんやりとした影
+                        if(stage==4 || stage==8){
+                            if(stage==4){
+                                ctx.fillStyle="rgb(255,255,255,0.1)";
+                                ctx.fillRect(0,0,1000,1000);//ぼんやりとした光
+                                ctx.fillStyle="rgb(0,0,0,0.2)";
+                                ctx.fillRect(0,0,1000,1000);//ぼんやりとした影
+                            }
+                            
                             
                             ctx.save();
                             ctx.scale(3,3);
