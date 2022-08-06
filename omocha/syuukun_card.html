@@ -691,6 +691,8 @@
 
             var 特殊状態=[];
             var 相手の降参=0;
+            
+            
             //---上デュエル系？　下デッキ系…？？？？？？？？
             var 所持カード=[];
             var deck_list;
@@ -6610,6 +6612,9 @@
                                 if(my_tehuda[i].card.name=="へにゃもちん"){
                                     my_haka.push(my_tehuda[i]);
                                     my_tehuda.splice(i,1);
+                                    if(i<tukau_card_num){
+                                        tukau_card_num-=1;
+                                    }
                                     i-=1;
                                 }
                             }
@@ -6626,6 +6631,9 @@
                                 if(teki_tehuda[i].card.name=="へにゃもちん"){
                                     teki_haka.push(teki_tehuda[i]);
                                     teki_tehuda.splice(i,1);
+                                    if(i<tukau_card_num){
+                                        tukau_card_num-=1;
+                                    }
                                     i-=1;
                                 }
                             }
@@ -7313,7 +7321,7 @@
 
                 
                 //お金=99999;
-                //deck_list={card_list:[[enjerukuraudo,4],[syuukun,20],[taihuu0gou,1]],ACE:[],TOP_ACE:[taihuu0gou]};
+                //deck_list={card_list:[[henyamotin,40],[ekken,1]],ACE:[],TOP_ACE:[]};
                 //ponya_list={card_list:[[tamanezumi,4],[kyuusonekowokamu,3]],ACE:[],TOP_ACE:[tamanezumi]};
                 //ponya_list=deck_list;
                 //所持カード=[[ponya_sutoraiku,5],[ponya_daburu,5]];
@@ -12057,7 +12065,10 @@
                                 key_interval=5;//30*n/1000[s]の間、長押しでの連続入力を無効。
                                 長押し阻止=1;
                                 if(key_input.indexOf("〇")!=-1 || key_input.indexOf("×")!=-1){//なんでこんなとこにいるんだよ！
+
+                                    
                                     teki_tehuda[tukau_card_num].card.effect("手札から");
+
                                     if(teki_tehuda[tukau_card_num].state.indexOf("消滅")==-1){
                                         teki_tehuda[tukau_card_num].position="teki_haka";
                                         teki_haka.push(teki_tehuda[tukau_card_num]);
