@@ -12033,7 +12033,7 @@
                                             if(teki_ba[j]!="" && teki_ba[j].state.indexOf("ラスボス")!=-1){//ラスボスが場にいる。
                                                 let しゅうくん数_ポン=0;
                                                 for(let k=0;k<5;k++){
-                                                    if(my_ba[k]!="" && my_ba[k].state.indexOf("しゅうくん")!=-1){
+                                                    if(my_ba[k]!="" && my_ba[k].state.indexOf("しゅうくん")!=-1 &&my_ba[k].card.name!="しゅうくん"){
                                                         しゅうくん数_ポン+=1;
                                                     }
                                                 }
