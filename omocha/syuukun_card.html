@@ -481,6 +481,9 @@
             
             var amarimonopakku=new Image();
             amarimonopakku.src="../images/omocha/syuukun_card/amarimonopakku.png";
+
+            var owaripakku=new Image();
+            owaripakku.src="../images/omocha/syuukun_card/owari_pakku.png";
             //--ステージ？
             var henyamoti_title=new Image();
             henyamoti_title.src="../images/omocha/syuukun_card/henyamotinsougen_title.png";
@@ -8172,6 +8175,8 @@
                 var 娘パック2=[nezumi,nezumi,nezumi,motinpinku,pupukuraudo,pandemikku,kanbanmusume,zangyakuakuma,kumosuitoriki,dakuesu];
 
                 var あまりものパック=[nezumi,tyuunezumi,dekanezumi,dokunezumi,tamanezumi,tatujinnezumi,tamanori,tyuukun,gingapawa,yamiyonokage,pupukuraudo,pantingukuraudo,happisukoru,hitujikuraudo,daburukuraudo,hikoukigumo,amakuraudo,poizunkuraudo,biribirikuraudo,enjerukuraudo,kyoumeiponya,syukuniumu,tutata,long,nyoro,kokuten,wesutan,hiru,kengou,omaemooreda];
+                
+                var 終わりパック=[test_card2];
                 //ここからロード、なんで一個ずつやってるのかというと、開発中はバージョンによってセーブデータがあったりなかったりするから、バグる。
                 //全データ消去();
                 if(localStorage.getItem('所持カード')){//セーブデータがあるね
@@ -9831,6 +9836,10 @@
                                                 for(i=0;i<3*(購入数[0]*100+購入数[1]*10+購入数[2]);i++){
                                                     出てきたカード[i]=あまりものパック[Math.floor(Math.random()*あまりものパック.length)];
                                                 }
+                                            }else if(cursor==8){
+                                                for(i=0;i<3*(購入数[0]*100+購入数[1]*10+購入数[2]);i++){
+                                                    出てきたカード[i]=終わりパック[0];
+                                                }
                                             }
 
                                             お金-=金額[cursor]*(購入数[0]*100+購入数[1]*10+購入数[2]);
@@ -9990,7 +9999,7 @@
                             }
                             
                             if(パック売るよ>=8){
-                                パック陳列 (550,650,ponya_pack,cursor==8);
+                                パック陳列 (550,650,owaripakku,cursor==8);
                                 ctx.fillStyle="rgb(0,0,0)";
                                 ctx.font = "30px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                                 ctx.fillText(金額[8], 630, 920);
@@ -10081,6 +10090,12 @@
                                 ctx.fillText("あまりものパック", 200, 100);
                                 カードパック(50,50,amarimonopakku);
                                 パックの中身(あまりものパック,50,300,700,600);
+                            }else if(cursor==8){
+                                ctx.fillStyle="rgb(0,0,0)";
+                                ctx.font = "50px  'ＭＳ ゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                                ctx.fillText("終わりパック", 200, 100);
+                                カードパック(50,50,owaripakku);
+                                パックの中身(終わりパック,50,300,700,600);
                             }
 
                             ctx.fillStyle="rgb(0,0,0)";
