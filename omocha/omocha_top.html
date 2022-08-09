@@ -22,6 +22,16 @@
                 height: 1.5em;
                 background-color: #ffffff;
                 border-radius: 20%;
+                
+            }
+            .torofi32{
+                display: none;
+                margin-left: 0.3em;
+                height: 3em;
+                background-color: #00000000;
+                border: outset #fff;
+                border-radius: 20%;
+                image-rendering: pixelated;
             }
             dl div{
                 background: #FFFFFF00;
@@ -41,6 +51,10 @@
                 vertical-align:bottom;
                 margin-top: 0.3em;
             }
+            dt .torofi32{
+                vertical-align:bottom;
+                margin-top: 0.3em;
+            }
             dd{
                 margin-top: 1em;
             }
@@ -49,6 +63,9 @@
         <script>
             onload = function(){
                 onload_functions();
+                if(localStorage.getItem('MAX_STAGE')==12){//セーブデータがあるね
+                    document.getElementById("kadotorofi").style.display ="inline";
+                }
             }
         </script>
     </head>
@@ -117,11 +134,11 @@
                 </div>
                 <div>
                     <dt>
-                        <a href="syuukun_card.html">しゅうくんカード</a>
+                        <img id="kadotorofi" class="torofi32" src="../images/omocha/omocha_top/kadotorofi32.png"><a href="syuukun_card.html">しゅうくんカード</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
                     </dt>
                     <dd>
-                        カードを集めてデッキを作ってステージを攻略しよう！世界に現れた大量のしゅうくん…この異変の謎は一体！？<br>(オートセーブです)（開発中です）
+                        カードを集めてデッキを作ってステージを攻略しよう！世界に現れた大量のしゅうくん…この異変の謎は一体！？(オートセーブ：ブラウザに保存されます。)
                     </dd>
                 </div>
             
