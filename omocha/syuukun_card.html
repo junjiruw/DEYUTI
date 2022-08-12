@@ -6383,7 +6383,7 @@
 
                 var nezumi={name:"ねずみ",image:nezumi_image,ATK:1,HP:1,state:["モンスター","ネズミ"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ぽにゃより弱いモンスターっていたんだ",text_iro:[]};
                 var tyuunezumi={name:"中ねずみ",image:tyuunezumi_image,ATK:3,HP:5,state:["モンスター","ネズミ"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ﾁｭｰ…ねずみ",text_iro:[]};
-                var dekanezumi={name:"デカねずみ",image:dekanezumi_image,ATK:3,HP:15,state:["モンスター","ネズミ"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ネズミしてはでかい。",text_iro:[]};
+                var dekanezumi={name:"デカねずみ",image:dekanezumi_image,ATK:3,HP:15,state:["モンスター","ネズミ"],effect_req:function(タイミング){return false;},effect:function(タイミング){},AI:function(タイミング){return true;},text:"ネズミにしてはでかい。",text_iro:[]};
                 var dokunezumi={name:"毒ねずみ",image:dokunezumi_image,ATK:1,HP:3,state:["モンスター","ネズミ","毒付与"],effect_req:function(タイミング){return false;},effect:function(タイミング){
                     if(タイミング=="攻撃した"){
                         if(def_card.state.indexOf("毒:")!=-1){//毒状態ですかぁ？
@@ -8071,7 +8071,7 @@
                             teki_tehuda.push(teki_deck[teki_deck.length-1]);
                         }
                     }
-                },AI:function(タイミング){return true;},text:"ターン開始時、無からカードを2枚取り出す。色欲よりも物欲をそそらせるサキュバス。",text_iro:[]};
+                },AI:function(タイミング){return true;},text:"ターン開始時、無からカードを2枚取り出す。色欲よりも物欲を刺激するサキュバス。",text_iro:[]};
                 var sitappa={name:"したっぱハート",image:sitappa_image,ATK:2,HP:10,state:["モンスター","ブロック"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
                     if(タイミング=="召喚された"){
                         if(option[0]=="my_ba"){//味方
