@@ -88,6 +88,9 @@
             h2{
                 text-shadow:2px 2px 0px #0f4936,-1px -1px;
             }
+            dl#session_dl >dt> img{
+                height: 1.5em;
+            }
 
         </style>
 
@@ -107,9 +110,9 @@
             async function Update_show(){
                 var res = await fetch("https://api.github.com/repos/junjiruw/DEYUTI/commits")//最新更新情報をgithubから持ってくる
                 var res_json = await res.json();
-                    var update_time=new Date(res_json[0].commit.committer.date);
-                    document.getElementById('update_time').textContent="更新日時："+update_time.getUTCFullYear()+"年"+("0"+(Number(update_time.getMonth())+1)).slice(-2)+"月"+("0"+update_time.getDate()).slice(-2)+"日 "+("0"+update_time.getHours()).slice(-2)+":"+("0"+update_time.getUTCMinutes()).slice(-2);
-                    document.getElementById('update_comment').textContent="更新コメント："+res_json[0].commit.message;
+                var update_time=new Date(res_json[0].commit.committer.date);
+                document.getElementById('update_time').textContent="更新日時："+update_time.getUTCFullYear()+"年"+("0"+(Number(update_time.getMonth())+1)).slice(-2)+"月"+("0"+update_time.getDate()).slice(-2)+"日 "+("0"+update_time.getHours()).slice(-2)+":"+("0"+update_time.getUTCMinutes()).slice(-2);
+                document.getElementById('update_comment').textContent="更新コメント："+res_json[0].commit.message;
 
                 res = await fetch(res_json[0].url)
                 res_json = await res.json();
@@ -134,6 +137,29 @@
                     }
                 }
             }
+
+            async function session_show(){
+                var res = await fetch("https://script.google.com/macros/s/AKfycbw95iP4-HfrJlSZYqe7i3rqTei9ySSEuICfyR0e6xbId2GTxLIN-eI1c5F7EdOW_bmtvA/exec");
+                //グーグルスプレッドシートの中身をとってきてくれるGAS。一日の制限はないけど一分で60回が限度かな？
+                //スプレッドシートはgoogle analiticsから値を持ってくる。(allは一日で更新、now(最近30分)は1分で更新)こっちは一日で50000回？ほんまか？
+                //スプレッドシートはこれ：https://docs.google.com/spreadsheets/d/1aGPa8oV83X_gAi7vVy1pNGL-usIngBp8jAyFBzi9ue4/edit?usp=sharing
+                //俺のアカウントとして実行するヤツになってる。スプレッドシート公開してるんだから直接もってくる方法ないんかいなと思ったけど闇が深そうなので思考から排除
+  
+                var res_json = await res.json();
+                //console.log(res_json);
+
+                let all_dl=document.getElementById("all_session");
+                let all_session=String(res_json.all_session).padStart(all_dl.childElementCount,"0");
+                for(let i=0;i<all_dl.childElementCount;i++){
+                    all_dl.children[i].src="../images/site/session/session_num_"+all_session[i]+".png";
+                }
+
+                let now_dl=document.getElementById("now_session");
+                let now_session=String(res_json.now_session).padStart(now_dl.childElementCount,"0");                
+                for(let i=0;i<now_dl.childElementCount;i++){
+                    now_dl.children[i].src="../images/site/session/session_num_"+now_session[i]+".png";
+                }
+            }
             onload = function(){
                 onload_functions();
 
@@ -145,7 +171,8 @@
                 }
 
                 Update_show();
-                
+                session_show();
+
             }
         </script>
     </head>
@@ -226,7 +253,12 @@
                     <dd>Twitterは💩みたいなことしか言ってないです。GitHubにはこのサイトがあります。</dd>
                 </div>
             </dl>
-            
+            <dl id="session_dl">
+                <dt id="all_session"><img><img><img><img><img><img></dt>
+                <dd> 昨日までの合計来訪者数</dd>
+                <dt id="now_session"><img><img><img><img><img><img></dt>
+                <dd> 最近30分の合計来訪者数(集計：1分くらい)</dd>
+            </dl>
             <a id="boti" href= "https://sites.google.com/view/junjiruw" target="_blank">
                 旧サイト<span id="notbikkuri">（三⦿ω⦿三）</span><span id="bikkuri">（三❗ω❗三）</span>
             </a>
