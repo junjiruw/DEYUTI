@@ -89,7 +89,7 @@
                 text-shadow:2px 2px 0px #0f4936,-1px -1px;
             }
             dl#session_dl >dt> img{
-                height: 1.5em;
+                height: 3em;
             }
 
         </style>
@@ -151,13 +151,13 @@
                 let all_dl=document.getElementById("all_session");
                 let all_session=String(res_json.all_session).padStart(all_dl.childElementCount,"0");
                 for(let i=0;i<all_dl.childElementCount;i++){
-                    all_dl.children[i].src="../images/site/session/session_num_"+all_session[i]+".png";
+                    all_dl.children[i].src="images/site/session/session_num_"+all_session[i]+".png";
                 }
 
                 let now_dl=document.getElementById("now_session");
                 let now_session=String(res_json.now_session).padStart(now_dl.childElementCount,"0");                
                 for(let i=0;i<now_dl.childElementCount;i++){
-                    now_dl.children[i].src="../images/site/session/session_num_"+now_session[i]+".png";
+                    now_dl.children[i].src="images/site/session/session_num_"+now_session[i]+".png";
                 }
             }
             onload = function(){
