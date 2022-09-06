@@ -88,8 +88,16 @@
             h2{
                 text-shadow:2px 2px 0px #0f4936,-1px -1px;
             }
-            dl#session_dl >dt> img{
-                height: 3em;
+
+            div.session_div{
+                padding: 0.5em;
+            }
+            div.session_div >dd{
+                margin-inline-start: 0px;
+            }
+            div.session_div >dt> img{
+                image-rendering: pixelated;/*ドット絵なんだろ？持っていきな*/
+                height: 4em;
             }
 
         </style>
@@ -150,6 +158,7 @@
 
                 let all_dl=document.getElementById("all_session");
                 let all_session=String(res_json.all_session).padStart(all_dl.childElementCount,"0");
+                //all_session=String("123456").padStart(all_dl.childElementCount,"0");
                 for(let i=0;i<all_dl.childElementCount;i++){
                     all_dl.children[i].src="images/site/session/session_num_"+all_session[i]+".png";
                 }
@@ -164,10 +173,15 @@
                 onload_functions();
 
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
-                        var obj=document.getElementsByClassName("a_img");
-                        for(let i=0;i<obj.length;i++){
+                    var obj=document.getElementsByClassName("a_img");
+                    for(let i=0;i<obj.length;i++){
                         obj[i].style.width ="50vw";
                     }
+
+                }else{//PC？
+
+                    document.getElementById("session_dl").style.display ="flex";
+                    
                 }
 
                 Update_show();
@@ -254,10 +268,15 @@
                 </div>
             </dl>
             <dl id="session_dl">
-                <dt id="all_session"><img><img><img><img><img><img></dt>
-                <dd> 昨日までの合計来訪者数</dd>
-                <dt id="now_session"><img><img><img><img><img><img></dt>
-                <dd> 最近30分の合計来訪者数(集計：1分くらい)</dd>
+                <div class="session_div">
+                    <dd> 昨日までの合計来訪者数</dd>
+                    <dt id="all_session"><img><img><img><img><img><img></dt>
+                </div>
+                <div class="session_div">
+                    <dd> 最近30分の合計来訪者数(集計：1分くらい)</dd>
+                    <dt id="now_session"><img><img><img><img><img><img></dt>
+                </div>
+
             </dl>
             <a id="boti" href= "https://sites.google.com/view/junjiruw" target="_blank">
                 旧サイト<span id="notbikkuri">（三⦿ω⦿三）</span><span id="bikkuri">（三❗ω❗三）</span>
