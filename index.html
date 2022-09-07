@@ -95,9 +95,33 @@
             div.session_div >dd{
                 margin-inline-start: 0px;
             }
-            div.session_div >dt> img{
+            div.session_div >dt{
+                border:10px outset #d0d6d4;
+                height: 0.5em;
+                display: inline-block;
+                text-align: right;
+            }
+            div.session_dt_div> img{
+                padding: 1px;
+                padding-top: 2px;
                 image-rendering: pixelated;/*ドット絵なんだろ？持っていきな*/
-                height: 4em;
+                height: 0em;/*3emでMAX*/
+                width: 2em;
+                vertical-align: top;/*上からニュッてね*/
+                object-fit: cover; /*画像切り出し*/
+                object-position: 50% 100%/*切り出し位置*/
+            }
+            div.session_dt_div{
+                position: relative;
+            }
+            div.session_dt_div::before{
+                content: "";  /* contentで何も入れず、疑似要素を実体化 */
+                display: inline-block;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                box-shadow: inset 0px 1em 2em -1em #000000;
+                z-index: 2;
             }
 
         </style>
@@ -156,21 +180,72 @@
                 var res_json = await res.json();
                 //console.log(res_json);
 
-                let all_dl=document.getElementById("all_session");
+                let all_dl=document.getElementById("all_session_div");
                 let all_session=String(res_json.all_session).padStart(all_dl.childElementCount,"0");
                 //all_session=String("123456").padStart(all_dl.childElementCount,"0");
                 for(let i=0;i<all_dl.childElementCount;i++){
                     all_dl.children[i].src="images/site/session/session_num_"+all_session[i]+".png";
                 }
 
-                let now_dl=document.getElementById("now_session");
+                let now_dl=document.getElementById("now_session_div");
                 let now_session=String(res_json.now_session).padStart(now_dl.childElementCount,"0");                
                 for(let i=0;i<now_dl.childElementCount;i++){
                     now_dl.children[i].src="images/site/session/session_num_"+now_session[i]+".png";
                 }
+
+                scroll_flag=1;
+                if(session_dl.getBoundingClientRect().bottom<window.innerHeight){//すでに画面内じゃね？
+                    scroll_flag=0;
+                    にゅっと出る();
+                }
+
             }
+
+            async function にゅっと出る(){
+                let all_dl=document.getElementById("all_session_div");
+                let now_dl=document.getElementById("now_session_div");
+                for(let time=0;time<100;time++){
+                    for(let i=0;i<all_dl.childElementCount;i++){
+                        all_dl.children[i].style.height=3*time/100+"em";
+                    }
+                    for(let i=0;i<now_dl.childElementCount;i++){
+                        now_dl.children[i].style.height=3*time/100+"em";
+                    }
+                    await sleep(10);
+                    if(time==50){
+                        for(let i=0;i<all_dl.childElementCount;i++){
+                           all_dl.children[i].style.verticalAlign="bottom";
+                        }
+                        for(let i=0;i<now_dl.childElementCount;i++){
+                            now_dl.children[i].style.verticalAlign="bottom";
+                        }
+                    }
+                }
+            }
+
+            function sleep(n){
+                return new Promise(function(resolve){
+                    setTimeout(resolve,n);//ミリ秒
+                });
+            }
+
+            
+            var scroll_flag=0;  
+
             onload = function(){
                 onload_functions();
+
+                
+                var session_dl=document.getElementById("session_dl");       
+   
+                //スクロールイベント
+                window.addEventListener('scroll', function () {
+                    if(scroll_flag==1 && session_dl.getBoundingClientRect().bottom<window.innerHeight){//画面内に出口が入った
+                        scroll_flag=0;
+                        にゅっと出る();
+                    }
+                });
+
 
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
                     var obj=document.getElementsByClassName("a_img");
@@ -180,12 +255,14 @@
 
                 }else{//PC？
 
-                    document.getElementById("session_dl").style.display ="flex";
+                    session_dl.style.display ="flex";
                     
                 }
 
                 Update_show();
                 session_show();
+                
+
 
             }
         </script>
@@ -270,11 +347,11 @@
             <dl id="session_dl">
                 <div class="session_div">
                     <dd> 昨日までの合計来訪者数</dd>
-                    <dt id="all_session"><img><img><img><img><img><img></dt>
+                    <dt id="all_session"><div id="all_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
                 </div>
                 <div class="session_div">
                     <dd> 最近30分の合計来訪者数(集計：1分くらい)</dd>
-                    <dt id="now_session"><img><img><img><img><img><img></dt>
+                    <dt id="now_session"><div id="now_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
                 </div>
 
             </dl>
