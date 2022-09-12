@@ -238,40 +238,28 @@
                 for(let time=0;time<100;time++){
                     for(let i=0;i<all_dl.childElementCount;i++){
                         all_dl.children[i].style.height=3*にゅ度[i]/99+"em";
-                        if(にゅ度[i]<100){
+                        if(にゅ度[i]<99){
                             にゅ度[i]+=1;
+                        }else{
+                            にゅ度[i]=99;
                         }
                     }
                     for(let i=0;i<now_dl.childElementCount;i++){
                         now_dl.children[i].style.height=3*にゅ度[i+6]/99+"em";
-                        if(にゅ度[i+6]<100){
+                        if(にゅ度[i+6]<99){
                             にゅ度[i+6]+=1;
+                        }else{
+                            にゅ度[i+6]=99;
                         }
                     }
                     await sleep(10);
-                    if(time==50){
-                        全体出現済み=0;
-                        for(let j=0;j<にゅ度.length;j++){
-                            if(にゅ度[j]>51){
-                                全体出現済み=1;
-                            }
-                        }
-                        if(全体出現済み!=1){//全体出現してるやつがいなくねえか？
-                            for(let i=0;i<all_dl.childElementCount;i++){
-                                all_dl.children[i].style.verticalAlign="bottom";
-                            }
-                            for(let i=0;i<now_dl.childElementCount;i++){
-                                now_dl.children[i].style.verticalAlign="bottom";
-                            }
-                        }
-
-                    }else if(time==0){
-
-                        for(let i=0;i<all_dl.childElementCount;i++){
-                           all_dl.children[i].style.verticalAlign="top";
-                        }
-                        for(let i=0;i<now_dl.childElementCount;i++){
-                            now_dl.children[i].style.verticalAlign="top";
+                    
+                    if(Math.max(...にゅ度)>50){
+                        let にゅind=にゅ度.indexOf(Math.max(...にゅ度));
+                        if(にゅind<6){
+                            all_dl.children[にゅind].style.verticalAlign="bottom";
+                        }else{
+                            now_dl.children[にゅind-6].style.verticalAlign="bottom";
                         }
                     }
                 }
@@ -287,7 +275,7 @@
             var scroll_flag=0;  
             var にゅ_flag=[1,1,1, 1,1,1, 1,1,1, 1,1,1];  //これ、配列数賢くできたんとちゃう？まま、ええわ
             var にゅ度=[0,0,0, 0,0,0, 0,0,0, 0,0,0];  
-            var 全体出現済み=0;
+
             var session_dl;
             var all_dl;
             var now_dl;
@@ -328,6 +316,7 @@
                     for(let i=0;i<6;i++){
                         if(Math.floor(Math.random()*2)==1){
                             にゅ度[i]=0;
+                            all_dl.children[i].style.verticalAlign="top";
                             all_dl.children[i].src="images/site/session/session_num_"+Math.floor(Math.random()*9)+".png";
                         }
                     }
@@ -338,6 +327,7 @@
                     for(let i=0;i<6;i++){
                         if(Math.floor(Math.random()*2)==1){
                             にゅ度[i+6]=0;
+                            now_dl.children[i].style.verticalAlign="top";
                             now_dl.children[i].src="images/site/session/session_num_"+Math.floor(Math.random()*9)+".png";
                         }
                     }
