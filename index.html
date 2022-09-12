@@ -101,6 +101,40 @@
                 display: inline-block;
                 text-align: right;
             }
+            div.session_div >button{
+                vertical-align: top;
+                background-color: #ffffff;
+                width: 1.5em;
+                height: 1.5em;
+                border-radius: 50%;
+                box-shadow: 0em 0em 0.1em 0.1em #F0F020;  
+                position: relative;
+            }
+            div.session_div >button:hover{
+                background-color: #8aa319;
+                cursor: pointer;
+            }
+            div.session_div >button:active{
+                background-color: #000000;
+                cursor: pointer;
+            }
+            div.session_div >button::before{
+                content: "";  /* contentで何も入れず、疑似要素を実体化 */
+                position: absolute;
+                width: 0em;
+                height: 0em;
+                border-radius: 50%;
+                box-shadow:0em 0em 0.4em 0.45em #F0F020 ;  
+            }
+            div.session_div >button::after{
+                content: "";  /* contentで何も入れず、疑似要素を実体化 */
+                position: absolute;
+                width: 0em;
+                height: 0em;
+                border-radius: 50%;
+                box-shadow:0em 0em 0.4em 0.2em #84860f ;  
+                
+            }
             div.session_dt_div> img{
                 padding: 1px;
                 padding-top: 2px;
@@ -123,7 +157,6 @@
                 box-shadow: inset 0px 1em 2em -1em #000000;
                 z-index: 2;
             }
-
         </style>
 
         <!-- Google tag (gtag.js) -->
@@ -173,21 +206,20 @@
             async function session_show(){
                 var res = await fetch("https://script.google.com/macros/s/AKfycbw95iP4-HfrJlSZYqe7i3rqTei9ySSEuICfyR0e6xbId2GTxLIN-eI1c5F7EdOW_bmtvA/exec");
                 //グーグルスプレッドシートの中身をとってきてくれるGAS。一日の制限はないけど一分で60回が限度かな？
-                //スプレッドシートはgoogle analiticsから値を持ってくる。(allは一日で更新、now(最近30分)は1分で更新)こっちは一日で50000回？ほんまか？
+                //スプレッドシートはgoogle analyticsから値を持ってくる。(allは一日で更新、now(最近30分)は1分で更新)こっちは一日で50000回？ほんまか？
                 //スプレッドシートはこれ：https://docs.google.com/spreadsheets/d/1aGPa8oV83X_gAi7vVy1pNGL-usIngBp8jAyFBzi9ue4/edit?usp=sharing
                 //俺のアカウントとして実行するヤツになってる。スプレッドシート公開してるんだから直接もってくる方法ないんかいなと思ったけど闇が深そうなので思考から排除
   
                 var res_json = await res.json();
                 //console.log(res_json);
 
-                let all_dl=document.getElementById("all_session_div");
+
                 let all_session=String(res_json.all_session).padStart(all_dl.childElementCount,"0");
                 //all_session=String("123456").padStart(all_dl.childElementCount,"0");
                 for(let i=0;i<all_dl.childElementCount;i++){
                     all_dl.children[i].src="images/site/session/session_num_"+all_session[i]+".png";
                 }
 
-                let now_dl=document.getElementById("now_session_div");
                 let now_session=String(res_json.now_session).padStart(now_dl.childElementCount,"0");                
                 for(let i=0;i<now_dl.childElementCount;i++){
                     now_dl.children[i].src="images/site/session/session_num_"+now_session[i]+".png";
@@ -201,23 +233,45 @@
 
             }
 
-            async function にゅっと出る(){
-                let all_dl=document.getElementById("all_session_div");
-                let now_dl=document.getElementById("now_session_div");
+            async function にゅっと出る(){//これ起動した数だけにゅが加速しない？←するっにゅ！するっにゅ！
+
                 for(let time=0;time<100;time++){
                     for(let i=0;i<all_dl.childElementCount;i++){
-                        all_dl.children[i].style.height=3*time/100+"em";
+                        all_dl.children[i].style.height=3*にゅ度[i]/99+"em";
+                        if(にゅ度[i]<100){
+                            にゅ度[i]+=1;
+                        }
                     }
                     for(let i=0;i<now_dl.childElementCount;i++){
-                        now_dl.children[i].style.height=3*time/100+"em";
+                        now_dl.children[i].style.height=3*にゅ度[i+6]/99+"em";
+                        if(にゅ度[i+6]<100){
+                            にゅ度[i+6]+=1;
+                        }
                     }
                     await sleep(10);
                     if(time==50){
+                        全体出現済み=0;
+                        for(let j=0;j<にゅ度.length;j++){
+                            if(にゅ度[j]>50){
+                                全体出現済み=1;
+                            }
+                        }
+                        if(全体出現済み!=1){//全体出現してるやつがいなくねえか？
+                            for(let i=0;i<all_dl.childElementCount;i++){
+                                all_dl.children[i].style.verticalAlign="bottom";
+                            }
+                            for(let i=0;i<now_dl.childElementCount;i++){
+                                now_dl.children[i].style.verticalAlign="bottom";
+                            }
+                        }
+
+                    }else if(time==0){
+
                         for(let i=0;i<all_dl.childElementCount;i++){
-                           all_dl.children[i].style.verticalAlign="bottom";
+                           all_dl.children[i].style.verticalAlign="top";
                         }
                         for(let i=0;i<now_dl.childElementCount;i++){
-                            now_dl.children[i].style.verticalAlign="bottom";
+                            now_dl.children[i].style.verticalAlign="top";
                         }
                     }
                 }
@@ -231,12 +285,20 @@
 
             
             var scroll_flag=0;  
+            var にゅ_flag=[1,1,1, 1,1,1, 1,1,1, 1,1,1];  //これ、配列数賢くできたんとちゃう？まま、ええわ
+            var にゅ度=[0,0,0, 0,0,0, 0,0,0, 0,0,0];  
+            var 全体出現済み=0;
+            var session_dl;
+            var all_dl;
+            var now_dl;
 
             onload = function(){
                 onload_functions();
 
                 
-                var session_dl=document.getElementById("session_dl");       
+                session_dl=document.getElementById("session_dl");    
+                all_dl=document.getElementById("all_session_div");
+                now_dl=document.getElementById("now_session_div");   
    
                 //スクロールイベント
                 window.addEventListener('scroll', function () {
@@ -262,7 +324,25 @@
                 Update_show();
                 session_show();
                 
+                document.getElementById("all_button").onclick = function() {
+                    for(let i=0;i<6;i++){
+                        if(Math.floor(Math.random()*2)==1){
+                            にゅ度[i]=0;
+                            all_dl.children[i].src="images/site/session/session_num_"+Math.floor(Math.random()*9)+".png";
+                        }
+                    }
+                    にゅっと出る();
+                };
 
+                document.getElementById("now_button").onclick = function() {
+                    for(let i=0;i<6;i++){
+                        if(Math.floor(Math.random()*2)==1){
+                            にゅ度[i+6]=0;
+                            now_dl.children[i].src="images/site/session/session_num_"+Math.floor(Math.random()*9)+".png";
+                        }
+                    }
+                    にゅっと出る();
+                };
 
             }
         </script>
@@ -348,10 +428,12 @@
                 <div class="session_div">
                     <dd> 昨日までの合計来訪者数</dd>
                     <dt id="all_session"><div id="all_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
+                    <button id="all_button"></button>
                 </div>
                 <div class="session_div">
                     <dd> 最近30分の合計来訪者数(集計：1分くらい)</dd>
                     <dt id="now_session"><div id="now_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
+                    <button id="now_button"></button>
                 </div>
 
             </dl>
