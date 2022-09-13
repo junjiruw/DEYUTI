@@ -227,7 +227,7 @@
 
                 scroll_flag=1;
                 if(session_dl.getBoundingClientRect().bottom<window.innerHeight){//すでに画面内じゃね？
-                    scroll_flag=0;
+                    scroll_flag=2;
                     にゅっと出る();
                 }
 
@@ -254,14 +254,23 @@
                     }
                     await sleep(10);
                     
-                    if(Math.max(...にゅ度)>50){
-                        let にゅind=にゅ度.indexOf(Math.max(...にゅ度));
-                        if(にゅind<6){
-                            all_dl.children[にゅind].style.verticalAlign="bottom";
-                        }else{
-                            now_dl.children[にゅind-6].style.verticalAlign="bottom";
-                        }
+                    if(scroll_flag==2 && Math.max(...にゅ度)>50){//下にある要素を押し込む
+                        all_dl.children[0].style.verticalAlign="bottom";
+                        now_dl.children[0].style.verticalAlign="bottom";
                     }
+                }
+
+
+                if(scroll_flag==2){
+                    //高さをautoから、現在値に固定
+                    document.getElementById("session_div_all").style.height=window.getComputedStyle(document.getElementById("session_div_all")).height;
+                    document.getElementById("session_div_now").style.height=window.getComputedStyle(document.getElementById("session_div_now")).height;
+                    //上から表示に戻す
+                    all_dl.children[0].style.verticalAlign="top";
+                    now_dl.children[0].style.verticalAlign="top";
+
+                    scroll_flag=3;//ボタンを有効にしたげる。
+                    
                 }
             }
 
@@ -291,7 +300,7 @@
                 //スクロールイベント
                 window.addEventListener('scroll', function () {
                     if(scroll_flag==1 && session_dl.getBoundingClientRect().bottom<window.innerHeight){//画面内に出口が入った
-                        scroll_flag=0;
+                        scroll_flag=2;
                         にゅっと出る();
                     }
                 });
@@ -313,25 +322,27 @@
                 session_show();
                 
                 document.getElementById("all_button").onclick = function() {
-                    for(let i=0;i<6;i++){
-                        if(Math.floor(Math.random()*2)==1){
-                            にゅ度[i]=0;
-                            all_dl.children[i].style.verticalAlign="top";
-                            all_dl.children[i].src="images/site/session/session_num_"+Math.floor(Math.random()*10)+".png";
+                    if(scroll_flag==3){
+                        for(let i=0;i<6;i++){
+                            if(Math.floor(Math.random()*2)==1){
+                                にゅ度[i]=0;
+                                all_dl.children[i].src="images/site/session/session_num_"+Math.floor(Math.random()*10)+".png";
+                            }
                         }
+                        にゅっと出る();
                     }
-                    にゅっと出る();
                 };
 
                 document.getElementById("now_button").onclick = function() {
-                    for(let i=0;i<6;i++){
-                        if(Math.floor(Math.random()*2)==1){
-                            にゅ度[i+6]=0;
-                            now_dl.children[i].style.verticalAlign="top";
-                            now_dl.children[i].src="images/site/session/session_num_"+Math.floor(Math.random()*10)+".png";
+                    if(scroll_flag==3){
+                        for(let i=0;i<6;i++){
+                            if(Math.floor(Math.random()*2)==1){
+                                にゅ度[i+6]=0;
+                                now_dl.children[i].src="images/site/session/session_num_"+Math.floor(Math.random()*10)+".png";
+                            }
                         }
+                        にゅっと出る();
                     }
-                    にゅっと出る();
                 };
 
             }
@@ -415,12 +426,12 @@
                 </div>
             </dl>
             <dl id="session_dl">
-                <div class="session_div">
+                <div class="session_div" id="session_div_all">
                     <dd> 昨日までの合計来訪者数</dd>
                     <dt id="all_session"><div id="all_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
                     <button id="all_button"></button>
                 </div>
-                <div class="session_div">
+                <div class="session_div" id="session_div_now">
                     <dd> 最近30分の合計来訪者数(集計：1分くらい)</dd>
                     <dt id="now_session"><div id="now_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
                     <button id="now_button"></button>
