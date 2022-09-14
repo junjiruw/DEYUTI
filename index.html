@@ -95,13 +95,15 @@
             div.session_div >dd{
                 margin-inline-start: 0px;
             }
-            div.session_div >dt{
-                border:10px outset #d0d6d4;
+            dt.session_dt{
+                font-size: 100%;
+                border:0.5em outset #d0d6d4;
                 height: 0.5em;
                 display: inline-block;
                 text-align: right;
             }
-            div.session_div >button{
+            button.session_button{
+                font-size: 100%;
                 vertical-align: top;
                 background-color: #ffffff;
                 width: 1.5em;
@@ -110,15 +112,15 @@
                 box-shadow: 0em 0em 0.1em 0.1em #F0F020;  
                 position: relative;
             }
-            div.session_div >button:hover{
+            button.session_button:hover{
                 background-color: #8aa319;
                 cursor: pointer;
             }
-            div.session_div >button:active{
+            button.session_button:active{
                 background-color: #000000;
                 cursor: pointer;
             }
-            div.session_div >button::before{
+            button.session_button::before{
                 content: "";  /* contentで何も入れず、疑似要素を実体化 */
                 position: absolute;
                 width: 0em;
@@ -126,7 +128,7 @@
                 border-radius: 50%;
                 box-shadow:0em 0em 0.4em 0.45em #F0F020 ;  
             }
-            div.session_div >button::after{
+            button.session_button::after{
                 content: "";  /* contentで何も入れず、疑似要素を実体化 */
                 position: absolute;
                 width: 0em;
@@ -428,13 +430,13 @@
             <dl id="session_dl">
                 <div class="session_div" id="session_div_all">
                     <dd> 昨日までの合計来訪者数</dd>
-                    <dt id="all_session"><div id="all_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
-                    <button id="all_button"></button>
+                    <dt id="all_session" class="session_dt"><div id="all_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
+                    <button id="all_button"  class="session_button"></button>
                 </div>
                 <div class="session_div" id="session_div_now">
                     <dd> 最近30分の合計来訪者数(集計：1分くらい)</dd>
-                    <dt id="now_session"><div id="now_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
-                    <button id="now_button"></button>
+                    <dt id="now_session" class="session_dt"><div id="now_session_div" class="session_dt_div"><img><img><img><img><img><img></div></dt>
+                    <button id="now_button" class="session_button"></button>
                 </div>
 
             </dl>
