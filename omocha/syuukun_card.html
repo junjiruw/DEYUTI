@@ -7850,6 +7850,7 @@
                 },AI:function(タイミング){return true;},text:"死の瞬間、自分のデッキに特殊なテレパシーを送り、自分の空いている場に同種を召喚することが判明した。メカニズムが解明されればあの装置が作成できるだろう…",text_iro:[]};
                 var syukuniumu={name:"シュクニウム",image:syukuniumu_image,ATK:1,HP:3,state:["モンスター","しゅうくん","死亡時","感染"],effect_req:function(タイミング){return false;},effect:function(タイミング,option){
                     if(タイミング=="死んだ"){
+                        console.log(atk_card);
                         if(option!=atk_card && atk_card!="" && atk_card.state.indexOf("シュクニウム耐性")==-1){//攻撃したの俺じゃねえよな？ && 攻撃で死んだよな？
                             atk_card.card=syukuniumu;
                             atk_card.ATK=1;
@@ -8287,9 +8288,9 @@
                 //sub_phase="デッキリスト";
                 //cursor=1;
                 //MAX_STAGE=4;
-                //mini_stage=2;
-                //game_phase="挑戦";
-                //stage=11;
+                mini_stage=1;
+                game_phase="挑戦";
+                stage=9;
                 //mini_stage=0;
                 //stage=1;
                 //MAX_TOP_ACE=15;
@@ -12107,6 +12108,8 @@
                                                     
                                                 }
                                                 
+                                            }else{
+                                                atk_card="";//消してね
                                             }
                                             
 
