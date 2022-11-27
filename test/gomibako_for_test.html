@@ -17,42 +17,24 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
-            body {
-                background-image:url("../images/site/junjiruw_pro.png"),
-                url("../images/site/junjiruw_pro_rev.png"),
-                linear-gradient(#053a24,80%,#000000);
-                
-                background-size:10% 120%,10% 120%,auto;
-                background-position: -2% 70%, 102% 0%;/*0%で画像の左が画面端。100%で右が画面端*/
-                background-repeat:no-repeat,no-repeat,repeat;
-                background-attachment: fixed,fixed,fixed;
-                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-
-                overflow-x: hidden;/*左右のスクロールバー消そうぜ！*/
-            }
             div#mannaka{
-                border-image: linear-gradient(rgba(255,255,255,1), rgba(0,30,100,1));/*透明は黒になるっぽいね*/
-                border-image-slice: 1;
-                background:linear-gradient(rgba(22,21,26,1), rgba(22,21,26,0.6));
+                width: 98%;
+                margin: auto;
+                background: #16151a;
+                border: 2px solid #ffffff;
+                color: #ffffff;   
+                font-size: 16px;    
             }
-            footer{
-                background:linear-gradient(rgba(4,29,66,0.6), rgba(4,29,66,0));
-            }
-
-
 
             div#parent_div{
                 text-align: center;
                 margin: 10px;
             }
             canvas{
-                background: #ffffff;
+                background: #242424;
                 height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ*/
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
             }
-
-
-            
 
         </style>
 
@@ -67,22 +49,99 @@
         </script>
 
         <script src="../js/public.js"></script>
-        <script>
-            //キーボードなど、システムの、あの、アレ、アレさ！
-            var key_input="";
-            var what_input="";//キーボード同時おしに使う
-            var key_interval=0;//n*10[s]　長押しの連続入力に使ってる
-            var key_owarasete=0;
 
+        <!--pixiJSを読み込もう-->
+        <script src="../js/library/pixi.min.js"></script>
+        <!--Pixi-soundを読み込もう-->
+        <script src="../js/library/pixi-sound.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあったぜ！-->
+
+        <script>
             onload = function(){
                 onload_functions();
-                const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
-                
-                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
-                    cnvs.style.width=90+"%";
-                    cnvs.style.height=cnvs.clientWidth+"px";
+                const canvas =document.getElementById("canvas")
+                const app = new PIXI.Application({//PIXIアプリを作成
+                    view : canvas, //canvas指定
+                    //antialias : true,//アンチエイリアス。デフォルトOFF
+                    width:100,
+                    height:100,
+                });
+
+                PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;//ドット絵ぼやけさせてんじゃねーぞ！
+
+
+
+                const 図=new PIXI.Graphics();//一つでええ
+                app.stage.addChild(図);
+                図.lineStyle(4,0xffffff,1);
+                図.moveTo(100,100);
+                図.lineTo(0,0);
+                図.lineTo(50,0);
+                図.lineTo(0,50);
+                図.lineTo(100,50);
+                図.lineTo(100,100);
+                図.drawRect(0,50,50,50);
+                //図.clear();
+
+                const fontstyle=new PIXI.TextStyle({
+                    fontSize: 0,
+                    fill: [0xffffff,0xff0000,0x00ff00],
+                    dropShadow: true,
+                    dropShadowColor:0x0000ff,
+                    fontStyle: "italic",
+                    fontWeight: 900,
+
+                })
+                fontstyle.fontSize+=10;
+                const titleText = new PIXI.Text( "Hello World!" ,fontstyle);
+                titleText.position.set(15,30);
+                app.stage.addChild( titleText );
+
+                const 画像= PIXI.Texture.from("../images/omocha/tuntunsyuukun/untiking.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                const スプライト=new PIXI.Sprite(画像);
+                スプライト.anchor.set(0.5,0.5);
+                app.stage.addChild(スプライト);
+
+                const スプライト2=new PIXI.Sprite(画像);
+                スプライト2.anchor.set(0.5,0.5);
+                スプライト2.scale.set(0.8,2);
+                スプライト2.position.set(50,80);
+                スプライト2.rotation=Math.PI*4/5;
+                let 回転方向=1;
+                スプライト2.on("pointerdown",()=>{
+                    回転方向*=-1;
+                    poyo_sound.play();
+                });
+                スプライト2.isOver = false;  
+                スプライト2.cursor = "pointer";//カーソル変化
+                スプライト2.interactive=true;//タッチ操作許可
+                app.stage.addChild(スプライト2);
+
+                const peu_sound = PIXI.sound.Sound.from('../sound/omocha/tuntunsyuukun/peu.wav');
+                const poyo_sound = PIXI.sound.Sound.from('../sound/omocha/tuntunsyuukun/poyo.wav');
+
+                app.ticker.add(loop);
+                let time=0;
+                let mouseX=0;
+                let mouseY=0;
+                canvas.onclick = function(event) {//キャンバスクリック
+                    let mouse = canvas.getBoundingClientRect();//キャンバスどこだよ
+                    mouseX = (event.clientX - Math.floor(mouse.left))/canvas.clientWidth*canvas.width;//(マウス位置 - キャンバス位置)/キャンバスの見た目でかさ*キャンバス本質でかさ
+                    mouseY = (event.clientY - Math.floor(mouse.top))/canvas.clientHeight*canvas.height;
+                    if((mouseX<スプライト2.position.x-18 || mouseX>スプライト2.position.x+18)||(mouseY<スプライト2.position.y-18 || mouseY>スプライト2.position.y+18)){
+                        スプライト.position.set(mouseX,mouseY);
+                    peu_sound.play();
+                    }
+
                 }
 
+                function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60  app.ticker.speed = 3;で変えられるらしいっすよ
+                    time+=delta;
+                    if(time>1000000){time=0;}
+                    スプライト2.scale.set(0.8,Math.sin(time/10)+1.5);
+                    スプライト2.rotation=Math.PI*(time)/20*回転方向;
+
+                }
             }
         </script>
     </head>
@@ -104,11 +163,9 @@
         </header>
 
         <div id="mannaka">
-
-            
-            
+            PixiJSっていうらしいっすよ
             <div id="parent_div">
-                <canvas id="cnvs" height="160px" width="160px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                <canvas id="canvas">
                 </canvas>
             </div>
 
