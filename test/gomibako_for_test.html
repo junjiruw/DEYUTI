@@ -32,7 +32,7 @@
             }
             canvas{
                 background: #242424;
-                height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ*/
+                height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ　→スマホはどースンだよ→そこはonloadくんとこで頑張ってもろて…*/
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
             }
 
@@ -60,6 +60,7 @@
         <script>
             onload = function(){
                 onload_functions();
+
                 const canvas =document.getElementById("canvas")
                 const app = new PIXI.Application({//PIXIアプリを作成
                     view : canvas, //canvas指定
@@ -68,9 +69,12 @@
                     height:100,
                 });
 
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                    canvas.style.width=80+"%";//スマホでみるとキャンバスでかいから縮めよう
+                    canvas.style.height=canvas.clientWidth+"px";
+                }
+
                 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;//ドット絵ぼやけさせてんじゃねーぞ！
-
-
 
                 const 図=new PIXI.Graphics();//一つでええ
                 app.stage.addChild(図);
