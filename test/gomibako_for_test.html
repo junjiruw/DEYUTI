@@ -155,8 +155,8 @@
                         音を読み込むために存在する悲しき関数();
                     }
                     let キャンバスどこ = canvas.getBoundingClientRect();//キャンバスどこだよ
-                    //(マウス位置 - キャンバス位置 -スクロール)/キャンバスの見た目でかさ*キャンバス本質でかさ
-                    うんち移動((event.clientX - Math.floor(キャンバスどこ.left)-window.pageXOffset)/canvas.clientWidth*canvas.width,(event.clientY - Math.floor(キャンバスどこ.top)-window.pageYOffset)/canvas.clientHeight*canvas.height);
+                    //(マウス位置 - キャンバス位置)/キャンバスの見た目でかさ*キャンバス本質でかさ //スクロール分のズレはクライアント.xyに吸収されるぜ。
+                    うんち移動((event.clientX - Math.floor(キャンバスどこ.left))/canvas.clientWidth*canvas.width,(event.clientY - Math.floor(キャンバスどこ.top))/canvas.clientHeight*canvas.height);
                 }
                 canvas.addEventListener('touchstart', function(e) {//スマホタッチ
                     if(!もう音読み込んだから帰っていいよ){
