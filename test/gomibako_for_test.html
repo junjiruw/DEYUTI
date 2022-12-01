@@ -52,9 +52,10 @@
 
         <!--pixiJSを読み込もう-->
         <script src="../js/library/pixi.min.js"></script>
-        <!--Pixi-soundを読み込もう-->
-        <script src="../js/library/pixi-sound.js"></script>
-        <!--ライセンス表記はコイツの中に書いてあったぜ！-->
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
+        <!--HOWLERを読み込もう-->
+        <script src="../js/library/howler.min.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
 
         <script>
             onload = function(){
@@ -109,31 +110,58 @@
                 スプライト2.rotation=Math.PI*4/5;
                 let 回転方向=1;
                 スプライト2.on("pointerdown",()=>{
+                    if(!もう音読み込んだから帰っていいよ){
+                        音を読み込むために存在する悲しき関数();
+                    }
                     回転方向*=-1;
-                    poyo_sound.play();
+                    poyo.play();
                 });
                 スプライト2.isOver = false;  
                 スプライト2.cursor = "pointer";//カーソル変化
                 スプライト2.interactive=true;//タッチ操作許可
                 app.stage.addChild(スプライト2);
 
-                const peu_sound = PIXI.sound.Sound.from('../sound/omocha/tuntunsyuukun/peu.wav');
-                const poyo_sound = PIXI.sound.Sound.from('../sound/omocha/tuntunsyuukun/poyo.wav');
 
+                let peu;
+                let poyo;
+                let もう音読み込んだから帰っていいよ=false;
+                function 音を読み込むために存在する悲しき関数(){//ユーザー操作の後に音をゴニョらんとイカンのですよ
+                    peu = new Howl({
+                        src: ["../sound/omocha/tuntunsyuukun/peu.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    poyo = new Howl({
+                        src: ["../sound/omocha/tuntunsyuukun/poyo.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    もう音読み込んだから帰っていいよ=true;
+                }
                 app.ticker.add(loop);
                 let time=0;
-                let mouseX=0;
-                let mouseY=0;
-                canvas.onclick = function(event) {//キャンバスクリック
-                    let mouse = canvas.getBoundingClientRect();//キャンバスどこだよ
-                    mouseX = (event.clientX - Math.floor(mouse.left))/canvas.clientWidth*canvas.width;//(マウス位置 - キャンバス位置)/キャンバスの見た目でかさ*キャンバス本質でかさ
-                    mouseY = (event.clientY - Math.floor(mouse.top))/canvas.clientHeight*canvas.height;
-                    if((mouseX<スプライト2.position.x-18 || mouseX>スプライト2.position.x+18)||(mouseY<スプライト2.position.y-18 || mouseY>スプライト2.position.y+18)){
-                        スプライト.position.set(mouseX,mouseY);
-                    peu_sound.play();
+                function うんち移動(x,y){
+                    if((x<スプライト2.position.x-18 || x>スプライト2.position.x+18)||(y<スプライト2.position.y-18 || y>スプライト2.position.y+18)){
+                        スプライト.position.set(x,y);
+                        peu.play();
                     }
-
                 }
+                canvas.onclick = function(event) {//キャンバスクリック
+                    if(!もう音読み込んだから帰っていいよ){
+                        音を読み込むために存在する悲しき関数();
+                    }
+                    let キャンバスどこ = canvas.getBoundingClientRect();//キャンバスどこだよ
+                    //(マウス位置 - キャンバス位置 -スクロール)/キャンバスの見た目でかさ*キャンバス本質でかさ
+                    うんち移動((event.clientX - Math.floor(キャンバスどこ.left)-window.pageXOffset)/canvas.clientWidth*canvas.width,(event.clientY - Math.floor(キャンバスどこ.top)-window.pageYOffset)/canvas.clientHeight*canvas.height);
+                }
+                canvas.addEventListener('touchstart', function(e) {//スマホタッチ
+                    if(!もう音読み込んだから帰っていいよ){
+                        音を読み込むために存在する悲しき関数();
+                    }
+                    let キャンバスどこ = canvas.getBoundingClientRect();//キャンバスどこだよ
+                    //(マウス位置 - キャンバス位置 -スクロール)/キャンバスの見た目でかさ*キャンバス本質でかさ
+                    うんち移動((event.changedTouches[0].pageX - Math.floor(キャンバスどこ.left) -window.pageXOffset)/canvas.clientWidth*canvas.width,(event.changedTouches[0].pageY - Math.floor(キャンバスどこ.top)-window.pageYOffset)/canvas.clientHeight*canvas.height);
+                });
 
                 function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60  app.ticker.speed = 3;で変えられるらしいっすよ
                     time+=delta;
@@ -163,7 +191,12 @@
         </header>
 
         <div id="mannaka">
-            PixiJSっていうらしいっすよ
+            画像を変形しよう:PixiJS　音を鳴らそう:HOWLER
+            <br>
+            <br>
+            クソガキ「先生！一部環境では音がなりません！」
+            <br>
+            偉大なる俺「バーカ！」
             <div id="parent_div">
                 <canvas id="canvas">
                 </canvas>
