@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="人間ならできるでしょ、というゲーム">                                                                 <!--ページ説明　入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/でゆキャプチャ</title>                                                         <!--タイトル　入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/deyucaptcha">                                <!--タイトル　入力すること！-->
+        <meta property="og:title" content="でゆキャプチャ">                                                               <!--タイトル　入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/deyucaptcha.html">                   <!--リンク　入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+
+
+            div#parent_div{
+                text-align: center;
+                margin: 10px;
+            }
+            #canvas{
+                background: #ffffff;
+                height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ　→スマホはどースンだよ→そこはonloadくんとこで頑張ってもろて…*/
+                /*image-rendering: pixelated;ドット絵を拡大したいなら使え*/
+            }
+            #start_button{
+                position: fixed;
+                background: #ffffff;
+            }
+        </style>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1MB5XLN4LW');
+        </script>
+        <!-- Google tag (gtag.js) -->
+
+        <script src="../js/public.js"></script>
+
+        <!--pixiJSを読み込もう-->
+        <script src="../js/library/pixi.min.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
+        <!--HOWLERを読み込もう-->
+        <script src="../js/library/howler.min.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
+
+        <script>
+
+            onload = function(){
+                onload_functions();
+
+                //宣言系をここにまとめるとめちゃエエね--------------------------------------------------------------------------------
+                const canvas =document.getElementById("canvas");
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                    canvas.style.width=80+"%";//スマホでみるとキャンバスでかいから縮めよう
+                    canvas.style.height=canvas.clientWidth+"px";
+                }
+                let クリック音;
+                let スタート済み=false;
+                const スタートボタン =document.getElementById("start_button");
+                function スタートボタン押し() {
+                    スタートボタン.style.display="none";
+                    //ここから音声の定義ーーーーーーーーーーーーーーーー
+                    クリック音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/クリック.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+
+                    //ここまで音声の定義ーーーーーーーーーーーーーーーー
+                    クリック音.play();
+                    タイトル図形.lineStyle(10, 0x2070ff, 1);
+                    スタート済み=true;
+                }   
+                スタートボタン.addEventListener("click", スタートボタン押し);
+
+                const app = new PIXI.Application({//PIXIアプリを作成
+                    view : canvas, //canvas指定
+                    //antialias : true,//アンチエイリアス。デフォルトOFF
+                    //preserveDrawingBuffer: true,//
+                    backgroundColor: 0x303030,
+                    width:1000,
+                    height:1000,
+                });
+                
+
+
+                const 基本文字=new PIXI.TextStyle({
+                    fontSize: 40,
+                    fill: 0x101010,
+                    fontWeight: 300,
+
+                });
+                const ちび文字=new PIXI.TextStyle({
+                    fontSize: 25,
+                    fill: 0x101010,
+                    fontWeight: 100,
+
+                });
+                let タイトルコンテナ = new PIXI.Container();
+                app.stage.addChild(タイトルコンテナ);
+                タイトルコンテナ.position.set(500,500);
+                タイトルコンテナ.pivot.set(350,75);
+                const タイトル図形=new PIXI.Graphics();
+                タイトルコンテナ.addChild(タイトル図形);
+                const logo_image= PIXI.Texture.from("../images/omocha/deyucaptcha/deyucaptcha.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+
+                let animation_time=0;
+                let ゲーム進行度=0;
+                
+
+                タイトル図形.beginFill(0xf0f0f0);
+                タイトル図形.drawRect(0,0,700,150);
+                タイトル図形.endFill();
+                タイトル図形.beginFill(0xffffff);
+                タイトル図形.drawRect(25,25,80,80);//150 425
+                タイトル図形.endFill();
+                タイトル図形.lineStyle(5,0xa0a0a0,1);
+                タイトル図形.drawRect(25,25,80,80);
+                スタートボタン.style.width=canvas.clientWidth*0.08+"px";
+                スタートボタン.style.height=canvas.clientHeight*0.08+"px";
+                const のっとろぼ = new PIXI.Text( "私はロボットではあり\nません。" ,基本文字);
+                のっとろぼ.position.set(140,35);
+                タイトルコンテナ.addChild( のっとろぼ );
+                const みぎしたのヤツ = new PIXI.Text( "DeyuCaptcha" ,ちび文字);
+                みぎしたのヤツ.position.set(540,115);
+                タイトルコンテナ.addChild( みぎしたのヤツ );
+                const ロゴ=new PIXI.Sprite(logo_image);
+                ロゴ.anchor.set(0.5,0.5);
+                ロゴ.scale.set(0.5,0.5);
+                ロゴ.position.set(610,65);
+                タイトルコンテナ.addChild(ロゴ);
+
+                //宣言系をここにまとめるとめちゃエエね--------------------------------------------------------------------------------
+                app.ticker.add(loop);
+                let time=0;
+                
+                function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60  app.ticker.speed = 3;で変えられるらしいっすよ
+                    time+=delta;
+                    if(time>1000000){time=0;}
+
+                    if(ゲーム進行度==0){
+                        if(!スタート済み){//スタートボタンの位置調整
+                            スタートボタン.style.left= (canvas.getBoundingClientRect().left+175*canvas.clientWidth/canvas.width) +"px";
+                            スタートボタン.style.top= (canvas.getBoundingClientRect().top+450*canvas.clientHeight/canvas.height) +"px";
+                        }else{
+                            animation_time+=1;
+                            if(animation_time<8){
+
+                                タイトル図形.moveTo(43+3*(animation_time-1), 61+3*(animation_time-1));//線引くぜ
+                                タイトル図形.lineTo(43+3*(animation_time), 61+3*(animation_time));//線引くぜ
+                            }else if(15<animation_time && animation_time<25){
+                                
+                                タイトル図形.moveTo(57+4*(animation_time-16), 82-4*(animation_time-16));//線引くぜ
+                                タイトル図形.lineTo(57+4*(animation_time-15), 82-4*(animation_time-15));//線引くぜ
+                            }else if(animation_time>=25 &&animation_time<30){
+                                タイトルコンテナ.rotation+=delta/30;//ちょっと曲げよう
+                            }else if(animation_time==30){
+                                ゲーム進行度=1;
+                                animation_time=0;
+                            }
+                        }
+                    }else if(ゲーム進行度==1){
+                        animation_time+=1;
+                        タイトルコンテナ.y=500+0.4*animation_time*animation_time-5+animation_time;//落ちろ
+                        
+                    }
+                    
+                }
+            }
+
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+
+            <div id="parent_div">
+                <button id="start_button"></button><!--すぐ消える-->
+                <canvas id="canvas"></canvas>
+            </div>
+            <footer>
+                <ul id="footul">
+                    <li id="foot_tweet_li">
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
