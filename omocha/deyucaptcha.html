@@ -17,7 +17,14 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
-
+            div#mannaka{
+                width: 98%;
+                margin: auto;
+                background: #16151a;
+                border: 2px solid #ffffff;
+                color: #ffffff;   
+                font-size: 16px;    
+            }
 
             div#parent_div{
                 text-align: center;
@@ -61,7 +68,7 @@
                 //宣言系をここにまとめるとめちゃエエね--------------------------------------------------------------------------------
                 const canvas =document.getElementById("canvas");
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
-                    canvas.style.width=80+"%";//スマホでみるとキャンバスでかいから縮めよう
+                    canvas.style.width=90+"%";//スマホでみるとキャンバスでかいから縮めよう
                     canvas.style.height=canvas.clientWidth+"px";
                 }
                 let クリック音;
@@ -108,8 +115,8 @@
                 });
                 let タイトルコンテナ = new PIXI.Container();
                 app.stage.addChild(タイトルコンテナ);
-                タイトルコンテナ.position.set(500,500);
-                タイトルコンテナ.pivot.set(350,75);
+                タイトルコンテナ.position.set(150,425);
+                タイトルコンテナ.pivot.set(0,0);
                 const タイトル図形=new PIXI.Graphics();
                 タイトルコンテナ.addChild(タイトル図形);
                 const logo_image= PIXI.Texture.from("../images/omocha/deyucaptcha/deyucaptcha.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
@@ -154,6 +161,12 @@
                             スタートボタン.style.top= (canvas.getBoundingClientRect().top+450*canvas.clientHeight/canvas.height) +"px";
                         }else{
                             animation_time+=1;
+                            if(animation_time>=25 ){
+                                console.log(タイトルコンテナ.rotation);
+                                タイトルコンテナ.rotation+=delta/30;//ちょっと曲げよう
+                                
+                            }
+                            
                             if(animation_time<8){
 
                                 タイトル図形.moveTo(43+3*(animation_time-1), 61+3*(animation_time-1));//線引くぜ
@@ -162,16 +175,17 @@
                                 
                                 タイトル図形.moveTo(57+4*(animation_time-16), 82-4*(animation_time-16));//線引くぜ
                                 タイトル図形.lineTo(57+4*(animation_time-15), 82-4*(animation_time-15));//線引くぜ
-                            }else if(animation_time>=25 &&animation_time<30){
-                                タイトルコンテナ.rotation+=delta/30;//ちょっと曲げよう
                             }else if(animation_time==30){
                                 ゲーム進行度=1;
                                 animation_time=0;
                             }
+                            
                         }
                     }else if(ゲーム進行度==1){
                         animation_time+=1;
-                        タイトルコンテナ.y=500+0.4*animation_time*animation_time-5+animation_time;//落ちろ
+                        console.log(タイトルコンテナ.rotation);
+                        タイトルコンテナ.rotation+=delta/40-0.00004*(animation_time*animation_time-5*animation_time);
+                        タイトルコンテナ.y=425+0.4*animation_time*animation_time-5+animation_time;//落ちろ
                         
                     }
                     
