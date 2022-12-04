@@ -107,24 +107,36 @@
                     fontWeight: 300,
 
                 });
+                const デカ文字_白=new PIXI.TextStyle({
+                    fontSize: 80,
+                    fill: 0xffffff,
+                    fontWeight: 900,
+
+                });
+                const 太文字_白=new PIXI.TextStyle({
+                    fontSize: 50,
+                    fill: 0xffffff,
+                    fontWeight: 900,
+
+                });
+                const 基本文字_白=new PIXI.TextStyle({
+                    fontSize: 40,
+                    fill: 0xffffff,
+                    fontWeight: 300,
+
+                });
                 const ちび文字=new PIXI.TextStyle({
                     fontSize: 25,
                     fill: 0x101010,
                     fontWeight: 100,
 
                 });
+
                 let タイトルコンテナ = new PIXI.Container();
                 app.stage.addChild(タイトルコンテナ);
                 タイトルコンテナ.position.set(150,425);
-                タイトルコンテナ.pivot.set(0,0);
                 const タイトル図形=new PIXI.Graphics();
                 タイトルコンテナ.addChild(タイトル図形);
-                const logo_image= PIXI.Texture.from("../images/omocha/deyucaptcha/deyucaptcha.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
-
-                let animation_time=0;
-                let ゲーム進行度=0;
-                
-
                 タイトル図形.beginFill(0xf0f0f0);
                 タイトル図形.drawRect(0,0,700,150);
                 タイトル図形.endFill();
@@ -141,11 +153,118 @@
                 const みぎしたのヤツ = new PIXI.Text( "DeyuCaptcha" ,ちび文字);
                 みぎしたのヤツ.position.set(540,115);
                 タイトルコンテナ.addChild( みぎしたのヤツ );
+                const logo_image= PIXI.Texture.from("../images/omocha/deyucaptcha/deyucaptcha.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
                 const ロゴ=new PIXI.Sprite(logo_image);
                 ロゴ.anchor.set(0.5,0.5);
                 ロゴ.scale.set(0.5,0.5);
                 ロゴ.position.set(610,65);
                 タイトルコンテナ.addChild(ロゴ);
+
+                let mainコンテナ = new PIXI.Container();
+                //app.stage.addChild(mainコンテナ);//使うタイミングで追加しようね
+                mainコンテナ.alpha=0;
+                mainコンテナ.position.set(150,50);
+                const main図形=new PIXI.Graphics();
+                mainコンテナ.addChild(main図形);
+                main図形.beginFill(0xffffff);
+                main図形.drawRect(0,0,700,900);
+                main図形.endFill();
+                main図形.beginFill(0x20a0ff);
+                main図形.drawRect(10,10,680,180);
+                main図形.endFill();
+                const koitu_image= PIXI.Texture.from("../images/omocha/deyucaptcha/150deyu.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                const コイツ=new PIXI.Sprite(koitu_image);
+                コイツ.position.set(500,20);
+                mainコンテナ.addChild(コイツ);
+                const タイトル文_1 = new PIXI.Text( "作者" ,デカ文字_白);
+                タイトル文_1.position.set(30,30);
+                mainコンテナ.addChild(タイトル文_1);
+                const タイトル文_2 = new PIXI.Text( "を全て選んで下さい。" ,基本文字_白);
+                タイトル文_2.position.set(50,130);
+                mainコンテナ.addChild(タイトル文_2);
+                const ロゴ_main=new PIXI.Sprite(logo_image);
+                ロゴ_main.scale.set(0.4,0.4);
+                ロゴ_main.position.set(20,820);
+                mainコンテナ.addChild(ロゴ_main);
+                const ひだりしたのヤツ_main = new PIXI.Text( "DeyuCaptcha" ,ちび文字);
+                ひだりしたのヤツ_main.position.set(100,870);
+                mainコンテナ.addChild( ひだりしたのヤツ_main );
+
+                const チェックマーク= PIXI.Texture.from("../images/omocha/deyucaptcha/tilekku200.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                let ステージ1コンテナ = new PIXI.Container();
+                app.stage.addChild(ステージ1コンテナ);
+                mainコンテナ.addChild(ステージ1コンテナ);
+                ステージ1コンテナ.position.set(50,200);
+                const ステージ1テクスチャ= new PIXI.BaseTexture("../images/omocha/deyucaptcha/deyuc1.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                var 中央四角_1 = new Array(9); 
+                var セレクトさん_1 = new Array(9); 
+                for(let i=0;i<9;i++){
+                    中央四角_1[i]=new PIXI.Sprite();
+                    中央四角_1[i].selected=0;
+                    ステージ1コンテナ.addChild(中央四角_1[i]);
+                    中央四角_1[i].anchor.set(0.5,0.5);
+                    中央四角_1[i].position.set(100+200*(i%3),100+200*Math.floor(i/3));
+                    中央四角_1[i].texture=new PIXI.Texture(ステージ1テクスチャ, new PIXI.Rectangle(200*(i%3),200*Math.floor(i/3), 200, 200));
+                    中央四角_1[i].on("pointerdown",()=>{
+                        クリック音.play();
+                        if(中央四角_1[i].selected==0){
+                            中央四角_1[i].selected=1;
+                            中央四角_1[i].scale.set(0.85,0.85);
+                            セレクトさん_1[i].visible = true;
+                        }else{
+                            中央四角_1[i].selected=0;
+                            中央四角_1[i].scale.set(1,1);
+                            セレクトさん_1[i].visible = false;
+                        }
+                    });
+                    中央四角_1[i].interactive=true;//タッチ操作許可
+
+                    セレクトさん_1[i]=new PIXI.Sprite(チェックマーク);
+                    セレクトさん_1[i].scale.set(0.3,0.3);
+                    セレクトさん_1[i].position.set(200*(i%3),200*Math.floor(i/3));
+                    セレクトさん_1[i].visible = false;
+                    ステージ1コンテナ.addChild(セレクトさん_1[i]);
+                }
+                const 枠線_1=new PIXI.Graphics();
+                ステージ1コンテナ.addChild(枠線_1);
+                枠線_1.lineStyle(5,0x202020,0.5);
+                枠線_1.moveTo(0,0);
+                枠線_1.lineTo(0,600);
+                枠線_1.lineTo(600,600);
+                枠線_1.lineTo(600,0);
+                枠線_1.lineTo(0,0);
+
+                枠線_1.moveTo(200,0);
+                枠線_1.lineTo(200,600);
+                枠線_1.moveTo(400,0);
+                枠線_1.lineTo(400,600);
+                枠線_1.moveTo(0,200);
+                枠線_1.lineTo(600,200);
+                枠線_1.moveTo(0,400);
+                枠線_1.lineTo(600,400);
+
+                const 確認ボタン=new PIXI.Graphics();
+                mainコンテナ.addChild(確認ボタン);
+                確認ボタン.beginFill(0x20a0ff);
+                確認ボタン.drawRect(500,810,180,80);
+                確認ボタン.endFill();
+                確認ボタン.on("pointerdown",()=>{
+                    クリック音.play();
+                    console.log("確認");
+                });
+                確認ボタン.interactive=true;//タッチ操作許可
+                const 確認テキスト = new PIXI.Text( "確認" ,太文字_白);
+                確認テキスト.position.set(540,825);
+                mainコンテナ.addChild(確認テキスト);
+
+
+                
+
+
+
+
+                let animation_time=0;
+                let ゲーム進行度=0;
 
                 //宣言系をここにまとめるとめちゃエエね--------------------------------------------------------------------------------
                 app.ticker.add(loop);
@@ -162,11 +281,8 @@
                         }else{
                             animation_time+=1;
                             if(animation_time>=25 ){
-                                console.log(タイトルコンテナ.rotation);
                                 タイトルコンテナ.rotation+=delta/30;//ちょっと曲げよう
-                                
                             }
-                            
                             if(animation_time<8){
 
                                 タイトル図形.moveTo(43+3*(animation_time-1), 61+3*(animation_time-1));//線引くぜ
@@ -183,10 +299,22 @@
                         }
                     }else if(ゲーム進行度==1){
                         animation_time+=1;
-                        console.log(タイトルコンテナ.rotation);
                         タイトルコンテナ.rotation+=delta/40-0.00004*(animation_time*animation_time-5*animation_time);
-                        タイトルコンテナ.y=425+0.4*animation_time*animation_time-5+animation_time;//落ちろ
-                        
+                        タイトルコンテナ.y=425+0.4*animation_time*animation_time-2*animation_time;//落ちろ
+                        if(animation_time==40){
+                            タイトルコンテナ.destroy();
+                            animation_time=0;
+                            app.stage.addChild(mainコンテナ);
+                            ゲーム進行度=2;
+                        }
+                    }else if(ゲーム進行度==2){
+                        animation_time+=1;
+                        mainコンテナ.alpha=animation_time/20;
+                        if(animation_time==20){
+                            ゲーム進行度=3;
+                        }
+                    }else if(ゲーム進行度==3){
+
                     }
                     
                 }
