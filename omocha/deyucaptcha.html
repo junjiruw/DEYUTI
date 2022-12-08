@@ -231,11 +231,11 @@
                 const 枠線_1=new PIXI.Graphics();
                 ステージ1コンテナ.addChild(枠線_1);
                 枠線_1.lineStyle(5,0x202020,0.5);
-                枠線_1.moveTo(0,0);
+                枠線_1.moveTo(0,-2);
                 枠線_1.lineTo(0,600);
                 枠線_1.lineTo(600,600);
                 枠線_1.lineTo(600,0);
-                枠線_1.lineTo(0,0);
+                枠線_1.lineTo(-2,0);
 
                 枠線_1.moveTo(200,0);
                 枠線_1.lineTo(200,600);
@@ -249,9 +249,24 @@
 
                 let ステージ2コンテナ = new PIXI.Container();
                 ステージ2コンテナ.position.set(50,200);
-                const ステージ2テクスチャ= new PIXI.BaseTexture("../images/omocha/deyucaptcha/deyuc1.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
-                let 中央四角_2 = new Array(9); 
-                let セレクトさん_2 = new Array(9); 
+                const ステージ2テクスチャ= new PIXI.BaseTexture("../images/omocha/deyucaptcha/deyuc2.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                const 横断テクスチャ_1= new PIXI.BaseTexture("../images/omocha/deyucaptcha/arukideyu_1.png");
+                const 横断テクスチャ_2= new PIXI.BaseTexture("../images/omocha/deyucaptcha/arukideyu_2.png");
+                ステージ2コンテナ.sortableChildren = true;//Zソート
+                let 歩く場所=new Array(4);
+                for(let i=0;i<4;i++){
+                    歩く場所[i]=new PIXI.Sprite();
+                    歩く場所[i].anchor.set(0.5,0.5);
+                    歩く場所[i].height=150;
+                    歩く場所[i].width=150;
+
+                    歩く場所[i].position.set(75+150*(i),75+300);
+                    歩く場所[i].zIndex = 1;
+                    歩く場所[i].backgroundColor = "#ff0000";
+                    ステージ2コンテナ.addChild(歩く場所[i]);
+                }
+                let 中央四角_2 = new Array(16); 
+                let セレクトさん_2 = new Array(16); 
                 for(let i=0;i<16;i++){
                     中央四角_2[i]=new PIXI.Sprite();
                     中央四角_2[i].selected=0;
@@ -264,10 +279,16 @@
                         if(中央四角_2[i].selected==0){
                             中央四角_2[i].selected=1;
                             中央四角_2[i].scale.set(0.85,0.85);
+                            if(i>7 && i<12){
+                                歩く場所[i%4].scale.set(0.425,0.425);
+                            }
                             セレクトさん_2[i].visible = true;
                         }else{
                             中央四角_2[i].selected=0;
                             中央四角_2[i].scale.set(1,1);
+                            if(i>7 && i<12){
+                                歩く場所[i%4].scale.set(0.5,0.5);
+                            }
                             セレクトさん_2[i].visible = false;
                         }
                     });
@@ -282,11 +303,11 @@
                 const 枠線_2=new PIXI.Graphics();
                 ステージ2コンテナ.addChild(枠線_2);
                 枠線_2.lineStyle(5,0x202020,0.5);
-                枠線_2.moveTo(0,0);
+                枠線_2.moveTo(0,-2);
                 枠線_2.lineTo(0,600);
                 枠線_2.lineTo(600,600);
                 枠線_2.lineTo(600,0);
-                枠線_2.lineTo(0,0);
+                枠線_2.lineTo(-2,0);
 
                 枠線_2.moveTo(150,0);
                 枠線_2.lineTo(150,600);
@@ -309,16 +330,17 @@
                 確認ボタン.drawRect(500,810,180,80);
                 確認ボタン.endFill();
                 確認ボタン.on("pointerdown",()=>{
+                    let 君はもう正解したか=0;//!?が変数名に使えないって知ってましたか？私は今知りました。
                     if(ゲーム進行度==3){
                         let 正解_1=[0,0,0,0,1,1,0,1,1];
-                        let 君はもう正解したか_1=0;//!?が変数名に使えないって知ってましたか？私は今知りました。
+                        はもう正解したか=0;
                         for(let i=0;i<9;i++){
                             if((正解_1[i]==0 && 中央四角_1[i].selected==0)||(正解_1[i]==1 && 中央四角_1[i].selected==1)){
                             }else{
-                                君はもう正解したか_1+=1;//ミスするとさ、それだけダメージを負ってもらうことになるかもしれないよね
+                                君はもう正解したか+=1;//ミスするとさ、それだけダメージを負ってもらうことになるかもしれないよね
                             }
                         }
-                        if(君はもう正解したか_1==0){//お前はすごい！
+                        if(君はもう正解したか==0){//お前はすごい！
                             クリック音.play();
                             mainコンテナ.filters = [普通_Filter];//正常化
                             ゲーム進行度=4;
@@ -327,8 +349,38 @@
                             animation_time=10;
                             ブブ音.play();
                         }
+                    }else if(ゲーム進行度==6){
+                        let 正解_2=[];
+                        if(animation_time<30){//正解分岐
+                            正解_2=[0,0,0,0,0,0,0,0, 0,0,0,1, 0,0,0,0];
+                        }else if(animation_time<60){
+                            正解_2=[0,0,0,0,0,0,0,0, 0,0,1,1, 0,0,0,0];
+                        }else if(animation_time<90){
+                            正解_2=[0,0,0,0,0,0,0,0, 0,1,1,0, 0,0,0,0];
+                        }else if(animation_time<120){
+                            正解_2=[0,0,0,0,0,0,0,0, 1,1,0,0, 0,0,0,0];
+                        }else if(animation_time<150){
+                            正解_2=[0,0,0,0,0,0,0,0, 1,0,0,0, 0,0,0,0];
+                        }else{
+                            正解_2=[0,0,0,0,0,0,0,0, 0,0,0,0, 0,0,0,0];
+                        }
+                        君はもう正解したか=0;
+                        for(let i=0;i<16;i++){
+                            if((正解_2[i]==0 && 中央四角_2[i].selected==0)||(正解_2[i]==1 && 中央四角_2[i].selected==1)){
+                            }else{
+                                君はもう正解したか+=1;//ミスするとさ、それだけダメージを負ってもらうことになるかもしれないよね
+                            }
+                        }
+                        if(君はもう正解したか==0){//お前はすごい！
+                            クリック音.play();
+                            mainコンテナ.filters = [普通_Filter];//正常化
+                            ゲーム進行度=7;
+                            animation_time=20;
+                        }else{//お前はすごくない！
+                            animation_time2=10;
+                            ブブ音.play();
+                        }
                     }
-
                 });
                 確認ボタン.interactive=true;//タッチ操作許可
                 const 確認テキスト = new PIXI.Text( "確認" ,太文字_白);
@@ -357,11 +409,8 @@
                 `;//赤くするよ。
                 let 普通_Filter = new PIXI.Filter(null, 普通_fragment);
 
-
-
-
-
                 let animation_time=0;
+                let animation_time2=0;
                 let ゲーム進行度=0;
 
                 //宣言系をここにまとめるとめちゃエエね--------------------------------------------------------------------------------
@@ -443,6 +492,82 @@
                         ステージ2コンテナ.alpha=animation_time/10;
                         if(animation_time==10){
                             ゲーム進行度=6;
+                            animation_time=-1;
+                        }
+                    }else if(ゲーム進行度==6){
+                        if(animation_time==0){//読む人をびっくりさせてしまうようなコードになってませんか？←俺が一番びっくりしてるからＯＫ
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+800,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==30){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+1120,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==60){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+1440,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==90){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+1760,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==120){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+2080,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==150){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+2400,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }
+                        if(animation_time==180){
+                            animation_time=0;
+                        }else{
+                            animation_time+=1;
+                        }
+
+                        if(animation_time2>0){
+                            animation_time2-=1;
+                            mainコンテナ.position.set(150+animation_time2*(animation_time2%2-1),50);
+
+                            RED_fragment = `
+                            varying vec2 vTextureCoord;
+                            uniform sampler2D uSampler;
+                            void main(void)
+                            {
+                                gl_FragColor = texture2D(uSampler, vTextureCoord)+vec4(`+animation_time2/10+","+(-animation_time2/30)+","+(-animation_time2/30)+`, 0);
+                            }
+                            `;//こんな書き方が許されるんですか？←うるせえてめぇも赤く染めてやろうか？
+                            RED_Filter = new PIXI.Filter(null, RED_fragment);
+                            mainコンテナ.filters = [RED_Filter];//間違えてたら赤くしましゅ！
+                        }
+                    }else if(ゲーム進行度==7){
+                        animation_time-=1;
+                        ステージ2コンテナ.position.set(50,220-animation_time);
+                        ステージ2コンテナ.alpha=animation_time/10;
+                        if(animation_time==-10){
+                            ゲーム進行度=8;         
+                            ステージ2コンテナ.destroy();
+                            //mainコンテナ.addChild(ステージ2コンテナ); 
+                            animation_time=0;                  
                         }
                     }
                     

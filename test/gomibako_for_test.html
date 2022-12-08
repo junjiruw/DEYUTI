@@ -3,14 +3,14 @@
     <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
         <meta charset="UTF-8">
         <!--文字コードは上のほうにないとすべておしまいになるらしい-->
-        <meta name="description" content="技術的なテストをしている">
-        <title>JUN汁ｗおもちゃばこ。/TEST</title>
+        <meta name="description" content="人間ならできるでしょ、というゲーム">                                                                 <!--ページ説明　入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/でゆキャプチャ</title>                                                         <!--タイトル　入力すること！-->
         <!--OGPとかいうの-->
-        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/TEST">
-        <meta property="og:title" content="テスト用ページ"/>
-        <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
-        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/test/gomibako_for_test"/>
-        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/deyucaptcha">                                <!--タイトル　入力すること！-->
+        <meta property="og:title" content="でゆキャプチャ">                                                               <!--タイトル　入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/deyucaptcha.html">                   <!--リンク　入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
         <meta name="twitter:card" content="summary"><!--なにを表示するか-->
         <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
         <link rel="stylesheet" href="../css/style.css">
@@ -30,12 +30,15 @@
                 text-align: center;
                 margin: 10px;
             }
-            canvas{
-                background: #242424;
+            #canvas{
+                background: #ffffff;
                 height: 70vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ　→スマホはどースンだよ→そこはonloadくんとこで頑張ってもろて…*/
-                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+                /*image-rendering: pixelated;ドット絵を拡大したいなら使え*/
             }
-
+            #start_button{
+                position: fixed;
+                background: #ffffff;
+            }
         </style>
 
         <!-- Google tag (gtag.js) -->
@@ -44,9 +47,9 @@
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-
             gtag('config', 'G-1MB5XLN4LW');
         </script>
+        <!-- Google tag (gtag.js) -->
 
         <script src="../js/public.js"></script>
 
@@ -61,125 +64,470 @@
             onload = function(){
                 onload_functions();
 
-                const canvas =document.getElementById("canvas")
+                //宣言系をここにまとめるとめちゃエエね--------------------------------------------------------------------------------
+                const canvas =document.getElementById("canvas");
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                    canvas.style.width=90+"%";//スマホでみるとキャンバスでかいから縮めよう
+                    canvas.style.height=canvas.clientWidth+"px";
+                }
+                let クリック音;
+                let ブブ音;
+                let スタート済み=false;
+                const スタートボタン =document.getElementById("start_button");
+
+                    スタートボタン.style.display="none";
+                    //ここから音声の定義ーーーーーーーーーーーーーーーー
+                    クリック音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/クリック.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    ブブ音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/ブブ.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    //ここまで音声の定義ーーーーーーーーーーーーーーーー
+                    クリック音.play();
+
+                    スタート済み=true;
+
+
                 const app = new PIXI.Application({//PIXIアプリを作成
                     view : canvas, //canvas指定
                     //antialias : true,//アンチエイリアス。デフォルトOFF
-                    width:100,
-                    height:100,
+                    //preserveDrawingBuffer: true,//
+                    backgroundColor: 0x303030,
+                    width:1000,
+                    height:1000,
                 });
+                
 
-                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
-                    canvas.style.width=80+"%";//スマホでみるとキャンバスでかいから縮めよう
-                    canvas.style.height=canvas.clientWidth+"px";
-                }
 
-                PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;//ドット絵ぼやけさせてんじゃねーぞ！
+                const 基本文字=new PIXI.TextStyle({
+                    fontSize: 40,
+                    fill: 0x101010,
+                    fontWeight: 300,
 
-                const 図=new PIXI.Graphics();//一つでええ
-                app.stage.addChild(図);
-                図.lineStyle(4,0xffffff,1);
-                図.moveTo(100,100);
-                図.lineTo(0,0);
-                図.lineTo(50,0);
-                図.lineTo(0,50);
-                図.lineTo(100,50);
-                図.lineTo(100,100);
-                図.drawRect(0,50,50,50);
-                //図.clear();
-
-                const fontstyle=new PIXI.TextStyle({
-                    fontSize: 0,
-                    fill: [0xffffff,0xff0000,0x00ff00],
-                    dropShadow: true,
-                    dropShadowColor:0x0000ff,
-                    fontStyle: "italic",
+                });
+                const デカ文字_白=new PIXI.TextStyle({
+                    fontSize: 80,
+                    fill: 0xffffff,
                     fontWeight: 900,
 
-                })
-                fontstyle.fontSize+=10;
-                const titleText = new PIXI.Text( "Hello World!" ,fontstyle);
-                titleText.position.set(15,30);
-                app.stage.addChild( titleText );
-
-                const 画像= PIXI.Texture.from("../images/omocha/tuntunsyuukun/untiking.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
-                const スプライト=new PIXI.Sprite(画像);
-                スプライト.anchor.set(0.5,0.5);
-                app.stage.addChild(スプライト);
-
-                const スプライト2=new PIXI.Sprite(画像);
-                スプライト2.anchor.set(0.5,0.5);
-                スプライト2.scale.set(0.8,2);
-                スプライト2.position.set(50,80);
-                スプライト2.rotation=Math.PI*4/5;
-                let 回転方向=1;
-                スプライト2.on("pointerdown",()=>{
-                    if(!もう音読み込んだから帰っていいよ){
-                        音を読み込むために存在する悲しき関数();
-                    }
-                    回転方向*=-1;
-                    poyo.play();
                 });
-                スプライト2.isOver = false;  
-                スプライト2.cursor = "pointer";//カーソル変化
-                スプライト2.interactive=true;//タッチ操作許可
-                app.stage.addChild(スプライト2);
+                const 太文字_白=new PIXI.TextStyle({
+                    fontSize: 50,
+                    fill: 0xffffff,
+                    fontWeight: 900,
 
+                });
+                const 基本文字_白=new PIXI.TextStyle({
+                    fontSize: 40,
+                    fill: 0xffffff,
+                    fontWeight: 300,
 
-                let peu;
-                let poyo;
-                let もう音読み込んだから帰っていいよ=false;
-                function 音を読み込むために存在する悲しき関数(){//ユーザー操作の後に音をゴニョらんとイカンのですよ
-                    peu = new Howl({
-                        src: ["../sound/omocha/tuntunsyuukun/peu.wav"],
-                        loop: false,// 繰り返し再生をする/しない
-                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                });
+                const ちび文字=new PIXI.TextStyle({
+                    fontSize: 25,
+                    fill: 0x101010,
+                    fontWeight: 100,
+
+                });
+
+                let タイトルコンテナ = new PIXI.Container();
+                app.stage.addChild(タイトルコンテナ);
+                タイトルコンテナ.position.set(150,425);
+                const タイトル図形=new PIXI.Graphics();
+                タイトルコンテナ.addChild(タイトル図形);
+                タイトル図形.beginFill(0xf0f0f0);
+                タイトル図形.drawRect(0,0,700,150);
+                タイトル図形.endFill();
+                タイトル図形.beginFill(0xffffff);
+                タイトル図形.drawRect(25,25,80,80);//150 425
+                タイトル図形.endFill();
+                タイトル図形.lineStyle(5,0xa0a0a0,1);
+                タイトル図形.drawRect(25,25,80,80);
+                スタートボタン.style.width=canvas.clientWidth*0.08+"px";
+                スタートボタン.style.height=canvas.clientHeight*0.08+"px";
+                const のっとろぼ = new PIXI.Text( "私はロボットではあり\nません。" ,基本文字);
+                のっとろぼ.position.set(140,35);
+                タイトルコンテナ.addChild( のっとろぼ );
+                const みぎしたのヤツ = new PIXI.Text( "DeyuCaptcha" ,ちび文字);
+                みぎしたのヤツ.position.set(540,115);
+                タイトルコンテナ.addChild( みぎしたのヤツ );
+                const logo_image= PIXI.Texture.from("../images/omocha/deyucaptcha/deyucaptcha.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                const ロゴ=new PIXI.Sprite(logo_image);
+                ロゴ.anchor.set(0.5,0.5);
+                ロゴ.scale.set(0.5,0.5);
+                ロゴ.position.set(610,65);
+                タイトルコンテナ.addChild(ロゴ);
+
+                let mainコンテナ = new PIXI.Container();
+                //app.stage.addChild(mainコンテナ);//使うタイミングで追加しようね
+
+                mainコンテナ.position.set(150,50);
+                const main図形=new PIXI.Graphics();
+                mainコンテナ.addChild(main図形);
+                main図形.beginFill(0xffffff);
+                main図形.drawRect(0,0,700,900);
+                main図形.endFill();
+                main図形.beginFill(0x20a0ff);
+                main図形.drawRect(10,10,680,180);
+                main図形.endFill();
+                const koitu_image= PIXI.Texture.from("../images/omocha/deyucaptcha/150deyu.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                const コイツ=new PIXI.Sprite(koitu_image);
+                コイツ.position.set(500,20);
+                mainコンテナ.addChild(コイツ);
+                const タイトル文_1 = new PIXI.Text( "作者" ,デカ文字_白);
+                タイトル文_1.position.set(30,30);
+                mainコンテナ.addChild(タイトル文_1);
+                const タイトル文_2 = new PIXI.Text( "を全て選んで下さい。" ,基本文字_白);
+                タイトル文_2.position.set(50,130);
+                mainコンテナ.addChild(タイトル文_2);
+                const ロゴ_main=new PIXI.Sprite(logo_image);
+                ロゴ_main.scale.set(0.4,0.4);
+                ロゴ_main.position.set(20,820);
+                mainコンテナ.addChild(ロゴ_main);
+                const ひだりしたのヤツ_main = new PIXI.Text( "DeyuCaptcha" ,ちび文字);
+                ひだりしたのヤツ_main.position.set(100,870);
+                mainコンテナ.addChild( ひだりしたのヤツ_main );
+
+                const チェックマーク= PIXI.Texture.from("../images/omocha/deyucaptcha/tilekku200.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+
+                let ステージ1コンテナ = new PIXI.Container();
+                ステージ1コンテナ.position.set(50,200);
+                const ステージ1テクスチャ= new PIXI.BaseTexture("../images/omocha/deyucaptcha/deyuc1.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                let 中央四角_1 = new Array(9); 
+                let セレクトさん_1 = new Array(9); 
+                for(let i=0;i<9;i++){
+                    中央四角_1[i]=new PIXI.Sprite();
+                    中央四角_1[i].selected=0;
+                    ステージ1コンテナ.addChild(中央四角_1[i]);
+                    中央四角_1[i].anchor.set(0.5,0.5);
+                    中央四角_1[i].position.set(100+200*(i%3),100+200*Math.floor(i/3));
+                    中央四角_1[i].texture=new PIXI.Texture(ステージ1テクスチャ, new PIXI.Rectangle(200*(i%3),200*Math.floor(i/3), 200, 200));
+                    中央四角_1[i].on("pointerdown",()=>{
+                        クリック音.play();
+                        if(中央四角_1[i].selected==0){
+                            中央四角_1[i].selected=1;
+                            中央四角_1[i].scale.set(0.85,0.85);
+                            セレクトさん_1[i].visible = true;
+                        }else{
+                            中央四角_1[i].selected=0;
+                            中央四角_1[i].scale.set(1,1);
+                            セレクトさん_1[i].visible = false;
+                        }
                     });
-                    poyo = new Howl({
-                        src: ["../sound/omocha/tuntunsyuukun/poyo.wav"],
-                        loop: false,// 繰り返し再生をする/しない
-                        volume: 1.0,// 音量(0.0 ~ 1.0)
-                    });
-                    もう音読み込んだから帰っていいよ=true;
+                    中央四角_1[i].interactive=true;//タッチ操作許可
+
+                    セレクトさん_1[i]=new PIXI.Sprite(チェックマーク);
+                    セレクトさん_1[i].scale.set(0.3,0.3);
+                    セレクトさん_1[i].position.set(200*(i%3),200*Math.floor(i/3));
+                    セレクトさん_1[i].visible = false;
+                    ステージ1コンテナ.addChild(セレクトさん_1[i]);
                 }
+                const 枠線_1=new PIXI.Graphics();
+                ステージ1コンテナ.addChild(枠線_1);
+                枠線_1.lineStyle(5,0x202020,0.5);
+                枠線_1.moveTo(0,-2);
+                枠線_1.lineTo(0,600);
+                枠線_1.lineTo(600,600);
+                枠線_1.lineTo(600,0);
+                枠線_1.lineTo(-2,0);
+
+                枠線_1.moveTo(200,0);
+                枠線_1.lineTo(200,600);
+                枠線_1.moveTo(400,0);
+                枠線_1.lineTo(400,600);
+                枠線_1.moveTo(0,200);
+                枠線_1.lineTo(600,200);
+                枠線_1.moveTo(0,400);
+                枠線_1.lineTo(600,400);
+                mainコンテナ.addChild(ステージ1コンテナ);
+
+                let ステージ2コンテナ = new PIXI.Container();
+                ステージ2コンテナ.position.set(50,200);
+                const ステージ2テクスチャ= new PIXI.BaseTexture("../images/omocha/deyucaptcha/deyuc2.png");//ロード。スプライト作成も同時にできるっぽいけど、いっか。
+                const 横断テクスチャ_1= new PIXI.BaseTexture("../images/omocha/deyucaptcha/arukideyu_1.png");
+                const 横断テクスチャ_2= new PIXI.BaseTexture("../images/omocha/deyucaptcha/arukideyu_2.png");
+                ステージ2コンテナ.sortableChildren = true;//Zソート
+                let 歩く場所=new Array(4);
+                for(let i=0;i<4;i++){
+                    歩く場所[i]=new PIXI.Sprite();
+                    歩く場所[i].anchor.set(0.5,0.5);
+                    歩く場所[i].height=150;
+                    歩く場所[i].width=150;
+
+                    歩く場所[i].position.set(75+150*(i),75+300);
+                    歩く場所[i].zIndex = 1;
+                    歩く場所[i].backgroundColor = "#ff0000";
+                    ステージ2コンテナ.addChild(歩く場所[i]);
+                }
+                let 中央四角_2 = new Array(16); 
+                let セレクトさん_2 = new Array(16); 
+                for(let i=0;i<16;i++){
+                    中央四角_2[i]=new PIXI.Sprite();
+                    中央四角_2[i].selected=0;
+                    ステージ2コンテナ.addChild(中央四角_2[i]);
+                    中央四角_2[i].anchor.set(0.5,0.5);
+                    中央四角_2[i].position.set(75+150*(i%4),75+150*Math.floor(i/4));
+                    中央四角_2[i].texture=new PIXI.Texture(ステージ2テクスチャ, new PIXI.Rectangle(150*(i%4),150*Math.floor(i/4), 150, 150));
+                    中央四角_2[i].on("pointerdown",()=>{
+                        クリック音.play();
+                        if(中央四角_2[i].selected==0){
+                            中央四角_2[i].selected=1;
+                            中央四角_2[i].scale.set(0.85,0.85);
+                            if(i>7 && i<12){
+                                歩く場所[i%4].scale.set(0.425,0.425);
+                            }
+                            セレクトさん_2[i].visible = true;
+                        }else{
+                            中央四角_2[i].selected=0;
+                            中央四角_2[i].scale.set(1,1);
+                            if(i>7 && i<12){
+                                歩く場所[i%4].scale.set(0.5,0.5);
+                            }
+                            セレクトさん_2[i].visible = false;
+                        }
+                    });
+                    中央四角_2[i].interactive=true;//タッチ操作許可
+
+                    セレクトさん_2[i]=new PIXI.Sprite(チェックマーク);
+                    セレクトさん_2[i].scale.set(0.3,0.3);
+                    セレクトさん_2[i].position.set(150*(i%4),150*Math.floor(i/4));
+                    セレクトさん_2[i].visible = false;
+                    ステージ2コンテナ.addChild(セレクトさん_2[i]);
+                }
+                const 枠線_2=new PIXI.Graphics();
+                ステージ2コンテナ.addChild(枠線_2);
+                枠線_2.lineStyle(5,0x202020,0.5);
+                枠線_2.moveTo(0,-2);
+                枠線_2.lineTo(0,600);
+                枠線_2.lineTo(600,600);
+                枠線_2.lineTo(600,0);
+                枠線_2.lineTo(-2,0);
+
+                枠線_2.moveTo(150,0);
+                枠線_2.lineTo(150,600);
+                枠線_2.moveTo(300,0);
+                枠線_2.lineTo(300,600);
+                枠線_2.moveTo(450,0);
+                枠線_2.lineTo(450,600);
+                枠線_2.moveTo(0,150);
+                枠線_2.lineTo(600,150);
+                枠線_2.moveTo(0,300);
+                枠線_2.lineTo(600,300);
+                枠線_2.moveTo(0,450);
+                枠線_2.lineTo(600,450);
+                ステージ2コンテナ.alpha=0;
+                //mainコンテナ.addChild(ステージ2コンテナ); ここで追加してもいいのでは？←知らんでゆ。
+
+                const 確認ボタン=new PIXI.Graphics();
+                mainコンテナ.addChild(確認ボタン);
+                確認ボタン.beginFill(0x20a0ff);
+                確認ボタン.drawRect(500,810,180,80);
+                確認ボタン.endFill();
+                確認ボタン.on("pointerdown",()=>{
+                    let 君はもう正解したか=0;//!?が変数名に使えないって知ってましたか？私は今知りました。
+                    if(ゲーム進行度==3){
+                        let 正解_1=[0,0,0,0,1,1,0,1,1];
+                        はもう正解したか=0;
+                        for(let i=0;i<9;i++){
+                            if((正解_1[i]==0 && 中央四角_1[i].selected==0)||(正解_1[i]==1 && 中央四角_1[i].selected==1)){
+                            }else{
+                                君はもう正解したか+=1;//ミスするとさ、それだけダメージを負ってもらうことになるかもしれないよね
+                            }
+                        }
+                        if(君はもう正解したか==0){//お前はすごい！
+                            クリック音.play();
+                            mainコンテナ.filters = [普通_Filter];//正常化
+                            ゲーム進行度=4;
+                            animation_time=20;
+                        }else{//お前はすごくない！
+                            animation_time=10;
+                            ブブ音.play();
+                        }
+                    }else if(ゲーム進行度==6){
+                        let 正解_2=[];
+                        if(animation_time<30){//正解分岐
+                            正解_2=[0,0,0,0,0,0,0,0, 0,0,0,1, 0,0,0,0];
+                        }else if(animation_time<60){
+                            正解_2=[0,0,0,0,0,0,0,0, 0,0,1,1, 0,0,0,0];
+                        }else if(animation_time<90){
+                            正解_2=[0,0,0,0,0,0,0,0, 0,1,1,0, 0,0,0,0];
+                        }else if(animation_time<120){
+                            正解_2=[0,0,0,0,0,0,0,0, 1,1,0,0, 0,0,0,0];
+                        }else if(animation_time<150){
+                            正解_2=[0,0,0,0,0,0,0,0, 1,0,0,0, 0,0,0,0];
+                        }else{
+                            正解_2=[0,0,0,0,0,0,0,0, 0,0,0,0, 0,0,0,0];
+                        }
+                        君はもう正解したか=0;
+                        for(let i=0;i<16;i++){
+                            if((正解_2[i]==0 && 中央四角_2[i].selected==0)||(正解_2[i]==1 && 中央四角_2[i].selected==1)){
+                            }else{
+                                君はもう正解したか+=1;//ミスするとさ、それだけダメージを負ってもらうことになるかもしれないよね
+                            }
+                        }
+                        if(君はもう正解したか==0){//お前はすごい！
+                            クリック音.play();
+                            mainコンテナ.filters = [普通_Filter];//正常化
+                            ゲーム進行度=7;
+                            animation_time=20;
+                        }else{//お前はすごくない！
+                            animation_time2=10;
+                            ブブ音.play();
+                        }
+                    }
+
+                });
+                確認ボタン.interactive=true;//タッチ操作許可
+                const 確認テキスト = new PIXI.Text( "確認" ,太文字_白);
+                確認テキスト.position.set(540,825);
+                mainコンテナ.addChild(確認テキスト);
+                
+
+
+                let RED_fragment = `
+                varying vec2 vTextureCoord;
+                uniform sampler2D uSampler;
+                void main(void)
+                {
+                    gl_FragColor = texture2D(uSampler, vTextureCoord)+vec4(1.0, 0, 0, 0);
+                }
+                `;//赤くするよ。
+                let RED_Filter = new PIXI.Filter(null, RED_fragment);
+
+                let 普通_fragment = `
+                varying vec2 vTextureCoord;
+                uniform sampler2D uSampler;
+                void main(void)
+                {
+                    gl_FragColor = texture2D(uSampler, vTextureCoord);
+                }
+                `;//赤くするよ。
+                let 普通_Filter = new PIXI.Filter(null, 普通_fragment);
+
+
+
+
+                タイトル図形.lineStyle(10, 0x2070ff, 1);
+                let animation_time=0;
+                let animation_time2=0;
+                let ゲーム進行度=4;
+                タイトルコンテナ.destroy();
+            
+                app.stage.addChild(mainコンテナ);
+                mainコンテナ.alpha=1;
+                //宣言系をここにまとめるとめちゃエエね--------------------------------------------------------------------------------
                 app.ticker.add(loop);
                 let time=0;
-                function うんち移動(x,y){
-                    if((x<スプライト2.position.x-18 || x>スプライト2.position.x+18)||(y<スプライト2.position.y-18 || y>スプライト2.position.y+18)){
-                        スプライト.position.set(x,y);
-                        peu.play();
-                    }
-                }
-                canvas.onclick = function(event) {//キャンバスクリック
-                    if(!もう音読み込んだから帰っていいよ){
-                        音を読み込むために存在する悲しき関数();
-                    }
-                    let キャンバスどこ = canvas.getBoundingClientRect();//キャンバスどこだよ
-                    //(マウス位置 - キャンバス位置)/キャンバスの見た目でかさ*キャンバス本質でかさ (スクロール分のズレはclient.xyに吸収されるぜ。
-                    うんち移動((event.clientX - Math.floor(キャンバスどこ.left))/canvas.clientWidth*canvas.width,(event.clientY - Math.floor(キャンバスどこ.top))/canvas.clientHeight*canvas.height);
-                }
-                canvas.addEventListener('touchstart', function(e) {//スマホタッチ
-                    if(!もう音読み込んだから帰っていいよ){
-                        音を読み込むために存在する悲しき関数();
-                    }
-                    let キャンバスどこ = canvas.getBoundingClientRect();//キャンバスどこだよ
-                    //(マウス位置 - キャンバス位置 -スクロール)/キャンバスの見た目でかさ*キャンバス本質でかさ (スクロール分のズレはclient.xyに吸収されるぜ。
-                    うんち移動((event.changedTouches[0].clientX - Math.floor(キャンバスどこ.left))/canvas.clientWidth*canvas.width,(event.changedTouches[0].clientY - Math.floor(キャンバスどこ.top))/canvas.clientHeight*canvas.height);
-                });
-
+                
                 function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60  app.ticker.speed = 3;で変えられるらしいっすよ
                     time+=delta;
                     if(time>1000000){time=0;}
-                    スプライト2.scale.set(0.8,Math.sin(time/10)+1.5);
-                    スプライト2.rotation=Math.PI*(time)/20*回転方向;
 
+                    if(ゲーム進行度==4){
+                        animation_time-=1;
+                        ステージ1コンテナ.position.set(50,220-animation_time);
+                        ステージ1コンテナ.alpha=animation_time/10;
+                        if(animation_time==-10){
+                            ゲーム進行度=5;         
+                            ステージ1コンテナ.destroy();
+                            mainコンテナ.addChild(ステージ2コンテナ); 
+                            animation_time=0;                  
+                        }
+                    }else if(ゲーム進行度==5){
+                        animation_time+=1;
+                        ステージ2コンテナ.alpha=animation_time/10;
+                        if(animation_time==10){
+                            ゲーム進行度=6;
+                            animation_time=0;
+                        }
+                    }else if(ゲーム進行度==6){
+                        if(animation_time==0){//読む人をびっくりさせてしまうようなコードになってませんか？←俺が一番びっくりしてるからＯＫ
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+800,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==30){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+1120,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==60){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+1440,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==90){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+1760,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==120){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+2080,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }else if(animation_time==150){
+                            for(let i=0;i<4;i++){
+                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+2400,160, 300, 300));
+                                if(中央四角_2[i+8].selected==1){
+                                    歩く場所[i].scale.set(0.425,0.425);
+                                }
+                            }
+                        }
+                        if(animation_time==180){
+                            animation_time=0;
+                        }else{
+                            animation_time+=1;
+                        }
+
+                        if(animation_time2>0){
+                            animation_time2-=1;
+                            mainコンテナ.position.set(150+animation_time2*(animation_time2%2-1),50);
+
+                            RED_fragment = `
+                            varying vec2 vTextureCoord;
+                            uniform sampler2D uSampler;
+                            void main(void)
+                            {
+                                gl_FragColor = texture2D(uSampler, vTextureCoord)+vec4(`+animation_time2/10+","+(-animation_time2/30)+","+(-animation_time2/30)+`, 0);
+                            }
+                            `;//こんな書き方が許されるんですか？←うるせえてめぇも赤く染めてやろうか？
+                            RED_Filter = new PIXI.Filter(null, RED_fragment);
+                            mainコンテナ.filters = [RED_Filter];//間違えてたら赤くしましゅ！
+                        }
+                    }else if(ゲーム進行度==7){
+                        animation_time-=1;
+                        ステージ2コンテナ.position.set(50,220-animation_time);
+                        ステージ2コンテナ.alpha=animation_time/10;
+                        if(animation_time==-10){
+                            ゲーム進行度=8;         
+                            ステージ2コンテナ.destroy();
+                            //mainコンテナ.addChild(ステージ2コンテナ); 
+                            animation_time=0;                  
+                        }
+                    }
+                    
                 }
             }
+
         </script>
     </head>
     <body>
-
-
         <div id="top"></div>
         <header id="header">
             <button onclick="html_link_btn()" id="html_link_btn"></button>
@@ -193,24 +541,16 @@
                 JUN汁ｗおもちゃばこ。
             </h1>
         </header>
-
         <div id="mannaka">
-            画像を変形しよう:PixiJS　音を鳴らそう:HOWLER
-            <br>
-            <br>
-            クソガキ「先生！一部環境では音がなりません！」
-            <br>
-            偉大なる俺「バーカ！」
+
             <div id="parent_div">
-                <canvas id="canvas">
-                </canvas>
+                <button id="start_button"></button><!--すぐ消える-->
+                <canvas id="canvas"></canvas>
             </div>
-
-
             <footer>
                 <ul id="footul">
                     <li id="foot_tweet_li">
-                        <a href="" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
                             <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
                         </a>
                     </li>
