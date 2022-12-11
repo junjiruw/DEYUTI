@@ -3,14 +3,14 @@
     <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
         <meta charset="UTF-8">
         <!--文字コードは上のほうにないとすべておしまいになるらしい-->
-        <meta name="description" content="人間ならできるでしょ、というゲーム">                                                                 <!--ページ説明　入力すること！-->
-        <title>JUN汁ｗおもちゃばこ。/おもちゃ/でゆキャプチャ</title>                                                         <!--タイトル　入力すること！-->
+        <meta name="description" content="技術的なテストをしている">
+        <title>JUN汁ｗおもちゃばこ。/TEST</title>
         <!--OGPとかいうの-->
-        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/deyucaptcha">                                <!--タイトル　入力すること！-->
-        <meta property="og:title" content="でゆキャプチャ">                                                               <!--タイトル　入力すること！-->
-        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
-        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/deyucaptcha.html">                   <!--リンク　入力すること！-->
-        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/TEST">
+        <meta property="og:title" content="テスト用ページ"/>
+        <meta property="og:type" content="website"/> <!--websiteはトップページだってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/test/gomibako_for_test"/>
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true"/>
         <meta name="twitter:card" content="summary"><!--なにを表示するか-->
         <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
         <link rel="stylesheet" href="../css/style.css">
@@ -323,6 +323,85 @@
                 ステージ2コンテナ.alpha=0;
                 //mainコンテナ.addChild(ステージ2コンテナ); ここで追加してもいいのでは？←知らんでゆ。
 
+                let ステージ3コンテナ = new PIXI.Container();
+                ステージ3コンテナ.position.set(50,200);
+                const ステージ3テクスチャ= new PIXI.BaseTexture("../images/site/junjiruw_pro.png");
+                let 中央四角_3 = new Array(16); 
+                let セレクトさん_3 = new Array(16); 
+                for(let i=0;i<16;i++){
+                    中央四角_3[i]=new PIXI.Sprite();
+                    中央四角_3[i].selected=0;
+                    ステージ3コンテナ.addChild(中央四角_3[i]);
+                    中央四角_3[i].anchor.set(0.5,0.5);
+                    中央四角_3[i].position.set(75+150*(i%4),75+150*Math.floor(i/4));
+                    中央四角_3[i].texture=new PIXI.Texture(ステージ3テクスチャ, new PIXI.Rectangle(0,0, 640, 640));
+                    中央四角_3[i].scale.set(0.3,0.3);
+                    中央四角_3[i].alpha=0;//透明に。
+                    中央四角_3[i].on("pointerdown",()=>{
+                        クリック音.play();
+                        if(中央四角_3[i].selected==0){
+                            中央四角_3[i].selected=1;
+                            if(i==でゆっち_x+でゆっち_y*4){
+                                //やべ
+                                if(でゆっち_x!=0 && 中央四角_3[i-1].selected==0){//左端じゃないとき かつ　左にいける
+                                    でゆっち_x-=1;
+                                    中央四角_3[i].alpha=0;//透明に。
+                                    中央四角_3[i-1].alpha=1;//召喚。
+                                }else if(でゆっち_y!=0 && 中央四角_3[i-4].selected==0){//上端じゃないとき かつ　上にいける
+                                    でゆっち_y-=1;
+                                    中央四角_3[i].alpha=0;//透明に。
+                                    中央四角_3[i-4].alpha=1;//召喚。
+                                }else if(でゆっち_x!=3 && 中央四角_3[i+1].selected==0){//右端じゃないとき かつ　右にいける
+                                    でゆっち_x+=1;
+                                    中央四角_3[i].alpha=0;//透明に。
+                                    中央四角_3[i+1].alpha=1;//召喚。
+                                }else if(でゆっち_y!=3 && 中央四角_3[i+4].selected==0){//上端じゃないとき かつ　上にいける
+                                    でゆっち_y+=1;
+                                    中央四角_3[i].alpha=0;//透明に。
+                                    中央四角_3[i+4].alpha=1;//召喚。
+                                }
+                            }
+                            セレクトさん_3[i].visible = true;
+                        }else{
+                            中央四角_3[i].selected=0;
+                            セレクトさん_3[i].visible = false;
+                        }
+                    });
+                    中央四角_3[i].interactive=true;//タッチ操作許可
+
+                    セレクトさん_3[i]=new PIXI.Sprite(チェックマーク);
+                    セレクトさん_3[i].scale.set(0.3,0.3);
+                    セレクトさん_3[i].position.set(150*(i%4),150*Math.floor(i/4));
+                    セレクトさん_3[i].visible = false;
+                    ステージ3コンテナ.addChild(セレクトさん_3[i]);
+                }
+                let でゆっち_x=2;
+                let でゆっち_y=2;
+                中央四角_3[でゆっち_x+でゆっち_y*4].alpha=1;
+                const 枠線_3=new PIXI.Graphics();
+                ステージ3コンテナ.addChild(枠線_3);
+                枠線_3.lineStyle(5,0x202020,0.5);
+                枠線_3.moveTo(0,-2);
+                枠線_3.lineTo(0,600);
+                枠線_3.lineTo(600,600);
+                枠線_3.lineTo(600,0);
+                枠線_3.lineTo(-2,0);
+
+                枠線_3.moveTo(150,0);
+                枠線_3.lineTo(150,600);
+                枠線_3.moveTo(300,0);
+                枠線_3.lineTo(300,600);
+                枠線_3.moveTo(450,0);
+                枠線_3.lineTo(450,600);
+                枠線_3.moveTo(0,150);
+                枠線_3.lineTo(600,150);
+                枠線_3.moveTo(0,300);
+                枠線_3.lineTo(600,300);
+                枠線_3.moveTo(0,450);
+                枠線_3.lineTo(600,450);
+                ステージ3コンテナ.alpha=0;
+
+
                 const 確認ボタン=new PIXI.Graphics();
                 mainコンテナ.addChild(確認ボタン);
                 確認ボタン.beginFill(0x20a0ff);
@@ -332,7 +411,7 @@
                     let 君はもう正解したか=0;//!?が変数名に使えないって知ってましたか？私は今知りました。
                     if(ゲーム進行度==3){
                         let 正解_1=[0,0,0,0,1,1,0,1,1];
-                        はもう正解したか=0;
+                        君はもう正解したか=0;
                         for(let i=0;i<9;i++){
                             if((正解_1[i]==0 && 中央四角_1[i].selected==0)||(正解_1[i]==1 && 中央四角_1[i].selected==1)){
                             }else{
@@ -377,6 +456,24 @@
                             animation_time=20;
                         }else{//お前はすごくない！
                             animation_time2=10;
+                            ブブ音.play();
+                        }
+                    }else if(ゲーム進行度==9){
+                       
+                        君はもう正解したか=0;
+                        for(let i=0;i<16;i++){
+                            if((i==でゆっち_x+でゆっち_y*4 && 中央四角_3[i].selected==1)||(i!=でゆっち_x+でゆっち_y*4 && 中央四角_3[i].selected==0)){
+                            }else{
+                                君はもう正解したか+=1;//ミスするとさ、それだけダメージを負ってもらうことになるかもしれないよね
+                            }
+                        }
+                        if(君はもう正解したか==0){//お前はすごい！
+                            クリック音.play();
+                            mainコンテナ.filters = [普通_Filter];//正常化
+                            ゲーム進行度=10;
+                            animation_time=20;
+                        }else{//お前はすごくない！
+                            animation_time=10;
                             ブブ音.play();
                         }
                     }
@@ -446,69 +543,12 @@
                             animation_time=0;
                         }
                     }else if(ゲーム進行度==6){
-                        if(animation_time==0){//読む人をびっくりさせてしまうようなコードになってませんか？←俺が一番びっくりしてるからＯＫ
-                            for(let i=0;i<4;i++){
-                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+800,160, 300, 300));
-                                if(中央四角_2[i+8].selected==1){
-                                    歩く場所[i].scale.set(0.425,0.425);
-                                }
-                            }
-                        }else if(animation_time==30){
-                            for(let i=0;i<4;i++){
-                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+1120,160, 300, 300));
-                                if(中央四角_2[i+8].selected==1){
-                                    歩く場所[i].scale.set(0.425,0.425);
-                                }
-                            }
-                        }else if(animation_time==60){
-                            for(let i=0;i<4;i++){
-                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+1440,160, 300, 300));
-                                if(中央四角_2[i+8].selected==1){
-                                    歩く場所[i].scale.set(0.425,0.425);
-                                }
-                            }
-                        }else if(animation_time==90){
-                            for(let i=0;i<4;i++){
-                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+1760,160, 300, 300));
-                                if(中央四角_2[i+8].selected==1){
-                                    歩く場所[i].scale.set(0.425,0.425);
-                                }
-                            }
-                        }else if(animation_time==120){
-                            for(let i=0;i<4;i++){
-                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_1, new PIXI.Rectangle(300*i+2080,160, 300, 300));
-                                if(中央四角_2[i+8].selected==1){
-                                    歩く場所[i].scale.set(0.425,0.425);
-                                }
-                            }
-                        }else if(animation_time==150){
-                            for(let i=0;i<4;i++){
-                                歩く場所[i].texture=new PIXI.Texture(横断テクスチャ_2, new PIXI.Rectangle(300*i+2400,160, 300, 300));
-                                if(中央四角_2[i+8].selected==1){
-                                    歩く場所[i].scale.set(0.425,0.425);
-                                }
-                            }
-                        }
-                        if(animation_time==180){
-                            animation_time=0;
+
+                        if(animation_time==20){
+                            ゲーム進行度=7;
+                            animation_time=20;
                         }else{
                             animation_time+=1;
-                        }
-
-                        if(animation_time2>0){
-                            animation_time2-=1;
-                            mainコンテナ.position.set(150+animation_time2*(animation_time2%2-1),50);
-
-                            RED_fragment = `
-                            varying vec2 vTextureCoord;
-                            uniform sampler2D uSampler;
-                            void main(void)
-                            {
-                                gl_FragColor = texture2D(uSampler, vTextureCoord)+vec4(`+animation_time2/10+","+(-animation_time2/30)+","+(-animation_time2/30)+`, 0);
-                            }
-                            `;//こんな書き方が許されるんですか？←うるせえてめぇも赤く染めてやろうか？
-                            RED_Filter = new PIXI.Filter(null, RED_fragment);
-                            mainコンテナ.filters = [RED_Filter];//間違えてたら赤くしましゅ！
                         }
                     }else if(ゲーム進行度==7){
                         animation_time-=1;
@@ -517,9 +557,43 @@
                         if(animation_time==-10){
                             ゲーム進行度=8;         
                             ステージ2コンテナ.destroy();
-                            //mainコンテナ.addChild(ステージ2コンテナ); 
-                            animation_time=0;                  
+                            mainコンテナ.addChild(ステージ3コンテナ); 
+                            animation_time=0;       
+        
                         }
+                    }else if(ゲーム進行度==8){
+                        animation_time+=1;
+                        ステージ3コンテナ.alpha=animation_time/10;
+                        if(animation_time==10){
+                            ゲーム進行度=9;
+                            animation_time=0;
+                        }
+                    }else if(ゲーム進行度==9){
+                        if(animation_time>0){
+                            animation_time-=1;
+                            mainコンテナ.position.set(150+animation_time*(animation_time%2-1),50);
+
+                            RED_fragment = `
+                            varying vec2 vTextureCoord;
+                            uniform sampler2D uSampler;
+                            void main(void)
+                            {
+                                gl_FragColor = texture2D(uSampler, vTextureCoord)+vec4(`+animation_time/10+","+(-animation_time/30)+","+(-animation_time/30)+`, 0);
+                            }
+                            `;//こんな書き方が許されるんですか？←うるせえてめぇも赤く染めてやろうか？
+                            RED_Filter = new PIXI.Filter(null, RED_fragment);
+                            mainコンテナ.filters = [RED_Filter];//間違えてたら赤くしましゅ！
+                        }
+                    }else if(ゲーム進行度==10){
+                        animation_time-=1;
+                        ステージ3コンテナ.position.set(50,220-animation_time);
+                        ステージ3コンテナ.alpha=animation_time/10;
+                        if(animation_time==-10){
+                            ゲーム進行度=11;         
+                            ステージ3コンテナ.destroy();
+                            //mainコンテナ.addChild(ステージ4コンテナ); 
+                            animation_time=0;                  
+                        }                       
                     }
                     
                 }
