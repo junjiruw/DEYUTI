@@ -341,6 +341,7 @@
                         クリック音.play();
                         if(中央四角_3[i].selected==0){
                             中央四角_3[i].selected=1;
+                            中央四角_3[i].scale.set(0.255,0.255);
                             if(i==でゆっち_x+でゆっち_y*4){
                                 //やべ
                                 if(でゆっち_x!=0 && 中央四角_3[i-1].selected==0){//左端じゃないとき かつ　左にいける
@@ -364,6 +365,7 @@
                             セレクトさん_3[i].visible = true;
                         }else{
                             中央四角_3[i].selected=0;
+                            中央四角_3[i].scale.set(0.3,0.3);
                             セレクトさん_3[i].visible = false;
                         }
                     });
@@ -401,6 +403,94 @@
                 枠線_3.lineTo(600,450);
                 ステージ3コンテナ.alpha=0;
 
+                let ステージ4コンテナ = new PIXI.Container();
+                ステージ4コンテナ.position.set(50,200);
+                ステージ4コンテナ.sortableChildren = true;//Zソート
+                const ステージ4テクスチャ= new PIXI.BaseTexture("../images/omocha/deyucaptcha/junjiruw_kao.png");
+                でゆ顔= new PIXI.Sprite();
+                ステージ4コンテナ.addChild(でゆ顔);
+                でゆ顔.position.set(300,300);
+                でゆ顔.zIndex=10;
+                でゆ顔.anchor.set(0.5,0.5);
+                でゆ顔.scale.set(0.3,0.3);
+                でゆ顔.texture=new PIXI.Texture(ステージ4テクスチャ);
+
+
+                let 白玉 = new Array(8); 
+                let 白玉_x=[60,120,170,210,340,390,460,510];
+                let 白玉_y=[70,450,370,180,140,290,460,50];
+                for(let i=0;i<8;i++){
+                    白玉[i]= new PIXI.Graphics();
+                    白玉[i].position.set(白玉_x[i],白玉_y[i]);
+                    白玉[i].zIndex=i;
+                    白玉[i].lineStyle(15, 0x000000,1);
+                    白玉[i].beginFill(0xffffff);
+                    白玉[i].drawCircle(0,0,30+Math.random()*10);   
+                    ステージ4コンテナ.addChild(白玉[i]);
+                    白玉[i].endFill();
+                }
+                let 灰玉 = new Array(8); 
+                let 灰玉_x=[180,220,100,510,310,450,400,70];
+                let 灰玉_y=[270,150,570,180,540,190,360,150];
+                for(let i=0;i<8;i++){
+                    灰玉[i]= new PIXI.Graphics();
+                    灰玉[i].position.set(灰玉_x[i],灰玉_y[i]);
+                    灰玉[i].zIndex=i;
+                    灰玉[i].lineStyle(15, 0x000000,1);
+                    灰玉[i].beginFill(0x9f9f9f);
+                    灰玉[i].drawCircle(0,0,20+Math.random()*20);   
+                    ステージ4コンテナ.addChild(灰玉[i]);
+                    灰玉[i].endFill();
+                }
+                let 黒玉 = new Array(8); 
+                let 黒玉_x=[100,220,200,510,350,250,200,520];
+                let 黒玉_y=[340,50,500,510,240,290,560,350];
+                for(let i=0;i<8;i++){
+                    黒玉[i]= new PIXI.Graphics();
+                    黒玉[i].position.set(黒玉_x[i],黒玉_y[i]);
+                    黒玉[i].zIndex=i;
+                    黒玉[i].lineStyle(15, 0x000000,1);
+                    黒玉[i].beginFill(0x000000);
+                    黒玉[i].drawCircle(0,0,20+Math.random()*20);   
+                    ステージ4コンテナ.addChild(黒玉[i]);
+                    黒玉[i].endFill();
+                }
+
+                let 中央四角_4 = new Array(16); 
+                let セレクトさん_4 = new Array(16); 
+                for(let i=0;i<16;i++){
+                    中央四角_4[i]= new PIXI.Graphics();
+                    中央四角_4[i].selected=0;
+                    ステージ4コンテナ.addChild(中央四角_4[i]);
+                    中央四角_4[i].position.set(75+150*(i%4),75+150*Math.floor(i/4));
+                    中央四角_4[i].lineStyle(5, 0x000000,1);
+                    中央四角_4[i].beginFill(0xeff9ff);
+                    中央四角_4[i].drawRect(-75,-75,150,150);
+                    中央四角_4[i].endFill();
+                    中央四角_4[i].zIndex = -1;
+
+                    中央四角_4[i].hitArea = new PIXI.Rectangle(-75,-75, 150, 150);
+     
+                    中央四角_4[i].on("pointerdown",()=>{
+                        クリック音.play();
+                        if(中央四角_4[i].selected==0){
+                            中央四角_4[i].selected=1;
+                            セレクトさん_4[i].visible = true;
+                        }else{
+                            中央四角_4[i].selected=0;
+                            セレクトさん_4[i].visible = false;
+                        }
+                    });
+                    中央四角_4[i].interactive=true;//タッチ操作許可
+
+                    セレクトさん_4[i]=new PIXI.Sprite(チェックマーク);
+                    セレクトさん_4[i].scale.set(0.3,0.3);
+                    セレクトさん_4[i].position.set(150*(i%4),150*Math.floor(i/4));
+                    セレクトさん_4[i].visible = false;
+                    セレクトさん_4[i].zIndex=11;
+                    ステージ4コンテナ.addChild(セレクトさん_4[i]);
+                }
+                ステージ4コンテナ.alpha=0;
 
                 const 確認ボタン=new PIXI.Graphics();
                 mainコンテナ.addChild(確認ボタン);
@@ -476,7 +566,25 @@
                             animation_time=10;
                             ブブ音.play();
                         }
-                    }
+                    }else if(ゲーム進行度==12){
+                       
+                       君はもう正解したか=0;
+                       for(let i=0;i<16;i++){
+                           if(中央四角_4[i].selected==1){
+                           }else{
+                               君はもう正解したか+=1;//ミスするとさ、それだけダメージを負ってもらうことになるかもしれないよね
+                           }
+                       }
+                       if(君はもう正解したか==0){//お前はすごい！
+                           クリック音.play();
+                           mainコンテナ.filters = [普通_Filter];//正常化
+                           ゲーム進行度=13;
+                           animation_time=20;
+                       }else{//お前はすごくない！
+                           animation_time=10;
+                           ブブ音.play();
+                       }
+                   }
 
                 });
                 確認ボタン.interactive=true;//タッチ操作許可
@@ -510,10 +618,16 @@
 
 
                 タイトル図形.lineStyle(10, 0x2070ff, 1);
-                let animation_time=0;
+                let animation_time=20;
                 let animation_time2=0;
-                let ゲーム進行度=4;
+                let ゲーム進行度=10;
                 タイトルコンテナ.destroy();
+                ステージ1コンテナ.destroy();
+
+                mainコンテナ.addChild(ステージ3コンテナ); 
+
+                ステージ3コンテナ.alpha=1;
+
             
                 app.stage.addChild(mainコンテナ);
                 mainコンテナ.alpha=1;
@@ -526,49 +640,36 @@
                     if(time>1000000){time=0;}
 
                     if(ゲーム進行度==4){
-                        animation_time-=1;
-                        ステージ1コンテナ.position.set(50,220-animation_time);
-                        ステージ1コンテナ.alpha=animation_time/10;
-                        if(animation_time==-10){
-                            ゲーム進行度=5;         
-                            ステージ1コンテナ.destroy();
-                            mainコンテナ.addChild(ステージ2コンテナ); 
-                            animation_time=0;                  
-                        }
-                    }else if(ゲーム進行度==5){
-                        animation_time+=1;
-                        ステージ2コンテナ.alpha=animation_time/10;
-                        if(animation_time==10){
-                            ゲーム進行度=6;
-                            animation_time=0;
-                        }
-                    }else if(ゲーム進行度==6){
 
-                        if(animation_time==20){
-                            ゲーム進行度=7;
-                            animation_time=20;
-                        }else{
-                            animation_time+=1;
-                        }
-                    }else if(ゲーム進行度==7){
+                    }else if(ゲーム進行度==10){
                         animation_time-=1;
-                        ステージ2コンテナ.position.set(50,220-animation_time);
-                        ステージ2コンテナ.alpha=animation_time/10;
-                        if(animation_time==-10){
-                            ゲーム進行度=8;         
-                            ステージ2コンテナ.destroy();
-                            mainコンテナ.addChild(ステージ3コンテナ); 
-                            animation_time=0;       
-        
-                        }
-                    }else if(ゲーム進行度==8){
-                        animation_time+=1;
+                        ステージ3コンテナ.position.set(50,220-animation_time);
                         ステージ3コンテナ.alpha=animation_time/10;
-                        if(animation_time==10){
-                            ゲーム進行度=9;
+                        if(animation_time==-10){
+                            ゲーム進行度=11;         
+                            ステージ3コンテナ.destroy();
+                            mainコンテナ.addChild(ステージ4コンテナ); 
+                            animation_time=0;                  
+                        }                       
+                    }else if(ゲーム進行度==11){
+                        animation_time+=1;
+                        ステージ4コンテナ.alpha=animation_time/2;
+                        if(animation_time==2){
+                            ゲーム進行度=12;
                             animation_time=0;
                         }
-                    }else if(ゲーム進行度==9){
+                    }else if(ゲーム進行度==12){
+                        白玉_x=[60+50*Math.sin(time*Math.PI/20),120,170,210,340,390+50*Math.sin(time*Math.PI/15),460+20*Math.sin(time*Math.PI/20),510];
+                        白玉_y=[70,450,370+50*Math.sin(time*Math.PI/20),180,140,290+50*Math.sin(time*Math.PI/20),460+20*Math.cos(time*Math.PI/20),50];
+                        灰玉_x=[180+50*Math.sin(time*Math.PI/20),220+50*Math.cos(time*Math.PI/20),100,510+50*Math.sin(time*Math.PI/20),310+50*Math.sin(time*Math.PI/20),450,400+150*Math.cos(time*Math.PI/200),70];
+                        灰玉_y=[270,150+50*Math.sin(time*Math.PI/20),570+50*Math.sin(time*Math.PI/20),180+50*Math.cos(time*Math.PI/20),540+50*Math.sin(time*Math.PI/50),190,360+150*Math.sin(time*Math.PI/200),150];
+                        黒玉_x=[100,220+50*Math.cos(time*Math.PI/20),200+50*Math.sin(time*Math.PI/20),510-50*Math.cos(time*Math.PI/20),350,250,200+50*Math.sin(time*Math.PI/20),520];
+                        黒玉_y=[340,50+20*Math.sin(time*Math.PI/10+1.5),500+50*Math.sin(time*Math.PI/20),510-50*Math.sin(time*Math.PI/20),240+50*Math.sin(time*Math.PI/20),290,560,350];
+                        for(let i=0;i<8;i++){
+                            白玉[i].position.set(白玉_x[i],白玉_y[i]);
+                            灰玉[i].position.set(灰玉_x[i],灰玉_y[i]);
+                            黒玉[i].position.set(黒玉_x[i],黒玉_y[i]);
+                        }
                         if(animation_time>0){
                             animation_time-=1;
                             mainコンテナ.position.set(150+animation_time*(animation_time%2-1),50);
@@ -584,18 +685,8 @@
                             RED_Filter = new PIXI.Filter(null, RED_fragment);
                             mainコンテナ.filters = [RED_Filter];//間違えてたら赤くしましゅ！
                         }
-                    }else if(ゲーム進行度==10){
-                        animation_time-=1;
-                        ステージ3コンテナ.position.set(50,220-animation_time);
-                        ステージ3コンテナ.alpha=animation_time/10;
-                        if(animation_time==-10){
-                            ゲーム進行度=11;         
-                            ステージ3コンテナ.destroy();
-                            //mainコンテナ.addChild(ステージ4コンテナ); 
-                            animation_time=0;                  
-                        }                       
                     }
-                    
+
                 }
             }
 
