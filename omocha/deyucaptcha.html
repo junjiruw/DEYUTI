@@ -39,6 +39,16 @@
                 position: fixed;
                 background: #ffffff;
             }
+            #tweet_a{
+                position: fixed;      
+                display: none;    
+                font-size: 2vw;       
+                text-align: center;     
+                cursor: pointer;/*カーソルを☝に*/
+                padding: 0.3vw; 
+                background: #20a0ff;
+                color: #ffffff;     
+            }
         </style>
 
         <!-- Google tag (gtag.js) -->
@@ -826,16 +836,7 @@
                 let 判定="";
                 let tweet_text="";
                 
-                let ツイートボタン=new PIXI.Graphics();
-                クリアコンテナ.addChild(ツイートボタン);
-                ツイートボタン.beginFill(0x20a0ff);
-                ツイートボタン.drawRect(360,630,280,80);
-                ツイートボタン.endFill();
-
-                ツイートボタン.interactive=true;//タッチ操作許可
-                let ツイートテキスト = new PIXI.Text( "ツイート" ,太文字_白);
-                ツイートテキスト.position.set(400,640);
-                クリアコンテナ.addChild(ツイートテキスト);
+                const ツイートボタン =document.getElementById("tweet_a");
 
                 let リロードボタン=new PIXI.Graphics();
                 クリアコンテナ.addChild(リロードボタン);
@@ -1280,17 +1281,25 @@
                             }
                             
                             tweet_text="https://twitter.com/intent/tweet?text=認証しました。私は…%0A"+判定+"⌛"+ 分+":"+ ("00"+秒).slice(-2)+"%0A%0A";//%0Aで改行
-                            //tweet_text=tweet_text+"⌛"+ 分+":"+ ("00"+秒).slice(-2)+"%0A%0A";
                             tweet_text=tweet_text+"JUN汁ｗおもちゃばこ。/おもちゃ/でゆキャプチャ&hashtags=Deyu_Captcha&url=https://junjiruw.github.io/DEYUTI/omocha/deyucaptcha.html"
-                            ツイートボタン.on("pointerdown",()=>{
-                                window.open(tweet_text,"_blank","noreferrer");
-                            });
+                            ツイートボタン.href=tweet_text;
                         }
-                    }else if(ゲーム進行度=16){
+                    }else if(ゲーム進行度==16){
                         if(animation_time!=20){
                             animation_time+=1;
                             クリアコンテナ.alpha=animation_time/20;
+                        }else{
+                            
+                            ツイートボタン.style.left= (canvas.getBoundingClientRect().left+360*canvas.clientWidth/canvas.width) +"px";
+                            ツイートボタン.style.top= (canvas.getBoundingClientRect().top+630*canvas.clientHeight/canvas.height) +"px";
+                            ツイートボタン.style.fontSize= 50*canvas.clientHeight/canvas.height +"px";
+                            ツイートボタン.style.display="inline";
+                            ゲーム進行度=17;
                         }
+                    }else if(ゲーム進行度==17){
+                        ツイートボタン.style.left= (canvas.getBoundingClientRect().left+360*canvas.clientWidth/canvas.width) +"px";
+                        ツイートボタン.style.top= (canvas.getBoundingClientRect().top+630*canvas.clientHeight/canvas.height) +"px";
+                        ツイートボタン.style.fontSize= 50*canvas.clientHeight/canvas.height +"px";
                     }
                     
                 }
@@ -1317,6 +1326,7 @@
             <div id="parent_div">
                 <button id="start_button"></button><!--すぐ消える-->
                 <canvas id="canvas"></canvas>
+                <a id="tweet_a"  target="_blank" rel="noopener noreferrer">ツイート</a><!--クリア時に出現-->
             </div>
             <footer>
                 <ul id="footul">
