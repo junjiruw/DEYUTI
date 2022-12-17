@@ -110,7 +110,7 @@
                     ぎゅいい音 = new Howl({
                         src: ["../sound/omocha/deyucaptcha/ぎゅいい.wav"],
                         loop: false,// 繰り返し再生をする/しない
-                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                        volume: 0.8,// 音量(0.0 ~ 1.0)
                     });
                     ううおおあ音 = new Howl({
                         src: ["../sound/omocha/deyucaptcha/ううおおあ.wav"],
@@ -758,12 +758,11 @@
                     this.移動前座標_y=this.position.y;
                     this.クリックされたんです=1;
                 }
-
                 document.body.onpointermove=function(event){//マウスを動かすと
                     if(ゲーム進行度==14){
                         for(let i=0;i<3;i++){
                             if(中央四角_4[i].クリックされたんです==1){//ドラッグ中だぜ！
-                                中央四角_4[i].position.set(中央四角_4[i].移動前座標_x+(event.clientX-マウス位置_x)*2,中央四角_4[i].移動前座標_y+(event.clientY-マウス位置_y)*2);
+                                中央四角_4[i].position.set(中央四角_4[i].移動前座標_x+(event.clientX-マウス位置_x)*(1000/canvas.clientWidth),中央四角_4[i].移動前座標_y+(event.clientY-マウス位置_y)*(1000/canvas.clientHeight));
                                 if(中央四角_4[i].position.x<-200){
                                     中央四角_4[i].position.x=-200;
                                 }else if(中央四角_4[i].position.x>770){
