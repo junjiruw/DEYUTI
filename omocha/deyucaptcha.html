@@ -56,6 +56,9 @@
         <!--pixiJSを読み込もう-->
         <script src="../js/library/pixi.min.js"></script>
         <!--ライセンス表記はコイツの中に書いてあるぜ！-->
+        <!--pixi-filters-を読み込もう-->
+        <script src="../js/library/pixi-filters.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
         <!--HOWLERを読み込もう-->
         <script src="../js/library/howler.min.js"></script>
         <!--ライセンス表記はコイツの中に書いてあるぜ！-->
@@ -74,6 +77,8 @@
                 let ブブ音;
                 let スタート済み=false;
                 const スタートボタン =document.getElementById("start_button");
+                let time=0;
+
                 function スタートボタン押し() {
                     スタートボタン.style.display="none";
                     //ここから音声の定義ーーーーーーーーーーーーーーーー
@@ -84,6 +89,31 @@
                     });
                     ブブ音 = new Howl({
                         src: ["../sound/omocha/deyucaptcha/ブブ.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    コン音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/コン.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    よける音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/よける.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    威嚇音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/威嚇.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    ぎゅいい音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/ぎゅいい.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    ううおおあ音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/ううおおあ.wav"],
                         loop: false,// 繰り返し再生をする/しない
                         volume: 1.0,// 音量(0.0 ~ 1.0)
                     });
@@ -105,15 +135,28 @@
                 
 
 
+
                 const 基本文字=new PIXI.TextStyle({
                     fontSize: 40,
                     fill: 0x101010,
                     fontWeight: 300,
 
                 });
+                const デカ文字=new PIXI.TextStyle({
+                    fontSize: 80,
+                    fill: 0x101010,
+                    fontWeight: 900,
+
+                });
                 const デカ文字_白=new PIXI.TextStyle({
                     fontSize: 80,
                     fill: 0xffffff,
+                    fontWeight: 900,
+
+                });
+                const 太文字=new PIXI.TextStyle({
+                    fontSize: 50,
+                    fill: 0x101010,
                     fontWeight: 900,
 
                 });
@@ -135,6 +178,8 @@
                     fontWeight: 100,
 
                 });
+
+
 
                 let タイトルコンテナ = new PIXI.Container();
                 app.stage.addChild(タイトルコンテナ);
@@ -180,6 +225,23 @@
                 const コイツ=new PIXI.Sprite(koitu_image);
                 コイツ.position.set(500,20);
                 mainコンテナ.addChild(コイツ);
+                let 新コイツ= new PIXI.Graphics();
+                mainコンテナ.addChild(新コイツ);
+                新コイツ.position.set(500,20);
+                新コイツ.beginFill(0xffffff);
+                新コイツ.drawRect(0,0,150,150);
+                新コイツ.endFill();
+                新コイツ.lineStyle(15, 0x000000,1);
+                新コイツ.beginFill(0x0000000);
+                新コイツ.drawCircle(50,90,40);   
+                新コイツ.endFill();
+                新コイツ.beginFill(0xffffff);
+                新コイツ.drawCircle(76,53,40);   
+                新コイツ.endFill();
+                新コイツ.beginFill(0x9f9f9f);
+                新コイツ.drawCircle(110,90,30);   
+                新コイツ.endFill();
+                新コイツ.alpha=0;
                 const タイトル文_1 = new PIXI.Text( "作者" ,デカ文字_白);
                 タイトル文_1.position.set(30,30);
                 mainコンテナ.addChild(タイトル文_1);
@@ -348,18 +410,24 @@
                                     でゆっち_x-=1;
                                     中央四角_3[i].alpha=0;//透明に。
                                     中央四角_3[i-1].alpha=1;//召喚。
+                                    よける音.play();
                                 }else if(でゆっち_y!=0 && 中央四角_3[i-4].selected==0){//上端じゃないとき かつ　上にいける
                                     でゆっち_y-=1;
                                     中央四角_3[i].alpha=0;//透明に。
                                     中央四角_3[i-4].alpha=1;//召喚。
+                                    よける音.play();
                                 }else if(でゆっち_x!=3 && 中央四角_3[i+1].selected==0){//右端じゃないとき かつ　右にいける
                                     でゆっち_x+=1;
                                     中央四角_3[i].alpha=0;//透明に。
                                     中央四角_3[i+1].alpha=1;//召喚。
+                                    よける音.play();
                                 }else if(でゆっち_y!=3 && 中央四角_3[i+4].selected==0){//上端じゃないとき かつ　上にいける
                                     でゆっち_y+=1;
                                     中央四角_3[i].alpha=0;//透明に。
                                     中央四角_3[i+4].alpha=1;//召喚。
+                                    よける音.play();
+                                }else{
+                                    コン音.play();//やべ
                                 }
                             }
                             中央四角_3[i].scale.set(0.255,0.255);
@@ -424,11 +492,12 @@
                     白玉[i]= new PIXI.Graphics();
                     白玉[i].position.set(白玉_x[i],白玉_y[i]);
                     白玉[i].zIndex=i;
+                    白玉[i].大きさ=30+Math.random()*10;
                     白玉[i].lineStyle(15, 0x000000,1);
                     白玉[i].beginFill(0xffffff);
-                    白玉[i].drawCircle(0,0,30+Math.random()*10);   
-                    ステージ4コンテナ.addChild(白玉[i]);
+                    白玉[i].drawCircle(0,0,白玉[i].大きさ);   
                     白玉[i].endFill();
+                    ステージ4コンテナ.addChild(白玉[i]);
                 }
                 let 灰玉 = new Array(8); 
                 let 灰玉_x=[180,220,100,510,310,450,400,70];
@@ -437,11 +506,12 @@
                     灰玉[i]= new PIXI.Graphics();
                     灰玉[i].position.set(灰玉_x[i],灰玉_y[i]);
                     灰玉[i].zIndex=i;
+                    灰玉[i].大きさ=20+Math.random()*20;
                     灰玉[i].lineStyle(15, 0x000000,1);
                     灰玉[i].beginFill(0x9f9f9f);
-                    灰玉[i].drawCircle(0,0,20+Math.random()*20);   
-                    ステージ4コンテナ.addChild(灰玉[i]);
+                    灰玉[i].drawCircle(0,0,灰玉[i].大きさ);   
                     灰玉[i].endFill();
+                    ステージ4コンテナ.addChild(灰玉[i]);
                 }
                 let 黒玉 = new Array(8); 
                 let 黒玉_x=[100,220,200,510,350,250,200,520];
@@ -450,11 +520,12 @@
                     黒玉[i]= new PIXI.Graphics();
                     黒玉[i].position.set(黒玉_x[i],黒玉_y[i]);
                     黒玉[i].zIndex=i;
+                    黒玉[i].大きさ=20+Math.random()*20;
                     黒玉[i].lineStyle(15, 0x000000,1);
                     黒玉[i].beginFill(0x000000);
-                    黒玉[i].drawCircle(0,0,20+Math.random()*20);   
-                    ステージ4コンテナ.addChild(黒玉[i]);
+                    黒玉[i].drawCircle(0,0,黒玉[i].大きさ);   
                     黒玉[i].endFill();
+                    ステージ4コンテナ.addChild(黒玉[i]);
                 }
 
                 let 中央四角_4 = new Array(16); 
@@ -473,13 +544,15 @@
                     中央四角_4[i].hitArea = new PIXI.Rectangle(-75,-75, 150, 150);
      
                     中央四角_4[i].on("pointerdown",()=>{
-                        クリック音.play();
-                        if(中央四角_4[i].selected==0){
-                            中央四角_4[i].selected=1;
-                            セレクトさん_4[i].visible = true;
-                        }else{
-                            中央四角_4[i].selected=0;
-                            セレクトさん_4[i].visible = false;
+                        if(ゲーム進行度<13){
+                            クリック音.play();
+                            if(中央四角_4[i].selected==0){
+                                中央四角_4[i].selected=1;
+                                セレクトさん_4[i].visible = true;
+                            }else{
+                                中央四角_4[i].selected=0;
+                                セレクトさん_4[i].visible = false;
+                            }
                         }
                     });
                     中央四角_4[i].interactive=true;//タッチ操作許可
@@ -578,14 +651,51 @@
                        }
                        if(君はもう正解したか==0){//お前はすごい！
                            クリック音.play();
-                           mainコンテナ.filters = [普通_Filter];//正常化
+                           mainコンテナ.filters = [ 躍動_Filiter];//ぎゅおお
                            ゲーム進行度=13;
-                           animation_time=20;
+                           animation_time=0;
+                           威嚇音.play();
+                           for(let i=0;i<16;i++){
+                            セレクトさん_4[i].position.set(-75,-75);
+                            中央四角_4[i].addChild(セレクトさん_4[i]);//おやを変えるぜ。
+                           }
                        }else{//お前はすごくない！
                            animation_time=10;
                            ブブ音.play();
                        }
-                   }
+                    }else if(ゲーム進行度==14){
+                        クリック音.play();
+                        ぎゅいい音.play();
+                        animation_time=20;
+                        for(let i=0;i<8;i++){
+                            if(白玉[i].当たってる_now==1){
+                                白玉[i].当たってる_now=2;
+                            }
+                            if(灰玉[i].当たってる_now==1){
+                                灰玉[i].当たってる_now=2;
+                            }
+                            if(黒玉[i].当たってる_now==1){
+                                黒玉[i].当たってる_now=2;
+                            }
+                        }
+                        let もう終わったよカウンター=0;
+                        for(let i=0;i<8;i++){
+                            if(白玉[i].当たってる_now>1){
+                                もう終わったよカウンター+=1;
+                            }
+                            if(灰玉[i].当たってる_now>1){
+                                もう終わったよカウンター+=1;
+                            }
+                            if(黒玉[i].当たってる_now>1){
+                                もう終わったよカウンター+=1;
+                            }
+                        }
+                        if(もう終わったよカウンター==24){
+                            ゲーム進行度=15;//クリアだ
+                            animation_time=0;
+                            ううおおあ音.play();
+                        }
+                    }
                 });
                 確認ボタン.interactive=true;//タッチ操作許可
                 const 確認テキスト = new PIXI.Text( "確認" ,太文字_白);
@@ -614,17 +724,168 @@
                 `;//赤くしないよ
                 let 普通_Filter = new PIXI.Filter(null, 普通_fragment);
 
+                let 躍動_Filiter=new PIXI.filters.ZoomBlurFilter();
+                躍動_Filiter.strength=0;
+                躍動_Filiter.center=[350,500];
+
                 let animation_time=0;
                 let animation_time2=0;
                 let ゲーム進行度=0;
 
+                function たまたま移動(){
+                    白玉_x=[60+50*Math.sin(time*Math.PI/20),120,170,210,340,390+50*Math.sin(time*Math.PI/15),460+20*Math.sin(time*Math.PI/20),510];
+                    白玉_y=[70,450,370+50*Math.sin(time*Math.PI/20),180,140,290+50*Math.sin(time*Math.PI/20),460+20*Math.cos(time*Math.PI/20),50];
+                    灰玉_x=[180+50*Math.sin(time*Math.PI/20),220+50*Math.cos(time*Math.PI/20),100,510+50*Math.sin(time*Math.PI/20),310+50*Math.sin(time*Math.PI/20),450,400+150*Math.cos(time*Math.PI/200),70];
+                    灰玉_y=[270,150+50*Math.sin(time*Math.PI/20),570+100*Math.sin(time*Math.PI/20),180+50*Math.cos(time*Math.PI/20),540+50*Math.sin(time*Math.PI/50),190,360+150*Math.sin(time*Math.PI/200),150];
+                    黒玉_x=[100,220+50*Math.cos(time*Math.PI/20),200+50*Math.sin(time*Math.PI/20),510-50*Math.cos(time*Math.PI/20),350,250,200+50*Math.sin(time*Math.PI/20),520];
+                    黒玉_y=[340,50+20*Math.sin(time*Math.PI/10+1.5),500+50*Math.sin(time*Math.PI/20),510-50*Math.sin(time*Math.PI/20),240+50*Math.sin(time*Math.PI/20),290,560,350];
+                    for(let i=0;i<8;i++){
+                        白玉[i].position.set(白玉_x[i],白玉_y[i]);
+                        灰玉[i].position.set(灰玉_x[i],灰玉_y[i]);
+                        黒玉[i].position.set(黒玉_x[i],黒玉_y[i]);
+                    }
+                }
+
+                let はじける四角_x=[-1,-4,1,-9, 5,10,-1,4, -12,1,-2,1 ,1,10,8,1];
+                let マウス位置_x=0;
+                let マウス位置_y=0;
+
+                function マウスクリック(event){//クリックされたときの状態を保存してちょ。
+                    クリック音.play();
+                    マウス位置_x=event.clientX;
+                    マウス位置_y=event.clientY;
+                    this.移動前座標_x=this.position.x;
+                    this.移動前座標_y=this.position.y;
+                    this.クリックされたんです=1;
+                }
+
+                document.body.onpointermove=function(event){//マウスを動かすと
+                    if(ゲーム進行度==14){
+                        for(let i=0;i<3;i++){
+                            if(中央四角_4[i].クリックされたんです==1){//ドラッグ中だぜ！
+                                中央四角_4[i].position.set(中央四角_4[i].移動前座標_x+(event.clientX-マウス位置_x)*2,中央四角_4[i].移動前座標_y+(event.clientY-マウス位置_y)*2);
+                                if(中央四角_4[i].position.x<-200){
+                                    中央四角_4[i].position.x=-200;
+                                }else if(中央四角_4[i].position.x>770){
+                                    中央四角_4[i].position.x=770;
+                                }
+                                if(中央四角_4[i].position.y<-250){
+                                    中央四角_4[i].position.y=-250;
+                                }else if(中央四角_4[i].position.y>750){
+                                    中央四角_4[i].position.y=750;
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                document.body.onpointerup=function(event){//クリック解除
+                    if(ゲーム進行度==14){
+                        for(let i=0;i<4;i++){
+                            中央四角_4[i].クリックされたんです=0;
+                        }
+                    }
+                }
+
+                document.body.onpointerleave=function(event){//なんかすごいところまで行ってませんか？
+                    if(ゲーム進行度==14){
+                        for(let i=0;i<4;i++){
+                            中央四角_4[i].クリックされたんです=0;
+                        }
+                    }
+                }
+
+
+                let クリアコンテナ = new PIXI.Container();
+                クリアコンテナ.position.set(0,0);
+                背景クリア= new PIXI.Graphics();
+                クリアコンテナ.addChild(背景クリア);
+                背景クリア.beginFill(0x000000,0.8);
+                背景クリア.drawRect(0,0,1000,1000);
+                背景クリア.endFill();
+                クリアコンテナ.alpha=0;
+                
+                ランク枠= new PIXI.Graphics();
+                クリアコンテナ.addChild(ランク枠);
+                ランク枠.beginFill(0xffffff);
+                ランク枠.drawRect(200,200,600,600);
+                ランク枠.endFill();
+
+                let タイム_でかい = new PIXI.Text( "" ,デカ文字);//あとで良い感じにいれまーす！
+                タイム_でかい.position.set(330,230);
+                クリアコンテナ.addChild(タイム_でかい);
+
+                let 結果 = new PIXI.Text( "" ,太文字);//あとで良い感じにいれまーす！
+                結果.position.set(330,350);
+                クリアコンテナ.addChild(結果);
+
+                let 表 = new PIXI.Text( "S: ~ 30s\nA: 30s ~ 60s\nB: 60s ~ 120s\nC: 120s ~" ,基本文字);
+                表.position.set(300,430);
+                クリアコンテナ.addChild(表);
+
+                let 判定="";
+                let tweet_text="";
+                
+                let ツイートボタン=new PIXI.Graphics();
+                クリアコンテナ.addChild(ツイートボタン);
+                ツイートボタン.beginFill(0x20a0ff);
+                ツイートボタン.drawRect(360,630,280,80);
+                ツイートボタン.endFill();
+
+                ツイートボタン.interactive=true;//タッチ操作許可
+                let ツイートテキスト = new PIXI.Text( "ツイート" ,太文字_白);
+                ツイートテキスト.position.set(400,640);
+                クリアコンテナ.addChild(ツイートテキスト);
+
+                let リロードボタン=new PIXI.Graphics();
+                クリアコンテナ.addChild(リロードボタン);
+                リロードボタン.beginFill(0x20a0ff);
+                リロードボタン.drawRect(700,700,80,80);
+                リロードボタン.endFill();
+                リロードボタン.on("pointerdown",()=>{
+                    window.location.reload();
+                });
+                リロードボタン.interactive=true;//タッチ操作許可
+                let リロードテキスト = new PIXI.Text( "↺" ,太文字_白);
+                リロードテキスト.position.set(720,720);
+                クリアコンテナ.addChild(リロードテキスト);
+
+                let タイム = new PIXI.Text( "" ,基本文字_白);//あとで良い感じにいれまーす！
+                タイム.position.set(30,0);
+                app.stage.addChild(タイム);
+
+                let 良い感じに使える便利な数字さん=0;
+                let 刹那=0;
+                let 秒=0;
+                let 分=0;
+                
+                
                 //宣言系をここにまとめるとめちゃエエね--------------------------------------------------------------------------------
                 app.ticker.add(loop);
-                let time=0;
                 
                 function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60  app.ticker.speed = 3;で変えられるらしいっすよ
-                    time+=delta;
-                    if(time>1000000){time=0;}
+                    if(ゲーム進行度>1 && ゲーム進行度<16){
+                        
+                        if(ゲーム進行度==15){
+                            良い感じに使える便利な数字さん+=delta/(animation_time+1)*10;
+                        }else{
+                            良い感じに使える便利な数字さん+=delta;
+                        }
+
+                        刹那=Math.floor(良い感じに使える便利な数字さん);
+                        if(刹那>59){
+                            秒+=1;
+                            良い感じに使える便利な数字さん-=60;
+                            if(秒==60){
+                                分+=1;
+                                秒=0;
+                            }
+                        }
+                        タイム.text= "⌛"+分+":"+ ("00"+秒).slice(-2)+":"+("00"+刹那).slice(-2);
+                    }
+
+                    time+=delta;//タイムって言ってるけどタイム計測には使わないぜ。
 
                     if(ゲーム進行度==0){
                         if(!スタート済み){//スタートボタンの位置調整
@@ -809,23 +1070,14 @@
                         }                       
                     }else if(ゲーム進行度==11){
                         animation_time+=1;
-                        ステージ4コンテナ.alpha=animation_time/2;
-                        if(animation_time==2){
+                        ステージ4コンテナ.alpha=animation_time/10;
+                        if(animation_time==10){
                             ゲーム進行度=12;
                             animation_time=0;
                         }
+                        たまたま移動();
                     }else if(ゲーム進行度==12){
-                        白玉_x=[60+50*Math.sin(time*Math.PI/20),120,170,210,340,390+50*Math.sin(time*Math.PI/15),460+20*Math.sin(time*Math.PI/20),510];
-                        白玉_y=[70,450,370+50*Math.sin(time*Math.PI/20),180,140,290+50*Math.sin(time*Math.PI/20),460+20*Math.cos(time*Math.PI/20),50];
-                        灰玉_x=[180+50*Math.sin(time*Math.PI/20),220+50*Math.cos(time*Math.PI/20),100,510+50*Math.sin(time*Math.PI/20),310+50*Math.sin(time*Math.PI/20),450,400+150*Math.cos(time*Math.PI/200),70];
-                        灰玉_y=[270,150+50*Math.sin(time*Math.PI/20),570+50*Math.sin(time*Math.PI/20),180+50*Math.cos(time*Math.PI/20),540+50*Math.sin(time*Math.PI/50),190,360+150*Math.sin(time*Math.PI/200),150];
-                        黒玉_x=[100,220+50*Math.cos(time*Math.PI/20),200+50*Math.sin(time*Math.PI/20),510-50*Math.cos(time*Math.PI/20),350,250,200+50*Math.sin(time*Math.PI/20),520];
-                        黒玉_y=[340,50+20*Math.sin(time*Math.PI/10+1.5),500+50*Math.sin(time*Math.PI/20),510-50*Math.sin(time*Math.PI/20),240+50*Math.sin(time*Math.PI/20),290,560,350];
-                        for(let i=0;i<8;i++){
-                            白玉[i].position.set(白玉_x[i],白玉_y[i]);
-                            灰玉[i].position.set(灰玉_x[i],灰玉_y[i]);
-                            黒玉[i].position.set(黒玉_x[i],黒玉_y[i]);
-                        }
+                        たまたま移動();
                         if(animation_time>0){
                             animation_time-=1;
                             mainコンテナ.position.set(150+animation_time*(animation_time%2-1),50);
@@ -840,6 +1092,205 @@
                             `;//こんな書き方が許されるんですか？←うるせえてめぇも赤く染めてやろうか？
                             RED_Filter = new PIXI.Filter(null, RED_fragment);
                             mainコンテナ.filters = [RED_Filter];//間違えてたら赤くしましゅ！
+                        }
+                    }else if(ゲーム進行度==13){
+                        たまたま移動();
+                        でゆ顔.position.set(300+50*Math.sin(time*Math.PI/50),300+50*Math.cos(time*Math.PI/50));
+                        animation_time+=1;
+                        for(let i=0;i<16;i++){
+                            中央四角_4[i].position.set(75+150*(i%4)+はじける四角_x[i]*animation_time/3,75+150*Math.floor(i/4)+animation_time*animation_time-animation_time*30);
+                            中央四角_4[i].rotation += はじける四角_x[i]*0.02;
+                        }
+                        if(animation_time<=10){
+                            躍動_Filiter.strength=1-Math.abs(animation_time/5-1);
+                            でゆ顔.scale.set(1-Math.abs(animation_time/5-1)*0.7,1-Math.abs(animation_time/5-1)*0.7);
+                        }
+                        if(animation_time==44){
+                            animation_time=0;
+                            ゲーム進行度=14;
+                            for(let i=3;i<16;i++){
+                                中央四角_4[i].destroy();
+                            }
+                            for(let i=0;i<3;i++){
+                                中央四角_4[i].クリックされたんです=0;
+                                中央四角_4[i].on("mousedown",マウスクリック);
+                                
+                            }
+                            for(let i=0;i<8;i++){
+                                白玉[i].当たってる_now=0;
+                                灰玉[i].当たってる_now=0;
+                                黒玉[i].当たってる_now=0;
+                            }
+                            タイトル文_2.text = "のパーツを破壊しろ！" ;
+                            確認テキスト.text="破壊";
+                            
+                           コイツ.destroy();
+                           新コイツ.alpha=1;
+
+                        }
+                    }else if(ゲーム進行度==14){
+                        たまたま移動();
+                        でゆ顔.position.set(300+50*Math.sin(time*Math.PI/50),300+50*Math.cos(time*Math.PI/50));
+                        for(let i=0;i<8;i++){
+                            if(白玉[i].当たってる_now<2){
+                                白玉[i].当たってる=白玉[i].当たってる_now;
+                                白玉[i].当たってる_now=0;
+                                for(let j=0;j<3;j++){
+                                    if(Math.sqrt( Math.pow( 白玉_x[i]-中央四角_4[j].position.x, 2 ) + Math.pow( 白玉_y[i]-中央四角_4[j].position.y, 2 ) ) <60){
+                                        白玉[i].当たってる_now=1;
+                                    }
+                                }
+                                if(白玉[i].当たってる!=白玉[i].当たってる_now){
+                                    白玉[i].clear();
+                                    
+                                    if(白玉[i].当たってる_now==1){
+                                        白玉[i].lineStyle(15, 0x600000,1);
+                                        白玉[i].beginFill(0xff0000);
+                                    }else{
+                                        白玉[i].lineStyle(15, 0x000000,1);
+                                        白玉[i].beginFill(0xffffff);
+                                    }
+                                    白玉[i].drawCircle(0,0,白玉[i].大きさ);   
+                                    白玉[i].endFill();
+                                }
+                            }else if(白玉[i].当たってる_now==2){//死亡
+                                白玉[i].大きさ-=1;
+                                if(白玉[i].大きさ<0){
+                                    白玉[i].clear();
+                                    白玉[i].当たってる_now=3;
+                                }else{
+                                    白玉[i].clear();
+                                    白玉[i].lineStyle(15, 0x600000,1);
+                                    白玉[i].beginFill(0xff0000);
+                                    白玉[i].drawCircle(0,0,白玉[i].大きさ);   
+                                    白玉[i].endFill();
+                                }
+                            }
+                            if(灰玉[i].当たってる_now<2){
+                                if(灰玉[i].当たってる!=灰玉[i].当たってる_now){
+                                    灰玉[i].clear();
+                                    if(灰玉[i].当たってる_now==1){
+                                        灰玉[i].lineStyle(15, 0x600000,1);
+                                        灰玉[i].beginFill(0xff5050);
+                                    }else{
+                                        灰玉[i].lineStyle(15, 0x000000,1);
+                                        灰玉[i].beginFill(0x9f9f9f);
+                                    }
+                                    灰玉[i].drawCircle(0,0,灰玉[i].大きさ);   
+                                    灰玉[i].endFill();
+                                }
+
+                                灰玉[i].当たってる=灰玉[i].当たってる_now;
+                                灰玉[i].当たってる_now=0;
+                                for(let j=0;j<3;j++){
+                                    if(Math.sqrt( Math.pow( 灰玉_x[i]-中央四角_4[j].position.x, 2 ) + Math.pow( 灰玉_y[i]-中央四角_4[j].position.y, 2 ) ) <60){
+                                        灰玉[i].当たってる_now=1;
+                                    }
+                                }
+                            }else if(灰玉[i].当たってる_now==2){//死亡
+                                灰玉[i].大きさ-=1;
+                                if(灰玉[i].大きさ<0){
+                                    灰玉[i].clear();
+                                    灰玉[i].当たってる_now=3;
+                                }else{
+                                    灰玉[i].clear();
+                                    灰玉[i].lineStyle(15, 0x600000,1);
+                                    灰玉[i].beginFill(0xff0000);
+                                    灰玉[i].drawCircle(0,0,灰玉[i].大きさ);   
+                                    灰玉[i].endFill();
+                                }
+                            }
+                            if(黒玉[i].当たってる_now<2){
+                                黒玉[i].当たってる=黒玉[i].当たってる_now;
+                                黒玉[i].当たってる_now=0;
+                                for(let j=0;j<3;j++){
+                                    if(Math.sqrt( Math.pow( 黒玉_x[i]-中央四角_4[j].position.x, 2 ) + Math.pow( 黒玉_y[i]-中央四角_4[j].position.y, 2 ) ) <80){
+                                        黒玉[i].当たってる_now=1;
+                                    }
+                                }
+                                if(黒玉[i].当たってる!=黒玉[i].当たってる_now){
+                                    黒玉[i].clear();
+                                    if(黒玉[i].当たってる_now==1){
+                                        黒玉[i].lineStyle(15, 0x600000,1);
+                                        黒玉[i].beginFill(0x8f0000);
+                                    }else{
+                                        黒玉[i].lineStyle(15, 0x000000,1);
+                                        黒玉[i].beginFill(0x000000);
+                                    }
+                                    黒玉[i].drawCircle(0,0,黒玉[i].大きさ);   
+                                    黒玉[i].endFill();
+                                }
+                            }else if(黒玉[i].当たってる_now==2){//死亡
+                                黒玉[i].大きさ-=1;
+                                if(黒玉[i].大きさ<0){
+                                    黒玉[i].clear();
+                                    黒玉[i].当たってる_now=3;
+                                }else{
+                                    黒玉[i].clear();
+                                    黒玉[i].lineStyle(15, 0x600000,1);
+                                    黒玉[i].beginFill(0xff0000);
+                                    黒玉[i].drawCircle(0,0,黒玉[i].大きさ);   
+                                    黒玉[i].endFill();
+                                }
+                            }
+                        }
+                        if(animation_time!=0){
+                            animation_time-=1;
+                            for(let i=0;i<3;i++){
+                                中央四角_4[i].rotation+=1;
+                            }
+                        }
+                    }else if(ゲーム進行度==15){
+                        if(animation_time!=100){
+                            animation_time+=1;
+
+                            RED_fragment = `
+                            varying vec2 vTextureCoord;
+                            uniform sampler2D uSampler;
+                            void main(void)
+                            {
+                                gl_FragColor = texture2D(uSampler, vTextureCoord)+vec4(`+animation_time/100+","+(-animation_time/30)+","+(-animation_time/30)+`, 0)*texture2D(uSampler, vTextureCoord).a;
+                            }
+                            `;//こんな書き方が許されるんですか？←うるせえてめぇも赤く染めてやろうか？
+                            RED_Filter = new PIXI.Filter(null, RED_fragment);
+                            でゆ顔.filters = [RED_Filter];//間違えてたら赤くしましゅ！
+                            でゆ顔.position.y-=20/animation_time;
+                        
+                            for(let i=0;i<3;i++){
+                                中央四角_4[i].rotation+=5/animation_time;
+                            }
+                        }else{
+                            app.stage.addChild(クリアコンテナ);
+                            ゲーム進行度=16;
+                            animation_time=0;
+                            タイム_でかい.text="⌛"+ 分+":"+ ("00"+秒).slice(-2);
+                            if(分==0){
+                                if(秒<31){
+                                    判定="S:逆にロボット";
+                                    結果.text=判定;
+                                }else{
+                                    判定="A:人間";
+                                    結果.text="      "+判定;
+                                }
+                            }else if(分==1){
+                                判定="B:ロボット";
+                                結果.text="    "+判定;
+                            }else{
+                                判定="C:逆に人間";
+                                結果.text="   "+判定;
+                            }
+                            
+                            tweet_text="https://twitter.com/intent/tweet?text=認証しました。私は…%0A"+判定+"⌛"+ 分+":"+ ("00"+秒).slice(-2)+"%0A%0A";//%0Aで改行
+                            //tweet_text=tweet_text+"⌛"+ 分+":"+ ("00"+秒).slice(-2)+"%0A%0A";
+                            tweet_text=tweet_text+"JUN汁ｗおもちゃばこ。/おもちゃ/でゆキャプチャ&hashtags=Deyu_Captcha&url=https://junjiruw.github.io/DEYUTI/omocha/deyucaptcha.html"
+                            ツイートボタン.on("pointerdown",()=>{
+                                window.open(tweet_text,"_blank","noreferrer");
+                            });
+                        }
+                    }else if(ゲーム進行度=16){
+                        if(animation_time!=20){
+                            animation_time+=1;
+                            クリアコンテナ.alpha=animation_time/20;
                         }
                     }
                     
