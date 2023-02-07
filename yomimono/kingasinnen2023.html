@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="2023年特別ページ">                                                                 <!--入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/読み物/謹賀新年2023</title>                                                         <!--入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/yomimono/kingasinnen2023">                                <!--入力すること！-->
+        <meta property="og:title" content="謹賀新年2023">                                                               <!--入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/yomimono/kingasinnen2023.html">                   <!--入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+            @font-face {
+                font-family: "衡山毛筆フォント";
+                src: url("../font/衡山毛筆フォント.ttf") format('truetype');
+            }
+
+            body{
+                font-family: "衡山毛筆フォント";
+                background: #3b0a0a;
+            }
+
+            div#mannaka{
+                text-align: center;
+                background: #fa5454;
+                border: 2px solid #ffffff;  
+            }
+            
+            header{
+                background: #f01e1e;
+            }
+            #canvas{
+                height: 70vh;
+                display: block;
+                margin: auto;
+            }
+        </style>
+        <script src="../js/public.js"></script>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-1MB5XLN4LW');
+        </script>
+
+        <!--pixiJSを読み込もう-->
+        <script src="../js/library/pixi.min.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
+        
+        <script>
+            onload = function(){
+                onload_functions();
+
+                const canvas =document.getElementById("canvas");
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                    canvas.style.width=90+"%";//スマホでみるとキャンバスでかいから縮めよう
+                    canvas.style.height=canvas.clientWidth+"px";
+                }
+
+                const app = new PIXI.Application({//PIXIアプリを作成
+                    view : canvas, //canvas指定
+                    //antialias : true,//アンチエイリアス。デフォルトOFF
+                    preserveDrawingBuffer: true,//保存可能に。
+                    backgroundColor: 0x000000,
+                    width:1000,
+                    height:1000,
+                });
+
+                const 基本文字=new PIXI.TextStyle({
+                    fontSize: 100,
+                    fill: 0xFFFFFF,
+                    fontWeight: 200,
+                    fontFamily: "衡山毛筆フォント",
+                });
+
+                const クジ文字=new PIXI.TextStyle({
+                    align:"center",
+                    fontSize: 150,
+                    fill: 0xFFFFFF,
+                    fontWeight: 200,
+                    fontFamily: "衡山毛筆フォント",
+                });
+
+                const 虹文字=new PIXI.TextStyle({
+                    align:"center",
+                    fontSize: 130,
+                    fill: 0xFFFFFF,
+                    stroke:"0x0000FF",
+                    strokeThickness:10,
+                    fontFamily: "衡山毛筆フォント",
+                });
+                
+                let 演出カウント=0;
+                let 演出カウント2=0;
+                let 動いてる演出=0;
+                let でえい中止じゃい=false;
+                let 最大運勢=0;
+
+                let mainコンテナ = new PIXI.Container();
+                app.stage.addChild(mainコンテナ);
+
+                背景=new PIXI.Graphics();
+                mainコンテナ.addChild(背景);
+
+                背景.beginFill(0x00005F5F)
+                        .drawRect(0, 0, 1000, 1000)
+                        .endFill();
+                let 背景演出=0;
+
+                let クジ_コンテナ=[];
+                let クジ=[];
+                let クジ_文字=[];
+                for(let i=0;i<10;i++){
+                    クジ_コンテナ[i] = new PIXI.Container();
+                    app.stage.addChild(クジ_コンテナ[i]);
+                    クジ_コンテナ[i].position.set(200*(i%5)+100,Math.floor(i/5)*410+210);
+
+                    クジ[i]=new PIXI.Graphics();
+                    クジ_コンテナ[i].addChild(クジ[i]);
+
+                    クジ_文字[i]=new PIXI.Text("",クジ文字);
+                }
+
+                const button図形=new PIXI.Graphics();
+                mainコンテナ.addChild(button図形);
+                button図形.pivot.x = -200;
+                button図形.pivot.y = -910;
+                button図形.beginFill(0xFF0000)
+                    .drawRect(-110, -70, 220, 140)
+                    .endFill();
+                button図形.beginFill(0xFFFFFF)
+                    .drawRect(-105, -65, 210, 130)
+                    .endFill();
+                button図形.beginFill(0xFF0000)
+                    .drawRect(-100, -60, 200, 120)
+                    .endFill();
+                const 引く = new PIXI.Text("引く",基本文字);
+                引く.position.set(-100,-40);
+                button図形.addChild( 引く );
+                let 結果_num=[0,0,0,0,0,0,0,0,0,0];
+                let 結果_文字=["","","","","","","","","",""];
+                function クジ引き(){
+                    背景.filters= [];
+                    背景演出=0;
+                    透過_Filter[10].uniforms.time=0;
+                    if(動いてる演出==0){
+                        最大運勢=0;
+                        for(let i=0;i<10;i++){
+                            クジ[i].clear();
+                            結果_num[i]=Math.floor(10*Math.random());
+                            結果_文字[i]=運勢変換(結果_num[i],1);
+                            if(最大運勢<結果_num[i]){
+                                最大運勢=結果_num[i];
+                            }
+                        }
+
+                        for(let i=0;i<10;i++){
+                            透過_Filter[i].uniforms.time=0;
+
+                            クジ色(クジ[i],運勢変換(結果_num[i],0),i);
+                            クジ_文字[i].destroy();
+
+                            if(運勢変換(結果_num[i],0)=="超極吉"){
+                                クジ_文字[i]=new PIXI.Text(結果_文字[i],虹文字);
+                            }else{
+                                クジ_文字[i]=new PIXI.Text(結果_文字[i],クジ文字);
+                            }
+                            
+                            クジ_文字[i].position.set(15-90,20-200);
+                            クジ[i].addChild(クジ_文字[i]);
+                        }
+                        演出カウント=0.01;
+                        演出カウント2=0;
+                    }else{
+                        でえい中止じゃい=true;
+                    }
+                }
+                button図形.on("pointerdown",クジ引き);
+                button図形.interactive=true;//タッチ操作許可
+
+                app.ticker.add(loop);
+                
+                async function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60  app.ticker.speed = 3;で変えられるらしいっすよ
+                    time+=delta;
+                    if(time>100){ 
+                        time=0;
+                    }
+                    虹_Filter.uniforms.time=time;
+                    極_Filter.uniforms.time=time;
+                    背景_Filter.uniforms.time=time;
+                    if(背景演出!=0){
+                        背景演出+=0.03;
+                        透過_Filter[10].uniforms.time=背景演出;
+                        
+                        if(背景演出>1){
+                            透過_Filter[10].uniforms.time=1;
+                            背景演出=0;
+                        }
+                    }
+                    if(でえい中止じゃい){
+                        //非同期関数が終わるのを待つ
+                        if(動いてる演出==0){
+                            でえい中止じゃい=false;
+                            クジ引き();
+                        }
+                    }else{
+                        if(演出カウント>0){
+                            演出カウント+=delta;
+                            if(演出カウント>10){
+                                if(運勢変換(最大運勢,0)=="超極吉" && 運勢変換(結果_num[演出カウント2],0)=="超極吉"){
+                                    if(背景演出==0){
+                                        背景演出=0.01;
+                                    }
+                                    背景.filters= [背景_Filter,透過_Filter[10]];
+                                }
+                                演出カウント=0.01;
+                                動いてる演出+=1;
+                                カード演出(クジ_コンテナ[演出カウント2],透過_Filter[演出カウント2],運勢変換(結果_num[演出カウント2],0));
+                                演出カウント2+=1;
+                                if(演出カウント2==10){
+                                    演出カウント=0;
+                                }
+                            }
+                        }
+                    }                    
+                }
+
+                async function カード演出(カード,透過,運勢){
+                    let 個別time=0;
+                    let 大きさ=2;
+                    カード.rotation=0;
+                    if(運勢=="大吉" || 運勢=="超大吉"){
+                        let ループ=setInterval(function(){//1秒に100回動くぞ！
+                            個別time+=0.1;
+                            透過.uniforms.time=個別time;
+                            大きさ=1.1-0.1*個別time;
+                            カード.scale.set(大きさ,大きさ);
+                            if(個別time>=1 || でえい中止じゃい){
+                                カード.scale.set(1,1);
+                                動いてる演出-=1;
+                                clearInterval(ループ);
+                            }
+                        }, 50);//n/1000[s]でくりかえすぞ！
+                    }else if(運勢=="極吉"){
+                        let ループ=setInterval(function(){//1秒に100回動くぞ！
+                            個別time+=0.05;
+                            透過.uniforms.time=個別time;
+                            大きさ=5-3*(個別time+1)*(個別time+1)+8*個別time;
+                            カード.scale.set(大きさ,大きさ);
+                            if(個別time>=1 || でえい中止じゃい){
+                                カード.scale.set(1,1);
+                                動いてる演出-=1;
+                                clearInterval(ループ);
+                            }
+                        }, 50);
+                    }else if(運勢=="超極吉"){
+                        let ループ=setInterval(function(){//1秒に100回動くぞ！
+                            個別time+=0.05;
+                            透過.uniforms.time=個別time;
+                            大きさ=6-5*(個別time);
+                            カード.scale.set(大きさ,大きさ);
+                            カード.rotation=Math.PI*(個別time)*2;
+                            if(個別time>=1 || でえい中止じゃい){
+                                カード.rotation=0;
+                                カード.scale.set(1,1);
+                                動いてる演出-=1;
+                                clearInterval(ループ);
+                            }
+                        }, 50);
+                    }
+
+                }
+            }
+            function 運勢変換(un,縦){
+                if(縦==1){
+                    if(un==9){
+                        return "超\n極\n吉";
+                    }else if(un>=7){
+                        return "極\n吉";
+                    }else if(un>=5){
+                        return "超\n大\n吉";
+                    }else{
+                        return "大\n吉";
+                    }
+                }else{
+                    if(un==9){
+                        return "超極吉";
+                    }else if(un>=7){
+                        return "極吉";
+                    }else if(un>=5){
+                        return "超大吉";
+                    }else{
+                        return "大吉";
+                    }
+                }
+            }
+
+            let time=0;
+
+            let 透過_fragment = `
+            varying vec2 vTextureCoord;
+            uniform sampler2D uSampler;
+            uniform float time;
+            
+            void main(void)
+            {
+                vec4 color=texture2D(uSampler, vTextureCoord);
+                color=color*time;
+                gl_FragColor = color;
+            }
+            `;
+            let 透過_Filter=[];
+            for(let i=0;i<11;i++){
+                透過_Filter[i] = new PIXI.Filter(null, 透過_fragment);
+            }
+
+            let 虹_fragment = `
+            varying vec2 vTextureCoord;
+            uniform sampler2D uSampler;
+            uniform float time;
+            
+            void main(void)
+            {
+                vec4 rgb;
+                vec4 nomal_color=texture2D(uSampler, vTextureCoord);
+               
+                float h=((vTextureCoord.x+vTextureCoord.y)/1.5-time/100.0)*6.0*2.0;
+                if(h>6.0){h=h-6.0;}
+                if(h<0.0){h=h+6.0;}
+                if(h<0.0){h=h+6.0;}
+                int i=int(h);
+                float hi= float(mod(h-float(i),6.0));
+                float v1 = 1.0 * (hi);
+                float v2 = 1.0 * (1.0-hi);
+                if(i==0 || i==6){
+                    rgb = vec4(1.0,v1,0.0,1.0);
+                }else if(i==1){
+                    rgb = vec4(v2,1.0,0.0,1.0);
+                }else if(i==2){
+                    rgb = vec4(0.0,1.0,v1,1.0);
+                }else if(i==3){
+                    rgb = vec4(0.0,v2,1.0,1.0);
+                }else if(i==4){
+                    rgb = vec4(v1,0.0,1.0,1.0);
+                }else if(i==5){
+                    rgb = vec4(1.0,0.0,v2,1.0);
+                }
+
+                float num=abs((vTextureCoord.x+vTextureCoord.y)*10.0+2.0-time/1.0)/1.5;
+                if(num>1.0){
+                    num=1.0;
+                }
+                if(nomal_color.r==0.0 && nomal_color.b!=0.0){
+                    gl_FragColor = rgb+(1.0-num)+abs((vTextureCoord.x+vTextureCoord.y)*0.4-0.2);;
+                }else{
+                    gl_FragColor = nomal_color+(1.0-num)+abs((vTextureCoord.x+vTextureCoord.y)*0.4-0.2);;
+                }
+                
+            }
+            `;
+            let 虹_Filter = new PIXI.Filter(null, 虹_fragment);
+
+            let 背景_fragment = `
+            varying vec2 vTextureCoord;
+            uniform sampler2D uSampler;
+            uniform float time;
+            const float PI  = 3.141592653589793;
+            void main(void)
+            {
+                vec4 rgb;
+                vec4 nomal_color=texture2D(uSampler, vTextureCoord);
+               
+                float arg=0.0;
+
+                if(vTextureCoord.x!=0.0){
+                    arg=atan(vTextureCoord.y-0.5,vTextureCoord.x-0.5)/PI+1.0;
+                }
+
+                float h=(arg/2.0-time/100.0)*6.0*2.0;
+
+                
+
+                if(h>6.0){h=h-6.0;}
+                if(h<0.0){h=h+6.0;}
+                if(h<0.0){h=h+6.0;}
+                int i=int(h);
+                float hi= float(mod(h-float(i),6.0));
+                float v1 = 1.0 * (hi);
+                float v2 = 1.0 * (1.0-hi);
+                if(i==0 || i==6){
+                    rgb = vec4(1.0,v1,0.0,1.0);
+                }else if(i==1){
+                    rgb = vec4(v2,1.0,0.0,1.0);
+                }else if(i==2){
+                    rgb = vec4(0.0,1.0,v1,1.0);
+                }else if(i==3){
+                    rgb = vec4(0.0,v2,1.0,1.0);
+                }else if(i==4){
+                    rgb = vec4(v1,0.0,1.0,1.0);
+                }else if(i==5){
+                    rgb = vec4(1.0,0.0,v2,1.0);
+                }
+
+                if(nomal_color.r==0.0 && nomal_color.b!=0.0){
+                    gl_FragColor = rgb;
+                }
+                
+            }
+            `;
+            let 背景_Filter = new PIXI.Filter(null, 背景_fragment);
+
+            let 極_fragment = `
+            varying vec2 vTextureCoord;
+            uniform sampler2D uSampler;
+            uniform float time;
+            
+            void main(void)
+            {
+                vec4 color=texture2D(uSampler, vTextureCoord);
+                float num=abs((vTextureCoord.x+vTextureCoord.y)*10.0+2.0-time/1.0)/1.5;
+                if(num>1.0){
+                    num=1.0;
+                }
+                color=color-num+1.0;
+                
+                color=color+abs((vTextureCoord.x+vTextureCoord.y)*0.4-0.2);
+                gl_FragColor =color;
+            }
+            `;
+            let 極_Filter = new PIXI.Filter(null, 極_fragment);
+
+            let 超_fragment = `
+            varying vec2 vTextureCoord;
+            uniform sampler2D uSampler;
+            
+            void main(void)
+            {
+                vec4 color=texture2D(uSampler, vTextureCoord);
+                float num=(pow(vTextureCoord.x-0.375,2.0)+pow(vTextureCoord.y-0.375,2.0)-0.05)*1.3;
+                color=color+num;
+                gl_FragColor =color;
+            }
+            `;
+            let 超_Filter = new PIXI.Filter(null, 超_fragment);
+
+            let 普通_fragment = `
+            varying vec2 vTextureCoord;
+            uniform sampler2D uSampler;
+            void main(void)
+            {
+                gl_FragColor = texture2D(uSampler, vTextureCoord);
+            }
+            `;
+            let 普通_Filter = new PIXI.Filter(null, 普通_fragment);
+
+            function クジ色(グラ,運勢,i){
+                
+                if(運勢=="大吉"){
+                    グラ.beginFill(0xFF0000)
+                        .drawRect(-90, -200, 180, 400)
+                        .endFill();
+                    グラ.filters = [普通_Filter,透過_Filter[i]];
+                }else if(運勢=="超大吉"){
+                    グラ.beginFill(0xCFCF00)
+                        .drawRect(-90, -200, 180, 400)
+                        .endFill();
+                    グラ.filters = [超_Filter,透過_Filter[i]];
+                }else if(運勢=="極吉"){
+                    グラ.beginFill(0x000000)
+                        .drawRect(-90, -200, 180, 400)
+                        .endFill();
+                    グラ.filters = [極_Filter,透過_Filter[i]];
+                }else if(運勢=="超極吉"){
+                    グラ.beginFill(0xFFFFFF)
+                        .drawRect(-90, -200, 180, 400)
+                        .endFill();
+                    グラ.filters = [虹_Filter,透過_Filter[i]];
+                }
+
+                if(運勢=="超極吉"){
+
+                    グラ.moveTo(-80, -190)
+                        .lineStyle(4, 0x0000FF)
+                        .lineTo(-80, 190)
+                        .lineTo(80, 190)
+                        .lineTo(80, -190)
+                        .lineTo(-80, -190)
+                        .lineTo(-80, 190);
+                }else{
+
+                    グラ.moveTo(-80, -190)
+                        .lineStyle(4, 0xFFFFFF)
+                        .lineTo(-80, 190)
+                        .lineTo(80, 190)
+                        .lineTo(80, -190)
+                        .lineTo(-80, -190)
+                        .lineTo(-80, 190);
+                }
+
+            }
+            let 数値_年=2023;
+            function 年数(){
+                数値_年=Math.floor(10000*Math.random())
+                let 年 =数値_年.toString().padStart( 4, '0');
+
+                document.getElementById("年").innerText = 年+"年";
+                if(数値_年>2023){
+                    document.getElementById("mannaka").style.backgroundColor = "rgb("+(250-250*(数値_年-2023)/7976)+","+(84+171*(数値_年-2023)/7976)+",84)";
+                }else{
+                    document.getElementById("mannaka").style.backgroundColor = "rgb("+(250+150*(数値_年-2023)/2023)+","+(84+84*(数値_年-2023)/2023)+","+(84+84*(数値_年-2023)/2023)+")";
+                }
+            }
+
+            function 保存(){
+                let cnvs = document.getElementById('canvas');//IDを指定して変数にぶち込む
+                let DL_URL = document.createElement('a');
+                DL_URL.href=cnvs.toDataURL("image/png");
+                DL_URL.download = '運勢.png';//ファイル名決めてる
+                DL_URL.click();//強制クリック
+            }
+        </script>
+
+
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+            <p>
+                <span style="font-size: 20vw;">
+                    謹賀<br>新年
+                </span>
+                <img src="../images/yomimono/kingasinnen2023/kingasaikadon.png" style="width: 50%;display: block;margin: auto;">
+            </p>
+            <p>
+                <span id="年" style="font-size: 20vw;">2023年</span>
+                <button onclick="年数()">
+                    違うよ
+                </button>
+            </p>
+            <p style="padding-top: 5vw;">
+                <span style="font-size: 7vw;">
+                    ★おみくじ★
+                </span>
+                <canvas id="canvas"></canvas>
+                <button onclick="保存()">
+                    保存
+                </button>
+            </p>
+            <footer>
+                <ul id="footul">
+                    <li id="foot_tweet_li">
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
