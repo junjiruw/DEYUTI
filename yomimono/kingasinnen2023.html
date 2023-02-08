@@ -41,6 +41,16 @@
                 display: block;
                 margin: auto;
             }
+            #tweet_a{
+                position: fixed;      
+                display: none;    
+                font-size: 2vw;       
+                text-align: center;     
+                cursor: pointer;/*カーソルを☝に*/
+                padding: 0.3vw; 
+                background: #ffffff00;
+                color: #ffffff;     
+            }
         </style>
         <script src="../js/public.js"></script>
 
@@ -59,6 +69,9 @@
         <!--ライセンス表記はコイツの中に書いてあるぜ！-->
         
         <script>
+            let 一回はくじ引きしました=false;
+            let 最大運勢=0;
+            let 合計運勢パワー=0;
             onload = function(){
                 onload_functions();
 
@@ -76,7 +89,7 @@
                     width:1000,
                     height:1000,
                 });
-
+                const ツイートボタン =document.getElementById("tweet_a");
                 const 基本文字=new PIXI.TextStyle({
                     fontSize: 100,
                     fill: 0xFFFFFF,
@@ -105,7 +118,7 @@
                 let 演出カウント2=0;
                 let 動いてる演出=0;
                 let でえい中止じゃい=false;
-                let 最大運勢=0;
+
 
                 let mainコンテナ = new PIXI.Container();
                 app.stage.addChild(mainコンテナ);
@@ -117,6 +130,8 @@
                         .drawRect(0, 0, 1000, 1000)
                         .endFill();
                 let 背景演出=0;
+
+
 
                 let クジ_コンテナ=[];
                 let クジ=[];
@@ -148,14 +163,37 @@
                 const 引く = new PIXI.Text("引く",基本文字);
                 引く.position.set(-100,-40);
                 button図形.addChild( 引く );
+
+                const ツイート図=new PIXI.Graphics();
+                ツイート図.pivot.x = -800;
+                ツイート図.pivot.y = -910;
+                ツイート図.beginFill(0x5F8FFF)
+                    .drawRect(-110, -70, 220, 140)
+                    .endFill();
+                    ツイート図.beginFill(0xFFFFFF)
+                    .drawRect(-105, -65, 210, 130)
+                    .endFill();
+                    ツイート図.beginFill(0x5F8FFF)
+                    .drawRect(-100, -60, 200, 120)
+                    .endFill();
+                const 呟く = new PIXI.Text("呟く",基本文字);
+                呟く.position.set(-100,-40);
+                ツイート図.addChild( 呟く );
+
                 let 結果_num=[0,0,0,0,0,0,0,0,0,0];
                 let 結果_文字=["","","","","","","","","",""];
+
+
+
                 function クジ引き(){
+
+
                     背景.filters= [];
                     背景演出=0;
                     透過_Filter[10].uniforms.time=0;
                     if(動いてる演出==0){
                         最大運勢=0;
+                        合計運勢パワー=0;
                         for(let i=0;i<10;i++){
                             クジ[i].clear();
                             結果_num[i]=Math.floor(10*Math.random());
@@ -163,8 +201,18 @@
                             if(最大運勢<結果_num[i]){
                                 最大運勢=結果_num[i];
                             }
+                            合計運勢パワー+=結果_num[i]+1;//1~10
                         }
-
+                        let tweet_text="https://twitter.com/intent/tweet?text="+document.getElementById("年").innerText+"の運勢は"+"%0A%0A";//%0Aで改行
+                        tweet_text=tweet_text+運勢変換(最大運勢,2)+"%0A合計運勢パワー:"+合計運勢パワー+"%0A%0A";
+                        tweet_text=tweet_text+"JUN汁ｗおもちゃばこ。/読み物/謹賀新年2023&hashtags=HAPPY2023w&url=https://junjiruw.github.io/DEYUTI/yomimono/kingasinnen2023.html"
+                        ツイートボタン.href=tweet_text;
+                        if(!一回はくじ引きしました){
+                            一回はくじ引きしました=true;
+                            mainコンテナ.addChild(ツイート図);
+                            ツイートボタン.style.display="inline";  
+                        }
+                        
                         for(let i=0;i<10;i++){
                             透過_Filter[i].uniforms.time=0;
 
@@ -188,6 +236,7 @@
                 }
                 button図形.on("pointerdown",クジ引き);
                 button図形.interactive=true;//タッチ操作許可
+
 
                 app.ticker.add(loop);
                 
@@ -233,7 +282,12 @@
                                 }
                             }
                         }
-                    }                    
+                    }               
+                    ツイートボタン.style.left= (canvas.getBoundingClientRect().left+690*canvas.clientWidth/canvas.width) +"px";
+                    ツイートボタン.style.top= (canvas.getBoundingClientRect().top+840*canvas.clientHeight/canvas.height) +"px";
+                    ツイートボタン.style.width= (210*canvas.clientWidth/canvas.width) +"px";
+                    ツイートボタン.style.height= (130*canvas.clientHeight/canvas.height) +"px";
+                    ツイートボタン.style.fontSize= 50*canvas.clientHeight/canvas.height +"px";   
                 }
 
                 async function カード演出(カード,透過,運勢){
@@ -292,6 +346,16 @@
                         return "超\n大\n吉";
                     }else{
                         return "大\n吉";
+                    }
+                }else if(縦==2){
+                    if(un==9){
+                        return "SSR:超極吉";
+                    }else if(un>=7){
+                        return "SR:極吉";
+                    }else if(un>=5){
+                        return "R:超大吉";
+                    }else{
+                        return "N:大吉…逆にすごい";
                     }
                 }else{
                     if(un==9){
@@ -387,6 +451,8 @@
                     arg=atan(vTextureCoord.y-0.5,vTextureCoord.x-0.5)/PI+1.0;
                 }
 
+                arg=arg+0.5*sqrt(pow(vTextureCoord.x-0.5,2.0)+pow(vTextureCoord.y-0.5,2.0));
+                arg=mod(arg,2.0);
                 float h=(arg/2.0-time/100.0)*6.0*2.0;
 
                 
@@ -520,6 +586,14 @@
                 }else{
                     document.getElementById("mannaka").style.backgroundColor = "rgb("+(250+150*(数値_年-2023)/2023)+","+(84+84*(数値_年-2023)/2023)+","+(84+84*(数値_年-2023)/2023)+")";
                 }
+
+
+                if(一回はくじ引きしました){
+                    let tweet_text="https://twitter.com/intent/tweet?text="+年+"年"+"の運勢は"+"%0A%0A";//%0Aで改行
+                    tweet_text=tweet_text+運勢変換(最大運勢,2)+"%0A合計運勢パワー:"+合計運勢パワー+"%0A%0A";
+                    tweet_text=tweet_text+"JUN汁ｗおもちゃばこ。/読み物/謹賀新年2023&hashtags=HAPPY2023w&url=https://junjiruw.github.io/DEYUTI/yomimono/kingasinnen2023.html"
+                    document.getElementById("tweet_a").href=tweet_text;
+                }
             }
 
             function 保存(){
@@ -565,10 +639,20 @@
                     ★おみくじ★
                 </span>
                 <canvas id="canvas"></canvas>
+                <a id="tweet_a"  target="_blank" rel="noopener noreferrer"></a><!--クリア時に出現-->
                 <button onclick="保存()">
                     保存
                 </button>
             </p>
+            <p style="font-size: 20vw;">
+                今年は…
+                <img src="../images/yomimono/kingasinnen2023/ebiman_0.png" style="width: 50%;display: block;margin: auto;">
+                エビ年！
+                <img src="../images/yomimono/kingasinnen2023/ebiman_1.png" style="width: 50%;display: block;margin: auto;">
+                <br>
+                <img src="../images/yomimono/kingasinnen2023/oseti.png" style="width: 50%;display: block;margin: auto;">
+            </p>
+            今年もよろしくね。
             <footer>
                 <ul id="footul">
                     <li id="foot_tweet_li">
