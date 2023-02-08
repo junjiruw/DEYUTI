@@ -195,7 +195,11 @@
                         var new_a = document.createElement('a');
                         
                         new_a.href="https://junjiruw.github.io/DEYUTI/" + res_json.files[i].filename;
-                        new_a.textContent= await URL_name_get(new_a.href);
+                        let ページ名=await URL_name_get(new_a.href);
+                        if(ページ名[0]=="%"){
+                            ページ名=decodeURI(ページ名);
+                        }
+                        new_a.textContent= ページ名;
 
                         new_a.className="new_a";
                         new_li.appendChild(new_a);
@@ -366,23 +370,29 @@
         </header>
         
         <div id="mannaka">
-            <h2 title="説明：今日でも元気であるということ">
-                <ruby>今日<rt>きょう</rt></ruby>も<ruby>元気<rt>げんき</rt></ruby>だでいんでい<ruby><img src="images/site/favicon32.png" style="height: 1.5em;"><rt>コイツ</rt></ruby>
-            </h2>
-            <p>
-                <span id="span1">
-                    <ruby>JUN汁ｗ<rt>じゅんじる</rt></ruby>おもちゃばこ。へようこそ。各ページには左上にある
-                    <span id="icon_imitate">☛</span>
-                    からアクセスできるよ。
-                </span>
-            </p>
-
-            <div id="update_div">
-                <p id="update_time" class="new_class"></p>
-                <p id="update_comment"></p>
-                <ul id="update_ul" ></ul>
-                
+            <div style="display: flex;">
+                <div>
+                    <h2 title="説明：説明です">
+                        <ruby>JUN汁ｗ<rt>じゅんじる</rt></ruby>おもちゃばこ。へようこそ。
+                    </h2>
+                    <p>
+                        <span id="span1">
+                            各ページには左上にある
+                            <span id="icon_imitate">☛</span>
+                            からアクセスできるよ。
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <img src="images/site/junjiruw_pro.png" style="height: 8em;">
+                    
+                </div>
             </div>
+        <div id="update_div">
+            <p id="update_time" class="new_class"></p>
+            <p id="update_comment"></p>
+            <ul id="update_ul" ></ul>
+        </div>
             <p>過去の更新履歴が見たい人はGitHubのcommit履歴から見れます。<a href="https://github.com/junjiruw/DEYUTI/commits/master">ココ</a></p>
             
             <dl id="links">
