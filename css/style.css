@@ -114,7 +114,8 @@ a:hover {/*マウスが上に乗っている状態*/
     text-decoration:underline;
 }
 input,button{
-    -webkit-appearance: none;/*ブラウザが変なデザインをデフォルト設定してくるので消す*/
+    -webkit-appearance: none;/*ブラウザが変なデザインをデフォルト設定してくるので消す…消えないぜ！*/
+    font-size: inherit;/*文字サイズを継承してね*/
 }
 /*－－－－－－－－－－－－－ー－－－－－－－－－－－－－－*/
 /*－－－－－－－－－－フッター－－－－－－－－－－－－－－*/
