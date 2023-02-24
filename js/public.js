@@ -82,7 +82,10 @@ function html_link_show(){//え？この程度ならhtmlに最初から書けっ
 
 }
 function btn_looks_better(){//jsでボタンの見た目を改善しましょう。　いや、ヘッダーは全部改善する。メインはボタン。
-    header_height=document.getElementById("header").clientHeight;//ヘッダーの大きさがfont-sizeから決まっているのでここで取得。
+    
+    document.getElementById("go_home").style.height='0px';//いったん画像の高さを0にすることでヘッダーの大きさをフォントサイズに合わせる
+
+    header_height=document.getElementById("header").clientHeight;//ヘッダーの大きさを取得し、これを基準に他の大きさを決定。
     document.getElementById("html_link_btn").style.height=header_height+ 'px';//数字じゃなくて文字を入れる。cssをいじってるので。
     document.getElementById("html_link_btn").style.width=header_height+ 'px';
     document.getElementById('html_link_btn').style.fontSize=header_height*0.5+ 'px';
@@ -91,7 +94,7 @@ function btn_looks_better(){//jsでボタンの見た目を改善しましょう
 
 
     document.getElementById("title_h1").style.paddingLeft=header_height+10+ 'px';//ボタン置くスペース確保
-    document.getElementById("go_home").style.height=header_height+ 'px';
+    document.getElementById("go_home").style.height=header_height+ 'px';//画像の高さを再設定
     
     if(window.getComputedStyle(document.getElementById('header')).position=="fixed"){  //fixed…つまりheaderについてきて欲しいとき CSSが別ファイルだとwindow.getしないとstyleとれないらしい
         document.getElementById("top").style.height=header_height*1.6+ 'px';//header置くところを縦にスペース確保
