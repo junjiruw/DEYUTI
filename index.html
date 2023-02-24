@@ -186,9 +186,9 @@
                 var update_ul = document.getElementById('update_ul');
 
                 for(let i=0;i<res_json.files.length;i++){
-                    if(res_json.files[i].filename.slice(-18)=="html_template.html" || res_json.files[i].filename.slice(-15)=="omocha_top.html"){
+                    if(res_json.files[i].filename.slice(-18)=="html_template.html" || res_json.files[i].filename.slice(-15)=="omocha_top.html" || res_json.files[i].filename.slice(-17)=="yomimono_top.html"){
                         //テンプレページ表示してもしょうがないので
-                        //おもちゃとっぷもいらんやろ
+                        //各種とっぷもいらんやろ
                     }else{
                         var new_li = document.createElement("li");
                         
