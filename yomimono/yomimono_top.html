@@ -17,7 +17,7 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
-            dl div{
+            dl>div{
                 background: #FFFFFF00;
                 padding: 1em;
                 margin: 1em;
@@ -33,6 +33,14 @@
             }
             dd{
                 margin-top: 1em;
+            }
+            span.作成日{
+                float: right;/*日付を右端に寄せる。ただし改行はスペースがないときだけ行う…という要望*/
+            }
+            dd:after{/*日付が浮いてるせいでdivが囲んでくれない。そこでddくんのケツに無を差し込むことで囲ませる*/
+                content: "";
+                clear: both;/*float殺すマン*/
+                display: block;
             }
         </style>
         <script src="../js/public.js"></script>
@@ -78,6 +86,7 @@
                     </dt>
                     <dd>
                         あけおめ。
+                        <span class="作成日">2023/02</span>
                     </dd>
                 </div>
                 <div>
@@ -86,6 +95,7 @@
                     </dt>
                     <dd>
                         マウスカーソルについて考えたこと
+                        <span class="作成日">2022/03</span>
                     </dd>
                 </div>
 

@@ -33,7 +33,7 @@
                 border-radius: 20%;
                 image-rendering: pixelated;
             }
-            dl div{
+            dl>div{
                 background: #FFFFFF00;
                 padding: 1em;
                 margin: 1em;
@@ -57,6 +57,14 @@
             }
             dd{
                 margin-top: 1em;
+            }
+            span.作成日{
+                float: right;/*日付を右端に寄せる。ただし改行はスペースがないときだけ行う…という要望*/
+            }
+            dd:after{/*日付が浮いてるせいでdivが囲んでくれない。そこでddくんのケツに無を差し込むことで囲ませる*/
+                content: "";
+                clear: both;/*float殺すマン*/
+                display: block;
             }
         </style>
 
@@ -109,9 +117,11 @@
                     <dt>
                         <a href="deyucaptcha.html">でゆキャプチャ</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
+
                     </dt>
                     <dd>
                         君は人間かな？
+                        <span class="作成日">2022/12</span>
                     </dd>
                 </div>
                 <div>
@@ -121,15 +131,18 @@
                     </dt>
                     <dd>
                         カードを集めてデッキを作ってステージを攻略しよう！世界に現れた大量のしゅうくん…この異変の謎は一体！？(オートセーブ：ブラウザに保存されます。)
+                        <span class="作成日">2022/08</span>
                     </dd>
                 </div>
                 <div>
                     <dt>
                         <a href="tuntunsyuukun.html">つんつんしゅうくん</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
+
                     </dt>
                     <dd>
                         うんちをつんつんしよう。すばやく。
+                        <span class="作成日">2022/04</span>
                     </dd>
                 </div>
                 <div>
@@ -139,6 +152,7 @@
                     </dt>
                     <dd>
                         話は聞かないし、戦闘はシカトするRPG。<a href="slide_glitch_kouryaku.html">攻略</a>
+                        <span class="作成日">2022/02</span>
                     </dd>
                 </div>
                 <div>
@@ -150,6 +164,7 @@
                     </dt>
                     <dd>
                         Wordleというゲームのパクリです。
+                        <span class="作成日">2022/01</span>
                     </dd>
                 </div>
                 <div>
@@ -159,6 +174,7 @@
                     </dt>
                     <dd>
                         一日一つのポケモンをテーマに創作を行う企画です。パッチール回は上記ページ。
+                        <span class="作成日">2021/08</span>
                     </dd>
                 </div>
 
