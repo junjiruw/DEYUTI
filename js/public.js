@@ -2,8 +2,8 @@ var header_height;//h1のfont-sizeに合わせてヘッダーの大きさが決�
 
 function onload_functions(){
     is_this_sumaho();//スマホの文字でかくする
-    html_link_show();//☝でページリンクが出る
     btn_looks_better();//☝の改善
+    html_link_show();//☝でページリンクが出る
     //ツイートリンク取得
     var URL_tweet_text="https://twitter.com/intent/tweet?text="+document.title+"%0A"+document.URL;;//%0Aで改行
     document.getElementById("foot_tweet_a").href=URL_tweet_text;
@@ -85,15 +85,15 @@ function btn_looks_better(){//jsでボタンの見た目を改善しましょう
     
     document.getElementById("go_home").style.height='0px';//いったん画像の高さを0にすることでヘッダーの大きさをフォントサイズに合わせる
 
-    header_height=document.getElementById("header").clientHeight;//ヘッダーの大きさを取得し、これを基準に他の大きさを決定。
+    header_height=document.getElementById("header").clientHeight+0.5;//ヘッダーの大きさを取得し、これを基準に他の大きさを決定。
     document.getElementById("html_link_btn").style.height=header_height+ 'px';//数字じゃなくて文字を入れる。cssをいじってるので。
     document.getElementById("html_link_btn").style.width=header_height+ 'px';
     document.getElementById('html_link_btn').style.fontSize=header_height*0.5+ 'px';
     document.getElementById('html_link_btn').innerText='☛';
-    document.getElementById("html_link_nav").style.marginTop=header_height+ 'px';
+    document.getElementById("html_link_nav").style.marginTop=header_height-0.5+ 'px';
 
 
-    document.getElementById("title_h1").style.paddingLeft=header_height+10+ 'px';//ボタン置くスペース確保
+    document.getElementById("title_h1").style.paddingLeft=header_height+8+ 'px';//ボタン置くスペース確保
     document.getElementById("go_home").style.height=header_height+ 'px';//画像の高さを再設定
     
     if(window.getComputedStyle(document.getElementById('header')).position=="fixed"){  //fixed…つまりheaderについてきて欲しいとき CSSが別ファイルだとwindow.getしないとstyleとれないらしい
