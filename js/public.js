@@ -13,7 +13,7 @@ function onload_functions(){
 function is_this_sumaho() {
     if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
         document.getElementById('mannaka').style.fontSize="3.5vw";
-        document.getElementById('header').style.fontSize="3vw";
+        document.getElementById('header').style.fontSize="2.9vw";//ここの大きさ、ソイヤで決まってない？
         document.getElementById('html_link_nav').style.fontSize="5vw";
     }
 }
