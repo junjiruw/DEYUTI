@@ -184,12 +184,37 @@
                 res = await fetch(res_json[0].url)
                 res_json = await res.json();
                 var update_ul = document.getElementById('update_ul');
+                var なにか表示したかどうか=false;
 
                 for(let i=0;i<res_json.files.length;i++){
                     if(res_json.files[i].filename.slice(-18)=="html_template.html" || res_json.files[i].filename.slice(-15)=="omocha_top.html" || res_json.files[i].filename.slice(-17)=="yomimono_top.html"){
                         //テンプレページ表示してもしょうがないので
                         //各種とっぷもいらんやろ
+                        //画像とかはどうなんすかね？まあいいか
                     }else{
+                        var new_li = document.createElement("li");
+                        
+                        var new_a = document.createElement('a');
+                        
+                        new_a.href="https://junjiruw.github.io/DEYUTI/" + res_json.files[i].filename;
+                        let ページ名=await URL_name_get(new_a.href);
+                        if(ページ名[0]=="%"){
+                            ページ名=decodeURI(ページ名);
+                        }
+                        new_a.textContent= ページ名;
+
+                        new_a.className="new_a";
+                        new_li.appendChild(new_a);
+
+                        update_ul.append(new_li);
+
+                        なにか表示したかどうか=true;//ああ、なんかは表示したのね
+                    }
+                }
+                if(!なにか表示したかどうか){
+                    //なにも表示されてないじゃん！非表示にしてたページを表示するね…
+                    for(let i=0;i<res_json.files.length;i++){
+
                         var new_li = document.createElement("li");
                         
                         var new_a = document.createElement('a');
@@ -419,10 +444,14 @@
                 <div>
                     <dt>
                         <a href="https://www.nicovideo.jp/user/18051408">
-                            <img src="images/site/nikoniko.png" alt="booth" width="240" class="a_img">
+                            <img src="images/site/nikoniko.png" alt="niconico" width="240" class="a_img">
+                        </a>
+
+                        <a href="https://sketchfab.com/junjiruw">
+                            <img src="images/site/sketchfab.png" alt="sketchfab" width="240" class="a_img">
                         </a>
                     </dt>
-                    <dd>動画はニコニコ。</dd>
+                    <dd>動画はニコニコ。Sketchfabは3Dモデルが置いてあるよ。</dd>
                 </div>
                 <div>
                     <dt>
