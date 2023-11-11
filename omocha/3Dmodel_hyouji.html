@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="ブラウザで3Dモデル表示してみたい。">                                                                 <!--ページ説明　入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/3Dモデル表示したい</title>                                                         <!--タイトル　入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/3Dmodel_hyouji">                                <!--タイトル　入力すること！-->
+        <meta property="og:title" content="3Dモデル表示したい">                                                               <!--タイトル　入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/3Dmodel_hyouji.html">                   <!--リンク　入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <meta name="viewport" content="width=device-width,initial-scale=1"><!--スマホで見てる人向けに表示領域の設定-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+            div#parent_div{
+                text-align: center;
+                margin: 10px;
+            }
+            canvas{
+                /*background: #ffffff;*/
+                /*表示大きさはThree.jsで設定*/
+                
+            }
+        </style>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1MB5XLN4LW');
+        </script>
+        <!-- Google tag (gtag.js) -->
+
+        <!--Three.jsのインポート用。最新バージョンはここをチェック：https://www.npmjs.com/package/three?activeTab=versions-->
+        <script type="importmap">
+            {
+                "imports": {
+                    "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+                    "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+                }
+            }
+        </script>
+        <!--Three.jsのインポート用 examples/jsm/は外部ファイルローダーがたっぷりいる-->
+
+        <script src="../js/public.js"></script>
+
+        <script type="module">
+            import * as THREE from "three";//インポート。type="module"じゃないと使えないらしいっス！
+            import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";//GLTF形式のロードに使うッス！
+            // GLTF・GLB形式のモデルデータを読み込むための…アレさ！
+            const loader = new GLTFLoader();
+            
+            onload = async function(){
+                onload_functions();
+                const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
+
+                const renderer = new THREE.WebGLRenderer({//ここに表示、よろしく！
+                    canvas: cnvs
+                });
+
+                function Resize_cnvs(){
+                    if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                        renderer.setSize(cnvs.parentElement.clientWidth,cnvs.parentElement.clientWidth);
+                    }else{//PCかな…
+                        renderer.setSize(window.innerHeight*0.7, window.innerHeight*0.7);
+                    }
+                }
+                Resize_cnvs();//キャンバスサイズ設定してねー☆
+                window.addEventListener('resize', Resize_cnvs);//キャンバスサイズ変更されたらもっかいね
+
+
+                const scene = new THREE.Scene();
+
+                //カメラ
+                const camera = new THREE.PerspectiveCamera(90, 1);// 画角, アスペクト比
+                camera.position.set(0, 3, +5);
+
+                // しゅうくんだ！
+                const glb = await loader.loadAsync('../3D/omocha/3Dmodel_hyouji/LOW_SYUUKUN.glb');
+                const SYUUKUN = glb.scene;
+                scene.add(SYUUKUN);        
+
+                // 平行光源
+                const directionalLight = new THREE.DirectionalLight(0xFFFFFF);
+                directionalLight.position.set(1, 1, 1);
+                scene.add(directionalLight);
+
+                Main();//ループ関数
+                function Main() {
+                    SYUUKUN.rotation.y += 0.01;
+                    renderer.render(scene, camera); // レンダリング
+
+                    requestAnimationFrame(Main);// 次フレームも実行よろしく！
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+
+            見て、くるくるまわってる、まるで僕たちの地球みたいだ
+            <div id="parent_div">
+                <canvas id="cnvs"><!--実大きさはThree.jsで決めてる-->
+                </canvas>
+            </div>
+
+            <footer>
+                <ul id="footul">
+                    <li id="foot_tweet_li">
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
