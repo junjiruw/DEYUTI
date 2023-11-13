@@ -155,12 +155,20 @@
 
                     let xz_kyori=Math.sqrt(now_x*now_x+now_z*now_z);
 
-                    console.log("k"+xz_kyori);
-                    console.log("z"+now_z/xz_kyori);//なんかy近くで遠くにぶっ飛んでいくのはなに
-
-                    camera.position.y = 1 *now_y*Math.cos(ドラッグ移動y )+ 1*xz_kyori*Math.sin(ドラッグ移動y )+3;
-                    camera.position.x = -1 *now_x/xz_kyori*now_y*Math.sin(ドラッグ移動y )+ 1*now_x*Math.cos(ドラッグ移動y );
-                    camera.position.z = -1 *now_z/xz_kyori*now_y*Math.sin(ドラッグ移動y )+ 1*now_z*Math.cos(ドラッグ移動y );
+                    let next_x=-1 *now_x/xz_kyori*now_y*Math.sin(ドラッグ移動y )+ 1*now_x*Math.cos(ドラッグ移動y );
+                    let next_y= 1 *now_y*Math.cos(ドラッグ移動y )+ 1*xz_kyori*Math.sin(ドラッグ移動y )+3;
+                    let next_z=-1 *now_z/xz_kyori*now_y*Math.sin(ドラッグ移動y )+ 1*now_z*Math.cos(ドラッグ移動y );
+                    //console.log("k"+xz_kyori);
+                    if(now_x*next_x<0 && now_z*next_z<0){
+                        //真上、真下で操作が逝くので制限。
+                        //更新しないでおいて
+                    }else{
+                        camera.position.x = next_x;
+                        camera.position.y = next_y;
+                        camera.position.z = next_z;
+                        
+                    }
+                    
 
                     let camera_length=Math.sqrt(camera.position.x*camera.position.x +(camera.position.y-3)*(camera.position.y-3) +camera.position.z*camera.position.z)
                     if(camera_length<4){//近いなら小さく動く
