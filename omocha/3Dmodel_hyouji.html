@@ -23,9 +23,7 @@
                 margin: 10px;
             }
             canvas{
-                /*background: #ffffff;*/
                 /*表示大きさはThree.jsで設定*/
-                
             }
         </style>
 
@@ -75,29 +73,114 @@
                 }
                 Resize_cnvs();//キャンバスサイズ設定してねー☆
                 window.addEventListener('resize', Resize_cnvs);//キャンバスサイズ変更されたらもっかいね
+            
+
+                let クリック中 = false;
+                let 開始x=0, 開始y=0;
+                let ドラッグ移動x = 0, ドラッグ移動y = 0, ホイール移動=0;
+
+                cnvs.addEventListener("mousedown", (e) => {
+                    クリック中 = true;
+                    開始x = e.clientX;
+                    開始y = e.clientY;
+                });
+
+                document.addEventListener("mouseup", () => {
+                    クリック中= false;
+                    ドラッグ移動x = 0;
+                    ドラッグ移動y = 0;
+                });
+                document.addEventListener("mouseleave", () => {
+                    クリック中= false;
+                    ドラッグ移動x = 0;
+                    ドラッグ移動y = 0;
+                });
+
+                document.addEventListener("mousemove", (e) => {
+                    if(クリック中){
+                        ドラッグ移動x=e.clientX-開始x;
+                        ドラッグ移動y=-e.clientY+開始y;
+
+                        開始x = e.clientX;
+                        開始y = e.clientY;
+                    }
+                });
+
+                cnvs.addEventListener("wheel", (event) => {
+                    ホイール移動=event.deltaY;//-100 or 0 or 100
+                });
 
 
                 const scene = new THREE.Scene();
 
                 //カメラ
                 const camera = new THREE.PerspectiveCamera(90, 1);// 画角, アスペクト比
-                camera.position.set(0, 3, +5);
+                camera.position.set(0, 3, 5);
+                camera.lookAt(new THREE.Vector3(0, 3, 0));
 
                 // しゅうくんだ！
                 const glb = await loader.loadAsync('../3D/omocha/3Dmodel_hyouji/LOW_SYUUKUN.glb');
                 const SYUUKUN = glb.scene;
+                SYUUKUN.position.set(0, 0, 0);
                 scene.add(SYUUKUN);        
+
+                //環境光
+                const light = new THREE.AmbientLight(0xFFFFFF, 0.1);
+                scene.add(light);
 
                 // 平行光源
                 const directionalLight = new THREE.DirectionalLight(0xFFFFFF);
-                directionalLight.position.set(1, 1, 1);
+                directionalLight.position.set(0, 1, 1);
                 scene.add(directionalLight);
+
+                
 
                 Main();//ループ関数
                 function Main() {
-                    SYUUKUN.rotation.y += 0.01;
-                    renderer.render(scene, camera); // レンダリング
+                    ///SYUUKUN.rotation.y += 0.01;
 
+                    ドラッグ移動x*=0.01;
+                    ドラッグ移動y*=0.01;
+
+                    let now_x=camera.position.x;
+                    let now_y=camera.position.y-3;
+                    let now_z=camera.position.z;
+
+                    camera.position.x = 1 *now_x*Math.cos(ドラッグ移動x )- 1*now_z*Math.sin(ドラッグ移動x );
+                    camera.position.z = 1 *now_x*Math.sin(ドラッグ移動x )+ 1*now_z*Math.cos(ドラッグ移動x );
+                    
+                    now_x=camera.position.x;
+                    now_y=camera.position.y-3;
+                    now_z=camera.position.z;
+
+                    let xz_kyori=Math.sqrt(now_x*now_x+now_z*now_z);
+
+                    console.log("k"+xz_kyori);
+                    console.log("z"+now_z/xz_kyori);//なんかy近くで遠くにぶっ飛んでいくのはなに
+
+                    camera.position.y = 1 *now_y*Math.cos(ドラッグ移動y )+ 1*xz_kyori*Math.sin(ドラッグ移動y )+3;
+                    camera.position.x = -1 *now_x/xz_kyori*now_y*Math.sin(ドラッグ移動y )+ 1*now_x*Math.cos(ドラッグ移動y );
+                    camera.position.z = -1 *now_z/xz_kyori*now_y*Math.sin(ドラッグ移動y )+ 1*now_z*Math.cos(ドラッグ移動y );
+
+                    let camera_length=Math.sqrt(camera.position.x*camera.position.x +(camera.position.y-3)*(camera.position.y-3) +camera.position.z*camera.position.z)
+                    if(camera_length<4){//近いなら小さく動く
+                        camera.position.x *= (camera_length+(ホイール移動)/500)/camera_length;
+                        camera.position.y = (camera.position.y-3)*(camera_length+(ホイール移動)/500)/camera_length+3;
+                        camera.position.z *= (camera_length+(ホイール移動)/500)/camera_length;
+                    }else{//遠いなら大きく動く                 
+                        camera.position.x *= (camera_length+(ホイール移動)/100)/camera_length;
+                        camera.position.y =(camera.position.y-3)*(camera_length+(ホイール移動)/100)/camera_length+3;
+                        camera.position.z *= (camera_length+(ホイール移動)/100)/camera_length;
+                    }
+                    ホイール移動=0;
+                    
+                    
+
+                    camera.lookAt(new THREE.Vector3(0, 3, 0));
+                    ドラッグ移動x = 0;
+                    ドラッグ移動y = 0;
+
+                    renderer.render(scene, camera); // レンダリング
                     requestAnimationFrame(Main);// 次フレームも実行よろしく！
                 }
             }
@@ -119,7 +202,7 @@
         </header>
         <div id="mannaka">
 
-            見て、くるくるまわってる、まるで僕たちの地球みたいだ
+            ぐりぐりうごかせるかも、しれませんよ？
             <div id="parent_div">
                 <canvas id="cnvs"><!--実大きさはThree.jsで決めてる-->
                 </canvas>
