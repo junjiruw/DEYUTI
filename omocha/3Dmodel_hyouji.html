@@ -22,8 +22,12 @@
                 text-align: center;
                 margin: 10px;
             }
-            canvas{
+            div#parent_div{
+                position: relative;/*子要素のabsoluteの原点をここにする*/
+            }
+            canvas#cnvs{
                 /*表示大きさはThree.jsで設定*/
+                position: absolute;
             }
         </style>
 
@@ -59,17 +63,21 @@
             onload = async function(){
                 onload_functions();
                 const cnvs = document.getElementById('cnvs');//IDを指定して変数にぶち込む
+                const cnvs_3D = document.getElementById('cnvs_3D');//IDを指定して変数にぶち込む
 
                 const renderer = new THREE.WebGLRenderer({//ここに表示、よろしく！
-                    canvas: cnvs
+                    canvas: cnvs_3D
                 });
 
                 function Resize_cnvs(){
                     if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                        cnvs.style.width=cnvs.parentElement.clientWidth+"px";
                         renderer.setSize(cnvs.parentElement.clientWidth,cnvs.parentElement.clientWidth);
                     }else{//PCかな…
+                        cnvs.style.width=window.innerHeight*0.7+"px";
                         renderer.setSize(window.innerHeight*0.7, window.innerHeight*0.7);
                     }
+                    cnvs.style.height=cnvs.clientWidth+"px";
                 }
                 Resize_cnvs();//キャンバスサイズ設定してねー☆
                 window.addEventListener('resize', Resize_cnvs);//キャンバスサイズ変更されたらもっかいね
@@ -86,10 +94,11 @@
                     開始y = e.clientY;
                 });
 
-                cnvs.addEventListener("touchstart", (e) => {
+                document.addEventListener("touchstart", (e) => {
                     //クリック中 = true; //いらないんじゃない？
                     if(e.touches.length == 2){//指が二本ある～～～
-                        開始指距離=Math.sqrt(e.touches[0]*e.touches[0]+e.touches[1]*e.touches[1]);
+                        e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
+                        開始指距離=Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2);
                     }else if(e.touches.length == 1){
                         開始x = e.touches[0].clientX;
                         開始y = e.touches[0].clientY;
@@ -112,7 +121,7 @@
                     //クリック中= false; //いらないんじゃない？
                     ドラッグ移動x = 0;
                     ドラッグ移動y = 0;
-                });
+                }, { passive: false });//デフォルト操作を妨害するときのオプション？
 
                 
 
@@ -128,11 +137,14 @@
 
                 document.addEventListener("touchmove", (e) => {
                     if(e.touches.length == 2){//指が二本ある～～～
-                        ホイール移動=Math.sqrt(e.touches[0]*e.touches[0]+e.touches[1]*e.touches[1])-開始指距離;
+                        e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
 
-                        開始指距離=Math.sqrt(e.touches[0]*e.touches[0]+e.touches[1]*e.touches[1]);
+                        ホイール移動=Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2)-開始指距離;
+                        開始指距離=Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2);
                     }else if(e.touches.length == 1){
-                        console.log(開始x);
+                        e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
+
+                        //console.log(開始x);
                         
                         ドラッグ移動x=(e.touches[0].clientX-開始x)*2;
                         ドラッグ移動y=(-e.touches[0].clientY+開始y)*2;
@@ -142,7 +154,7 @@
                     
                     }
                     
-                });
+                }, { passive: false });//デフォルト操作を妨害するときのオプション？
 
                 cnvs.addEventListener("wheel", (e) => {
                     ホイール移動=e.deltaY;//-100 or 0 or 100
@@ -153,7 +165,7 @@
 
                 //カメラ
                 const camera = new THREE.PerspectiveCamera(90, 1);// 画角, アスペクト比
-                camera.position.set(0, 3, 5);
+                camera.position.set(0, 3, -5);
                 camera.lookAt(new THREE.Vector3(0, 3, 0));
 
                 // しゅうくんだ！
@@ -168,17 +180,22 @@
 
                 // 平行光源
                 const directionalLight = new THREE.DirectionalLight(0xFFFFFF);
-                directionalLight.position.set(0, 1, 1);
+                directionalLight.position.set(1, 1, -1);
                 scene.add(directionalLight);
 
                 
+                var ctx = cnvs.getContext("2d");
+                ctx.font = "20px 'ＭＳ Ｐゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                ctx.fillStyle="#FFFFFF";
 
                 Main();//ループ関数
                 function Main() {
+                    ctx.clearRect(0, 0, cnvs.width, cnvs.height);//更新！
+                    
                     ///SYUUKUN.rotation.y += 0.01;
 
                     ドラッグ移動x*=0.01;
-                    ドラッグ移動y*=0.01;
+                    ドラッグ移動y*=-0.01;
 
                     let now_x=camera.position.x;
                     let now_y=camera.position.y-3;
@@ -221,6 +238,7 @@
                     ホイール移動=0;
                     
                     
+                    ctx.fillText("オイラ、デバッグメッセージ！", 35, 120);
 
                     camera.lookAt(new THREE.Vector3(0, 3, 0));
                     ドラッグ移動x = 0;
@@ -250,7 +268,9 @@
 
             ぐりぐりうごかせるかも、しれませんよ？
             <div id="parent_div">
-                <canvas id="cnvs"><!--実大きさはThree.jsで決めてる-->
+                <canvas id="cnvs" height="1000px" width="1000px"><!--実大きさはThree.jsで決めてる-->
+                </canvas>
+                <canvas id="cnvs_3D"><!--実大きさはThree.jsで決めてる-->
                 </canvas>
             </div>
 
