@@ -18,16 +18,21 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
+            
             div#parent_div{
                 text-align: center;
                 margin: 10px;
-            }
-            div#parent_div{
                 position: relative;/*子要素のabsoluteの原点をここにする*/
+            }
+            canvas{
+                border: 1px solid #FFF;
             }
             canvas#cnvs{
                 /*表示大きさはThree.jsで設定*/
                 position: absolute;
+            }
+            input{
+                -webkit-appearance: auto;/*デフォルトデザインのボタン殺してたんだったぜ！*/
             }
         </style>
 
@@ -81,6 +86,8 @@
                 }
                 Resize_cnvs();//キャンバスサイズ設定してねー☆
                 window.addEventListener('resize', Resize_cnvs);//キャンバスサイズ変更されたらもっかいね
+                
+                const scene = new THREE.Scene();                
 
                 const 操作画像_1 = new Image();
                 const 操作画像_2 = new Image();
@@ -91,6 +98,8 @@
                 操作画像_3.src="../images/omocha/3Dmodel_hyouji/sousaaikon_3.png";
                 操作画像_4.src="../images/omocha/3Dmodel_hyouji/sousaaikon_4.png";
 
+                const 刹那 = new THREE.Clock();
+                let 倍速=1;
 
                 let クリック中 = false;
                 let タップ開始=0;
@@ -182,7 +191,7 @@
                 });
 
 
-                const scene = new THREE.Scene();
+
 
                 //カメラ
                 const camera = new THREE.PerspectiveCamera(90, 1);// 画角, アスペクト比
@@ -194,6 +203,50 @@
                 const SYUUKUN = glb.scene;
                 SYUUKUN.position.set(0, 0, 0);
                 scene.add(SYUUKUN);        
+                
+                const syuukun_anim= glb.animations;//アニメーション
+                const syuukun_mixer = new THREE.AnimationMixer(SYUUKUN);//アニメーションミキサー
+                var アクション={};
+                for (let i = 0; i < syuukun_anim.length; i++) {        
+                    アクション[i] = syuukun_mixer.clipAction(syuukun_anim[i]) ;
+                    アクション[i].setLoop(THREE.LoopRepeat);//無限ルーピ        
+                    console.log(syuukun_anim[i].name);
+                }
+                const slider = document.getElementById('slider');
+                const slider値 = document.getElementById('slider値');
+                slider.addEventListener('input', function() {
+                    倍速 = (this.value/2)**2;
+                    slider値.textContent = 倍速;
+                });
+
+                const チェック1 = document.getElementById('check_1');
+                const チェック2 = document.getElementById('check_2');
+                const チェック3 = document.getElementById('check_3');
+
+                アクション[0].play();//デフォでうごかしとこ
+                チェック1.addEventListener('change', function() {
+                    if (this.checked) {
+                        アクション[0].play();
+                    } else {
+                        アクション[0].stop();
+                    }
+                });
+
+                チェック2.addEventListener('change', function() {
+                    if (this.checked) {
+                        アクション[1].play();
+                    } else {
+                        アクション[1].stop();
+                    }
+                });
+
+                チェック3.addEventListener('change', function() {
+                    if (this.checked) {
+                        アクション[2].play();
+                    } else {
+                        アクション[2].stop();
+                    }
+                });
 
                 //環境光
                 const light = new THREE.AmbientLight(0xFFFFFF, 0.1);
@@ -270,6 +323,7 @@
                     ドラッグ移動x = 0;
                     ドラッグ移動y = 0;
 
+                    syuukun_mixer.update(刹那.getDelta()*倍速);//ちょっと動けー！
                     renderer.render(scene, camera); // レンダリング
                     requestAnimationFrame(Main);// 次フレームも実行よろしく！
                 }
@@ -299,6 +353,11 @@
                 <canvas id="cnvs_3D"><!--実大きさはThree.jsで決めてる-->
                 </canvas>
             </div>
+
+            <input type="checkbox" id="check_1" checked> ポカポカ
+            <input type="checkbox" id="check_2" > うずうず待機
+            <input type="checkbox" id="check_3" > 歩き
+            <input type="range" min="0" max="10" value="2" id="slider"> 速度 <span id="slider値">1</span> 倍
 
             <footer>
                 <ul id="footul">
