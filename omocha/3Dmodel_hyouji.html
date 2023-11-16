@@ -81,7 +81,16 @@
                 }
                 Resize_cnvs();//キャンバスサイズ設定してねー☆
                 window.addEventListener('resize', Resize_cnvs);//キャンバスサイズ変更されたらもっかいね
-            
+
+                const 操作画像_1 = new Image();
+                const 操作画像_2 = new Image();
+                const 操作画像_3 = new Image();
+                const 操作画像_4 = new Image();
+                操作画像_1.src="../images/omocha/3Dmodel_hyouji/sousaaikon_1.png";
+                操作画像_2.src="../images/omocha/3Dmodel_hyouji/sousaaikon_2.png";
+                操作画像_3.src="../images/omocha/3Dmodel_hyouji/sousaaikon_3.png";
+                操作画像_4.src="../images/omocha/3Dmodel_hyouji/sousaaikon_4.png";
+
 
                 let クリック中 = false;
                 let タップ開始=0;
@@ -197,7 +206,7 @@
 
                 
                 var ctx = cnvs.getContext("2d");
-                ctx.font = "20px 'ＭＳ Ｐゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
+                ctx.font = "30px 'ＭＳ Ｐゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                 ctx.fillStyle="#FFFFFF";
 
                 Main();//ループ関数
@@ -251,7 +260,11 @@
                     ホイール移動=0;
                     
                     
-                    ctx.fillText("オイラ、デバッグメッセージ！", 35, 120);
+                    ctx.fillText("操作方法は…上のコレの通りだ！", 15, 130);
+                    ctx.drawImage(操作画像_1, 0, 0);
+                    ctx.drawImage(操作画像_2, 130, 0);
+                    ctx.drawImage(操作画像_3, 300, 0);
+                    ctx.drawImage(操作画像_4, 430, 0);
 
                     camera.lookAt(new THREE.Vector3(0, 3, 0));
                     ドラッグ移動x = 0;
