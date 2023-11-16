@@ -215,7 +215,7 @@
                 const slider = document.getElementById('slider');
                 const slider値 = document.getElementById('slider値');
                 slider.addEventListener('input', function() {
-                    倍速 = (this.value/2)**2;
+                    倍速 = (this.value)**2;
                     slider値.textContent = 倍速;
                 });
 
@@ -354,10 +354,10 @@
                 </canvas>
             </div>
 
-            <input type="checkbox" id="check_1" checked> ポカポカ
-            <input type="checkbox" id="check_2" > うずうず待機
-            <input type="checkbox" id="check_3" > 歩き
-            <input type="range" min="0" max="10" value="2" id="slider"> 速度 <span id="slider値">1</span> 倍
+            <input type="checkbox" id="check_1" checked> <label for="check_1">ポカポカ</label>
+            <input type="checkbox" id="check_2" > <label for="check_2">うずうず待機</label>
+            <input type="checkbox" id="check_3" > <label for="check_3">歩き</label>
+            <input type="range" min="0" max="10" value="1" id="slider" step="0.1"> 速度 <span id="slider値">1</span> 倍
 
             <footer>
                 <ul id="footul">
