@@ -84,6 +84,7 @@
             
 
                 let クリック中 = false;
+                let タップ開始=0;
                 let 開始x=0, 開始y=0;
                 let 開始指距離=0;
                 let ドラッグ移動x = 0, ドラッグ移動y = 0, ホイール移動=0;
@@ -96,12 +97,15 @@
 
                 document.addEventListener("touchstart", (e) => {
                     //クリック中 = true; //いらないんじゃない？
+                    
                     if(e.touches.length == 2){//指が二本ある～～～
                         e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
                         開始指距離=Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2);
                     }else if(e.touches.length == 1){
-                        開始x = e.touches[0].clientX;
-                        開始y = e.touches[0].clientY;
+                        //拡大操作したときに暴発するのでちょっとガードする
+                        タップ開始=0;
+                        //開始x = e.touches[0].clientX;
+                        //開始y = e.touches[0].clientY;
                     }
                     
                 });
@@ -119,6 +123,7 @@
 
                 document.addEventListener("touchend", () => {
                     //クリック中= false; //いらないんじゃない？
+                    タップ開始=0;
                     ドラッグ移動x = 0;
                     ドラッグ移動y = 0;
                 }, { passive: false });//デフォルト操作を妨害するときのオプション？
@@ -139,18 +144,25 @@
                     if(e.touches.length == 2){//指が二本ある～～～
                         e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
 
-                        ホイール移動=Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2)-開始指距離;
+                        ホイール移動=-1*(Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2)-開始指距離);
                         開始指距離=Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2);
                     }else if(e.touches.length == 1){
                         e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
-
                         //console.log(開始x);
                         
-                        ドラッグ移動x=(e.touches[0].clientX-開始x)*2;
-                        ドラッグ移動y=(-e.touches[0].clientY+開始y)*2;
+                        //拡大操作したときに暴発するのでちょっとガードする
+                        タップ開始++;
+                        if(タップ開始==3){
+                            開始x = e.touches[0].clientX;
+                            開始y = e.touches[0].clientY;
+                        }else if(タップ開始>3){
+                            ドラッグ移動x=(e.touches[0].clientX-開始x)*2;
+                            ドラッグ移動y=(-e.touches[0].clientY+開始y)*2;
 
-                        開始x = e.touches[0].clientX;
-                        開始y = e.touches[0].clientY;
+                            開始x = e.touches[0].clientX;
+                            開始y = e.touches[0].clientY;
+                        }
+                        
                     
                     }
                     
@@ -194,6 +206,7 @@
                     
                     ///SYUUKUN.rotation.y += 0.01;
 
+                    //まずは上下左右ぐりぐり
                     ドラッグ移動x*=0.01;
                     ドラッグ移動y*=-0.01;
 
@@ -224,7 +237,7 @@
                         
                     }
                     
-
+                    //拡大縮小
                     let camera_length=Math.sqrt(camera.position.x*camera.position.x +(camera.position.y-3)*(camera.position.y-3) +camera.position.z*camera.position.z)
                     if(camera_length<4){//近いなら小さく動く
                         camera.position.x *= (camera_length+(ホイール移動)/500)/camera_length;
