@@ -98,7 +98,7 @@
                 操作画像_3.src="../images/omocha/3Dmodel_hyouji/sousaaikon_3.png";
                 操作画像_4.src="../images/omocha/3Dmodel_hyouji/sousaaikon_4.png";
 
-                const 刹那 = new THREE.Clock();
+                const 時間 = new THREE.Clock();
                 let 倍速=1;
 
                 let クリック中 = false;
@@ -198,11 +198,123 @@
                 camera.position.set(0, 3, -5);
                 camera.lookAt(new THREE.Vector3(0, 3, 0));
 
+                /*
+                頂点シェーダ。
+                position 座標データ。vec3
+                uv UV座標。vec2。 
+
+                ↓記述はMainより前に。
+                uniform シェーダ外から変数を持ってくる。マテリアルのとこで設定
+                attribute こっちは頂点ごとに異なる情報を持てる。頂点シェーダでのみ使う
+                varying って型の前に書くとフラグメントシェーダに投げられる。
+
+                gl_Position　←こいつに頂点座標をぶんなげるとよい(vec4)
+                
+                ----
+                ここからは頂点シェーダーのアニメーション対応とかの話
+                THREE.ShaderChunk　どうやらシェーダーの一部を読み込んでくれるようだ
+                ・common 共通部分だろう。たぶん
+                ・skinning_pars_vertex　名前からすると頂点のボーンからの影響とか計算をしてくれるんだろう
+                ・shadowmap_pars_vertex　これで影が変わると…思っていた…のに…
+                ・その他　知らん。エラーが出ないようにぶちこみまくった
+                
+                ソースコードはココから探せばあるとおもう。解体するときは中身をコピペして使ってるよ
+                github: https://github.com/mrdoob/three.js/tree/4c5c68f4c690a73e8243e0d10c7cc3101dd0e084/src/renderers/shaders/ShaderChunk
+
+                > Three.jsでBoneアニメーションをShaderMaterialで動かす
+                > https://qiita.com/ykido/items/55c7f17fb32216056705 ←参考資料。天才
+
+                ＊["project_vertex"]を解体してあるよ＊
+                ---- 
+                */
+               
+                const vertexShader = `
+                varying vec4 model_pos;
+                uniform float time;
+
+                ${THREE.ShaderChunk["common"]}               
+                ${THREE.ShaderChunk["skinning_pars_vertex"]}
+                ${THREE.ShaderChunk["shadowmap_pars_vertex"]}
+                void main() {
+                    ${THREE.ShaderChunk["beginnormal_vertex"]}
+                    ${THREE.ShaderChunk["begin_vertex"]}
+                    ${THREE.ShaderChunk["skinbase_vertex"]}
+                    ${THREE.ShaderChunk["skinning_vertex"]}
+                    
+
+                    vec4 mvPosition = vec4( transformed, 1.0 );
+
+                    #ifdef USE_BATCHING
+                        mvPosition = batchingMatrix * mvPosition;
+                    #endif
+
+                    #ifdef USE_INSTANCING
+                        mvPosition = instanceMatrix * mvPosition;
+                    #endif
+
+
+                    mvPosition.y=mvPosition.y*(sin(mvPosition.x*3.0+time)*0.3+1.0);
+
+
+                    mvPosition = modelViewMatrix * mvPosition;
+                    gl_Position = projectionMatrix * mvPosition;
+                    
+                    ${THREE.ShaderChunk["worldpos_vertex"]}
+                    ${THREE.ShaderChunk["defaultnormal_vertex"]}
+                    
+                    ${THREE.ShaderChunk["shadowmap_vertex"]}
+
+                    
+                    model_pos = mvPosition ;
+                }
+                `;
+
+                /*
+                フラグメントシェーダ。
+
+                ↓記述はMainより前に。
+                uniform シェーダ外から変数を持ってくる。マテリアルのとこで設定
+                varying って型の前に書くとフラグメントシェーダに投げられる。
+
+                gl_FragColor　←こいつに色をぶんなげるとよい(vec4)
+                */
+                const fragmentShader = `
+                varying vec4 model_pos;
+                uniform float time;
+                uniform vec3 model_color;
+                void main() {
+                    vec3 color = 0.3*vec3(model_pos.x*0.5+0.5, model_pos.y*0.5+0.5 ,model_pos.z*0.5+0.5)+model_color;
+                    gl_FragColor = vec4(color, 1.0);
+                }
+                `;
+                let customMaterial_s=[];//シェーダー適用されたマテリアルの配列
+
                 // しゅうくんだ！
                 const glb = await loader.loadAsync('../3D/omocha/3Dmodel_hyouji/LOW_SYUUKUN.glb');
                 const SYUUKUN = glb.scene;
-                SYUUKUN.position.set(0, 0, 0);
-                scene.add(SYUUKUN);        
+                SYUUKUN.position.set(0, 0, 0);                
+
+                SYUUKUN.traverse((SYUUKUN)=>{
+                    if (SYUUKUN.isMesh) {
+                        SYUUKUN.castShadow = true;//影を落とす
+
+                        // カスタムシェーダーマテリアルを作成
+                        let customMaterial = new THREE.ShaderMaterial({
+                            uniforms: {// ユニフォーム変数と初期値くん
+                                model_color:{value:SYUUKUN.material.color},
+                                time: { value: 0.0 } ,
+                            },
+                            vertexShader: vertexShader,
+                            fragmentShader: fragmentShader,
+                            // uniformsなどの他のシェーダーパラメータを設定することができます
+                        });
+                        customMaterial_s.push(customMaterial);//マテリアルの格納配列に入れておくね
+                        SYUUKUN.material = customMaterial;
+                        
+                    }
+                });
+                scene.add(SYUUKUN);      
+                console.log("マテリアル数:"+customMaterial_s.length);  
                 
                 const syuukun_anim= glb.animations;//アニメーション
                 const syuukun_mixer = new THREE.AnimationMixer(SYUUKUN);//アニメーションミキサー
@@ -210,7 +322,7 @@
                 for (let i = 0; i < syuukun_anim.length; i++) {        
                     アクション[i] = syuukun_mixer.clipAction(syuukun_anim[i]) ;
                     アクション[i].setLoop(THREE.LoopRepeat);//無限ルーピ        
-                    console.log(syuukun_anim[i].name);
+                    console.log("アクション"+i+":"+syuukun_anim[i].name);
                 }
                 const slider = document.getElementById('slider');
                 const slider値 = document.getElementById('slider値');
@@ -247,20 +359,41 @@
                         アクション[2].stop();
                     }
                 });
+                
+                const cube = new THREE.Mesh( new THREE.BoxGeometry( 10, 1, 10 ),new THREE.MeshLambertMaterial({color: 0x6699FF}));
+                cube.position.set(0, -0.5, 0);
+                cube.receiveShadow = true;//影を受ける
+                scene.add( cube );
 
-                //環境光
+                const cube2 = new THREE.Mesh( new THREE.BoxGeometry( 10, 8, 1 ),new THREE.MeshLambertMaterial({color: 0x66FF99}));
+                cube2.position.set(0, 3, 5.5);
+                cube2.receiveShadow = true;//影を受ける
+                scene.add( cube2 );
+
+                const cube3 = new THREE.Mesh( new THREE.BoxGeometry( 1, 8, 7 ),new THREE.MeshLambertMaterial({color: 0xFF6699}));
+                cube3.position.set(-5.5, 3, 2.5);
+                cube3.receiveShadow = true;//影を受ける
+                scene.add( cube3 );
+
+                //環境光    
                 const light = new THREE.AmbientLight(0xFFFFFF, 0.1);
                 scene.add(light);
 
                 // 平行光源
-                const directionalLight = new THREE.DirectionalLight(0xFFFFFF);
-                directionalLight.position.set(1, 1, -1);
+                const directionalLight = new THREE.DirectionalLight(0xFFFFFF,1);
+                directionalLight.position.set(2, 2, -3);//この位置から
+                directionalLight.target.position.set(0, 1, 0);//この位置へ光を
+                directionalLight.castShadow = true;//影を有効に。
+                directionalLight.shadow.mapSize.set(1024, 1024);//影の解像度
                 scene.add(directionalLight);
+
+                renderer.shadowMap.enabled = true;//影を有効に。
 
                 
                 var ctx = cnvs.getContext("2d");
                 ctx.font = "30px 'ＭＳ Ｐゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                 ctx.fillStyle="#FFFFFF";
+                
 
                 Main();//ループ関数
                 function Main() {
@@ -301,7 +434,7 @@
                     
                     //拡大縮小
                     let camera_length=Math.sqrt(camera.position.x*camera.position.x +(camera.position.y-3)*(camera.position.y-3) +camera.position.z*camera.position.z)
-                    if(camera_length<4){//近いなら小さく動く
+                    if(camera_length<5){//近いなら小さく動く
                         camera.position.x *= (camera_length+(ホイール移動)/500)/camera_length;
                         camera.position.y = (camera.position.y-3)*(camera_length+(ホイール移動)/500)/camera_length+3;
                         camera.position.z *= (camera_length+(ホイール移動)/500)/camera_length;
@@ -323,7 +456,12 @@
                     ドラッグ移動x = 0;
                     ドラッグ移動y = 0;
 
-                    syuukun_mixer.update(刹那.getDelta()*倍速);//ちょっと動けー！
+                    customMaterial_s.forEach(materialくん=>{
+                        materialくん.uniforms.time.value += 0.1*倍速;
+                    });
+                    renderer.shadowMap.needsUpdate= true;//影を有効に。
+
+                    syuukun_mixer.update(時間.getDelta()*倍速);//ちょっと動けー！
                     renderer.render(scene, camera); // レンダリング
                     requestAnimationFrame(Main);// 次フレームも実行よろしく！
                 }
