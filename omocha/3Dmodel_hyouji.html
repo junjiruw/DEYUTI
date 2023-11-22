@@ -98,6 +98,12 @@
                         document.querySelectorAll(".slider").forEach(function(e) {
                             e.style.width = "20vw"; //スライダでかくしとこ
                         });
+                        document.querySelectorAll(".slider_speed_div").forEach(function(e) {
+                            e.style.width = "100%"; //枠でかくしとこ
+                        });
+                        document.querySelectorAll(".slider_speed").forEach(function(e) {
+                            e.style.width = "60vw"; //スライダでかくしとこ
+                        });
                     }else{//PCかな…
                         cnvs.style.width=window.innerHeight*0.7+"px";
                         renderer.setSize(window.innerHeight*0.7, window.innerHeight*0.7);
@@ -266,6 +272,7 @@
 
                     vec4 mvPosition = vec4( transformed, 1.0 );
                     mvPosition.x=mvPosition.x*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                    mvPosition.z=mvPosition.z*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
                     mvPosition.y*=length_value;
                     mvPosition = modelViewMatrix * mvPosition;
 
@@ -489,6 +496,16 @@
                         アクション[2].stop();
                     }
                 });
+
+                document.getElementById('download_button').addEventListener("click", function(){
+                    var 今= new Date();
+                    var 今_文字=今.getDate()+""+今.getHours()+""+今.getMinutes()+""+今.getSeconds();
+                    var DL_URL = document.createElement('a');
+                    renderer.render(scene, camera); // レンダリング
+                    DL_URL.href=cnvs_3D.toDataURL("image/png");//ﾚﾝﾀﾞﾘﾝｸﾞ結果
+                    DL_URL.download = '3Dしゅうくん'+ 今_文字+ '.png';//ファイル名決めてる
+                    DL_URL.click();//強制クリック
+                });//ボタンに機能割り当て
                 
                 const cube = new THREE.Mesh( new THREE.BoxGeometry( 10, 1, 10 ),new THREE.MeshLambertMaterial({color: 0x6699FF}));
                 cube.position.set(0, -0.5, 0);
@@ -637,14 +654,14 @@
             <input type="checkbox" id="check_2" > <label for="check_2">うずうず待機</label>
             <input type="checkbox" id="check_3" > <label for="check_3">歩き</label>
             <div id="slider_div_div">
-                <div class="slider_div">
-                    <input type="range" class="slider" min="0" max="10" value="1" id="speed" step="0.1"> 速度 <span id="speed値">1.00</span> 倍
+                <div class="slider_div slider_speed_div">
+                    <input type="range" class="slider slider_speed" min="0" max="10" value="1" id="speed" step="0.1"> 速度 <span id="speed値">1.00</span> 倍
                 </div>
                 <div class="slider_div">
                     <input type="range" class="slider" min="0" max="10" value="1" id="length" step="0.1"> 身長 <span id="length値">1.0</span> 倍
                 </div>
                 <div class="slider_div">
-                    <input type="range" class="slider" min="0" max="5" value="0" id="amp" step="0.05"> 揺れ幅 <span id="amp値">0.00</span> 倍
+                    <input type="range" class="slider" min="0" max="2" value="0" id="amp" step="0.05"> 揺れ幅 <span id="amp値">0.00</span> 倍
                 </div>
                 <div class="slider_div">
                     <input type="range" class="slider" min="0" max="10" value="1" id="omega" step="0.1"> 周波数 <span id="omega値">1.0</span> 倍
@@ -653,6 +670,8 @@
                     <input type="range" class="slider" min="0" max="10" value="1" id="wave_num" step="0.1"> 波の数 <span id="wave_num値">1</span> 個
                 </div>
             </div>
+
+            <input id="download_button" type="button" value="✨スクショ保存✨">
             
             <footer>
                 <ul id="footul">
