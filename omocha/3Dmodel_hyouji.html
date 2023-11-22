@@ -24,6 +24,16 @@
                 margin: 10px;
                 position: relative;/*子要素のabsoluteの原点をここにする*/
             }
+            div#slider_div_div{
+                display: flex;
+                flex-wrap: wrap;
+            }
+            div.slider_div{
+                border: 1px solid #FFF;
+                font-size: 1.5vw;
+                width: 33%;
+                box-sizing: border-box;/*ボーダー含めて幅とするよ*/
+            }
             canvas{
                 border: 1px solid #FFF;
             }
@@ -33,6 +43,9 @@
             }
             input{
                 -webkit-appearance: auto;/*デフォルトデザインのボタン殺してたんだったぜ！*/
+            }
+            input.slider{
+                width:15Svw;
             }
         </style>
 
@@ -78,6 +91,13 @@
                     if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
                         cnvs.style.width=cnvs.parentElement.clientWidth+"px";
                         renderer.setSize(cnvs.parentElement.clientWidth,cnvs.parentElement.clientWidth);
+                        document.querySelectorAll(".slider_div").forEach(function(e) {
+                            e.style.fontSize = "3vw"; //もじでかくしとこ
+                            e.style.width = "50%"; //枠でかくしとこ
+                        });
+                        document.querySelectorAll(".slider").forEach(function(e) {
+                            e.style.width = "20vw"; //スライダでかくしとこ
+                        });
                     }else{//PCかな…
                         cnvs.style.width=window.innerHeight*0.7+"px";
                         renderer.setSize(window.innerHeight*0.7, window.innerHeight*0.7);
@@ -113,8 +133,8 @@
                     開始y = e.clientY;
                 });
 
-                document.addEventListener("touchstart", (e) => {
-                    //クリック中 = true; //いらないんじゃない？
+                cnvs.addEventListener("touchstart", (e) => {
+                    クリック中 = true;
                     
                     if(e.touches.length == 2){//指が二本ある～～～
                         e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
@@ -140,7 +160,7 @@
                 });
 
                 document.addEventListener("touchend", () => {
-                    //クリック中= false; //いらないんじゃない？
+                    クリック中= false; 
                     タップ開始=0;
                     ドラッグ移動x = 0;
                     ドラッグ移動y = 0;
@@ -159,36 +179,38 @@
                 });
 
                 document.addEventListener("touchmove", (e) => {
-                    if(e.touches.length == 2){//指が二本ある～～～
-                        e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
+                    if(クリック中){
+                        if(e.touches.length == 2){//指が二本ある～～～
+                            e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
 
-                        ホイール移動=-1*(Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2)-開始指距離);
-                        開始指距離=Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2);
-                    }else if(e.touches.length == 1){
-                        e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
-                        //console.log(開始x);
-                        
-                        //拡大操作したときに暴発するのでちょっとガードする
-                        タップ開始++;
-                        if(タップ開始==3){
-                            開始x = e.touches[0].clientX;
-                            開始y = e.touches[0].clientY;
-                        }else if(タップ開始>3){
-                            ドラッグ移動x=(e.touches[0].clientX-開始x)*2;
-                            ドラッグ移動y=(-e.touches[0].clientY+開始y)*2;
+                            ホイール移動=-1*(Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2)-開始指距離);
+                            開始指距離=Math.sqrt((e.touches[0].clientX-e.touches[1].clientX)**2+(e.touches[0].clientY-e.touches[1].clientY)**2);
+                        }else if(e.touches.length == 1){
+                            e.preventDefault(); // ブラウザのデフォルトのズーム動作を無効化する
+                            //console.log(開始x);
+                            
+                            //拡大操作したときに暴発するのでちょっとガードする
+                            タップ開始++;
+                            if(タップ開始==3){
+                                開始x = e.touches[0].clientX;
+                                開始y = e.touches[0].clientY;
+                            }else if(タップ開始>3){
+                                ドラッグ移動x=(e.touches[0].clientX-開始x)*2;
+                                ドラッグ移動y=(-e.touches[0].clientY+開始y)*2;
 
-                            開始x = e.touches[0].clientX;
-                            開始y = e.touches[0].clientY;
+                                開始x = e.touches[0].clientX;
+                                開始y = e.touches[0].clientY;
+                            }
+                            
                         }
-                        
-                    
                     }
                     
                 }, { passive: false });//デフォルト操作を妨害するときのオプション？
 
                 cnvs.addEventListener("wheel", (e) => {
+                    e.preventDefault(); // ブラウザのデフォルトのスクロール動作を無効化する
                     ホイール移動=e.deltaY;//-100 or 0 or 100
-                });
+                }, { passive: false });//デフォルト操作を妨害するときのオプション？
 
 
 
@@ -214,60 +236,44 @@
                 ここからは頂点シェーダーのアニメーション対応とかの話
                 THREE.ShaderChunk　どうやらシェーダーの一部を読み込んでくれるようだ
                 ・common 共通部分だろう。たぶん
-                ・skinning_pars_vertex　名前からすると頂点のボーンからの影響とか計算をしてくれるんだろう
-                ・shadowmap_pars_vertex　これで影が変わると…思っていた…のに…
+                ・skinning_vertex　名前からすると頂点のボーンからの影響とか計算をしてくれるんだろう
                 ・その他　知らん。エラーが出ないようにぶちこみまくった
                 
-                ソースコードはココから探せばあるとおもう。解体するときは中身をコピペして使ってるよ
-                github: https://github.com/mrdoob/three.js/tree/4c5c68f4c690a73e8243e0d10c7cc3101dd0e084/src/renderers/shaders/ShaderChunk
+                ShaderChunkのソースコードはココから探せばあるとおもう。解体するときは中身をコピペして使ってるよ
+                github: https://github.com/mrdoob/three.js/tree/master/src/renderers/shaders/ShaderChunk
 
                 > Three.jsでBoneアニメーションをShaderMaterialで動かす
                 > https://qiita.com/ykido/items/55c7f17fb32216056705 ←参考資料。天才
 
-                ＊["project_vertex"]を解体してあるよ＊
                 ---- 
                 */
                
                 const vertexShader = `
                 varying vec4 model_pos;
                 uniform float time;
+                uniform float length_value;
+                uniform float amp;
+                uniform float omega;
+                uniform float wave_num;
 
-                ${THREE.ShaderChunk["common"]}               
-                ${THREE.ShaderChunk["skinning_pars_vertex"]}
-                ${THREE.ShaderChunk["shadowmap_pars_vertex"]}
+                #include <common>              
+                #include <skinning_pars_vertex>
+
                 void main() {
-                    ${THREE.ShaderChunk["beginnormal_vertex"]}
-                    ${THREE.ShaderChunk["begin_vertex"]}
-                    ${THREE.ShaderChunk["skinbase_vertex"]}
-                    ${THREE.ShaderChunk["skinning_vertex"]}
-                    
+                    #include <begin_vertex>
+                    #include <skinbase_vertex>
+                    #include <skinning_vertex>                    
 
                     vec4 mvPosition = vec4( transformed, 1.0 );
-
-                    #ifdef USE_BATCHING
-                        mvPosition = batchingMatrix * mvPosition;
-                    #endif
-
-                    #ifdef USE_INSTANCING
-                        mvPosition = instanceMatrix * mvPosition;
-                    #endif
-
-
-                    mvPosition.y=mvPosition.y*(sin(mvPosition.x*3.0+time)*0.3+1.0);
-
-
+                    mvPosition.x=mvPosition.x*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                    mvPosition.y*=length_value;
                     mvPosition = modelViewMatrix * mvPosition;
+
                     gl_Position = projectionMatrix * mvPosition;
                     
-                    ${THREE.ShaderChunk["worldpos_vertex"]}
-                    ${THREE.ShaderChunk["defaultnormal_vertex"]}
-                    
-                    ${THREE.ShaderChunk["shadowmap_vertex"]}
-
                     
                     model_pos = mvPosition ;
-                }
-                `;
+                }`;
 
                 /*
                 フラグメントシェーダ。
@@ -285,9 +291,59 @@
                 void main() {
                     vec3 color = 0.3*vec3(model_pos.x*0.5+0.5, model_pos.y*0.5+0.5 ,model_pos.z*0.5+0.5)+model_color;
                     gl_FragColor = vec4(color, 1.0);
-                }
-                `;
+                   
+                }`;
                 let customMaterial_s=[];//シェーダー適用されたマテリアルの配列
+
+                
+                /*
+                頂点シェーダ。こっちは影をつくるためにcustomDepthMaterialにぶちこむ
+
+                THREE.ShaderLib['depth']　ってやるとシェーダーがとれるので、フラグメントシェーダーのほうはそのまま使用。
+                頂点シェーダーは中身を奪ってくる
+                github: https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib/depth.glsl.js
+
+                あ！色々消してたら頂点いじってたシェーダーとほぼ同じになちゃった
+                本質はvHighPrecisionZW;って変数なのか？
+
+                > three.jsのcustomDepthMaterialを使ってみる  
+                > https://qiita.com/aa_debdeb/items/2a3527b1527380e4af85 ←参考資料。天才
+
+                > 【React Three Fiber】Shaderを使用してMaterialを変更する  
+                > https://qiita.com/nemutas/items/434806b73455634a5d27 ←参考資料。天才
+                ----
+                */
+               /*
+                const depth_vertexShader = `
+                uniform float time;
+
+                #include <common>
+                #include <skinning_pars_vertex>
+
+                varying vec2 vHighPrecisionZW;
+                void main() {
+                    #include <begin_vertex>
+                    #include <skinbase_vertex>
+                    #include <skinning_vertex>  
+                    
+                    vec4 mvPosition = vec4( transformed, 1.0 );
+                    mvPosition = modelViewMatrix * mvPosition;
+
+                    gl_Position = projectionMatrix * mvPosition;
+                        
+                    vHighPrecisionZW = gl_Position.zw;
+                }`;
+                */
+                
+                //どうせ似たようなコードになったんなら、流用しちゃおうぜ
+                //.onBeforeCompile っての使ったほうがお上品なのかな…まあイイかァ！
+                let depth_vertexShader=vertexShader;
+                depth_vertexShader="varying vec2 vHighPrecisionZW;"+depth_vertexShader.slice(0, -1)+"vHighPrecisionZW = gl_Position.zw;}";
+                
+                //フラグメントはオリジナルをそのまま。
+                const depth_fragmentShader=THREE.ShaderLib['depth'].fragmentShader;
+
+                let custom_depth_Material_s=[];//depth_シェーダー適用されたマテリアルの配列
 
                 // しゅうくんだ！
                 const glb = await loader.loadAsync('../3D/omocha/3Dmodel_hyouji/LOW_SYUUKUN.glb');
@@ -303,14 +359,39 @@
                             uniforms: {// ユニフォーム変数と初期値くん
                                 model_color:{value:SYUUKUN.material.color},
                                 time: { value: 0.0 } ,
+                                length_value: { value: 1.0 } ,
+                                amp: { value: 0.0 } ,
+                                omega: { value: 1.0 } ,
+                                wave_num: { value: 1.0 } ,
                             },
                             vertexShader: vertexShader,
                             fragmentShader: fragmentShader,
-                            // uniformsなどの他のシェーダーパラメータを設定することができます
                         });
                         customMaterial_s.push(customMaterial);//マテリアルの格納配列に入れておくね
                         SYUUKUN.material = customMaterial;
                         
+                        
+
+                        // カスタム深度シェーダーマテリアルを作成
+                        let custom_depth_Material = new THREE.ShaderMaterial({
+                            uniforms: {// ユニフォーム変数と初期値くん
+                                time: { value: 0.0 } ,
+                                length_value: { value: 1.0 } ,
+                                amp: { value: 0.0 } ,
+                                omega: { value: 1.0 } ,
+                                wave_num: { value: 1.0 } ,
+                            },
+                            vertexShader: depth_vertexShader,
+                            fragmentShader: depth_fragmentShader,
+                            
+                            defines: {
+                                //深度情報のパッキングをする　←なんて…？
+                                DEPTH_PACKING: THREE.RGBADepthPacking
+                            }
+
+                        });
+                        custom_depth_Material_s.push(custom_depth_Material);//マテリアルの格納配列に入れておくね
+                        SYUUKUN.customDepthMaterial = custom_depth_Material;
                     }
                 });
                 scene.add(SYUUKUN);      
@@ -324,13 +405,62 @@
                     アクション[i].setLoop(THREE.LoopRepeat);//無限ルーピ        
                     console.log("アクション"+i+":"+syuukun_anim[i].name);
                 }
-                const slider = document.getElementById('slider');
-                const slider値 = document.getElementById('slider値');
-                slider.addEventListener('input', function() {
+                const speed = document.getElementById('speed');
+                const speed値 = document.getElementById('speed値');
+                speed.addEventListener('input', function() {
                     倍速 = (this.value)**2;
-                    slider値.textContent = 倍速;
+                    speed値.textContent = 倍速.toFixed(2);
                 });
-
+                const length = document.getElementById('length');
+                const length値 = document.getElementById('length値');
+                length.addEventListener('input', function() {
+                    let 長さ = parseFloat(this.value);
+                    length値.textContent = 長さ.toFixed(1);
+                    customMaterial_s.forEach(materialくん=>{
+                        materialくん.uniforms.length_value.value=長さ;
+                    });
+                    custom_depth_Material_s.forEach(materialくん=>{
+                        materialくん.uniforms.length_value.value=長さ;
+                    });
+                });
+                const amp = document.getElementById('amp');
+                const amp値 = document.getElementById('amp値');
+                amp.addEventListener('input', function() {
+                    let 振幅 = parseFloat(this.value);
+                    amp値.textContent = 振幅.toFixed(2);
+                    customMaterial_s.forEach(materialくん=>{
+                        materialくん.uniforms.amp.value=振幅;
+                    });
+                    custom_depth_Material_s.forEach(materialくん=>{
+                        materialくん.uniforms.amp.value=振幅;
+                    });
+                });
+                const omega = document.getElementById('omega');
+                const omega値 = document.getElementById('omega値');
+                omega.addEventListener('input', function() {
+                    let おめが = parseFloat(this.value);
+                    omega値.textContent = おめが.toFixed(1);
+                    customMaterial_s.forEach(materialくん=>{
+                        materialくん.uniforms.omega.value=おめが;
+                    });
+                    custom_depth_Material_s.forEach(materialくん=>{
+                        materialくん.uniforms.omega.value=おめが;
+                    });
+                });
+                const wave_num = document.getElementById('wave_num');
+                const wave_num値 = document.getElementById('wave_num値');
+                wave_num.addEventListener('input', function() {
+                    let 波の数 = this.value;
+                    wave_num値.textContent = 波の数;
+                    customMaterial_s.forEach(materialくん=>{
+                        materialくん.uniforms.wave_num.value=波の数;
+                    });
+                    custom_depth_Material_s.forEach(materialくん=>{
+                        materialくん.uniforms.wave_num.value=波の数;
+                    });
+                });
+                
+                
                 const チェック1 = document.getElementById('check_1');
                 const チェック2 = document.getElementById('check_2');
                 const チェック3 = document.getElementById('check_3');
@@ -381,15 +511,25 @@
 
                 // 平行光源
                 const directionalLight = new THREE.DirectionalLight(0xFFFFFF,1);
-                directionalLight.position.set(2, 2, -3);//この位置から
-                directionalLight.target.position.set(0, 1, 0);//この位置へ光を
-                directionalLight.castShadow = true;//影を有効に。
-                directionalLight.shadow.mapSize.set(1024, 1024);//影の解像度
+                directionalLight.position.set(4, 4, -5);//この位置から (この位置はめりこまないように)
+                directionalLight.target.position.set(0, 2, 0);//この位置へ光を
                 scene.add(directionalLight);
-
-                renderer.shadowMap.enabled = true;//影を有効に。
-
                 
+                directionalLight.castShadow = true;//影を有効に。
+                renderer.shadowMap.enabled = true;//影を有効に。
+                //影カメラの範囲にある影が作成される。                
+                directionalLight.shadow.camera.right = 5;
+                directionalLight.shadow.camera.left = -5;
+                directionalLight.shadow.camera.top = 12;
+                directionalLight.shadow.camera.bottom = -1;
+                directionalLight.shadow.mapSize.set(1024, 1024);//影の解像度
+                //影カメラの範囲がこれでわかるぴゃお
+                /*
+                var directionalLightShadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera);
+                scene.add( directionalLightShadowHelper);
+                */
+
+
                 var ctx = cnvs.getContext("2d");
                 ctx.font = "30px 'ＭＳ Ｐゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                 ctx.fillStyle="#FFFFFF";
@@ -459,6 +599,9 @@
                     customMaterial_s.forEach(materialくん=>{
                         materialくん.uniforms.time.value += 0.1*倍速;
                     });
+                    custom_depth_Material_s.forEach(materialくん=>{
+                        materialくん.uniforms.time.value += 0.1*倍速;
+                    });
                     renderer.shadowMap.needsUpdate= true;//影を有効に。
 
                     syuukun_mixer.update(時間.getDelta()*倍速);//ちょっと動けー！
@@ -483,8 +626,6 @@
             </h1>
         </header>
         <div id="mannaka">
-
-            ぐりぐりうごかせるかも、しれませんよ？
             <div id="parent_div">
                 <canvas id="cnvs" height="1000px" width="1000px"><!--実大きさはThree.jsで決めてる-->
                 </canvas>
@@ -495,8 +636,24 @@
             <input type="checkbox" id="check_1" checked> <label for="check_1">ポカポカ</label>
             <input type="checkbox" id="check_2" > <label for="check_2">うずうず待機</label>
             <input type="checkbox" id="check_3" > <label for="check_3">歩き</label>
-            <input type="range" min="0" max="10" value="1" id="slider" step="0.1"> 速度 <span id="slider値">1</span> 倍
-
+            <div id="slider_div_div">
+                <div class="slider_div">
+                    <input type="range" class="slider" min="0" max="10" value="1" id="speed" step="0.1"> 速度 <span id="speed値">1.00</span> 倍
+                </div>
+                <div class="slider_div">
+                    <input type="range" class="slider" min="0" max="10" value="1" id="length" step="0.1"> 身長 <span id="length値">1.0</span> 倍
+                </div>
+                <div class="slider_div">
+                    <input type="range" class="slider" min="0" max="5" value="0" id="amp" step="0.05"> 揺れ幅 <span id="amp値">0.00</span> 倍
+                </div>
+                <div class="slider_div">
+                    <input type="range" class="slider" min="0" max="10" value="1" id="omega" step="0.1"> 周波数 <span id="omega値">1.0</span> 倍
+                </div>
+                <div class="slider_div">
+                    <input type="range" class="slider" min="0" max="10" value="1" id="wave_num" step="0.1"> 波の数 <span id="wave_num値">1</span> 個
+                </div>
+            </div>
+            
             <footer>
                 <ul id="footul">
                     <li id="foot_tweet_li">
