@@ -60,11 +60,13 @@
         <!-- Google tag (gtag.js) -->
 
         <!--Three.jsのインポート用。最新バージョンはここをチェック：https://www.npmjs.com/package/three?activeTab=versions-->
+            <!--これ、「,」抜けてたり最後に付けてたりすると死ぬんで注意ね-->
         <script type="importmap">
             {
                 "imports": {
                     "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
-                    "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+                    "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/",
+                    "three/src/": "https://unpkg.com/three@0.158.0/src/"
                 }
             }
         </script>
@@ -74,7 +76,15 @@
 
         <script type="module">
             import * as THREE from "three";//インポート。type="module"じゃないと使えないらしいっス！
+            
+            //https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/UniformsLib.js
+            //既存のシェーダーがつかってるのでしぶしぶもってきた
+            import { UniformsLib } from 'three/src/renderers/shaders/UniformsLib.js';
+            import { mergeUniforms } from 'three/src/renderers/shaders/UniformsUtils.js';
+            import { Color } from 'three/src/math/Color.js';
+
             import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";//GLTF形式のロードに使うッス！
+
             // GLTF・GLB形式のモデルデータを読み込むための…アレさ！
             const loader = new GLTFLoader();
             
@@ -124,8 +134,24 @@
                 操作画像_3.src="../images/omocha/3Dmodel_hyouji/sousaaikon_3.png";
                 操作画像_4.src="../images/omocha/3Dmodel_hyouji/sousaaikon_4.png";
 
+                const cubeTextureLoader = new THREE.CubeTextureLoader()
+                const キューブマップ = cubeTextureLoader.load([//キューブマップ用の画像を6枚用意←めんどくせえからゴミみてえな画像でいいや！
+                "../images/omocha/slide_glitch_kouryaku/eria7.png",
+                "../images/omocha/slide_glitch_kouryaku/eria7.png",
+                "../images/omocha/slide_glitch_kouryaku/eria10.png",
+                "../images/omocha/slide_glitch_kouryaku/eria10.png",
+                "../images/omocha/slide_glitch_kouryaku/eria3.png",
+                "../images/omocha/slide_glitch_kouryaku/eria3.png",
+                ])
+
                 const 時間 = new THREE.Clock();
+
                 let 倍速=1;
+                let 長さ = 1;
+                let 振幅=0;
+                let おめが=1;
+                let 波の数=1;
+                let スペシャル数=1;
 
                 let クリック中 = false;
                 let タップ開始=0;
@@ -273,13 +299,15 @@
                     vec4 mvPosition = vec4( transformed, 1.0 );
                     mvPosition.x=mvPosition.x*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
                     mvPosition.z=mvPosition.z*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                    model_pos = mvPosition ;
                     mvPosition.y*=length_value;
+
                     mvPosition = modelViewMatrix * mvPosition;
 
                     gl_Position = projectionMatrix * mvPosition;
                     
                     
-                    model_pos = mvPosition ;
+                    
                 }`;
 
                 /*
@@ -293,25 +321,29 @@
                 */
                 const fragmentShader = `
                 varying vec4 model_pos;
-                uniform float time;
                 uniform vec3 model_color;
+                uniform float spe_num;
                 void main() {
-                    vec3 color = 0.3*vec3(model_pos.x*0.5+0.5, model_pos.y*0.5+0.5 ,model_pos.z*0.5+0.5)+model_color;
+                    vec3 color = 0.3*vec3(model_pos.x*spe_num/5.0+0.5, (model_pos.y-2.0)*spe_num/5.0+0.5 ,(model_pos.z+0.2)*spe_num/5.0+0.5)+model_color;
                     gl_FragColor = vec4(color, 1.0);
                    
                 }`;
+
+
                 let customMaterial_s=[];//シェーダー適用されたマテリアルの配列
 
-                
+
                 /*
                 頂点シェーダ。こっちは影をつくるためにcustomDepthMaterialにぶちこむ
 
                 THREE.ShaderLib['depth']　ってやるとシェーダーがとれるので、フラグメントシェーダーのほうはそのまま使用。
                 頂点シェーダーは中身を奪ってくる
                 github: https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib/depth.glsl.js
+                THREE.ShaderLib['hoge'] https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib.js
 
                 あ！色々消してたら頂点いじってたシェーダーとほぼ同じになちゃった
                 本質はvHighPrecisionZW;って変数なのか？
+                じゃあちょっといじるだけの処理にかえとこ
 
                 > three.jsのcustomDepthMaterialを使ってみる  
                 > https://qiita.com/aa_debdeb/items/2a3527b1527380e4af85 ←参考資料。天才
@@ -357,9 +389,97 @@
                 const SYUUKUN = glb.scene;
                 SYUUKUN.position.set(0, 0, 0);                
 
+                //トゥーンシェーダーのテクチャを産み出すための
+                    //フォーマット
+                const toon_gradient_format = ( renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat;
+                    //色段階の設定
+                let toon_gradient_colors = new Uint8Array( 3 );//色の分割数
+                for ( let c = 0; c <= toon_gradient_colors.length; c ++ ) {
+                    toon_gradient_colors[ c ] = ( c / toon_gradient_colors.length ) * 256;
+                }
+                let gradientMap = new THREE.DataTexture( toon_gradient_colors, toon_gradient_colors.length, 1, toon_gradient_format );
+                gradientMap.needsUpdate = true;
+
                 SYUUKUN.traverse((SYUUKUN)=>{
                     if (SYUUKUN.isMesh) {
                         SYUUKUN.castShadow = true;//影を落とす
+
+                        //basic_カスタムシェーダーマテリアルを作成
+                        let basic_customMaterial = new THREE.MeshLambertMaterial({
+                            color:SYUUKUN.material.color,
+                            emissiveIntensity :0,
+                            emissive :new THREE.Color(0x600000),
+                        });
+                        //ここからカスタマイズ
+                        basic_customMaterial.onBeforeCompile = function ( shader ) {
+                            shader.uniforms.time = { value: 0.0 };
+                            shader.uniforms.length_value = { value: 1.0 };
+                            shader.uniforms.amp = { value: 0.0 };
+                            shader.uniforms.omega = { value: 1.0 };
+                            shader.uniforms.wave_num = { value: 1.0 };
+                            shader.uniforms.spe_num={value:1.0};
+                            
+                            //頂点シェーダいじるね
+                            shader.vertexShader = `
+                            uniform float time;
+                            uniform float length_value;
+                            uniform float amp;
+                            uniform float omega;
+                            uniform float wave_num;
+                            ` + shader.vertexShader;
+                            shader.vertexShader = shader.vertexShader.replace('#include <project_vertex>',  `
+                            vec4 mvPosition = vec4( transformed, 1.0 );
+                            #ifdef USE_INSTANCING
+                                mvPosition = instanceMatrix * mvPosition;
+                            #endif
+                            mvPosition.x=mvPosition.x*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                            mvPosition.z=mvPosition.z*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                            mvPosition.y*=length_value;
+
+                            mvPosition = modelViewMatrix * mvPosition;
+                            gl_Position = projectionMatrix * mvPosition;
+                            `);
+
+                            basic_customMaterial.userData.shader = shader;//ここに入れないといけないんだけど、カスタムシェーダーくんと位置が違っていて、狂いそうだ。
+                        };
+
+                        // toon_カスタムシェーダーマテリアルを作成
+                        let toon_customMaterial =  new THREE.MeshToonMaterial( {
+                            color:SYUUKUN.material.color,
+                            gradientMap: gradientMap,
+                        } );
+                        //ここからカスタマイズ
+                        toon_customMaterial.onBeforeCompile = function ( shader ) {
+                            shader.uniforms.time = { value: 0.0 };
+                            shader.uniforms.length_value = { value: 1.0 };
+                            shader.uniforms.amp = { value: 0.0 };
+                            shader.uniforms.omega = { value: 1.0 };
+                            shader.uniforms.wave_num = { value: 1.0 };
+                            shader.uniforms.spe_num={value:1.0};
+                            
+                            //頂点シェーダいじるね
+                            shader.vertexShader = `
+                            uniform float time;
+                            uniform float length_value;
+                            uniform float amp;
+                            uniform float omega;
+                            uniform float wave_num;
+                            ` + shader.vertexShader;
+                            shader.vertexShader = shader.vertexShader.replace('#include <project_vertex>',  `
+                            vec4 mvPosition = vec4( transformed, 1.0 );
+                            #ifdef USE_INSTANCING
+                                mvPosition = instanceMatrix * mvPosition;
+                            #endif
+                            mvPosition.x=mvPosition.x*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                            mvPosition.z=mvPosition.z*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                            mvPosition.y*=length_value;
+
+                            mvPosition = modelViewMatrix * mvPosition;
+                            gl_Position = projectionMatrix * mvPosition;
+                            `);
+
+                            toon_customMaterial.userData.shader = shader;//ここに入れないといけないんだけど、カスタムシェーダーくんと位置が違っていて、狂いそうだ。
+                        };
 
                         // カスタムシェーダーマテリアルを作成
                         let customMaterial = new THREE.ShaderMaterial({
@@ -370,12 +490,96 @@
                                 amp: { value: 0.0 } ,
                                 omega: { value: 1.0 } ,
                                 wave_num: { value: 1.0 } ,
+                                spe_num:{value:1.0},
                             },
                             vertexShader: vertexShader,
                             fragmentShader: fragmentShader,
                         });
-                        customMaterial_s.push(customMaterial);//マテリアルの格納配列に入れておくね
-                        SYUUKUN.material = customMaterial;
+
+                        //basic_wire_カスタムシェーダーマテリアルを作成
+                        let basic_wire_customMaterial = new THREE.MeshLambertMaterial({
+                            color:SYUUKUN.material.color,
+                            wireframe :true,
+                        });
+                        //ここからカスタマイズ
+                        basic_wire_customMaterial.onBeforeCompile = function ( shader ) {
+                            shader.uniforms.time = { value: 0.0 };
+                            shader.uniforms.length_value = { value: 1.0 };
+                            shader.uniforms.amp = { value: 0.0 };
+                            shader.uniforms.omega = { value: 1.0 };
+                            shader.uniforms.wave_num = { value: 1.0 };
+                            shader.uniforms.spe_num={value:1.0};
+                            
+                            //頂点シェーダいじるね
+                            shader.vertexShader = `
+                            uniform float time;
+                            uniform float length_value;
+                            uniform float amp;
+                            uniform float omega;
+                            uniform float wave_num;
+                            ` + shader.vertexShader;
+                            shader.vertexShader = shader.vertexShader.replace('#include <project_vertex>',  `
+                            vec4 mvPosition = vec4( transformed, 1.0 );
+                            #ifdef USE_INSTANCING
+                                mvPosition = instanceMatrix * mvPosition;
+                            #endif
+                            mvPosition.x=mvPosition.x*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                            mvPosition.z=mvPosition.z*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                            mvPosition.y*=length_value;
+
+                            mvPosition = modelViewMatrix * mvPosition;
+                            gl_Position = projectionMatrix * mvPosition;
+                            `);
+
+                            basic_wire_customMaterial.userData.shader = shader;//ここに入れないといけないんだけど、カスタムシェーダーくんと位置が違っていて、狂いそうだ。
+                        };
+
+                         //Metal_カスタムシェーダーマテリアルを作成
+                         let crystal_customMaterial =new THREE.MeshStandardMaterial(
+                            {
+                                color:new THREE.Color(SYUUKUN.material.color.r*0.4+0.6,SYUUKUN.material.color.g*0.4+0.6,SYUUKUN.material.color.b*0.4+0.6),
+                                roughness:0.1,
+                                metalness:1,
+                                envMap:キューブマップ,
+                            }
+                            );
+                        //ここからカスタマイズ
+                        crystal_customMaterial.onBeforeCompile = function ( shader ) {
+                            shader.uniforms.time = { value: 0.0 };
+                            shader.uniforms.length_value = { value: 1.0 };
+                            shader.uniforms.amp = { value: 0.0 };
+                            shader.uniforms.omega = { value: 1.0 };
+                            shader.uniforms.wave_num = { value: 1.0 };
+                            shader.uniforms.spe_num={value:1.0};
+                            
+                            //頂点シェーダいじるね
+                            shader.vertexShader = `
+                            uniform float time;
+                            uniform float length_value;
+                            uniform float amp;
+                            uniform float omega;
+                            uniform float wave_num;
+                            ` + shader.vertexShader;
+                            shader.vertexShader = shader.vertexShader.replace('#include <project_vertex>',  `
+                            vec4 mvPosition = vec4( transformed, 1.0 );
+                            #ifdef USE_INSTANCING
+                                mvPosition = instanceMatrix * mvPosition;
+                            #endif
+                            mvPosition.x=mvPosition.x*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                            mvPosition.z=mvPosition.z*(sin(mvPosition.y*wave_num+time*omega)*amp+1.0);
+                            mvPosition.y*=length_value;
+
+                            mvPosition = modelViewMatrix * mvPosition;
+                            gl_Position = projectionMatrix * mvPosition;
+                            `);
+
+                            crystal_customMaterial.userData.shader = shader;//ここに入れないといけないんだけど、カスタムシェーダーくんと位置が違っていて、狂いそうだ。
+                        };
+
+                        customMaterial_s.push([basic_customMaterial,toon_customMaterial,customMaterial,basic_wire_customMaterial,crystal_customMaterial]);//マテリアルの格納配列に入れておくね
+
+                        //SYUUKUN.material = customMaterial;
+                        //初期マテリアル設定はマテリアルチェンジ関数でやってるよん♪
                         
                         
 
@@ -387,6 +591,7 @@
                                 amp: { value: 0.0 } ,
                                 omega: { value: 1.0 } ,
                                 wave_num: { value: 1.0 } ,
+                                //spe_num:{value:1.0},
                             },
                             vertexShader: depth_vertexShader,
                             fragmentShader: depth_fragmentShader,
@@ -403,6 +608,87 @@
                 });
                 scene.add(SYUUKUN);      
                 console.log("マテリアル数:"+customMaterial_s.length);  
+
+                let Material_number=0;
+                function Material_Change(mat_num){
+                    let Mesh_i=0;
+                    SYUUKUN.traverse((SYUUKUN)=>{
+                        if (SYUUKUN.isMesh) {
+                            SYUUKUN.material = customMaterial_s[Mesh_i][mat_num];
+                            Mesh_i++;
+                        }
+                    });
+
+                    renderer.render(scene, camera); // いったんレンダリングして、.onBeforeCompileを走らせる
+
+                    customMaterial_s.forEach(materialくん_s=>{        
+                        materialくん_s.forEach(materialくん=>{          
+                            if(materialくん.userData.shader){
+                                materialくん.userData.shader.uniforms.length_value.value=長さ;
+                                materialくん.userData.shader.uniforms.amp.value=振幅;
+                                materialくん.userData.shader.uniforms.omega.value=おめが;
+                                materialくん.userData.shader.uniforms.wave_num.value=波の数;
+                                materialくん.userData.shader.uniforms.spe_num.value=スペシャル数;
+                            }else if(materialくん.uniforms){          
+                                materialくん.uniforms.length_value.value=長さ;   
+                                materialくん.uniforms.amp.value=振幅;
+                                materialくん.uniforms.omega.value=おめが;
+                                materialくん.uniforms.wave_num.value=波の数;
+                                materialくん.uniforms.spe_num.value=スペシャル数;
+                            }
+                        })
+                    });
+                    if(Material_number==0){//通常だね
+                        エミッション変更();
+                    }else if(Material_number==1){//トゥーンだね
+                        トゥーン色数変更();//色段階の設定
+                    }else if(Material_number==4){//金属だね
+                        クリスタル色変更();
+                    }
+                }
+
+                function エミッション変更(){
+                    let Mesh_i=0;
+                    SYUUKUN.traverse((SYUUKUN)=>{
+                        if (SYUUKUN.isMesh) {
+                            customMaterial_s[Mesh_i][0].emissiveIntensity= スペシャル数-1;
+                            SYUUKUN.material = customMaterial_s[Mesh_i][0];
+                            Mesh_i++;
+                        }
+                    });
+                }
+
+                function トゥーン色数変更(){
+                    toon_gradient_colors = new Uint8Array( スペシャル数+1 );//色の分割数
+                    for ( let c = 0; c <= toon_gradient_colors.length; c ++ ) {
+                        toon_gradient_colors[ c ] = ( c / toon_gradient_colors.length ) * 256;
+                    }
+                    gradientMap = new THREE.DataTexture( toon_gradient_colors, toon_gradient_colors.length, 1, toon_gradient_format );
+                    gradientMap.needsUpdate = true;
+                    let Mesh_i=0;
+                    SYUUKUN.traverse((SYUUKUN)=>{
+                        if (SYUUKUN.isMesh) {
+                            customMaterial_s[Mesh_i][1].gradientMap= gradientMap;
+                            SYUUKUN.material = customMaterial_s[Mesh_i][1];
+                            Mesh_i++;
+                        }
+                    });
+                }
+
+                function クリスタル色変更(){
+                    let Mesh_i=0;
+                    SYUUKUN.traverse((SYUUKUN)=>{
+                        if (SYUUKUN.isMesh) {
+                            customMaterial_s[Mesh_i][4].color=new THREE.Color(SYUUKUN.material.color.r*0.4+0.6,SYUUKUN.material.color.g*0.4+0.6*(10-スペシャル数)/10,SYUUKUN.material.color.b*0.4+0.6);
+                            SYUUKUN.material = customMaterial_s[Mesh_i][4];
+                            Mesh_i++;
+                        }
+                    });
+                }
+                
+                Material_Change(Material_number=0);//初期設定ここだぜー！！！！
+
+                
                 
                 const syuukun_anim= glb.animations;//アニメーション
                 const syuukun_mixer = new THREE.AnimationMixer(SYUUKUN);//アニメーションミキサー
@@ -412,6 +698,8 @@
                     アクション[i].setLoop(THREE.LoopRepeat);//無限ルーピ        
                     console.log("アクション"+i+":"+syuukun_anim[i].name);
                 }
+
+                
                 const speed = document.getElementById('speed');
                 const speed値 = document.getElementById('speed値');
                 speed.addEventListener('input', function() {
@@ -421,10 +709,16 @@
                 const length = document.getElementById('length');
                 const length値 = document.getElementById('length値');
                 length.addEventListener('input', function() {
-                    let 長さ = parseFloat(this.value);
+                    長さ = parseFloat(this.value);
                     length値.textContent = 長さ.toFixed(1);
-                    customMaterial_s.forEach(materialくん=>{
-                        materialくん.uniforms.length_value.value=長さ;
+                    customMaterial_s.forEach(materialくん_s=>{
+                        materialくん_s.forEach(materialくん=>{
+                            if(materialくん.userData.shader){
+                                materialくん.userData.shader.uniforms.length_value.value=長さ;
+                            }else if(materialくん.uniforms){ 
+                                materialくん.uniforms.length_value.value=長さ;
+                            }
+                        })
                     });
                     custom_depth_Material_s.forEach(materialくん=>{
                         materialくん.uniforms.length_value.value=長さ;
@@ -433,10 +727,16 @@
                 const amp = document.getElementById('amp');
                 const amp値 = document.getElementById('amp値');
                 amp.addEventListener('input', function() {
-                    let 振幅 = parseFloat(this.value);
+                    振幅 = parseFloat(this.value);
                     amp値.textContent = 振幅.toFixed(2);
-                    customMaterial_s.forEach(materialくん=>{
-                        materialくん.uniforms.amp.value=振幅;
+                    customMaterial_s.forEach(materialくん_s=>{        
+                        materialくん_s.forEach(materialくん=>{          
+                            if(materialくん.userData.shader){
+                                materialくん.userData.shader.uniforms.amp.value=振幅;
+                            }else if(materialくん.uniforms){             
+                                materialくん.uniforms.amp.value=振幅;
+                            }
+                        })
                     });
                     custom_depth_Material_s.forEach(materialくん=>{
                         materialくん.uniforms.amp.value=振幅;
@@ -445,10 +745,16 @@
                 const omega = document.getElementById('omega');
                 const omega値 = document.getElementById('omega値');
                 omega.addEventListener('input', function() {
-                    let おめが = parseFloat(this.value);
+                    おめが = parseFloat(this.value);
                     omega値.textContent = おめが.toFixed(1);
-                    customMaterial_s.forEach(materialくん=>{
-                        materialくん.uniforms.omega.value=おめが;
+                    customMaterial_s.forEach(materialくん_s=>{        
+                        materialくん_s.forEach(materialくん=>{            
+                            if(materialくん.userData.shader){
+                                materialくん.userData.shader.uniforms.omega.value=おめが;
+                            }else if(materialくん.uniforms){               
+                                materialくん.uniforms.omega.value=おめが;
+                            }
+                        })
                     });
                     custom_depth_Material_s.forEach(materialくん=>{
                         materialくん.uniforms.omega.value=おめが;
@@ -457,16 +763,42 @@
                 const wave_num = document.getElementById('wave_num');
                 const wave_num値 = document.getElementById('wave_num値');
                 wave_num.addEventListener('input', function() {
-                    let 波の数 = this.value;
+                    波の数 = this.value;
                     wave_num値.textContent = 波の数;
-                    customMaterial_s.forEach(materialくん=>{
-                        materialくん.uniforms.wave_num.value=波の数;
+                    customMaterial_s.forEach(materialくん_s=>{        
+                        materialくん_s.forEach(materialくん=>{   
+                            if(materialくん.userData.shader){
+                                materialくん.userData.shader.uniforms.wave_num.value=波の数;
+                            }else if(materialくん.uniforms){               
+                                materialくん.uniforms.wave_num.value=波の数;
+                            }
+                        })
                     });
                     custom_depth_Material_s.forEach(materialくん=>{
                         materialくん.uniforms.wave_num.value=波の数;
                     });
                 });
-                
+                const spe_num値 = document.getElementById('spe_num値');
+                spe_num.addEventListener('input', function() {
+                    スペシャル数 = parseFloat(this.value);
+                    spe_num値.textContent = スペシャル数;
+                    customMaterial_s.forEach(materialくん_s=>{        
+                        materialくん_s.forEach(materialくん=>{   
+                            if(materialくん.userData.shader){
+                                materialくん.userData.shader.uniforms.spe_num.value=スペシャル数;
+                            }else if(materialくん.uniforms){              
+                                materialくん.uniforms.spe_num.value=スペシャル数;
+                            }
+                        })
+                    });
+                    if(Material_number==0){//通常だね
+                        エミッション変更();
+                    }else if(Material_number==1){//トゥーンだね
+                        トゥーン色数変更();//色段階の設定
+                    }else if(Material_number==4){//金属だね
+                        クリスタル色変更();
+                    }
+                });
                 
                 const チェック1 = document.getElementById('check_1');
                 const チェック2 = document.getElementById('check_2');
@@ -496,6 +828,22 @@
                         アクション[2].stop();
                     }
                 });
+
+                document.getElementById('basic_button').addEventListener("click", function(){
+                    Material_Change(Material_number=0);
+                });//ボタンに機能割り当て
+                document.getElementById('toon_button').addEventListener("click", function(){
+                    Material_Change(Material_number=1);
+                });//ボタンに機能割り当て
+                document.getElementById('xyz_button').addEventListener("click", function(){
+                    Material_Change(Material_number=2);
+                });//ボタンに機能割り当て
+                document.getElementById('wire_button').addEventListener("click", function(){
+                    Material_Change(Material_number=3);
+                });//ボタンに機能割り当て
+                document.getElementById('crystal_button').addEventListener("click", function(){
+                    Material_Change(Material_number=4);
+                });//ボタンに機能割り当て
 
                 document.getElementById('download_button').addEventListener("click", function(){
                     var 今= new Date();
@@ -551,7 +899,7 @@
                 ctx.font = "30px 'ＭＳ Ｐゴシック'";//フォント設定。左のフォントがないと右のフォントを適用するらしい。
                 ctx.fillStyle="#FFFFFF";
                 
-
+                let TIME=0;
                 Main();//ループ関数
                 function Main() {
                     ctx.clearRect(0, 0, cnvs.width, cnvs.height);//更新！
@@ -613,11 +961,20 @@
                     ドラッグ移動x = 0;
                     ドラッグ移動y = 0;
 
-                    customMaterial_s.forEach(materialくん=>{
-                        materialくん.uniforms.time.value += 0.1*倍速;
+                    TIME+= 0.1*倍速;
+                    customMaterial_s.forEach(materialくん_s=>{
+                        materialくん_s.forEach(materialくん=>{
+                            
+                            if(materialくん.userData.shader){
+                                materialくん.userData.shader.uniforms.time.value =TIME;
+                            }else if(materialくん.uniforms){        
+                                materialくん.uniforms.time.value =TIME;
+                            }
+                        })
                     });
+
                     custom_depth_Material_s.forEach(materialくん=>{
-                        materialくん.uniforms.time.value += 0.1*倍速;
+                        materialくん.uniforms.time.value =TIME;
                     });
                     renderer.shadowMap.needsUpdate= true;//影を有効に。
 
@@ -653,6 +1010,13 @@
             <input type="checkbox" id="check_1" checked> <label for="check_1">ポカポカ</label>
             <input type="checkbox" id="check_2" > <label for="check_2">うずうず待機</label>
             <input type="checkbox" id="check_3" > <label for="check_3">歩き</label>
+
+            <input id="basic_button" type="button" value="basic">
+            <input id="toon_button" type="button" value="toon">
+            <input id="xyz_button" type="button" value="xyz">
+            <input id="wire_button" type="button" value="wire">
+            <input id="crystal_button" type="button" value="crystal">
+
             <div id="slider_div_div">
                 <div class="slider_div slider_speed_div">
                     <input type="range" class="slider slider_speed" min="0" max="10" value="1" id="speed" step="0.1"> 速度 <span id="speed値">1.00</span> 倍
@@ -668,6 +1032,9 @@
                 </div>
                 <div class="slider_div">
                     <input type="range" class="slider" min="0" max="10" value="1" id="wave_num" step="0.1"> 波の数 <span id="wave_num値">1</span> 個
+                </div>
+                <div class="slider_div">
+                    <input type="range" class="slider" min="0" max="10" value="1" id="spe_num" step="1"> 特殊 <span id="spe_num値">1</span> 
                 </div>
             </div>
 
