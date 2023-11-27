@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="クリッカー系ゲームを…つくりたい！">                                                                 <!--ページ説明　入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/毎日しゅうくん</title>                                                         <!--タイトル　入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/everyday_syuukun">                                <!--タイトル　入力すること！-->
+        <meta property="og:title" content="毎日しゅうくん">                                                               <!--タイトル　入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/everyday_syuukun.html">                   <!--リンク　入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <meta name="viewport" content="width=device-width,initial-scale=1"><!--スマホで見てる人向けに表示領域の設定-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+            div#mannaka{
+                width: 98%;
+            }
+            div#parent_div{
+                text-align: center;
+                margin: 10px;
+            }
+            #canvas{
+                background: #ffffff;
+                height: 80vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ　→スマホはどースンだよ→そこはonloadくんとこで頑張ってもろて…*/
+                /*image-rendering: pixelated;ドット絵を拡大したいなら使え*/
+            }
+        </style>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1MB5XLN4LW');
+        </script>
+        <!-- Google tag (gtag.js) -->
+
+        <script src="../js/public.js"></script>
+
+        <!--pixiJSを読み込もう-->
+        <script src="../js/library/pixi.min.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
+        <!--pixi-filters-を読み込もう-->
+        <script src="../js/library/pixi-filters.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
+
+        <script>
+            onload = function(){
+                onload_functions();
+
+                const canvas =document.getElementById("canvas");
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                    canvas.style.height=70+"vh";
+                    canvas.style.width=canvas.clientHeight*2/3+"px";
+                    //canvas.style.height=canvas.clientWidth+"px";
+                }
+                const app = new PIXI.Application({//PIXIアプリを作成
+                    view : canvas, //canvas指定
+                    //antialias : true,//アンチエイリアス。デフォルトOFF
+                    //preserveDrawingBuffer: true,//
+                    backgroundColor: 0x303030,
+                    width:1000,
+                    height:1500,
+                });
+
+                const 基本文字=new PIXI.TextStyle({
+                    fontSize: 40,
+                    fill: 0x101010,
+                    fontWeight: 300,
+                });
+                const 時刻文字=new PIXI.TextStyle({
+                    fontSize: 70,
+                    fill: 0x101010,
+                    fontWeight: 300,
+                });
+
+                let time =0;
+                let 倍速=1;
+
+                const 上コンテナ = new PIXI.Container();
+                app.stage.addChild(上コンテナ);
+
+                const 上バー=new PIXI.Graphics();
+                上バー.beginFill(0xffffff);
+                上バー.drawRect(10,10,980,90);
+                上バー.endFill();
+                上コンテナ.addChild(上バー);
+
+                const 時刻 = new PIXI.Text( "00:00" ,時刻文字);
+                時刻.position.set(800,15);
+                上コンテナ.addChild(時刻);
+
+                const mainコンテナ = new PIXI.Container();
+                app.stage.addChild(mainコンテナ);
+                
+                const お世話=new PIXI.Graphics();
+                お世話.beginFill(0xffffff);
+                お世話.drawRect(10,710,480,380);
+                お世話.endFill();
+                お世話.interactive=true;//タッチ操作許可
+                お世話.on("pointerdown",()=>{
+                        console.log("oh");
+                    });
+                mainコンテナ.addChild(お世話);
+
+                const 店=new PIXI.Graphics();
+                店.beginFill(0xffffff);
+                店.drawRect(510,1110,480,380);
+                店.endFill();
+                店.interactive=true;//タッチ操作許可
+                店.on("pointerdown",()=>{
+                        console.log("oh");
+                    });
+                mainコンテナ.addChild(店);
+
+                const 実績=new PIXI.Graphics();
+                実績.beginFill(0xffffff);
+                実績.drawRect(510,710,480,380);
+                実績.endFill();
+                実績.interactive=true;//タッチ操作許可
+                実績.on("pointerdown",()=>{
+                        console.log("oh");
+                    });
+                mainコンテナ.addChild(実績);
+
+                倍速=60;
+                //time=86200;
+
+                app.ticker.add(loop);
+                
+                function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60 …まあ大体1だ  app.ticker.speed = 3;で変えられるらしいっすよ
+                    time+=delta/60;
+                    if(time>=86400){
+                        time=time%86400;
+                        //何日ｽｯ飛んだかも計算したほうがいいよ
+                    }
+                    時刻.text=Math.floor(time/3600).toString().padStart(2,0)+":"+Math.floor(Math.floor((time%3600)/60)).toString().padStart(2,0);
+                    app.ticker.speed=倍速;
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+
+            <div id="parent_div">
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <footer>
+                <ul id="footul">
+                    <li id="foot_tweet_li">
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
