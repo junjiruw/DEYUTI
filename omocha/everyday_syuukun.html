@@ -63,26 +63,36 @@
                 }
                 const app = new PIXI.Application({//PIXIアプリを作成
                     view : canvas, //canvas指定
-                    //antialias : true,//アンチエイリアス。デフォルトOFF
-                    //preserveDrawingBuffer: true,//
+                    antialias : true,//アンチエイリアス。デフォルトOFF
+                    //preserveDrawingBuffer: true,//canvasのキャプチャとか実装するなら必要らしい。
                     backgroundColor: 0x303030,
                     width:1000,
                     height:1500,
                 });
+                PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;//スプライトの拡大をぼやけさせない。
 
-                const 基本文字=new PIXI.TextStyle({
+                const 基本文字_黒=new PIXI.TextStyle({
                     fontSize: 40,
                     fill: 0x101010,
+                    fontWeight: 300,
+                });
+                const 基本文字_白=new PIXI.TextStyle({
+                    fontSize: 40,
+                    fill: 0xFFFFFF,
                     fontWeight: 300,
                 });
                 const 時刻文字=new PIXI.TextStyle({
                     fontSize: 70,
                     fill: 0x101010,
-                    fontWeight: 300,
+                    fontWeight: 700,
                 });
 
                 let time =0;
+                let day=1;
+                const 曜日=["月","火","水","木","金","土","日"];
+                let 曜日カウント=0;
                 let 倍速=1;
+                let ダイヤ=0;
 
                 const 上コンテナ = new PIXI.Container();
                 app.stage.addChild(上コンテナ);
@@ -93,16 +103,52 @@
                 上バー.endFill();
                 上コンテナ.addChild(上バー);
 
-                const 時刻 = new PIXI.Text( "00:00" ,時刻文字);
-                時刻.position.set(800,15);
-                上コンテナ.addChild(時刻);
+                const 時刻表示 = new PIXI.Text( "00:00" ,時刻文字);
+                時刻表示.position.set(800,15);
+                上コンテナ.addChild(時刻表示);
+
+                const 曜日表示 = new PIXI.Text( "（月）" ,時刻文字);
+                曜日表示.position.set(320,15);
+                上コンテナ.addChild(曜日表示);
+
+                const 日付表示 = new PIXI.Text( "😎月/01日" ,時刻文字);
+                日付表示.position.set(30,15);
+                上コンテナ.addChild(日付表示);
+
+                const ダイヤ表示 = new PIXI.Text( "💎:0",時刻文字);
+                ダイヤ表示.position.set(980,110);
+                ダイヤ表示.anchor.set(1,0);
+                上コンテナ.addChild(ダイヤ表示);
+
+                上コンテナ.zIndex = 10;
+
+                
+                //---
+
+                const 中コンテナ = new PIXI.Container();
+                app.stage.addChild(中コンテナ);
+
+                const 中央=new PIXI.Graphics();
+                中央.beginFill(0xafdfcf);
+                中央.drawRect(10,110,980,590);
+                中央.endFill();
+                中コンテナ.addChild(中央);
+
+                const しゅうくん=new PIXI.Sprite(PIXI.Texture.from("../images/omocha/every_syuukun/syukun1616.png"));
+                しゅうくん.anchor.set(0.5);
+                しゅうくん.scale.set(10);
+                しゅうくん.position.set(700,420);
+                中コンテナ.addChild(しゅうくん);
+
+                中コンテナ.zIndex = -1;
+                //---
 
                 const mainコンテナ = new PIXI.Container();
                 app.stage.addChild(mainコンテナ);
                 
                 const お世話=new PIXI.Graphics();
                 お世話.beginFill(0xffffff);
-                お世話.drawRect(10,710,480,380);
+                お世話.drawRect(10,710,485,385);
                 お世話.endFill();
                 お世話.interactive=true;//タッチ操作許可
                 お世話.on("pointerdown",()=>{
@@ -112,7 +158,7 @@
 
                 const 店=new PIXI.Graphics();
                 店.beginFill(0xffffff);
-                店.drawRect(510,1110,480,380);
+                店.drawRect(505,710,485,385);
                 店.endFill();
                 店.interactive=true;//タッチ操作許可
                 店.on("pointerdown",()=>{
@@ -120,28 +166,92 @@
                     });
                 mainコンテナ.addChild(店);
 
-                const 実績=new PIXI.Graphics();
-                実績.beginFill(0xffffff);
-                実績.drawRect(510,710,480,380);
-                実績.endFill();
-                実績.interactive=true;//タッチ操作許可
-                実績.on("pointerdown",()=>{
+                const ミッション=new PIXI.Graphics();
+                ミッション.beginFill(0xffffff);
+                ミッション.drawRect(505,1105,485,385);
+                ミッション.endFill();
+                ミッション.interactive=true;//タッチ操作許可
+                ミッション.on("pointerdown",()=>{
                         console.log("oh");
                     });
-                mainコンテナ.addChild(実績);
+                mainコンテナ.addChild(ミッション);
 
-                倍速=60;
-                //time=86200;
 
-                app.ticker.add(loop);
+                //---
+                const デイリーコンテナ = new PIXI.Container();
+                app.stage.addChild(デイリーコンテナ);
+
+                const デイリーミッションだよ = new PIXI.Text( "デイリーミッション" ,基本文字_白);
+                デイリーミッションだよ.anchor.set(0.5);
+                デイリーミッションだよ.position.set(250,1130);
+                上コンテナ.addChild(デイリーミッションだよ);
                 
+                let daily_mission = new Array(5);
+                const daily_mission_text = new Array(5);
+                for(let i=0;i<5;i++){
+                    daily_mission[i]=new PIXI.Graphics();
+                    daily_mission[i].beginFill(0xcfcfcf);
+                    daily_mission[i].x=10;
+                    daily_mission[i].y=1165+i*60;
+                    daily_mission[i].drawRect(0,0,485,55);
+                    daily_mission[i].endFill();
+                    daily_mission[i].interactive=true;//タッチ操作許可
+                    daily_mission[i].有効=true;
+                    daily_mission[i].on("pointerdown",()=>{
+                            if(daily_mission[i].有効){
+                                console.log("oh");
+                            }
+                        });
+                    daily_mission[i].有効化=function(){
+                        daily_mission[i].有効=true;
+                        this.clear();//いったん消して描きなおす
+                        this.beginFill(0xcfcfcf);
+                        this.drawRect(0,0,485,55);
+                        this.endFill();
+                    };
+                    daily_mission[i].無効化=function(){
+                        daily_mission[i].有効=false;
+                        this.clear();//いったん消して描きなおす
+                        this.beginFill(0x3f3f3f);
+                        this.drawRect(0,0,485,55);
+                        this.endFill();
+                    };
+                    デイリーコンテナ.addChild(daily_mission[i]);
+
+                    daily_mission_text[i]= new PIXI.Text( "うぃ" ,基本文字_黒);
+                    daily_mission_text[i].position.set(5,5);
+                    daily_mission[i].addChild(daily_mission_text[i]);
+
+                };                 
+
+                デイリーコンテナ.zIndex = 1;
+
+                //---
+                
+                app.stage.sortChildren();//コンテナのzソート
+
+
+                //↓ここでセーブデータによって色々いじる処理が入るよ！
+                daily_mission[3].無効化();
+                daily_mission[4].無効化();
+                倍速=6000;
+                //↑ここでセーブデータによって色々いじる処理が入るよ！
+
+                app.ticker.add(loop);                
                 function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60 …まあ大体1だ  app.ticker.speed = 3;で変えられるらしいっすよ
                     time+=delta/60;
                     if(time>=86400){
+                        day+=Math.floor(time/86400);
+                        日付表示.text="😎月/"+(day%32).toString().padStart(2,0)+"日";
+                        曜日表示.text="（"+曜日[day%7]+"）";
+                        if(曜日カウント<Math.floor(day/7)){
+                            //console.log(Math.floor(day/7)-曜日カウント);//何週間飛んだ？
+                            曜日カウント=Math.floor(day/7);
+                        }
                         time=time%86400;
-                        //何日ｽｯ飛んだかも計算したほうがいいよ
                     }
-                    時刻.text=Math.floor(time/3600).toString().padStart(2,0)+":"+Math.floor(Math.floor((time%3600)/60)).toString().padStart(2,0);
+                    時刻表示.text=Math.floor(time/3600).toString().padStart(2,0)+":"+Math.floor(Math.floor((time%3600)/60)).toString().padStart(2,0);
+                    ダイヤ表示.text="💎:"+ダイヤ;
                     app.ticker.speed=倍速;
                 }
             }
