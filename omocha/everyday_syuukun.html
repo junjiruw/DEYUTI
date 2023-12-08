@@ -57,8 +57,8 @@
 
                 const canvas =document.getElementById("canvas");
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
-                    canvas.style.height=70+"vh";
-                    canvas.style.width=canvas.clientHeight*2/3+"px";
+                    canvas.style.width=90+"%";
+                    canvas.style.height=canvas.clientWidth*3/2+"px";//これさ、スマホがずんぐりむっくりだったら縦にはみ出ない？⇒そうかも～（笑）
                     //canvas.style.height=canvas.clientWidth+"px";
                 }
                 const app = new PIXI.Application({//PIXIアプリを作成
