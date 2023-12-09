@@ -57,7 +57,7 @@
 
                 const canvas =document.getElementById("canvas");
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
-                    canvas.style.width=90+"%";
+                    canvas.style.width=100+"%";
                     canvas.style.height=canvas.clientWidth*3/2+"px";//これさ、スマホがずんぐりむっくりだったら縦にはみ出ない？⇒そうかも～（笑）
                     //canvas.style.height=canvas.clientWidth+"px";
                 }
@@ -128,10 +128,10 @@
                 const 中コンテナ = new PIXI.Container();
                 app.stage.addChild(中コンテナ);
 
-                const 中央=new PIXI.Graphics();
-                中央.beginFill(0xafdfcf);
-                中央.drawRect(10,110,980,590);
-                中央.endFill();
+                const 中央=new PIXI.Graphics()
+                .beginFill(0xafdfcf)
+                .drawRect(10,110,980,590)
+                .endFill();
                 中コンテナ.addChild(中央);
 
                 let 所持しゅうくん数=1;
@@ -143,27 +143,37 @@
                     しゅうくん[i].x=100+Math.floor(i/3)*130;
                     しゅうくん[i].y=280+i%3*150;
                     しゅうくん[i].visible=false;
-                    しゅうくん[i].作業内容="";
+                    しゅうくん[i].作業表示= new PIXI.Text("",時刻文字);
+                    しゅうくん[i].作業表示.position.set(しゅうくん[i].x,しゅうくん[i].y-10);
+                    しゅうくん[i].作業表示.anchor.set(0.5,0);
                     しゅうくん[i].進捗=0;
                     しゅうくん[i].進捗表示=new PIXI.Graphics();
                     しゅうくん[i].バー表示=function(){
                         this.進捗表示.clear()
                         .beginFill(0x404040)
-                        .drawRect(しゅうくん[i].x-96,しゅうくん[i].y-110,192,34)
+                        .drawRect(しゅうくん[i].x-56,しゅうくん[i].y-90,112,14)
                         .endFill()
                         .beginFill(0x40ff40)
-                        .drawRect(しゅうくん[i].x-94,しゅうくん[i].y-108,188*this.進捗,30)
+                        .drawRect(しゅうくん[i].x-54,しゅうくん[i].y-88,108*this.進捗,10)
                         .endFill();
                     };
                     しゅうくん[i].バー非表示=function(){
                         this.進捗表示.clear();
                     };
+                    しゅうくん[i].interactive=true;//タッチ操作許可
+                        しゅうくん[i].on("pointerdown",()=>{
+                            if(しゅうくん[i].visible){
+                                ダイヤ+=0.3;
+                                本日お世話[4]++;
+                                daily_mission[4].更新();
+                            }
+                        });
                     中コンテナ.addChild(しゅうくん[i]);
                     中コンテナ.addChild(しゅうくん[i].進捗表示);
+                    中コンテナ.addChild(しゅうくん[i].作業表示);
                 }
                 中コンテナ.zIndex = -1;
                 //---
-
                 const mainコンテナ = new PIXI.Container();
                 app.stage.addChild(mainコンテナ);
                 
@@ -182,8 +192,8 @@
                     お世話[i].on("pointerdown",()=>{
                         if(お世話[i].有効){
                             for(let j=0;j<所持しゅうくん数;j++){
-                                if(しゅうくん[j].作業内容==""){//なんもしてねえやついた
-                                    しゅうくん[j].作業内容=お世話_内容[i];
+                                if(しゅうくん[j].作業表示.text==""){//なんもしてねえやついた
+                                    しゅうくん[j].作業表示.text=お世話_内容[i];
                                     しゅうくん[j].バー表示();
                                     break;
                                 };
@@ -213,14 +223,13 @@
                     お世話[i].addChild(お世話_text[i]);
                 }
                 let お世話カウンター=[0,0,0,0];
-                let 本日お世話=[0,0,0,0];
-                let お世話ノルマ=[3,3,100,100,10];
+                let 本日お世話=[0,0,0,0,0];
+                let お世話ノルマ=[3,2,100,100,10];
                 let お世話速度=[1,0.9,0.5,0.1];
                 
-
                 const 店=new PIXI.Graphics()
                 .beginFill(0xffffff)
-                .drawRect(505,710,485,385)
+                .drawRect(505,710,237,385)
                 .endFill();
                 店.interactive=true;//タッチ操作許可
                 店.on("pointerdown",()=>{
@@ -230,13 +239,36 @@
 
                 const ミッション=new PIXI.Graphics()
                 .beginFill(0xffffff)
-                .drawRect(505,1105,485,385)
+                .drawRect(752,710,238,385)
                 .endFill();
                 ミッション.interactive=true;//タッチ操作許可
                 ミッション.on("pointerdown",()=>{
                         console.log("oh");
                     });
                 mainコンテナ.addChild(ミッション);
+
+                let 一時的な倍速=1;
+                const 翌日=new PIXI.Graphics()
+                .beginFill(0xff6f6f)
+                .drawRect(645,1295,345,195)
+                .endFill();
+                翌日.有効=true;
+                翌日.interactive=true;//タッチ操作許可
+                翌日.on("pointerdown",()=>{
+                    if(翌日.有効){
+                        ダイヤ=0;//これさ、寝たあと次の日になるまでの間にミッション報酬受け取ればダイヤリセット回避しない？←バカ、そういうのが楽しいんだろボケが
+                        一時的な倍速=1000;
+                        for(let j=0;j<所持しゅうくん数;j++){
+                            if(しゅうくん[j].作業表示.text==""){//なんもしてねえやついた
+                                しゅうくん[j].作業表示.text="💤";
+                            };
+                        }
+                    }
+                });
+                mainコンテナ.addChild(翌日);
+                翌日_text= new PIXI.Text( "💎全消費\n🛏寝る！" ,時刻文字);
+                翌日_text.position.set(655,1305);
+                翌日.addChild(翌日_text);
 
 
                 const デイリーミッションだよ = new PIXI.Text( "デイリーミッション" ,基本文字_白);
@@ -250,7 +282,7 @@
                 const daily_mission_報酬=[10,10,100,300,30];
                 for(let i=0;i<5;i++){
                     daily_mission[i]=new PIXI.Graphics()
-                    .beginFill(0xcfcfcf)
+                    .beginFill(0x3f3f3f)
                     .drawRect(0,0,485,55)
                     .endFill();
                     daily_mission[i].x=10;
@@ -305,6 +337,8 @@
                     };
                     mainコンテナ.addChild(daily_mission[i]);
 
+                    
+
                     daily_mission_text[i]= new PIXI.Text( daily_mission_内容[i]+お世話ノルマ[i] ,基本文字_黒);
                     daily_mission_text[i].position.set(5,5);
                     daily_mission[i].addChild(daily_mission_text[i]);
@@ -314,7 +348,8 @@
                     報酬.position.set(480,5);
                     daily_mission[i].addChild(報酬);
 
-                };                
+                };    
+                let 有効デイリーミッション=[true,true,false,false,true];            
                 
                 //---
                 
@@ -322,15 +357,19 @@
 
 
                 //↓ここでセーブデータによって色々いじる処理が入るよ！
-                所持しゅうくん数=20;
+                所持しゅうくん数=10;
                 for(let i=0;i<所持しゅうくん数;i++){
                     しゅうくん[i].visible=true;
                 }
                 
                 お世話[2].無効化();
                 お世話[3].無効化();
-                daily_mission[2].無効化();
-                daily_mission[3].無効化();
+
+                for(let i=0;i<5;i++){
+                    if(有効デイリーミッション[i]){
+                        daily_mission[i].有効化();
+                    }
+                }
                 //倍速=6000;
                 //↑ここでセーブデータによって色々いじる処理が入るよ！
 
@@ -345,20 +384,39 @@
                             //console.log(Math.floor(day/7)-曜日カウント);//何週間飛んだ？
                             曜日カウント=Math.floor(day/7);
                         }
+                        for(let i=0;i<5;i++){
+                            本日お世話[i]=0;
+                            if(有効デイリーミッション[i]){
+                                daily_mission[i].有効化();
+                            }
+                        }
+                        for(let j=0;j<所持しゅうくん数;j++){
+                            if(しゅうくん[j].作業表示.text=="💤"){//寝てるんじゃねえ
+                                しゅうくん[j].作業表示.text="";
+                            };
+                        }
+                        一時的な倍速=1;
                         time=time%86400;
                     }
                     時刻表示.text=Math.floor(time/3600).toString().padStart(2,0)+":"+Math.floor(Math.floor((time%3600)/60)).toString().padStart(2,0);
-                    ダイヤ表示.text="💎:"+ダイヤ;
-                    app.ticker.speed=倍速;
+                    ダイヤ表示.text="💎:"+ダイヤ.toFixed(1);
+                    //夜を演出したい。
+                    let 明るさ=(Math.sin((time-20000)/86400*2*Math.PI)+3)/4;
+                    中央.clear()
+                    .beginFill( (190*明るさ << 16) + (250*明るさ << 8) + 220*明るさ)
+                    .drawRect(10,110,980,590)
+                    .endFill();
+                    
+                    app.ticker.speed=倍速*一時的な倍速;
 
                     for(let i=0;i<所持しゅうくん数;i++){
                         for(let j=0;j<4;j++){
-                            if(しゅうくん[i].作業内容==お世話_内容[j]){
+                            if(しゅうくん[i].作業表示.text==お世話_内容[j]){
                                 しゅうくん[i].進捗+=倍速/100*お世話速度[j];
                                 if(しゅうくん[i].進捗>=1){
                                     しゅうくん[i].バー非表示();
                                     しゅうくん[i].進捗=0;
-                                    しゅうくん[i].作業内容="";
+                                    しゅうくん[i].作業表示.text="";
                                     お世話カウンター[j]++;
                                     本日お世話[j]++;
                                     daily_mission[j].更新();
