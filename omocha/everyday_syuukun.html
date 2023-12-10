@@ -580,26 +580,27 @@
                         //削除したいよね
                     };
                     生涯ミッション[i].更新=function(){
-
-                        if(生涯ミッション_現状[i]>=生涯ミッション_ノルマ[i] && 生涯ミッション[i].達成==false){
-                            生涯ミッション[i].達成=true;
-                            生涯ミッション[i].clear()//いったん消して描きなおす
-                            .beginFill(0xcfcfcf)
-                            .drawRect(0,0,485,55)
-                            .endFill()
-                            .beginFill(0xefef0f)
-                            .drawRect(0,0,485,55)
-                            .endFill();
-                        }
-                        
-                        if(生涯ミッション_現状[i]<生涯ミッション_ノルマ[i]){
-                            生涯ミッション[i].clear()//いったん消して描きなおす
-                            .beginFill(0xcfcfcf)
-                            .drawRect(0,0,485,55)
-                            .endFill()
-                            .beginFill(0xffcfcf)
-                            .drawRect(0,0,485/生涯ミッション_ノルマ[i]*生涯ミッション_現状[i],55)
-                            .endFill();
+                        if(!生涯ミッション[i].達成済み){
+                            if(生涯ミッション_現状[i]>=生涯ミッション_ノルマ[i] && 生涯ミッション[i].達成==false){
+                                生涯ミッション[i].達成=true;
+                                生涯ミッション[i].clear()//いったん消して描きなおす
+                                .beginFill(0xcfcfcf)
+                                .drawRect(0,0,485,55)
+                                .endFill()
+                                .beginFill(0xefef0f)
+                                .drawRect(0,0,485,55)
+                                .endFill();
+                            }
+                            
+                            if(生涯ミッション_現状[i]<生涯ミッション_ノルマ[i]){
+                                生涯ミッション[i].clear()//いったん消して描きなおす
+                                .beginFill(0xcfcfcf)
+                                .drawRect(0,0,485,55)
+                                .endFill()
+                                .beginFill(0xffcfcf)
+                                .drawRect(0,0,485/生涯ミッション_ノルマ[i]*生涯ミッション_現状[i],55)
+                                .endFill();
+                            }
                         }
 
                     };
@@ -627,7 +628,7 @@
 
 
                 //↓ここでセーブデータによって色々いじる処理が入るよ！--------------------------------------------------------------------
-                ダイヤ=100;
+                ダイヤ=0;
                 
                 購入状況[11]=1;
                 for(let i=0;i<購入状況[11];i++){
