@@ -342,25 +342,27 @@
                         .endFill();
                     };
                     daily_mission[i].更新=function(){
-                        if(本日お世話[i]>=お世話ノルマ[i] && daily_mission[i].達成==false){
-                            daily_mission[i].達成=true;
-                            daily_mission[i].clear()//いったん消して描きなおす
-                            .beginFill(0xcfcfcf)
-                            .drawRect(0,0,585,55)
-                            .endFill()
-                            .beginFill(0xefef0f)
-                            .drawRect(0,0,585,55)
-                            .endFill();
-                        }
-                        
-                        if(本日お世話[i]<お世話ノルマ[i]){
-                            daily_mission[i].clear()//いったん消して描きなおす
-                            .beginFill(0xcfcfcf)
-                            .drawRect(0,0,585,55)
-                            .endFill()
-                            .beginFill(0xffcfcf)
-                            .drawRect(0,0,585/お世話ノルマ[i]*本日お世話[i],55)
-                            .endFill();
+                        if(!daily_mission[i].達成済み){
+                            if(本日お世話[i]>=お世話ノルマ[i] && daily_mission[i].達成==false){
+                                daily_mission[i].達成=true;
+                                daily_mission[i].clear()//いったん消して描きなおす
+                                .beginFill(0xcfcfcf)
+                                .drawRect(0,0,585,55)
+                                .endFill()
+                                .beginFill(0xefef0f)
+                                .drawRect(0,0,585,55)
+                                .endFill();
+                            }
+                            
+                            if(本日お世話[i]<お世話ノルマ[i]){
+                                daily_mission[i].clear()//いったん消して描きなおす
+                                .beginFill(0xcfcfcf)
+                                .drawRect(0,0,585,55)
+                                .endFill()
+                                .beginFill(0xffcfcf)
+                                .drawRect(0,0,585/お世話ノルマ[i]*本日お世話[i],55)
+                                .endFill();
+                            }
                         }
                     };
                     daily_mission[i].再生成=function(){
