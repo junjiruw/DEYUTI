@@ -95,6 +95,7 @@
                 let ダイヤ=0;
 
                 let 購入状況=[1,1,1,1,0,1,0,1,1,1,1,1];
+                let お支払いしゅうくん=0;
 
                 const 上コンテナ = new PIXI.Container();
                 app.stage.addChild(上コンテナ);
@@ -192,7 +193,7 @@
                     お世話[i].有効=true;
                     お世話[i].on("pointerdown",()=>{
                         if(お世話[i].有効){
-                            for(let j=0;j<購入状況[11];j++){
+                            for(let j=0;j<購入状況[11]-お支払いしゅうくん;j++){
                                 if(しゅうくん[j].作業表示.text==""){//なんもしてねえやついた
                                     しゅうくん[j].作業表示.text=お世話_内容[i];
                                     しゅうくん[j].バー表示();
@@ -225,8 +226,8 @@
                 }
                 let お世話カウンター=[0,0,0,0];
                 let 本日お世話=[0,0,0,0,0];
-                let お世話ノルマ=[3,2,5,10,10];
-                let お世話速度=[1,0.9,0.5,0.1];
+                let お世話ノルマ=[3,2,5,5,10];
+                let お世話速度=[1,0.8,0.5,0.1];
                 
                 let お店ON=false;
                 let ミッションON=false;
@@ -263,18 +264,18 @@
                 ミッション.addChild(ミッション_text);
 
                 const 時ショップ=new PIXI.Graphics()
-                .beginFill(0xdfdfdf)
+                .beginFill(0x300000)
                 .drawRect(752,1105,238,100)
                 .endFill();
                 時ショップ.interactive=true;//タッチ操作許可
                 時ショップ.on("pointerdown",()=>{
                     if(!ミッションON & !お店ON){
-                        //時ON=true;
+                        時ON=true;
                     }
                 });
                 mainコンテナ.addChild(時ショップ);
-                時ショップ_text= new PIXI.Text( "?" ,時刻文字);
-                時ショップ_text.position.set(800,1110);
+                時ショップ_text= new PIXI.Text( "人身売買\nSHOP" ,基本文字_白);
+                時ショップ_text.position.set(755,1110);
                 時ショップ.addChild(時ショップ_text);
 
                 let 一時的な倍速=1;
@@ -288,7 +289,7 @@
                     if(翌日.有効){
                         ダイヤ=0;//これさ、寝たあと次の日になるまでの間にミッション報酬受け取ればダイヤリセット回避しない？←バカ、そういうのが楽しいんだろボケが
                         一時的な倍速=1000;
-                        for(let j=0;j<購入状況[11];j++){
+                        for(let j=0;j<購入状況[11]-お支払いしゅうくん;j++){
                             if(しゅうくん[j].作業表示.text==""){//なんもしてねえやついた
                                 しゅうくん[j].作業表示.text="💤";
                             };
@@ -309,7 +310,7 @@
                 let daily_mission = new Array(5);
                 const daily_mission_text = new Array(5);
                 const daily_mission_内容=["🍙×","💪×","🧘×","🌿×","ツンツンする×"];
-                const daily_mission_報酬=[10,10,200,1000,30];
+                const daily_mission_報酬=[15,15,150,2000,25];
                 for(let i=0;i<5;i++){
                     daily_mission[i]=new PIXI.Graphics()
                     .beginFill(0x3f3f3f)
@@ -427,7 +428,7 @@
                 let 買い物 = new Array(12);
                 const 買い物_text = new Array(12);
                 const 買い物_内容=["🍙必要数×:","🍙効率×:","💪必要数×:","💪効率×:","🧘必要数×:","🧘効率×:","🌿必要数×:","🌿効率×:","ツンツン必要数×:","ツンツン効率×:","ツンツンパワー×:","しゅうくん:"];
-                const 買い物_値段=[50,10,50,10,200,200,1000,1000,50,50,10,100];
+                const 買い物_値段=[40,10,40,10,200,50,1000,100,45,30,25,100];
                 for(let i=0;i<12;i++){
                     買い物[i]=new PIXI.Graphics()
                     .beginFill(0xcfcfcf)
@@ -439,7 +440,7 @@
                     買い物[i].有効=true;
                     買い物[i].文字更新=function(){
                         if(i==1 || i==3 || i==5 || i==7 || i==9){
-                            買い物_text[i].text= 買い物_内容[i] +(1.1**(購入状況[i]-1)).toFixed(1)+"⇒"+(1.1**購入状況[i]).toFixed(1);
+                            買い物_text[i].text= 買い物_内容[i] +(1.2**(購入状況[i]-1)).toFixed(1)+"⇒"+(1.2**購入状況[i]).toFixed(1);
                         }else if(i==11){
                             買い物_text[i].text= 買い物_内容[i] +(購入状況[i])+"⇒"+(購入状況[i]+1);
                         }else{
@@ -466,7 +467,7 @@
                                     daily_mission[Math.floor(i/2)].再生成();
                                 }
                                 if(i==1 || i==3 || i==5 || i==7 || i==9){
-                                    daily_mission_報酬[Math.floor(i/2)]*=1.1;
+                                    daily_mission_報酬[Math.floor(i/2)]*=1.2;
                                     daily_mission[Math.floor(i/2)].再生成();
                                 }
                                 if(i==4 & !お世話[2].有効){
@@ -481,7 +482,10 @@
                                     有効デイリーミッション[3]=true;
                                 }
                                 if(i==11){
-                                    しゅうくん[購入状況[i]-1].visible=true;
+                                    しゅうくん[購入状況[i]-1-お支払いしゅうくん].visible=true;
+                                    if(購入状況[i]-1-お支払いしゅうくん==20){
+                                        買い物[11].無効化();
+                                    }
                                 }
                                 買い物[i].文字更新();
                             }
@@ -496,6 +500,7 @@
                     };
                     買い物[i].無効化=function(){
                         買い物[i].有効=false;
+                        買い物[i].白色=false;
                         this.clear()//いったん消して描きなおす
                         .beginFill(0x3f3f3f)
                         .drawRect(0,0,785,55)
@@ -534,6 +539,114 @@
 
                 店コンテナ.x=-1000;
                 店コンテナ.zIndex = 11;
+                //---
+
+                const 時コンテナ = new PIXI.Container();
+                app.stage.addChild(時コンテナ);
+                
+                const 時画面=new PIXI.Graphics()
+                .beginFill(0x0c0c0c,0.5)
+                .drawRect(0,0,1000,1500)
+                .endFill();
+                時画面.interactive=true;//タッチ操作許可
+                時画面.on("pointerdown",()=>{
+                    時ON=false;
+                });
+                時コンテナ.addChild(時画面);
+
+                let 時買い物 = new Array(3);
+                const 時買い物_text = new Array(3);
+                const 時買い物_値段=[20,1,999];
+                for(let i=0;i<3;i++){
+                    時買い物[i]=new PIXI.Graphics()
+                    .beginFill(0xcfcfcf)
+                    .drawRect(0,0,785,55)
+                    .endFill();
+                    時買い物[i].x=10;
+                    時買い物[i].y=210+i*60;
+                    時買い物[i].interactive=true;//タッチ操作許可
+                    時買い物[i].有効=true;
+                    時買い物[i].on("pointerdown",()=>{
+                        if(時買い物[i].有効){
+                            if(購入状況[11]-お支払いしゅうくん>時買い物_値段[i]){// >=じゃないよ
+                                for(let j=0;j<時買い物_値段[i];j++){
+                                    しゅうくん[購入状況[11]-お支払いしゅうくん-j-1].visible=false;//きえなさい
+                                    //これ作業中だったら無が作業を継続しない？←おもしろいからOK
+                                }
+                                お支払いしゅうくん+=時買い物_値段[i];//おしはらいありがとね
+                                
+                                //ここから、ド根性条件分岐で商品記述だ
+                                if(i==0){
+                                    倍速*=100;
+                                }else if(i==1){
+                                    倍速*=2;
+                                    時買い物[i].無効化();
+                                }
+
+                                if(購入状況[i]-1-お支払いしゅうくん!=20){
+                                    買い物[11].有効化();
+                                }
+                            }
+                        }
+                    });
+                    時買い物[i].有効化=function(){
+                        時買い物[i].有効=true;
+                        this.clear()//いったん消して描きなおす
+                        .beginFill(0xcfcfcf)
+                        .drawRect(0,0,785,55)
+                        .endFill();
+                    };
+                    時買い物[i].無効化=function(){
+                        時買い物[i].有効=false;
+                        時買い物[i].白色=false;
+                        this.clear()//いったん消して描きなおす
+                        .beginFill(0x3f3f3f)
+                        .drawRect(0,0,785,55)
+                        .endFill();
+                    };
+                    時買い物[i].白色=false;
+                    時買い物[i].買えるよ=function(){
+                        時買い物[i].白色=true;
+                        this.clear()//いったん消して描きなおす
+                        .beginFill(0xffffff)
+                        .drawRect(0,0,785,55)
+                        .endFill();
+                    };
+                    時買い物[i].買えないよ=function(){
+                        時買い物[i].白色=false;
+                        this.clear()//いったん消して描きなおす
+                        .beginFill(0xcfcfcf)
+                        .drawRect(0,0,785,55)
+                        .endFill();
+                    };
+                    時コンテナ.addChild(時買い物[i]);
+
+                    
+                    if(i==0){
+                        時買い物_text[i]= new PIXI.Text( "時 100倍速:",基本文字_黒);
+                        時買い物_text[i].position.set(5,5);
+                        時買い物[i].addChild(時買い物_text[i]);
+
+                        const 時値段 = new PIXI.Text( "しゅうくん：-"+時買い物_値段[i] ,基本文字_黒);
+                        時値段.anchor.set(1,0);
+                        時値段.position.set(780,5);
+                        時買い物[i].addChild(時値段);
+                    }else if(i==1){
+                        時買い物_text[i]= new PIXI.Text("時 2倍速",基本文字_黒);
+                        時買い物_text[i].position.set(5,5);
+                        時買い物[i].addChild(時買い物_text[i]);
+
+                        const 時値段 = new PIXI.Text( "しゅうくん：-"+時買い物_値段[i] ,基本文字_黒);
+                        時値段.anchor.set(1,0);
+                        時値段.position.set(780,5);
+                        時買い物[i].addChild(時値段);
+                    }
+                };
+
+                
+
+                時コンテナ.x=-1000;
+                時コンテナ.zIndex = 11;
                 //---
                 
                 const ミッションコンテナ = new PIXI.Container();
@@ -633,7 +746,8 @@
                 ダイヤ=0;
                 
                 購入状況[11]=1;
-                for(let i=0;i<購入状況[11];i++){
+                お支払いしゅうくん=0;
+                for(let i=0;i<購入状況[11]-お支払いしゅうくん;i++){
                     しゅうくん[i].visible=true;
                 }
                 
@@ -678,7 +792,7 @@
                                 daily_mission[i].有効化();
                             }
                         }
-                        for(let j=0;j<購入状況[11];j++){
+                        for(let j=0;j<購入状況[11]-お支払いしゅうくん;j++){
                             if(しゅうくん[j].作業表示.text=="💤"){//寝てるんじゃねえ
                                 しゅうくん[j].作業表示.text="";
                             };
@@ -715,11 +829,20 @@
                             ミッションコンテナ.x-=100;
                         }
                     }
+                    if(時ON){
+                        if(時コンテナ.x!=0){
+                            時コンテナ.x+=100;
+                        }
+                    }else{
+                        if(時コンテナ.x!=-1000){
+                            時コンテナ.x-=100;
+                        }
+                    }
 
-                    for(let i=0;i<購入状況[11];i++){//全しゅうくんで
+                    for(let i=0;i<購入状況[11]-お支払いしゅうくん;i++){//全しゅうくんで
                         for(let j=0;j<4;j++){//各作業について
                             if(しゅうくん[i].作業表示.text==お世話_内容[j]){//該当作業の途中なら
-                                しゅうくん[i].進捗+=倍速/100*お世話速度[j]*倍速;// *一時的な倍速 はいらないの？ ←あるとさ、なんか気持ち悪かった ←でもメイド・イン・ヘブンみたいになってるよ ←いいよ
+                                しゅうくん[i].進捗+=倍速/100*お世話速度[j];// *一時的な倍速 はいらないの？ ←あるとさ、なんか気持ち悪かった ←でもメイド・イン・ヘブンみたいになってるよ ←いいよ
                                 if(しゅうくん[i].進捗>=1){//終わった
                                     しゅうくん[i].バー非表示();
                                     しゅうくん[i].進捗=0;
@@ -739,6 +862,13 @@
                             買い物[i].買えるよ();
                         }else if(ダイヤ<買い物_値段[i]  & 買い物[i].白色){
                             買い物[i].買えないよ();
+                        }
+                    }
+                    for(let i=0;i<3;i++){//購入可能なら白くしたほうが、かっこいいよね♪
+                        if(購入状況[11]-お支払いしゅうくん>時買い物_値段[i] & !時買い物[i].白色 & 時買い物[i].有効){
+                            時買い物[i].買えるよ();
+                        }else if(購入状況[11]-お支払いしゅうくん<=時買い物_値段[i]  & 時買い物[i].白色  & 時買い物[i].有効){
+                            時買い物[i].買えないよ();
                         }
                     }
 
