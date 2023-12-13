@@ -705,14 +705,14 @@
                                 break;
                             case 1:
                                 効率_値[0]=1.25;
-                                daily_mission_報酬[0]=daily_mission_報酬_オリジナル[0]*(2**購入状況[0])*(効率_値[0]**購入状況[1]);
+                                daily_mission_報酬[0]=daily_mission_報酬_オリジナル[0]*(2**(購入状況[0]-1))*(効率_値[0]**購入状況[1]);
                 
                                 daily_mission[0].再生成();
                                 買い物[1].文字更新();
                                 break;
                             case 2:
                                 効率_値[1]=1.25;
-                                daily_mission_報酬[1]=daily_mission_報酬_オリジナル[1]*(2**購入状況[2])*(効率_値[1]**購入状況[3]);
+                                daily_mission_報酬[1]=daily_mission_報酬_オリジナル[1]*(2**(購入状況[2]-1))*(効率_値[1]**購入状況[3]);
                                 daily_mission[1].再生成();
                                 買い物[3].文字更新();
                                 break;
@@ -901,11 +901,11 @@
                 console.log(効率_値[0]);
                 console.log(購入状況[1]);
 
-                daily_mission_報酬[0]=daily_mission_報酬_オリジナル[0]*(2**購入状況[0])*(効率_値[0]**購入状況[1]);
-                daily_mission_報酬[1]=daily_mission_報酬_オリジナル[1]*(2**購入状況[2])*(効率_値[1]**購入状況[3]);
-                daily_mission_報酬[2]=daily_mission_報酬_オリジナル[2]*(2**購入状況[4])*(効率_値[2]**購入状況[5]);
-                daily_mission_報酬[3]=daily_mission_報酬_オリジナル[3]*(2**購入状況[6])*(効率_値[3]**購入状況[7]);
-                daily_mission_報酬[4]=daily_mission_報酬_オリジナル[4]*(2**購入状況[8])*(効率_値[4]**購入状況[9]);
+                daily_mission_報酬[0]=daily_mission_報酬_オリジナル[0]*(2**(購入状況[0]-1))*(効率_値[0]**購入状況[1]);
+                daily_mission_報酬[1]=daily_mission_報酬_オリジナル[1]*(2**(購入状況[2]-1))*(効率_値[1]**購入状況[3]);
+                daily_mission_報酬[2]=daily_mission_報酬_オリジナル[2]*(2**(購入状況[4]-1))*(効率_値[2]**購入状況[5]);
+                daily_mission_報酬[3]=daily_mission_報酬_オリジナル[3]*(2**(購入状況[6]-1))*(効率_値[3]**購入状況[7]);
+                daily_mission_報酬[4]=daily_mission_報酬_オリジナル[4]*(2**(購入状況[8]-1))*(効率_値[4]**購入状況[9]);
 
                 for(let i=0;i<5;i++){
                     if(有効デイリーミッション[i]){
