@@ -603,11 +603,11 @@
                                 if(購入前所持[i]){//デフォルトで所持しているものは掛け算の回数変えないと…ネ
                                     買い物_値段[i]=買い物_値段_オリジナル[i]*2**(購入状況[i]-1);
                                     お世話ノルマ[Math.floor(i/2)]=お世話ノルマ_オリジナル[Math.floor(i/2)]*2**(購入状況[i]-1);
-                                    daily_mission_報酬[Math.floor(i/2)]=daily_mission_報酬_オリジナル[Math.floor(i/2)]*(2**(購入状況[i]-1))*(効率_値[4]**購入状況[i+1]);
+                                    daily_mission_報酬[Math.floor(i/2)]=daily_mission_報酬_オリジナル[Math.floor(i/2)]*(2**(購入状況[i]-1))*(効率_値[Math.floor(i/2)]**購入状況[i+1]);
                                 }else{
                                     買い物_値段[i]=買い物_値段_オリジナル[i]*2**(購入状況[i]);
                                     お世話ノルマ[Math.floor(i/2)]=お世話ノルマ_オリジナル[Math.floor(i/2)]*2**(購入状況[i]);
-                                    daily_mission_報酬[Math.floor(i/2)]=daily_mission_報酬_オリジナル[Math.floor(i/2)]*(2**(購入状況[i]))*(効率_値[4]**購入状況[i+1]);
+                                    daily_mission_報酬[Math.floor(i/2)]=daily_mission_報酬_オリジナル[Math.floor(i/2)]*(2**(購入状況[i]))*(効率_値[Math.floor(i/2)]**購入状況[i+1]);
                                 }
                                 買い物[i].文字更新();
                                 
