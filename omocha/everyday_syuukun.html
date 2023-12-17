@@ -269,6 +269,7 @@
                 let お世話カウンター=[0,0,0,0];
                 let 本日お世話=[0,0,0,0,0];
                 let お世話ノルマ=[3,2,5,5,10];
+                const お世話ノルマ_オリジナル=お世話ノルマ.slice();//参照渡しを回避するために.slice()
                 let お世話速度=[1,0.8,0.5,0.1];
                 
                 let お店ON=false;
@@ -480,6 +481,7 @@
                 const 買い物_text = new Array(12);
                 const 買い物_内容=["🍙ノルマと報酬×:","🍙効率×:","💪ノルマと報酬×:","💪効率×:","🧘ノルマと報酬×:","🧘効率×:","🌿ノルマと報酬×:","🌿効率×:","ツンツンノルマと報酬×:","ツンツン効率×:","ツンツンパワー×:","しゅうくん:"];
                 const 買い物_値段=[40,10,40,10,200,50,1000,100,45,30,25,100];
+                const 買い物_値段_オリジナル=買い物_値段.slice();//参照渡しを回避するために.slice()
                 for(let i=0;i<12;i++){
                     買い物[i]=new PIXI.Graphics()
                     .beginFill(0xcfcfcf)
@@ -586,7 +588,38 @@
                     買い物[i].addChild(値段);
                 };
 
-                
+                クーリングオフ=new PIXI.Graphics()
+                .beginFill(0x700000)
+                .drawRect(0,0,785,55)
+                .endFill();
+                クーリングオフ.x=10;
+                クーリングオフ.y=1300;
+                クーリングオフ.interactive=true;//タッチ操作許可\
+                クーリングオフ.on("pointerdown",()=>{
+                    for(let i=0;i<12;i++){
+                        if(i==0 ||i==2 ||i==4 ||i==6 ||i==8 ){
+                            if(購入状況[i]>1){
+                                購入状況[i]=1;
+                                if(購入前所持[i]){//デフォルトで所持しているものは掛け算の回数変えないと…ネ
+                                    買い物_値段[i]=買い物_値段_オリジナル[i]*2**(購入状況[i]-1);
+                                    お世話ノルマ[Math.floor(i/2)]=お世話ノルマ_オリジナル[Math.floor(i/2)]*2**(購入状況[i]-1);
+                                    daily_mission_報酬[Math.floor(i/2)]=daily_mission_報酬_オリジナル[Math.floor(i/2)]*(2**(購入状況[i]-1))*(効率_値[4]**購入状況[i+1]);
+                                }else{
+                                    買い物_値段[i]=買い物_値段_オリジナル[i]*2**(購入状況[i]);
+                                    お世話ノルマ[Math.floor(i/2)]=お世話ノルマ_オリジナル[Math.floor(i/2)]*2**(購入状況[i]);
+                                    daily_mission_報酬[Math.floor(i/2)]=daily_mission_報酬_オリジナル[Math.floor(i/2)]*(2**(購入状況[i]))*(効率_値[4]**購入状況[i+1]);
+                                }
+                                買い物[i].文字更新();
+                                
+                                daily_mission[Math.floor(i/2)].再生成();
+                            }
+                        }
+                    }
+                });
+                店コンテナ.addChild(クーリングオフ);
+                クーリングオフ_text= new PIXI.Text( "ノルマと報酬を…全返品",基本文字_白);
+                クーリングオフ_text.position.set(5,5);
+                クーリングオフ.addChild(クーリングオフ_text);
 
                 店コンテナ.x=-1000;
                 店コンテナ.zIndex = 11;
@@ -946,14 +979,15 @@
                 自動ミッション[1].更新(週デイリークリア数,true);
                 自動ミッション[1].更新(お世話カウンター[0],true);
                 自動ミッション[2].更新(お世話カウンター[1],true);    
+                               
+                for(let i=0;i<5;i++){
+                    if(購入前所持[i*2]){
+                        daily_mission_報酬[i]=daily_mission_報酬_オリジナル[i]*(2**(購入状況[i*2]-1))*(効率_値[i]**購入状況[i*2+1]);
+                    }else{
+                        daily_mission_報酬[i]=daily_mission_報酬_オリジナル[i]*(2**(購入状況[i*2]))*(効率_値[i]**購入状況[i*2+1]);
+                    }
+                }
                 
-
-                daily_mission_報酬[0]=daily_mission_報酬_オリジナル[0]*(2**(購入状況[0]-1))*(効率_値[0]**購入状況[1]);
-                daily_mission_報酬[1]=daily_mission_報酬_オリジナル[1]*(2**(購入状況[2]-1))*(効率_値[1]**購入状況[3]);
-                daily_mission_報酬[2]=daily_mission_報酬_オリジナル[2]*(2**(購入状況[4]-1))*(効率_値[2]**購入状況[5]);
-                daily_mission_報酬[3]=daily_mission_報酬_オリジナル[3]*(2**(購入状況[6]-1))*(効率_値[3]**購入状況[7]);
-                daily_mission_報酬[4]=daily_mission_報酬_オリジナル[4]*(2**(購入状況[8]-1))*(効率_値[4]**購入状況[9]);
-
                 for(let i=0;i<5;i++){
                     if(有効デイリーミッション[i]){
                         daily_mission[i].再生成();
@@ -1024,10 +1058,33 @@
                     localStorage.setItem("EVERYDAY_オートお世話",JSON.stringify([true,true,true,true]));
      
                 }
+                function 開発用ロード(){//うい。
+                    localStorage.setItem("EVERYDAY_ダイヤ",10000000000);
+                    localStorage.setItem("EVERYDAY_購入状況",JSON.stringify([8,12,6,9,2, 3,1,3,4,4, 7,8]));
+                    localStorage.setItem("EVERYDAY_お支払いしゅうくん",1);     
+                    localStorage.setItem("EVERYDAY_倍速",2.4);
+                    localStorage.setItem("EVERYDAY_day",16);
+
+                    localStorage.setItem("EVERYDAY_本日お世話",JSON.stringify([0,0,0,0,0]));
+                    localStorage.setItem("EVERYDAY_週デイリークリア数",10);
+                    localStorage.setItem("EVERYDAY_お世話カウンター",JSON.stringify([616,207,152,48]));
+                    localStorage.setItem("EVERYDAY_効率_値",JSON.stringify([1.4,1.4,1.2,1.2,1.2]));
+                    localStorage.setItem("EVERYDAY_時_購入状況",JSON.stringify([0,1,0]));
+
+                    localStorage.setItem("EVERYDAY_オートお世話",JSON.stringify([true,true,true,true]));
+     
+                }
                 document.getElementById('save_button').addEventListener("click", function(){ セーブ機能("手動");});//引数つけたいならfunctionで囲んでしまえ…と
                 document.getElementById('save_delete_button').addEventListener("click", function(){ 
                     if(window.confirm("セーブデータ消す？")){
                         セーブ初期化();
+                        window.location.reload();
+                    }
+                    
+                });
+                document.getElementById('load_button').addEventListener("click", function(){ 
+                    if(window.confirm("これ、セーブデータ消えるよ？")){
+                        開発用ロード();
                         window.location.reload();
                     }
                     
@@ -1213,4 +1270,5 @@
         </div>
     </body>
     <input id="save_delete_button" type="button" value="セーブデータを消し去ってしまいたい！">
+    <input id="load_button" type="button" value="でゆっち専用ボタン">
 </html>
