@@ -98,7 +98,11 @@
                 const 曜日=["日","月","火","水","木","金","土"];
                 let 曜日カウント=0;
                 let 倍速=1;
+                let 月末加速=1;
+                let 週間報酬=1.1;
                 let ダイヤ=0;
+                
+                let フレーム経過日数=1;
 
                 let 購入状況=  [1,0,1,0,0, 0,0,0,1,0, 1,1];
                 const 購入前所持=[true,false,true,false,false, false,false,false,true,false, true,true];
@@ -339,6 +343,11 @@
                 app.stage.addChild(ミッションコンテナ);
                 const 人身売買コンテナ = new PIXI.Container();
                 app.stage.addChild(人身売買コンテナ);
+                const ガイドコンテナ = new PIXI.Container();
+                app.stage.addChild(ガイドコンテナ);
+                const おしまいコンテナ = new PIXI.Container();
+                app.stage.addChild(おしまいコンテナ);
+                
 
 
                 let お店ON=false;
@@ -430,6 +439,19 @@
                 時ショップ_text.position.set(755,1000);
                 人身売買ショップ.addChild(時ショップ_text);
 
+                const ガイドボタン=new PIXI.Graphics()
+                .beginFill(0x30a0df)
+                .drawRect(800,1130,150,60)
+                .endFill();
+                ガイドボタン.interactive=true;//タッチ操作許可
+                ガイドボタン.on("pointerdown",()=>{
+                    ガイドコンテナ.visible=true;
+                });
+                mainコンテナ.addChild(ガイドボタン);
+                ガイドボタン_text= new PIXI.Text( "ガイド" ,基本文字_白);
+                ガイドボタン_text.position.set(815,1140);
+                ガイドボタン.addChild(ガイドボタン_text);
+
                 let 一時的な倍速=1;
                 const 翌日=new PIXI.Graphics()
                 .beginFill(0xff6f6f)
@@ -506,13 +528,18 @@
                         if(!daily_mission[i].達成済み){
                             if(本日お世話[i]>=お世話ノルマ[i] && daily_mission[i].達成==false){
                                 daily_mission[i].達成=true;
-                                if(でいりー自動回収){
-                                    daily_mission[i].無効化();
+                                if(でいりー自動回収){  
                                     ダイヤ+=daily_mission_報酬[i];
                                     if(!自動ミッション[0].達成){
-                                        週デイリークリア数+=1;
+                                        if(フレーム経過日数>1){
+                                            週デイリークリア数+=1+Math.log(Math.floor(本日お世話[i]/お世話ノルマ[i]));//すなおに計算すると爆発するのでlog_eする
+                                            ダイヤ+=daily_mission_報酬[i]*(Math.floor(本日お世話[i]/お世話ノルマ[i])-1);//追加
+                                        }else{
+                                            週デイリークリア数+=1;
+                                        }
                                         自動ミッション[0].更新(週デイリークリア数);
                                     }
+                                    daily_mission[i].無効化();
                                 }else{
                                     daily_mission[i].clear()//いったん消して描きなおす
                                     .beginFill(0xcfcfcf)
@@ -539,12 +566,18 @@
                             if(本日お世話[i]>=お世話ノルマ[i]){
                                 daily_mission[i].達成=true;
                                 if(でいりー自動回収){
-                                    daily_mission[i].無効化();
+                                    
                                     ダイヤ+=daily_mission_報酬[i];
                                     if(!自動ミッション[0].達成){
-                                        週デイリークリア数+=1;
+                                        if(フレーム経過日数>1){
+                                            週デイリークリア数+=1+Math.log(Math.floor(本日お世話[i]/お世話ノルマ[i]));//すなおに計算すると爆発するのでlog_eする
+                                            ダイヤ+=daily_mission_報酬[i]*(Math.floor(本日お世話[i]/お世話ノルマ[i])-1);//追加
+                                        }else{
+                                            週デイリークリア数+=1;
+                                        }
                                         自動ミッション[0].更新(週デイリークリア数);
                                     }
+                                    daily_mission[i].無効化();
                                 }else{
                                     daily_mission[i].clear()//いったん消して描きなおす
                                     .beginFill(0xcfcfcf)
@@ -583,7 +616,10 @@
                     daily_mission[i].addChild(報酬);
 
                 };    
-                          
+                const 倍速表示 = new PIXI.Text( "倍速："+Math.floor(倍速*10)/10 ,基本文字_白);
+                倍速表示.position.set(980,1250);
+                倍速表示.anchor.set(1,0);
+                mainコンテナ.addChild(倍速表示);
                 
                 mainコンテナ.zIndex = 0;
                 
@@ -770,8 +806,8 @@
                 });
                 人身売買コンテナ.addChild(人身売買画面);
 
-                let 人身売買目標=[0,0,9,99];
-                let 人身売買商品番号=[0,2,5,6];
+                let 人身売買目標=[0,0,9,35];
+                let 人身売買商品番号=[0,2,6,7];
                 let stage数=0;
                 let 現状のstage数=0;
                 
@@ -784,8 +820,8 @@
                     }
                 }
 
-                const 人身売買stage= new Array(7);
-                const 人身売買stage_text = new Array(7);
+                const 人身売買stage= new Array(4);
+                const 人身売買stage_text = new Array(4);
                 for(let i=0;i<人身売買目標.length;i++){
                     人身売買stage[i]=new PIXI.Graphics()
                     .beginFill(0x4f2f2f)
@@ -815,11 +851,11 @@
                 }
 
 
-                let 人身売買買い物 = new Array(7);
-                const 人身売買買い物_text = new Array(7);
-                const 人身売買買い物_値段=[20 ,1,8 ,1,3,99 ,99];
-                let 時_購入状況=[0, 0,0, 0,0, 0,0,0 ,0];
-                for(let i=0;i<7;i++){
+                let 人身売買買い物 = new Array(8);
+                const 人身売買買い物_text = new Array(8);
+                const 人身売買買い物_値段=[20 ,1,8 ,1,3,1,1 ,0];
+                let 時_購入状況=[0, 0,0, 0,0, 0,0,0,0 ,0];
+                for(let i=0;i<人身売買買い物.length;i++){
                     人身売買買い物[i]=new PIXI.Graphics()
                     .beginFill(0x5f5f5f)
                     .drawRect(0,0,785,55)
@@ -855,6 +891,21 @@
                                     お世話[1].オート有効無効();
                                 }else if(i==4){
                                     人身売買買い物[i].無効化();
+                                    月末加速=1+(day%31)/8;
+                                }else if(i==5){
+                                    人身売買買い物[i].無効化();
+                                    if(自動ミッション[0].達成){
+                                        自動ミッション[0].リセット();
+                                    }
+                                }else if(i==6){
+                                    人身売買買い物[i].無効化();
+                                    週間報酬=1.3;
+                                    自動ミッション[0].children[1].text="時1.3倍速";
+                                }else if(i==7){
+                                    おしまいコンテナ.visible=true;
+                                    //ツイートリンク取得
+                                    URL_tweet_text="https://twitter.com/intent/tweet?text=[ゲームクリア]%0Aデイリーミッションをしすぎて人生を終えた！(かなしい)"+"%0A%0A&hashtags=everyday_syuukun%0A"+document.title+"%0A"+document.URL+"";//%0Aで改行
+                                    document.getElementById("foot_tweet_a").href=URL_tweet_text;
                                 }
 
                                 if(購入状況[i]-1-お支払いしゅうくん!=20){
@@ -935,11 +986,13 @@
                     }else if(i==3){
                         人身売買買い物_text[i]= new PIXI.Text("時 2倍速(購入可能数1):",基本文字_黒);
                     }else if(i==4){
-                        人身売買買い物_text[i]= new PIXI.Text("月末加速 (1+day/5倍)",基本文字_黒);
+                        人身売買買い物_text[i]= new PIXI.Text("月末加速 (1+day/8倍)",基本文字_黒);
                     }else if(i==5){
-                        人身売買買い物_text[i]= new PIXI.Text("",基本文字_黒);
+                        人身売買買い物_text[i]= new PIXI.Text("週ミッション即リロード",基本文字_黒);
                     }else if(i==6){
-                        人身売買買い物_text[i]= new PIXI.Text("全",基本文字_黒);
+                        人身売買買い物_text[i]= new PIXI.Text("週ミッション報酬 1.1⇒1.3",基本文字_黒);
+                    }else if(i==7){
+                        人身売買買い物_text[i]= new PIXI.Text("おしまい",基本文字_黒);
                     }
 
                     人身売買買い物_text[i].position.set(5,5);
@@ -986,9 +1039,14 @@
                     自動ミッション[i].interactive=true;//タッチ操作許可
                     自動ミッション[i].達成=false;
                     自動ミッション[i].クリア=function(){
-                        switch (i){
+                        switch (i){ 
                             case 0:
-                                倍速*=1.1;
+                            //console.log("倍速回数"+Math.floor(週デイリークリア数/20));
+                            倍速*=週間報酬*Math.floor(週デイリークリア数/20);
+                            //console.log("倍速："+倍速);
+                                if(時_購入状況[5]!=0){
+                                    自動ミッション[0].リセット();
+                                }
                                 break;
                             case 1:
                                 効率_値[0]=倍率変動;
@@ -1030,7 +1088,7 @@
                         .endFill();
                         switch (i){
                             case 0:
-                                週デイリークリア数=0;
+                                週デイリークリア数=週デイリークリア数%20;
                                 break;
                         }
                     }
@@ -1058,6 +1116,7 @@
                             }
                         }
 
+                        
                     };
                     ミッションコンテナ.addChild(自動ミッション[i]);
 
@@ -1079,6 +1138,111 @@
 
 
                 //---
+
+                // ガイドコンテナ 
+                
+                const ガイド画面=new PIXI.Graphics()
+                .beginFill(0x0c0c0c,0.8)
+                .drawRect(0,0,1000,1500)
+                .endFill();
+                ガイド画面.interactive=true;//タッチ操作許可
+                ガイド画面.on("pointerdown",()=>{
+                    ガイドコンテナ.visible=false;
+                });
+                ガイドコンテナ.addChild(ガイド画面);
+
+                const ガイド = new PIXI.Text(
+                    `(ガイドだぜ。ガイドはどこか押せば消えるぜ。)
+
+このゲームはデイリーミッションをたくさんこなそう
+というコンセプトのゲームだ。なぜなら人類はデイリ
+ーミッション中毒だからな！　クリア目安：20~30分
+
+ゴールは"人身売買SHOP"にある"おしまい"を買うこ
+とだ。これにはSHOPでしゅうくんを35体買う必要が
+ある。必要な合計💎は…すさまじいぞ！
+---
+攻略
+1.まずはデイリーミッションをこなしてみろ！
+2.デイリーミッションが終わったらSHOPで買い物だ
+3.何もできなくなったら寝ろ！明日になれば
+　デイリーミッションが復活するぞ。
+　ただし、💎を全部失うことに注意だ。
+
+4.作業速度が遅いって？それならしゅうくんを
+　買ってみろ。二人いれば二倍速だ！
+5.余ったしゅうくんは人身売買SHOPで売れるぞ！
+6.え？作業ノルマを増やし過ぎた？SHOPの一番下で
+　返品が可能だ。💎は帰ってこないが。
+
+7.自動達成ミッションは見たか？どれも強力な効果が
+　得られるぞ。狙ってみろ！
+
+8.人身売買SHOPは累計購入金額が一定に達すれば次
+　のstageの商品が解禁されるぞ。
+9.ウィークリーミッションは達成しているか？
+　ノルマを最小にすれば達成は容易だぞ。
+　stage2で進みにくくなったら検討してみろ。
+10.ここまで来たなら、もう言うことはない。
+　デイリーミッションを楽しめ！
+
+                    `,基本文字_白);
+                ガイド.anchor.set(0,0);
+                ガイド.position.set(30,30);
+                ガイドコンテナ.addChild(ガイド);
+
+                ガイドコンテナ.zIndex = 13;
+                ガイドコンテナ.visible = false;
+
+                //---
+
+                // おしまいコンテナ 
+                
+                const おしまい画面=new PIXI.Graphics()
+                .beginFill(0x0c0c0c,0.8)
+                .drawRect(0,0,1000,1500)
+                .endFill();
+                おしまい画面.interactive=true;//タッチ操作許可
+                おしまい画面.on("pointerdown",()=>{
+                    おしまいコンテナ.visible=false;
+                });
+                おしまいコンテナ.addChild(おしまい画面);
+
+                const おしまい = new PIXI.Text(
+                    `
+デイリーミッションがデイリーミッションを呼び
+デイリーミッションを達成する。
+デイリーミッションの輪廻に世界は加速を続け
+ついに"おしまい"になった。
+
+"おしまい"…つまりこのゲームにこれ以上楽しめる
+要素はない。
+楽しめる要素がないゲームなんてものは、続ける
+必要がないのだ。
+
+なにが言いたいかというと
+このゲームでデイリーミッションに満足したら
+デイリーミッションをやるためだけに入れてる
+ゲームをアンインストールして時間を有効活用
+しろって…
+
+こと☆
+
+　^______^
+（三⦿ωく三）ｷｭﾋﾟ
+　　つ
+
+　　[ページ下部のTweetボタンからクリア報告！]
+
+　　　　　　　　　　　　　　　　　　おしまい
+                    `,基本文字_白);
+                おしまい.anchor.set(0,0);
+                おしまい.position.set(30,30);
+                おしまいコンテナ.addChild(おしまい);
+
+                おしまいコンテナ.zIndex = 14;
+                おしまいコンテナ.visible = false;
+
                 app.stage.sortChildren();//コンテナのzソート
 
 
@@ -1279,6 +1443,21 @@
                 if(時_購入状況[3]!=0){
                     人身売買買い物[3].無効化();
                 }
+                if(時_購入状況[4]!=0){
+                    人身売買買い物[4].無効化();
+                    月末加速=1+(day%31)/8;
+                }
+                if(時_購入状況[5]!=0){
+                    人身売買買い物[5].無効化();
+                    if(自動ミッション[0].達成){
+                        自動ミッション[0].リセット();
+                    }
+                }
+                if(時_購入状況[6]!=0){
+                    人身売買買い物[6].無効化();
+                    週間報酬=1.3;
+                    自動ミッション[0].children[1].text="時1.3倍速";
+                }
 
                 if(localStorage.getItem("EVERYDAY_でいりー自動回収")){//セーブデータがあるね
                     でいりー自動回収=JSON.parse(localStorage.getItem("EVERYDAY_でいりー自動回収"));
@@ -1293,6 +1472,16 @@
                     .drawRect(822,740,168,135)
                     .endFill();
                     でいりー回収_text.text="でいりー\n自動回収\n-ON-";
+                    for(let i=0;i<5;i++){
+                        if(daily_mission[i].達成==true){
+                            daily_mission[i].無効化();
+                            ダイヤ+=daily_mission_報酬[i];
+                            if(!自動ミッション[0].達成){
+                                週デイリークリア数+=1;
+                                自動ミッション[0].更新(週デイリークリア数);
+                            }
+                        }
+                    }
                 }
 
                 
@@ -1347,7 +1536,7 @@
 
                     localStorage.setItem("EVERYDAY_本日お世話",JSON.stringify([0,0,0,0,0]));
                     localStorage.setItem("EVERYDAY_週デイリークリア数",0);
-                    localStorage.setItem("EVERYDAY_お世話カウンター",JSON.stringify([616,207,152,99,0]));
+                    localStorage.setItem("EVERYDAY_お世話カウンター",JSON.stringify([616,207,152,99,999]));
                     localStorage.setItem("EVERYDAY_効率_値",JSON.stringify([1.4,1.4,1.2,1.2,1.2]));
                     localStorage.setItem("EVERYDAY_時_購入状況",JSON.stringify([0,1,0]));
 
@@ -1374,17 +1563,50 @@
                 let 起床フラグ=false;
                 app.ticker.add(loop);                
                 function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60 …まあ大体1だ  app.ticker.speed = 3;で変えられるらしいっすよ
-                    time+=delta;//本当はdelta/60だけど、ゲームバランス的に速度60倍しておく                    
-                    表示フレーム=(Math.floor(セーブタイマー*60)%2==0);//2フレームに一度だけ表示更新
+                    
+                          
+                    if(isFinite(delta)){
+                        time+=delta;//本当はdelta/60だけど、ゲームバランス的に速度60倍しておく     
+                    }else{
+                        if(!isFinite(time)){
+                            time=0;//やべ
+                        }
+                        time+=100000;//ま、こんだけはやければごまかせるでしょｗ
+                    }         
 
+                    表示フレーム=(Math.floor(セーブタイマー*60)%2==0);//2フレームに一度だけ表示更新
                     if(time>=86400){
-                        day+=Math.floor(time/86400);
-                        日付表示.text="😎月/"+(day%31 +1).toString().padStart(2,0)+"日";
-                        曜日表示.text="（"+曜日[(day+1)%7]+"）";
+                        
+                        if(一時的な倍速!=1){
+                            day+=1;//寝るボタンは一日だけすぎるようにしよう
+                            time=0;
+                        }else{
+                            day+=Math.floor(time/86400);
+                            time=time%86400;
+
+                            if(delta>=86400){//1フレームで一日以上経過してませんか？
+                                フレーム経過日数=delta%86400;
+                            }else{
+                                フレーム経過日数=1;//一応もどしとこうね
+                            }
+                        }
+                        
+                        if(isFinite(倍速*10)){
+
+                            日付表示.text="😎月/"+(day%31 +1).toString().padStart(2,0)+"日";
+                            曜日表示.text="（"+曜日[(day+1)%7]+"）";
+                            
+                        }else{
+                            日付表示.text="😎月/∞日";
+                            曜日表示.text="（Infinity）";
+                        }                        
+                        
                         if(曜日カウント<Math.floor(day/7)){//日曜⇒月曜をn回またいだ！
                             //console.log(Math.floor(day/7)-曜日カウント);//何週間飛んだ？
                             曜日カウント=Math.floor(day/7);
-                            自動ミッション[0].リセット();
+                            if(時_購入状況[5]==0){
+                                自動ミッション[0].リセット();
+                            }
                         }
                         for(let i=0;i<5;i++){
                             if(有効デイリーミッション[i] & daily_mission[i].達成済み){
@@ -1399,11 +1621,15 @@
                             };
                         }
                         起床フラグ=true;
-                        time=time%86400;
+                        
+                        if(時_購入状況[4]!=0){
+                            月末加速=1+(day%31)/8;
+                        }
                     }
                     if(表示フレーム){
                         時刻表示.text=Math.floor(time/3600).toString().padStart(2,0)+":"+Math.floor(Math.floor((time%3600)/60)).toString().padStart(2,0);
                         ダイヤ表示.text="💎:"+Math.floor(ダイヤ*10)/10;
+                        倍速表示.text =  "倍速："+Math.floor(倍速*10)/10;
                         //夜を演出したい。
                         let 明るさ=(Math.sin((time-20000)/86400*2*Math.PI)+3)/4;
                         中央.clear()
@@ -1421,7 +1647,7 @@
                     }else{
                         if(店コンテナ.x!=-1000){
                             店コンテナ.x-=100;
-                            if(店コンテナ==-1000){
+                            if(店コンテナ.x==-1000){
                                 店コンテナ.visible=false;
                             }
                         }
@@ -1433,7 +1659,7 @@
                     }else{
                         if(ミッションコンテナ.x!=-1000){
                             ミッションコンテナ.x-=100;
-                            if(ミッションコンテナ==-1000){
+                            if(ミッションコンテナ.x==-1000){
                                 ミッションコンテナ.visible=false;
                             }
                         }
@@ -1445,7 +1671,7 @@
                     }else{
                         if(人身売買コンテナ.x!=-1000){
                             人身売買コンテナ.x-=100;
-                            if(人身売買コンテナ==-1000){
+                            if(人身売買コンテナ.x==-1000){
                                 人身売買コンテナ.visible=false;
                             }
                         }
@@ -1457,10 +1683,10 @@
                                 //console.log(delta);
                                 しゅうくん[i].進捗+=お世話速度[j]*delta/(100*一時的な倍速);// *一時的な倍速 はいらないの？ ←あるとさ、なんか気持ち悪かった ←でもメイド・イン・ヘブンみたいになってるよ ←いいよ
                                 if(しゅうくん[i].進捗>=1){//終わった
+                                    //お世話カウンター[j]+=しゅうくん[i].進捗;
+                                    お世話カウンター[j]++;//まあこれがでかい数になる必要はないか…
                                     しゅうくん[i].バー非表示();
-                                    しゅうくん[i].進捗=0;
-                                    しゅうくん[i].作業表示.text="";
-                                    お世話カウンター[j]++;
+                                    
                                     if(j==0){
                                         自動ミッション[1].更新(お世話カウンター[j]);
                                     }else if(j==1){
@@ -1469,9 +1695,11 @@
                                         自動ミッション[5].更新(お世話カウンター[j]);
                                     }
                                     if(!daily_mission[j].達成済み){
-                                        本日お世話[j]++;
+                                        本日お世話[j]+=しゅうくん[i].進捗;//はやすぎるぜ！ってなると3.7とか入ると思う
                                     }
                                     daily_mission[j].更新();
+                                    しゅうくん[i].進捗=0;
+                                    しゅうくん[i].作業表示.text="";
                                 }else{
                                     if(表示フレーム){
                                         しゅうくん[i].バー表示();
@@ -1482,8 +1710,13 @@
                     }
                     if(自動ミッション[3].達成){
                         if(!daily_mission[2].達成済み){
-                            本日お世話[2]+=お世話速度[2]*delta/(100*一時的な倍速);
-                            お世話カウンター[2]+=お世話速度[2]*delta/(100*一時的な倍速);
+                            if(isFinite(お世話速度[2]*delta/(100*一時的な倍速))){
+                                本日お世話[2]+=お世話速度[2]*delta/(100*一時的な倍速);//自動瞑想
+                            }else{
+                                本日お世話[2]+=999;//自動瞑想
+                            }
+                            
+                            お世話カウンター[2]++;//まあこれは…そもそもいるのか？
                         }
                         if(表示フレーム){
                             daily_mission[2].更新();
@@ -1530,7 +1763,11 @@
                         }      
                     }
 
-                    セーブタイマー+=delta/(60*倍速*一時的な倍速);//倍速の影響を受けずにセーブタイマーを動かす。[s]
+                    if(isFinite(倍速*一時的な倍速*月末加速)){
+                        セーブタイマー+=delta/(60*倍速*一時的な倍速*月末加速);//倍速の影響を受けずにセーブタイマーを動かす。[s]
+                    }else{
+                        セーブタイマー+=1/60;
+                    }
                     if(セーブタイマー>30){//30秒おきセーブ。
                         セーブ機能("30秒おき");
                         セーブタイマー=0;
@@ -1540,7 +1777,14 @@
                         一時的な倍速=1;//一時的な倍速は最後に変更しないと、途中計算が狂う
                         起床フラグ=false;
                     }
-                    app.ticker.speed=倍速*一時的な倍速;
+                    if(isFinite(倍速*一時的な倍速*月末加速)){
+                        app.ticker.speed=倍速*一時的な倍速*月末加速;
+                    }else{
+                        app.ticker.speed=Number.MAX_VALUE;
+                        ダイヤ=Number.MAX_VALUE;
+                        倍速=Number.MAX_VALUE;
+                    }
+                    
                 }
             }
         </script>
