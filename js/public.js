@@ -5,7 +5,7 @@ function onload_functions(){
     btn_looks_better();//☝の改善
     html_link_show();//☝でページリンクが出る
     //ツイートリンク取得
-    var URL_tweet_text="https://twitter.com/intent/tweet?text="+document.title+"%0A"+document.URL;;//%0Aで改行
+    var URL_tweet_text="https://twitter.com/intent/tweet?text="+document.title+"%0A"+document.URL;//%0Aで改行
     document.getElementById("foot_tweet_a").href=URL_tweet_text;
 }
 
