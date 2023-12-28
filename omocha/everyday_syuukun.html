@@ -1563,7 +1563,7 @@
                 function loop(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60 …まあ大体1だ  app.ticker.speed = 3;で変えられるらしいっすよ
                     
                           
-                    if(isFinite(delta)){
+                    if(isFinite(倍速)){
                         time+=delta;//本当はdelta/60だけど、ゲームバランス的に速度60倍しておく     
                     }else{
                         if(!isFinite(time)){
@@ -1779,8 +1779,9 @@
                         app.ticker.speed=倍速*一時的な倍速*月末加速;
                     }else{
                         app.ticker.speed=Number.MAX_VALUE;
-                        ダイヤ=Number.MAX_VALUE;
-                        倍速=Number.MAX_VALUE;
+                        ダイヤ=Infinity;
+                        倍速=Infinity;
+                        day=Infinity;
                     }
                     
                 }
