@@ -91,6 +91,9 @@
                 if(localStorage.getItem('MAX_STAGE')==12){//セーブデータがあるね
                     document.getElementById("kadotorofi").style.display ="inline";
                 }
+                if(localStorage.getItem('EVERYDAY_倍速')==Infinity){//セーブデータがあるね
+                    document.getElementById("everytorofi").style.display ="inline";
+                }
             }
         </script>
     </head>
@@ -119,6 +122,17 @@
             
             
             <dl id="pages_ul" >
+                <div>
+                    <dt>
+                        <img id="everytorofi" class="torofi32" src="../images/omocha/omocha_top/everytorofi32.png"><a href="everyday_syuukun.html">毎日しゅうくん</a>
+                        <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
+
+                    </dt>
+                    <dd>
+                        忙しいインフレ系ゲーム
+                        <span class="作成日">2023/12</span>
+                    </dd>
+                </div>
                 <div>
                     <dt>
                         <a href="3Dmodel_hyouji.html">3Dモデル表示したい</a>
