@@ -35,12 +35,17 @@
                 border-radius: 20%;
                 image-rendering: pixelated;
             }
-            dl>div{
+            #pages_ul{
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .dl_div{
                 background: #FFFFFF00;
                 padding: 1em;
-                margin: 1em;
+                margin: 0.2em;
                 border-radius:1em;
                 box-shadow:0px 0px 0px 5px #003621 inset,0px 0px 0px 6px #ffffff inset;
+                display: inline-block;
             }
             dt a{
                 background: #ffffff00;
@@ -88,12 +93,24 @@
         <script>
             onload = function(){
                 onload_functions();
+
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                }else{
+                    const dlDivElements = document.querySelectorAll('.dl_div');
+                    dlDivElements.forEach(element => {
+                        element.style.width = '30%';
+                    });
+                    
+                    document.getElementById('pages_ul').style.justifyContent = 'center';
+                }
+
                 if(localStorage.getItem('MAX_STAGE')==12){//セーブデータがあるね
                     document.getElementById("kadotorofi").style.display ="inline";
                 }
                 if(localStorage.getItem('EVERYDAY_倍速')==Infinity){//セーブデータがあるね
                     document.getElementById("everytorofi").style.display ="inline";
                 }
+                
             }
         </script>
     </head>
@@ -122,18 +139,18 @@
             
             
             <dl id="pages_ul" >
-                <div>
+                <div class="dl_div">
                     <dt>
                         <img id="everytorofi" class="torofi32" src="../images/omocha/omocha_top/everytorofi32.png"><a href="everyday_syuukun.html">毎日しゅうくん</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
 
                     </dt>
                     <dd>
-                        忙しいインフレ系ゲーム
+                        忙しいインフレ系ゲーム(オートセーブ：ブラウザに保存されます。)
                         <span class="作成日">2023/12</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="3Dmodel_hyouji.html">3Dモデル表示したい</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
@@ -144,7 +161,7 @@
                         <span class="作成日">2023/11</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="https://unityroom.com/games/syuukun_in_uniti">(PC)しゅうくんinうにちーわーるど</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png">
@@ -155,7 +172,7 @@
                         <span class="作成日">2023/05</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="deyucaptcha.html">でゆキャプチャ</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
@@ -166,7 +183,7 @@
                         <span class="作成日">2022/12</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <img id="kadotorofi" class="torofi32" src="../images/omocha/omocha_top/kadotorofi32.png"><a href="syuukun_card.html">しゅうくんカード</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
@@ -176,7 +193,7 @@
                         <span class="作成日">2022/08</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="tuntunsyuukun.html">つんつんしゅうくん</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
@@ -187,7 +204,7 @@
                         <span class="作成日">2022/04</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="slide_glitch_RPG.html">すらいどぐりっちしゅうくんRPG</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">
@@ -197,7 +214,7 @@
                         <span class="作成日">2022/02</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="not_wordle.html">Not_Wordle</a>
                         <a href="not_wordle2.html">Not_Wordle2</a>
@@ -209,7 +226,7 @@
                         <span class="作成日">2022/01</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="patiru.html">一日一ポケモン:パッチール</a>
                         <img class="img32" src="../images/omocha/omocha_top/pasokon32.png"><img class="img32" src="../images/omocha/omocha_top/sumaho32.png">

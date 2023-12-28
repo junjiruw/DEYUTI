@@ -18,12 +18,17 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
-            dl>div{
+            #pages_ul{
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .dl_div{
                 background: #FFFFFF00;
                 padding: 1em;
-                margin: 1em;
+                margin: 0.2em;
                 border-radius:1em;
                 box-shadow:0px 0px 0px 5px #003621 inset,0px 0px 0px 6px #ffffff inset;
+                display: inline-block;
             }
             dt a{
                 background: #ffffff00;
@@ -63,6 +68,15 @@
         <script>
             onload = function(){
                 onload_functions();
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                }else{
+                    const dlDivElements = document.querySelectorAll('.dl_div');
+                    dlDivElements.forEach(element => {
+                        element.style.width = '30%';
+                    });
+                    
+                    document.getElementById('pages_ul').style.justifyContent = 'center';
+                }
             }
         </script>
     </head>
@@ -85,7 +99,7 @@
             <h2>読み物のページ</h2>
             <p>文字を読むだけのページを集めてるページです。</p>
             <dl>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="kingasinnen2023.html">謹賀新年2023</a>
                     </dt>
@@ -94,7 +108,7 @@
                         <span class="作成日">2023/02</span>
                     </dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="cursor_kaeyou.html">カーソル変えようという話</a>
                     </dt>

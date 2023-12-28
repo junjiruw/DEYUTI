@@ -18,6 +18,12 @@
         
         <link rel="icon" href="../images/site/favicon32.png">
         <style>
+            h1{
+                text-align: center 
+            }
+            h2{
+                text-align: center 
+            }
             img{
                 image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
             }
@@ -78,6 +84,7 @@
         <script>
             onload = function(){
                 onload_functions();
+                読み物調整();
                 
                 const canvas = document.querySelector('canvas');
                 const ctx = canvas.getContext('2d');
