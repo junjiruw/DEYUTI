@@ -29,7 +29,6 @@
                 background: #ffffff;
                 height: 80vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ　→スマホはどースンだよ→そこはonloadくんとこで頑張ってもろて…*/
                 /*image-rendering: pixelated;ドット絵を拡大したいなら使え*/
-                user-select: none;
             }
         </style>
 
@@ -70,6 +69,8 @@
                     height:1500,
                 });
                 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;//スプライトの拡大をぼやけさせない。
+
+                canvas.addEventListener("pointerdown", e => e.preventDefault());//ダブルクリックしたら↓のほうが全選択されちゃったので無効にしようねという話
 
                 const 基本文字_黒=new PIXI.TextStyle({
                     fontSize: 40,
