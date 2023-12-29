@@ -29,6 +29,7 @@
                 background: #ffffff;
                 height: 80vh;/*これ、PCブラウザで横に狭くしたら崩壊せえへん？→勝手に崩壊してろ　→スマホはどースンだよ→そこはonloadくんとこで頑張ってもろて…*/
                 /*image-rendering: pixelated;ドット絵を拡大したいなら使え*/
+                user-select: none;
             }
         </style>
 
@@ -54,7 +55,6 @@
         <script>
             onload = function(){
                 onload_functions();
-
                 const canvas =document.getElementById("canvas");
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
                     canvas.style.width=100+"%";
