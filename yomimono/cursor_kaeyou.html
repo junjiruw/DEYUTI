@@ -17,6 +17,8 @@
         <link rel="stylesheet" href="../css/style.css">
         
         <link rel="icon" href="../images/site/favicon32.png">
+
+        <link rel="stylesheet" href="../css/読み物.css">
         <style>
             h1{
                 text-align: center 
@@ -24,36 +26,7 @@
             h2{
                 text-align: center 
             }
-            img{
-                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-            }
-            .flex_div{
-                display: flex;   
-            }
-            .right_div{
-                justify-content: flex-end;
-                padding-left: 10px;
-            }
-            .left_div{
-                text-align: left;
-                justify-content: flex-start;
-                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
-            }
-            .figure_icon{
-                text-align: center;
-                margin-top: 0;
-                margin-bottom: 0;
-                margin-left: 0.5em;
-                margin-right: 0.5em;
-            }
-            .figure_icon img{
-                border-radius: 25%;
-                height: 5em;
-                background-color: white;
-            }
-            figcaption{
-                color: rgb(212, 212, 212);
-            }
+            
             #pointa_syuu{
                 width: 100%;
                 height: 100%;
@@ -274,7 +247,7 @@
             </h1>
         </header>
         <div id="mannaka">
-                <div id="pointa_syuu">
+            <div id="pointa_syuu">
                 <h1 id="h1_1st">マウスカーソル変えようぜ！！</h1>
 
                 <hr>
@@ -458,7 +431,7 @@
                 <div class="right_div flex_div">
                     <div>
                         <p>できた(32×32)</p>
-                        <img src="../images/yomimono/cursor_kaeyou/tyuukuuka-soru.png" width="128px">
+                        <img src="../images/yomimono/cursor_kaeyou/tyuukuuka-soru.png" class="dot_img" width="128px">
                         <p>色を緑にして目立たせ、立体的にすることで面白みをプラス。さらに色を2色に絞ることでシンプルに仕上げました。</p>
                     </div>
                     <figure class="figure_icon">
@@ -545,7 +518,7 @@
                 <div class="right_div flex_div">
                     <div>
                         <p>なるほど、このカーソルはぱっと見たときにカーソルの中央付近を見ちゃうな</p>
-                        <img src="../images/yomimono/cursor_kaeyou/tyuukuuka-soru.png" width="64px">
+                        <img src="../images/yomimono/cursor_kaeyou/tyuukuuka-soru.png"  class="dot_img"  width="64px">
                         <p>これは形状が正方形だからなのか</p>
                     </div>
                     <figure class="figure_icon">
@@ -601,7 +574,7 @@
                 <hr>
                 <div class="right_div flex_div">
                     <div>
-                        <img src="../images/yomimono/cursor_kaeyou/surudoi_pointa.png" width="64px">
+                        <img src="../images/yomimono/cursor_kaeyou/surudoi_pointa.png"  class="dot_img"  width="64px">
                         <p>すべてを貫く槍…ゲイ・ボルグとでも呼ぼうか…</p>
                     </div>
                     <figure class="figure_icon">
@@ -684,7 +657,7 @@
                 <hr>
                 <div class="right_div flex_div">
                     <div>
-                        <img src="../images/yomimono/cursor_kaeyou/surudoi_pointa_kawaii.png" width="64px">
+                        <img src="../images/yomimono/cursor_kaeyou/surudoi_pointa_kawaii.png"  class="dot_img"  width="64px">
                         <p>…</p>
                     </div>
                     <figure class="figure_icon">
