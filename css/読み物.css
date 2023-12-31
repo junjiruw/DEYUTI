@@ -1,0 +1,30 @@
+.dot_img{
+    image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+}
+.flex_div{
+    display: flex;   
+}
+.right_div{
+    justify-content: flex-end;
+    padding-left: 10px;
+}
+.left_div{
+    text-align: left;
+    justify-content: flex-start;
+    image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+}
+.figure_icon{
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+.figure_icon img{
+    border-radius: 25%;
+    height: 5em;
+    background-color: white;
+}
+figcaption{
+    color: rgb(212, 212, 212);
+}
