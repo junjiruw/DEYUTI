@@ -11,7 +11,9 @@
 .left_div{
     text-align: left;
     justify-content: flex-start;
-    image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+}
+.left_div figure img{
+    transform: scale(-1, 1);
 }
 .figure_icon{
     text-align: center;
