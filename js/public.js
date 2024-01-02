@@ -134,7 +134,7 @@ function 読み物調整(){
     if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
 
     }else{
-        document.getElementById('mannaka').style.width="50%";
+        document.getElementById('mannaka').style.width="40em";
     }
 }
 
