@@ -12,6 +12,10 @@
     text-align: left;
     justify-content: flex-start;
 }
+.left_right_div{
+    text-align: left;
+    justify-content: space-between;
+}
 .left_div figure img{
     transform: scale(-1, 1);
 }

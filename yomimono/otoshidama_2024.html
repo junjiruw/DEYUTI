@@ -3,13 +3,13 @@
     <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
         <meta charset="UTF-8">
         <!--文字コードは上のほうにないとすべておしまいになるらしい-->
-        <meta name="description" content="***">                                                                 <!--入力すること！-->
-        <title>JUN汁ｗおもちゃばこ。/読み物/***</title>                                                         <!--入力すること！-->
+        <meta name="description" content="お年玉くれ">                                                                 <!--入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/読み物/お年玉2024</title>                                                         <!--入力すること！-->
         <!--OGPとかいうの-->
-        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/yomimono/***">                                <!--入力すること！-->
-        <meta property="og:title" content="***">                                                               <!--入力すること！-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/yomimono/お年玉2024">                                <!--入力すること！-->
+        <meta property="og:title" content="お年玉くれ">                                                               <!--入力すること！-->
         <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
-        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/yomimono/***.html">                   <!--入力すること！-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/yomimono/otoshimada_2024.html">                   <!--入力すること！-->
         <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
         <meta name="twitter:card" content="summary"><!--なにを表示するか-->
         <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
@@ -20,9 +20,55 @@
 
         <link rel="stylesheet" href="../css/読み物.css"><!--まあ必要ならこれ入れといて-->
         <style>
-
+            @font-face {
+                font-family: "misaki_gothic";
+                src: url("../font/misaki_gothic_2nd.ttf") format('truetype');
+            }
+            @font-face {
+                font-family: "衡山毛筆フォント";
+                src: url("../font/衡山毛筆フォント.ttf") format('truetype');
+            }
+            body{    
+                background-image:url("../images/site/junjiruw_pro.png"),linear-gradient(#b43434,90%,#817b7b);
+                
+            }
+            div#mannaka{
+                text-align: center;
+                border: 2px solid #ffffff;  
+            }
+            
+            
+            h1{
+                text-align: center; 
+            }
+            #start_button{
+                position: fixed;
+                background: #ffffff;
+            }
+            canvas{
+                width: 98%;
+                image-rendering: pixelated;/*ドット絵を拡大したいなら使え*/
+            }
+            input.key_button{
+                background-color: #FFFFFF;
+                font-size: 3em;
+                margin: 1em;
+            }
+            @keyframes rotation{
+                0%{ transform:rotate(0);}
+                100%{ transform:rotate(360deg); }
+            }
+            .rotation_style{
+                animation:3s linear infinite rotation;
+            }
         </style>
         <script src="../js/public.js"></script>
+        <!--pixiJSを読み込もう-->
+        <script src="../js/library/pixi.min.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
+        <!--HOWLERを読み込もう-->
+        <script src="../js/library/howler.min.js"></script>
+        <!--ライセンス表記はコイツの中に書いてあるぜ！-->
 
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
@@ -35,9 +81,670 @@
         </script>
         
         <script>
+            let key_input="";
+            let what_input="";
+            document.addEventListener('keydown', function(key){//キーボード操作
+                what_input="";
+                if(key.key=="a" || key.key=="h" || key.key=="ArrowLeft"){
+                    what_input="←";
+                }else if(key.key=="d" || key.key=="l" || key.key=="ArrowRight"){
+                    what_input="→";
+                }
+                if(key_input.indexOf(what_input)==-1){//すでに押されていたら、文字列検索でひっかかる。ひっかからないなら-1が帰ってくる
+                    key_input=key_input+what_input;//キーボードは同時押しが可能なので書き換えではなく、追加にします。え？キーボードとボタン同時押しされたら？バ～カ
+                }
+                key.preventDefault();//キー入力によるブラウザ操作を破壊
+            });
+
+            document.addEventListener('keyup', function(key){//キーボード操作
+                what_input="";
+                if(key.key=="a" || key.key=="h" || key.key=="ArrowLeft"){
+                    what_input="←";
+                }else if(key.key=="d" || key.key=="l" || key.key=="ArrowRight"){
+                    what_input="→";
+                }
+
+                key_input=key_input.slice(0,key_input.indexOf(what_input))+key_input.slice(key_input.indexOf(what_input)+1);//該当文字を消去
+            });
+
+            let 所持コイン=0;
+            let 金額倍率_2=1;
+            let 金額倍率_3=1;
+            let 年=2024;
             onload = function(){
                 onload_functions();
                 読み物調整();//まあ必要なら入れておいて
+
+                const 基本文字_黒=new PIXI.TextStyle({
+                    fontSize: 10,
+                    fill: 0x101010,
+                    fontWeight: 900,
+                    fontFamily: "misaki_gothic",
+                });
+
+                const canvas_1 =document.getElementById("canvas_1");
+                const app_1 = new PIXI.Application({//PIXIアプリを作成
+                    view : canvas_1, //canvas指定
+                    antialias : false,//アンチエイリアス。デフォルトOFF
+                    //preserveDrawingBuffer: true,//canvasのキャプチャとか実装するなら必要らしい。
+                    backgroundColor: 0xffdfdf,
+                    width:200,
+                    height:200,
+                });
+                PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;//スプライトの拡大をぼやけさせない。
+                const コンテナ_1 = new PIXI.Container();
+                app_1.stage.addChild(コンテナ_1);
+                canvas_1.addEventListener("pointerdown", e => e.preventDefault());//ダブルクリックしたら↓のほうが全選択されちゃったので無効にしようねという話
+
+                let コイン = new Array(20);
+                for(let i=0;i<コイン.length;i++){
+                    コイン[i]=new PIXI.Sprite(PIXI.Texture.from("../images/yomimono/otoshidama_2024/100en.png"));
+                    コイン[i].anchor.set(0.5);
+                    コイン[i].x=100;
+                    コイン[i].y=30;
+                    コイン[i].x_p=100;
+                    コイン[i].y_p=30;
+                    コイン[i].vy=-2;
+                    コイン[i].vx=0;
+                    コイン[i].最終反射=0;
+                    コイン[i].visible=false;
+                    コイン[i].初期化=function(ぽちx){
+                        コイン[i].x=ぽちx;
+                        コイン[i].y=30;
+                        コイン[i].x_p=コイン[i].x;
+                        コイン[i].y_p=コイン[i].y;
+                        コイン[i].vy=-2*(Math.random()+1);
+                        コイン[i].vx=(0.5-Math.random())*4;
+                        コイン[i].visible=true;
+                    };
+                    コンテナ_1.addChild(コイン[i]);
+
+                    //コイン[i].初期化(100);
+                }
+
+                let 釘 = new Array(7);
+                for(let i=0;i<釘.length;i++){
+                    釘[i]=[64*(i%4)+4+30*Math.floor(i/4),70+60*Math.floor(i/4)];
+
+                    let 釘絵= new PIXI.Graphics()
+                        .lineStyle(0) //線のでかさ0
+                        .beginFill(0xafaf90, 1)
+                        .drawCircle(釘[i][0],釘[i][1],3)
+                        .endFill();
+
+                    コンテナ_1.addChild(釘絵);
+                }
+
+                let ねこっぴ=new PIXI.Sprite(PIXI.Texture.from("../images/yomimono/otoshidama_2024/nekobaketu.png"));
+                ねこっぴ.anchor.set(0.5);
+                ねこっぴ.x=100;
+                ねこっぴ.y=180;
+                コンテナ_1.addChild(ねこっぴ);
+                let ねこっぴ移動=0;
+
+                let ぽち=new PIXI.Sprite(PIXI.Texture.from("../images/yomimono/otoshidama_2024/potihukuro32.png"));
+                ぽち.anchor.set(0.5);
+                ぽち.x=100;
+                ぽち.y=30;
+                コンテナ_1.addChild(ぽち);
+
+                let 左ボタン=new PIXI.Graphics()
+                .beginFill(0x90f0f0)
+                .drawRect(0,0,30,30)
+                .endFill();
+                左ボタン.x=0;
+                左ボタン.y=170;
+                左ボタン.interactive=true;//タッチ操作許可
+                左ボタン.on("pointerdown",()=>{
+                    key_input="←";
+                });
+                左ボタン.on("pointerup",()=>{
+                    key_input="";
+                });
+                コンテナ_1.addChild(左ボタン);
+
+                左ボタン.txt= new PIXI.Text( "左" ,基本文字_黒);
+                左ボタン.txt.position.set(15,15);
+                左ボタン.txt.anchor.set(0.5);
+                左ボタン.addChild(左ボタン.txt);
+                
+                let 右ボタン=new PIXI.Graphics()
+                .beginFill(0x90f0f0)
+                .drawRect(0,0,30,30)
+                .endFill();
+                右ボタン.x=170;
+                右ボタン.y=170;
+                右ボタン.interactive=true;//タッチ操作許可
+                右ボタン.on("pointerdown",()=>{
+                    key_input="→";
+                });
+                右ボタン.on("pointerup",()=>{
+                    key_input="";
+                });
+                コンテナ_1.addChild(右ボタン);
+
+                右ボタン.txt= new PIXI.Text( "右" ,基本文字_黒);
+                右ボタン.txt.position.set(15,15);
+                右ボタン.txt.anchor.set(0.5);
+                右ボタン.addChild(右ボタン.txt);
+
+                let 画面黒くしようぜ_1=new PIXI.Graphics()
+                .beginFill(0x000000,0.8)
+                .drawRect(0,0,200,200)
+                .endFill();
+                コンテナ_1.addChild(画面黒くしようぜ_1);
+
+                 let スタートボタン_1=new PIXI.Graphics()
+                .beginFill(0xff0000)
+                .drawRect(0,0,60,25)
+                .endFill();
+                スタートボタン_1.x=70;
+                スタートボタン_1.y=100;
+                スタートボタン_1.interactive=true;//タッチ操作許可
+                スタートボタン_1.visible=false;
+                スタートボタン_1.on("pointerdown",()=>{
+                    スタートボタン_1.visible=false;
+                    画面黒くしようぜ_1.visible=false;
+                    ゲームスタート_1=true;
+                    for(let i=0;i<コイン.length;i++){
+                        コイン[i].初期化(100);
+                    }
+                    ぴょい音.play();//初期化に含めると最初にクソうるさいからココね
+                    time_1=0;
+                    カウンター_1=20;
+                    所持コイン=0;
+                    所持コイン表示.innerText="金額：0円";
+                    ねこっぴ.x=100;
+                });
+                コンテナ_1.addChild(スタートボタン_1);
+
+                スタートボタン_1.txt= new PIXI.Text( "RESTART" ,基本文字_黒);
+                スタートボタン_1.txt.position.set(30,12);
+                スタートボタン_1.txt.anchor.set(0.5);
+                スタートボタン_1.addChild(スタートボタン_1.txt);
+
+                let 音読み込み済み=false;
+                const スタートボタン =document.getElementById("start_button");
+                function スタートボタン押し() {
+                    スタートボタン.style.display="none";
+                    音読み込み済み=true;
+                    //ここから音声の定義ーーーーーーーーーーーーーーーー
+                    金音 = new Howl({
+                        src: ["../sound/yomimono/otoshidama_2024/100en.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    ぴょい音 = new Howl({
+                        src: ["../sound/yomimono/otoshidama_2024/pyoi_003.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    おわり音 = new Howl({
+                        src: ["../sound/yomimono/otoshidama_2024/seikai.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    //---1---
+                    //---2---
+                    倍音 = new Howl({
+                        src: ["../sound/yomimono/otoshidama_2024/とくてん.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    失敗音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/ブブ.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    微妙音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/コン.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    カチ音 = new Howl({
+                        src: ["../sound/omocha/deyucaptcha/クリック.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    //---2---
+                    //---3---
+                    ドォン音 = new Howl({
+                        src: ["../sound/yomimono/otoshidama_2024/ドォン.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+
+                    //ここまで音声の定義ーーーーーーーーーーーーーーーー
+                    画面黒くしようぜ_1.visible=false;
+                    ゲームスタート_1=true;
+                    for(let i=0;i<コイン.length;i++){
+                        コイン[i].初期化(100);
+                    }
+                    ぴょい音.play();//初期化に含めると最初にクソうるさいからココね
+                }   
+                スタートボタン.addEventListener("click", スタートボタン押し);
+                スタートボタン.style.width="6em";
+                スタートボタン.style.height="1.7em";
+
+                let 所持コイン表示 = document.getElementById("coin_p");
+
+                let time_1=0;
+                let カウンター_1表示 = document.getElementById("counter_1_p");
+
+                let ゲームスタート_1=false;
+
+                app_1.ticker.add(loop_1);             
+                function loop_1(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60 …まあ大体1だ  app.ticker.speed = 3;で変えられるらしいっすよ     
+                    if(ゲームスタート_1){
+                        time_1+=delta/60;
+                        if(Number.isInteger(Math.floor(200-time_1*10)/10)){
+                            カウンター_1表示.innerText="残り："+Math.floor(20-time_1)+".0秒";
+                        }else{
+                            カウンター_1表示.innerText="残り："+Math.floor(200-time_1*10)/10+"秒";
+                        }
+                        
+
+                        ぽち.x=(1+Math.sin(time_1))*100;
+
+                        ねこっぴ移動=ねこっぴ移動/1.1;
+                        if(Math.abs(ねこっぴ移動)<0.01){
+                            ねこっぴ移動=0;
+                        }  
+                        if(key_input[0]=="←"){
+                            ねこっぴ移動-=0.3*delta;
+                        }else if(key_input[0]=="→"){
+                            ねこっぴ移動+=0.3*delta;
+                        }      
+                        
+                        ねこっぴ.x+=ねこっぴ移動;
+                        if(ねこっぴ.x>184){
+                            ねこっぴ.x=184;
+                            ねこっぴ移動*=-1;
+                        }else if(ねこっぴ.x<16){
+                            ねこっぴ.x=16;
+                            ねこっぴ移動*=-1;
+                        }
+
+                        for(let i=0;i<コイン.length;i++){
+                            if(コイン[i].visible){
+                                //取得判定
+                                let 二点間距離=距離計算(コイン[i].x,コイン[i].y,ねこっぴ.x,ねこっぴ.y);
+                                if(二点間距離<20){
+                                    コイン[i].visible=false;
+                                    所持コイン+=100;
+                                    所持コイン表示.innerText="金額："+所持コイン+"円";
+                                    最終金額計算();
+                                    金音.play();
+                                }
+
+                                //釘衝突
+                                if(コイン[i].最終反射==0){
+                                    for(let j=0;j<釘.length;j++){
+                                        二点間距離=距離計算(コイン[i].x,コイン[i].y,釘[j][0],釘[j][1]);
+                                        if(二点間距離<11){//コイン16/2+釘3
+                                            コイン[i].最終反射=10;
+
+                                            let ぶつかり法線ベクトル=[(コイン[i].x_p-釘[j][0])/(二点間距離),(コイン[i].y_p-釘[j][1])/(二点間距離)];
+                                            let 反射方向速度くん=[コイン[i].vx*ぶつかり法線ベクトル[0],コイン[i].vy*ぶつかり法線ベクトル[1]];
+                                            コイン[i].vx=コイン[i].vx+2*反射方向速度くん[0]*0.8;
+                                            コイン[i].vy=コイン[i].vy+2*反射方向速度くん[1]*0.8;
+                                            if(Math.abs(コイン[i].vx)>2){
+                                                コイン[i].vx=Math.sign(コイン[i].vx)*2;
+                                            }
+                                            if(Math.abs(コイン[i].vy)>2){
+                                                コイン[i].vy=Math.sign(コイン[i].vy)*2;
+                                            }
+                                            if(Math.abs(コイン[i].vx)+Math.abs(コイン[i].vy)<1){
+                                                コイン[i].vx+=ぶつかり法線ベクトル[0]*0.5;
+                                                コイン[i].vy+=ぶつかり法線ベクトル[1]*0.5;
+                                            }
+                                            コイン[i].x+=ぶつかり法線ベクトル[0]*1;
+                                            コイン[i].y+=ぶつかり法線ベクトル[1]*1;
+                                        }
+                                    }
+                                }else if(コイン[i].最終反射!=0){
+                                    コイン[i].最終反射-=1;
+                                }
+                                
+                                //アンチねこっぴフィールド
+                                二点間距離=距離計算(コイン[i].x,コイン[i].y,ねこっぴ.x,ねこっぴ.y);
+                                if(二点間距離<40){
+                                    コイン[i].vx+=(コイン[i].x-ねこっぴ.x)/二点間距離;
+                                    コイン[i].vy+=(コイン[i].y-ねこっぴ.y)/二点間距離;
+
+                                }
+
+                                //1フレーム前保存
+                                コイン[i].x_p=コイン[i].x;
+                                コイン[i].y_p=コイン[i].y;
+                                //移動決定
+                                コイン[i].x+=コイン[i].vx*delta;
+                                if(コイン[i].x>192){
+                                    コイン[i].x=192;
+                                    コイン[i].vx*=-1;
+                                }else if(コイン[i].x<8){
+                                    コイン[i].x=8;
+                                    コイン[i].vx*=-1;
+                                }
+                                コイン[i].vy+=0.1;
+                                コイン[i].y+=コイン[i].vy*delta;
+                                if(コイン[i].y>220){
+                                    コイン[i].初期化(ぽち.x);
+                                    ぴょい音.play();//初期化に含めると最初にクソうるさいからココね
+                                }
+                            }
+                        }
+                        if(time_1>=20){
+                            おわり音.play();
+                            カウンター_1表示.innerText="残り：0.0秒";
+                            スタートボタン_1.visible=true;
+                            画面黒くしようぜ_1.visible=true;
+                            ゲームスタート_1=false;
+                        }
+                    }else{
+                        if(スタートボタン.style.display!="none"){                            
+                            スタートボタン.style.left= (canvas_1.getBoundingClientRect().left+70*canvas_1.clientWidth/canvas_1.width) +"px";
+                            スタートボタン.style.top= (canvas_1.getBoundingClientRect().top+100*canvas_1.clientHeight/canvas_1.height) +"px";
+                        }
+                        
+                    }
+                    
+                }
+
+                const canvas_2 =document.getElementById("canvas_2");
+                const app_2 = new PIXI.Application({//PIXIアプリを作成
+                    view : canvas_2, //canvas指定
+                    antialias : false,//アンチエイリアス。デフォルトOFF
+                    //preserveDrawingBuffer: true,//canvasのキャプチャとか実装するなら必要らしい。
+                    backgroundColor: 0xffdfdf,
+                    width:200,
+                    height:200,
+                });
+                const コンテナ_2 = new PIXI.Container();
+                app_2.stage.addChild(コンテナ_2);
+                コンテナ_2.x=100;
+                コンテナ_2.y=100;
+                canvas_2.addEventListener("pointerdown", e => e.preventDefault());//ダブルクリックしたら↓のほうが全選択されちゃったので無効にしようねという話
+
+                let 倍率_2表示 = document.getElementById("bai_2_p");
+
+                const 回転コンテナ = new PIXI.Container();
+                コンテナ_2.addChild(回転コンテナ);
+
+                const 中央円= new PIXI.Graphics()
+                        .lineStyle(0) //線のでかさ0
+                        .beginFill(0xafaf90, 1)
+                        .drawCircle(0,0,80)
+                        .endFill();
+                        回転コンテナ.addChild(中央円);
+
+                const はずれ円 = new PIXI.Graphics()
+                .beginFill(0xFF5050)
+                .moveTo(0, 0)
+                .arc(0, 0, 80, -Math.PI/2, 0, false)// 中心x,y,半径,開始角度ラジアン,終了角度,終了角度
+                .endFill();
+                回転コンテナ.addChild(はずれ円);
+
+                const あたり円 = new PIXI.Graphics()
+                .beginFill(0xFFFF50)
+                .moveTo(0, 0)
+                .arc(0, 0, 80, -Math.PI/8, 0, false)// 中心x,y,半径,開始角度ラジアン,終了角度,終了角度
+                .endFill();
+                回転コンテナ.addChild(あたり円);
+
+                let 釘2 = new Array(17);
+                for(let i=0;i<釘2.length-1;i++){
+
+                    釘2[i]= new PIXI.Graphics()
+                        .lineStyle(0) //線のでかさ0
+                        .beginFill(0x808000, 1)
+                        .drawCircle(80*Math.sin(i*Math.PI/8),80*Math.cos(i*Math.PI/8),2)
+                        .endFill();
+
+                    回転コンテナ.addChild(釘2[i]);
+                }
+                釘2[16]= new PIXI.Graphics()
+                        .lineStyle(0) //線のでかさ0
+                        .beginFill(0x808000, 1)
+                        .drawCircle(0,0,2)
+                        .endFill();
+
+                    回転コンテナ.addChild(釘2[16]);
+
+                const 止める三角= new PIXI.Graphics()
+                    .moveTo(0,-80)
+                    .beginFill(0x000000, 1)
+                    .lineTo(-5,-88.6)
+                    .lineTo(5,-88.6)
+                    .endFill();
+                    コンテナ_2.addChild(止める三角);
+
+
+                let 回転スタート=false;
+                let 回転時間=0;
+                let 回転カウント=0;
+                let 回転戻り=0;
+                let 回転位置=0;
+
+                let スタートボタン_2=new PIXI.Graphics()
+                .beginFill(0xffffff)
+                .drawRect(0,0,20,20)
+                .endFill();
+                スタートボタン_2.x=175;
+                スタートボタン_2.y=175;
+                スタートボタン_2.interactive=true;//タッチ操作許可
+                スタートボタン_2.on("pointerdown",()=>{
+                    回転スタート=true;
+                    回転時間=Math.random()*0.5+2;
+                    回転カウント=0;
+                    回転戻り=Math.random()*0.4+0.55;
+                });
+                app_2.stage.addChild(スタートボタン_2);
+
+                スタートボタン_2.txt= new PIXI.Text( "🎯" ,基本文字_黒);
+                スタートボタン_2.txt.position.set(11,8);
+                スタートボタン_2.txt.anchor.set(0.5);
+                スタートボタン_2.addChild(スタートボタン_2.txt);
+
+                let time_2=0;
+
+                app_2.ticker.add(loop_2);             
+                function loop_2(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60 …まあ大体1だ  app.ticker.speed = 3;で変えられるらしいっすよ     
+
+                    time_2+=delta/60;
+                    コンテナ_2.rotation+=delta/120;
+                    if(回転スタート){
+                        回転カウント+=delta/60;
+                        回転コンテナ.rotation-=(回転カウント-回転時間+回転戻り)*(回転カウント-回転時間)/10;
+                        if(回転位置!=Math.floor(回転コンテナ.rotation/(Math.PI/8))){
+                            回転位置=Math.floor(回転コンテナ.rotation/(Math.PI/8));
+                            if(音読み込み済み){
+                                カチ音.play();
+                            }
+                        }
+                        if(回転カウント>回転時間){
+                            回転スタート=false;
+                            if(回転位置%16==-4){
+                                金額倍率_2=2;
+                                if(音読み込み済み){
+                                    倍音.play();
+                                }
+                            }else if(回転位置%16==-1 ||回転位置%16==-2||回転位置%16==-3){
+                                金額倍率_2=1;
+                                if(音読み込み済み){
+                                    微妙音.play();
+                                }
+                            }else{
+                                金額倍率_2=0;
+                                if(音読み込み済み){
+                                    失敗音.play();
+                                }
+                            }
+                            倍率_2表示.innerText="金額："+金額倍率_2+"倍";
+                            最終金額計算();
+                        }
+                    }                    
+                }
+
+                const canvas_3 =document.getElementById("canvas_3");
+                const app_3 = new PIXI.Application({//PIXIアプリを作成
+                    view : canvas_3, //canvas指定
+                    antialias : false,//アンチエイリアス。デフォルトOFF
+                    //preserveDrawingBuffer: true,//canvasのキャプチャとか実装するなら必要らしい。
+                    backgroundColor: 0xffdfdf,
+                    width:200,
+                    height:200,
+                });
+                const コンテナ_3 = new PIXI.Container();
+                app_3.stage.addChild(コンテナ_3);
+
+                canvas_3.addEventListener("pointerdown", e => e.preventDefault());//ダブルクリックしたら↓のほうが全選択されちゃったので無効にしようねという話
+
+                const まとコンテナ = new PIXI.Container();
+                コンテナ_3.addChild(まとコンテナ);
+                まとコンテナ.x=100;
+                まとコンテナ.y=100;
+
+                const まとコンテナ_2 = new PIXI.Container();
+                コンテナ_3.addChild(まとコンテナ_2);
+                まとコンテナ_2.x=-100;
+                まとコンテナ_2.y=100;
+
+                let まと絵 = new Array(4);
+                let まと絵_2 = new Array(4);
+                let まと色=[0x303030,0xFF5050,0x5f044b,0xFFFF50];
+                let まと大きさ=[80,60,30,5];
+                for(let i=0;i<まと絵.length;i++){
+                    まと絵[i]= new PIXI.Graphics()
+                        .lineStyle(0) //線のでかさ0
+                        .beginFill(まと色[i], 1)
+                        .drawCircle(0,0,まと大きさ[i])
+                        .endFill();
+                        まとコンテナ.addChild(まと絵[i]);
+                    まと絵_2[i]= new PIXI.Graphics()
+                        .lineStyle(0) //線のでかさ0
+                        .beginFill(まと色[i], 1)
+                        .drawCircle(0,0,まと大きさ[i])
+                        .endFill();
+                        まとコンテナ_2.addChild(まと絵_2[i]);
+                }
+                let 矢_1=new PIXI.Sprite(PIXI.Texture.from("../images/yomimono/otoshidama_2024/yumiya_ya.png"));
+                矢_1.visible=false;
+                矢_1.anchor.set(0.5);
+                まとコンテナ.addChild(矢_1);
+                let 矢_2=new PIXI.Sprite(PIXI.Texture.from("../images/yomimono/otoshidama_2024/yumiya_ya.png"));
+                矢_2.visible=false;
+                矢_2.anchor.set(0.5);
+                まとコンテナ_2.addChild(矢_2);
+
+
+                let 弓_1=new PIXI.Sprite(PIXI.Texture.from("../images/yomimono/otoshidama_2024/yumiya_1.png"));
+                弓_1.visible=true;
+                コンテナ_3.addChild(弓_1);
+                let 弓_2=new PIXI.Sprite(PIXI.Texture.from("../images/yomimono/otoshidama_2024/yumiya_2.png"));
+                弓_2.visible=false;
+                コンテナ_3.addChild(弓_2);
+
+                let 引き絞り時間=0;
+                let スタートボタン_3=new PIXI.Graphics()
+                .beginFill(0xffffff)
+                .drawRect(0,0,20,20)
+                .endFill();
+                スタートボタン_3.x=5;
+                スタートボタン_3.y=175;
+                スタートボタン_3.interactive=true;//タッチ操作許可
+                スタートボタン_3.on("pointerdown",()=>{
+                    引き絞り時間=Math.random()*0.3+0.3;
+                    弓_1.visible=false;
+                    弓_2.visible=true;
+                });
+                app_3.stage.addChild(スタートボタン_3);
+
+                スタートボタン_3.txt= new PIXI.Text( "🎯" ,基本文字_黒);
+                スタートボタン_3.txt.position.set(11,8);
+                スタートボタン_3.txt.anchor.set(0.5);
+                スタートボタン_3.addChild(スタートボタン_3.txt);
+
+                let time_3=0;
+                let 倍率_3表示 = document.getElementById("bai_3_p");
+
+                app_3.ticker.add(loop_3);             
+                function loop_3(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60 …まあ大体1だ  app.ticker.speed = 3;で変えられるらしいっすよ     
+
+                    time_3+=delta/60;
+                    まとコンテナ.x+=1;
+                    まとコンテナ_2.x+=1;
+                    
+                    if(まとコンテナ.x>300){
+                        まとコンテナ.x-=400;
+                    }
+                    if(まとコンテナ_2.x>300){
+                        まとコンテナ_2.x-=400;
+                    }
+                    if(引き絞り時間!=0){
+                        引き絞り時間-=delta/60;
+                        if(引き絞り時間<0){
+                            引き絞り時間=0;
+                            弓_2.visible=false;
+                            弓_1.visible=true;
+                            矢_1.visible=true;
+                            矢_2.visible=true;
+                            矢_1.x=-(まとコンテナ.x+200)%200+100;
+                            矢_2.x=矢_1.x;
+                            if(Math.abs(矢_1.x)<=まと大きさ[3]){
+                                金額倍率_3=3;
+                                if(音読み込み済み){
+                                    倍音.play();
+                                }
+                            }else if(Math.abs(矢_1.x)<=まと大きさ[2]){
+                                金額倍率_3=-3;
+                                if(音読み込み済み){
+                                    ドォン音.play();//上弦の…参？どうして今ここに…
+                                }
+                            }else if(Math.abs(矢_1.x)<=まと大きさ[1]){
+                                金額倍率_3=1;
+                                if(音読み込み済み){
+                                    微妙音.play();
+                                }
+                            }else if(Math.abs(矢_1.x)<=まと大きさ[0]){
+                                金額倍率_3=-1;
+                                if(音読み込み済み){
+                                    失敗音.play();
+                                }
+                            }else{
+                                金額倍率_3=0;
+                                if(音読み込み済み){
+                                    失敗音.play();
+                                }
+                            }
+                            倍率_3表示.innerText="金額："+金額倍率_3+"倍";
+                            最終金額計算();
+                        }
+                    }
+                }
+                最終金額計算();
+            }
+            function 年数(){
+                数値_年=Math.floor(10000*Math.random())
+                年 =数値_年.toString().padStart( 4, '0');
+                document.getElementById("h1_1st").innerText = 年+"年 元旦";
+                //呟く前に変更されたらどうするの？⇒ま、あとでね
+            }
+            function 距離計算(x1,y1,x2,y2){
+                return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+            }
+            function 最終金額計算(){
+                let 倍率表示欄 = document.getElementById("倍率_div");
+                倍率表示欄.children[0].innerText="獲得金額："+所持コイン;
+                倍率表示欄.children[1].innerText="ルーレット倍率："+金額倍率_2;
+                倍率表示欄.children[2].innerText="的当て倍率："+金額倍率_3;
+                
+                let 表示欄 = document.getElementById("last_div");
+                表示欄.innerText="最終金額："+所持コイン*金額倍率_2*金額倍率_3+"円";
+
+                //ツイートリンク取得
+                let URL_tweet_text="https://twitter.com/intent/tweet?text="+年+"年のお年玉は…%0A"+所持コイン+"×"+金額倍率_2+"×"+金額倍率_3+"= "+所持コイン*金額倍率_2*金額倍率_3+"円! "+"&hashtags=otoshidama_2024w%0A%0A"+document.title+"%0A"+document.URL+"";//%0Aで改行
+                document.getElementById("tweet_a").href=URL_tweet_text;
             }
         </script>
     </head>
@@ -56,8 +763,295 @@
             </h1>
         </header>
         <div id="mannaka">
+                <div class="flex_div" style="align-items: center;justify-content: center;">
+                    <h1>~ <span id="h1_1st" style="font-family: '衡山毛筆フォント';">2024年 元旦</span> ~</h1>
+                    <button onclick="年数()" >
+                        違うよ
+                    </button>
+                </div>
+                <hr>
+                <div class="right_div flex_div">
+                    <div>
+                        <p style="font-size: 2em;font-family: '衡山毛筆フォント';"><span style="color: red;">お</span>年<span style="color: red;">玉</span>く<span style="color: red;">れ</span>ー<span style="color: red;">ー</span>ー<span style="color: red;">！</span>！</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/saika_kihon.png">
+                        <figcaption>サイカ</figcaption>
+                    </figure>
+                </div>
+                <hr>
 
-            ここに本文
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/mikupon_kihon.png">
+                        <figcaption>みくぽん</figcaption>
+                    </figure>  
+                    <div>
+                        <p>ほう。</p>
+                    </div>
+                                      
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p>お年玉って…なに</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/saika_kihon.png">
+                        <figcaption>サイカ</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p>年間ログインボーナス</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/mikupon_kihon.png">
+                        <figcaption>みくぽん</figcaption>
+                    </figure>  
+                    <div>
+                        <p>そして謎のミニゲームで金額が決定される</p>
+                    </div>                  
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p>なんで！？</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <p>操作方法：　キーボードなら：←→、AD、HL。　スマホなら画面内ボタン</p>
+                <div style="text-align: center;background-color:rgb(221, 86, 86);padding: 10px;">
+                    <button id="start_button" style="font-size: 1.6em;">START(🔊)</button><!--すぐ消える-->
+                    <canvas id="canvas_1"></canvas>
+                </div>
+                <div class="flex_div left_right_div" style="padding: 10px;">
+                    <p id="counter_1_p" style="font-size: 2em;">残り：20秒</p>
+                    <p id="coin_p" style="font-size: 2em;">金額：0円</p>
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p style="font-size: 2em;">(なんか全然入んねえんだけど！？！？？)</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <div class="left_right_div flex_div">
+                    <figure class="figure_icon dot_img">
+                        <img src="../images/yomimono/otoshidama_2024/nekobaketu.png">
+                        <figcaption>ねこっぴ</figcaption>
+                    </figure>  
+                    <div class="right_div flex_div">
+                        <div>
+                            <p>ねこっぴだー！</p>
+                        </div>
+                        <figure class="figure_icon">
+                            <img src="../images/yomimono/saika_kihon.png">
+                            <figcaption>サイカ</figcaption>
+                        </figure>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/mikupon_kihon.png">
+                        <figcaption>みくぽん</figcaption>
+                    </figure>  
+                    <div>
+                        <p style="font-size: 2em">ダブルアップチャーンス！！！</p>
+                    </div>                  
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p style="font-size: 2em;">!?</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                    <div>
+                        <p style="font-size: 2em;">!?</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/saika_kihon.png">
+                        <figcaption>サイカ</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <p>操作方法：　画面内ボタン</p>
+                <div style="text-align: center;background-color:rgb(221, 86, 86);padding: 10px;">
+                    <canvas id="canvas_2"></canvas>
+                </div>
+                <div class="" style="padding: 10px;">
+                    <p><span style="color: #afaf90;">■</span>灰色=0倍　<span style="color: #FF5050;">■</span>赤色=1倍　<span style="color: #FFFF50;">■</span>黄色=2倍</p>
+                    <p id="bai_2_p" style="font-size: 2em;">金額：1倍</p>
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p style="font-size: 2em;">期待値低すぎだろ！！！！</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <div class="left_right_div flex_div">
+                    <div class="left flex_div">
+                        <figure class="figure_icon dot_img">
+                            <img class="rotation_style" src="../images/yomimono/otoshidama_2024/nekobaketu.png">
+                            <figcaption class="rotation_style">ねこっぴ</figcaption>
+                        </figure> 
+                        <div>
+                            <p class="rotation_style">うひ～</p>
+                        </div>
+                        
+                    </div>
+                    <div class="right_div flex_div">
+                        <div>
+                            <p class="rotation_style">おあー</p>
+                        </div>
+                        <figure class="figure_icon">
+                            <img class="rotation_style" src="../images/yomimono/saika_kihon.png">
+                            <figcaption class="rotation_style">サイカ</figcaption>
+                        </figure>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/mikupon_kihon.png">
+                        <figcaption>みくぽん</figcaption>
+                    </figure>  
+                    <div>
+                        <p style="font-size: 2em">トリプルアップチャーンス！！！</p>
+                    </div>                  
+                </div>
+                <hr>
+
+                <p>操作方法：　画面内ボタン</p>
+                <div style="text-align: center;background-color:rgb(221, 86, 86);padding: 10px;">
+                    <canvas id="canvas_3"></canvas>
+                </div>
+                <div class="" style="padding: 10px;">
+                    <p><span style="color: #5f044b;">■</span>紫色=-3倍　<span style="color: #303030;">■</span>黒色=-1倍　まと外=0倍　<span style="color: #FF5050;">■</span>赤色=1倍　<span style="color: #FFFF50;">■</span>黄色=3倍</p>
+                   <p id="bai_3_p" style="font-size: 2em;">金額：1倍</p>
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p style="font-size: 2em;">もうツッコまねえからな？</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/mikupon_kihon.png">
+                        <figcaption>みくぽん</figcaption>
+                    </figure>  
+                    <div>
+                        <p>というわけで今年のお年玉になります。</p>
+                        <img class="dot_img" src="../images/yomimono/otoshidama_2024/potihukuro32.png">
+                        <img class="dot_img" src="../images/yomimono/otoshidama_2024/potihukuro32.png">
+                        <img class="dot_img" src="../images/yomimono/otoshidama_2024/potihukuro32.png">
+                    </div>                                       
+                </div>
+                <hr>
+
+                <div class="left_right_div flex_div">
+                    <div class="left flex_div">
+                        <figure class="figure_icon dot_img">
+                            <img src="../images/yomimono/otoshidama_2024/nekobaketu.png">
+                            <figcaption>ねこっぴ</figcaption>
+                        </figure> 
+                        <div>
+                            <p>！</p>
+                            <img class="dot_img" src="../images/yomimono/otoshidama_2024/potihukuro32.png">
+                        </div>
+                        
+                    </div>
+                    <div class="right_div flex_div">
+                        <div>
+                            <p>わーい</p>
+                            <img class="dot_img" src="../images/yomimono/otoshidama_2024/potihukuro32.png">
+                        </div>
+                        <figure class="figure_icon">
+                            <img src="../images/yomimono/saika_kihon.png">
+                            <figcaption>サイカ</figcaption>
+                        </figure>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="right_div flex_div">
+                    <div>
+                        <p>…</p>
+                        <img class="dot_img" src="../images/yomimono/otoshidama_2024/potihukuro32.png">
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+                <hr>
+
+                <div>
+                    <div class="left_right_div flex_div" id="倍率_div" style="padding: 1em;">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <div id="last_div" style="font-size: 1.5em;">
+                    </div>
+                </div>
+                <div style="padding: 1em;">
+                    <a id="tweet_a" href=""  target="_blank" rel="noopener noreferrer" style="border: #ffffff 2px solid;padding: 0.5em;">
+                        ツイートする
+                    </a>
+                </div>
+                <hr>
+                
 
             <footer>
                 <ul id="footul">
