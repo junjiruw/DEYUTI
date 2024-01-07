@@ -129,7 +129,7 @@
                     //preserveDrawingBuffer: true,//canvasのキャプチャとか実装するなら必要らしい。
                     backgroundColor: 0xffdfdf,
                     width:200,
-                    height:200,
+                    height:250,
                 });
                 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;//スプライトの拡大をぼやけさせない。
                 const コンテナ_1 = new PIXI.Container();
@@ -189,11 +189,11 @@
                 コンテナ_1.addChild(ぽち);
 
                 let 左ボタン=new PIXI.Graphics()
-                .beginFill(0x90f0f0)
-                .drawRect(0,0,30,30)
+                .beginFill(0xa0c0f0)
+                .drawRect(0,0,100,50)
                 .endFill();
                 左ボタン.x=0;
-                左ボタン.y=170;
+                左ボタン.y=200;
                 左ボタン.interactive=true;//タッチ操作許可
                 左ボタン.on("pointerdown",()=>{
                     key_input="←";
@@ -204,16 +204,16 @@
                 コンテナ_1.addChild(左ボタン);
 
                 左ボタン.txt= new PIXI.Text( "左" ,基本文字_黒);
-                左ボタン.txt.position.set(15,15);
+                左ボタン.txt.position.set(50,25);
                 左ボタン.txt.anchor.set(0.5);
                 左ボタン.addChild(左ボタン.txt);
                 
                 let 右ボタン=new PIXI.Graphics()
-                .beginFill(0x90f0f0)
-                .drawRect(0,0,30,30)
+                .beginFill(0xf0a0a0)
+                .drawRect(0,0,100,50)
                 .endFill();
-                右ボタン.x=170;
-                右ボタン.y=170;
+                右ボタン.x=100;
+                右ボタン.y=200;
                 右ボタン.interactive=true;//タッチ操作許可
                 右ボタン.on("pointerdown",()=>{
                     key_input="→";
@@ -224,9 +224,15 @@
                 コンテナ_1.addChild(右ボタン);
 
                 右ボタン.txt= new PIXI.Text( "右" ,基本文字_黒);
-                右ボタン.txt.position.set(15,15);
+                右ボタン.txt.position.set(50,25);
                 右ボタン.txt.anchor.set(0.5);
                 右ボタン.addChild(右ボタン.txt);
+
+                let ボタンワケ=new PIXI.Graphics()
+                .beginFill(0x505050)
+                .drawRect(98,200,4,50)
+                .endFill();
+                コンテナ_1.addChild(ボタンワケ);
 
                 let 画面黒くしようぜ_1=new PIXI.Graphics()
                 .beginFill(0x000000,0.8)
