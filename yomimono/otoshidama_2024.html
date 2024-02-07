@@ -127,7 +127,7 @@
                     view : canvas_1, //canvas指定
                     antialias : false,//アンチエイリアス。デフォルトOFF
                     //preserveDrawingBuffer: true,//canvasのキャプチャとか実装するなら必要らしい。
-                    backgroundColor: 0xffdfdf,
+                    backgroundColor: 0x000000,
                     width:200,
                     height:250,
                 });
@@ -136,7 +136,62 @@
                 app_1.stage.addChild(コンテナ_1);
                 canvas_1.addEventListener("pointerdown", e => e.preventDefault());//ダブルクリックしたら↓のほうが全選択されちゃったので無効にしようねという話
 
-                let コイン = new Array(20);
+                let 背景_fragment = `
+                varying vec2 vTextureCoord;
+                uniform sampler2D uSampler;
+                uniform float time;
+                uniform float poti_x;
+                uniform float poti_y;
+                const float PI  = 3.141592653589793;
+                void main(void)
+                {
+                    vec4 rgb;
+                    vec4 nomal_color=texture2D(uSampler, vTextureCoord);
+                    float vx=vTextureCoord.x;
+                    float vy=vTextureCoord.y*250.0/200.0;
+                    float poti_y_2=poti_y;
+                
+                    float arg=0.0;
+
+                    if(time>17.0-6.2){
+                        poti_y_2=poti_y+sin((time-17.0+6.2)*PI*4.0)/5.0;
+                    }
+                    if(vx!=poti_x){
+                        arg=atan(vy-poti_y_2,vx-poti_x)/PI+0.5;
+                    }
+                    arg=mod(arg,2.0);
+                    
+                    float kyori=sqrt(pow(vx-poti_x,2.0)+pow(vy-poti_y,2.0))/3.0;
+                    if(kyori+arg/5.0<time){
+                        float color=mod(floor((arg-time/2.0)/(1.0/10.0)),2.0);
+                        if(color>0.0){
+                            rgb = vec4(1.0,0.0,0.0,1.0);
+                        }else{
+                            rgb = vec4(1.0,1.0,0.0,1.0);
+                        }
+                    }else{
+                        rgb = vec4(1.0,0.8,0.8,1.0);
+                    }
+                    
+
+                    
+                    gl_FragColor = rgb;
+                    
+                    
+                }
+                `;
+                let 背景_Filter = new PIXI.Filter(null, 背景_fragment);
+
+                背景=new PIXI.Graphics();
+                コンテナ_1.addChild(背景);
+
+                背景.beginFill(0xffdfdf)
+                        .drawRect(0, 0, 1000, 1000)
+                        .endFill();
+                背景.filters= [];
+
+                let コイン = new Array(25);
+                let 最初コイン数=5;
                 for(let i=0;i<コイン.length;i++){
                     コイン[i]=new PIXI.Sprite(PIXI.Texture.from("../images/yomimono/otoshidama_2024/100en.png"));
                     コイン[i].anchor.set(0.5);
@@ -148,19 +203,19 @@
                     コイン[i].vx=0;
                     コイン[i].最終反射=0;
                     コイン[i].visible=false;
-                    コイン[i].初期化=function(ぽちx){
+                    コイン[i].初期化=function(ぽちx,ぽちy){
                         コイン[i].x=ぽちx;
-                        コイン[i].y=30;
+                        コイン[i].y=ぽちy;
                         コイン[i].x_p=コイン[i].x;
                         コイン[i].y_p=コイン[i].y;
                         コイン[i].vy=-2*(Math.random()+1);
                         コイン[i].vx=(0.5-Math.random())*4;
-                        コイン[i].visible=true;
+                        コイン[i].visible=true;                      
                     };
                     コンテナ_1.addChild(コイン[i]);
-
-                    //コイン[i].初期化(100);
                 }
+
+               
 
                 let 釘 = new Array(7);
                 for(let i=0;i<釘.length;i++){
@@ -188,6 +243,8 @@
                 ぽち.y=30;
                 コンテナ_1.addChild(ぽち);
 
+                let 左ボタンが押されている=false;
+                let 右ボタンが押されている=false;
                 let 左ボタン=new PIXI.Graphics()
                 .beginFill(0xa0c0f0)
                 .drawRect(0,0,100,50)
@@ -197,9 +254,16 @@
                 左ボタン.interactive=true;//タッチ操作許可
                 左ボタン.on("pointerdown",()=>{
                     key_input="←";
+                    左ボタンが押されている=true;
                 });
                 左ボタン.on("pointerup",()=>{
-                    key_input="";
+                    左ボタンが押されている=false;
+                    if(右ボタンが押されている){
+                        key_input="→";
+                    }else{
+                        key_input="";
+                    }
+                    
                 });
                 コンテナ_1.addChild(左ボタン);
 
@@ -216,10 +280,16 @@
                 右ボタン.y=200;
                 右ボタン.interactive=true;//タッチ操作許可
                 右ボタン.on("pointerdown",()=>{
+                    右ボタンが押されている=true;
                     key_input="→";
                 });
                 右ボタン.on("pointerup",()=>{
-                    key_input="";
+                    右ボタンが押されている=false;
+                    if(左ボタンが押されている){
+                        key_input="←";
+                    }else{
+                        key_input="";
+                    }
                 });
                 コンテナ_1.addChild(右ボタン);
 
@@ -252,15 +322,22 @@
                     スタートボタン_1.visible=false;
                     画面黒くしようぜ_1.visible=false;
                     ゲームスタート_1=true;
-                    for(let i=0;i<コイン.length;i++){
-                        コイン[i].初期化(100);
+                    後半戦=false;
+                    for(let i=0;i<最初コイン数;i++){
+                        コイン[i].初期化(100,30);
+                    }
+                    for(let i=最初コイン数;i<コイン.length;i++){
+                        コイン[i].visible=false;
                     }
                     ぴょい音.play();//初期化に含めると最初にクソうるさいからココね
+                    BGM音.stop();
+                    BGM音.play();
                     time_1=0;
                     カウンター_1=20;
                     所持コイン=0;
                     所持コイン表示.innerText="金額：0円";
                     ねこっぴ.x=100;
+                    背景.filters= [];
                 });
                 コンテナ_1.addChild(スタートボタン_1);
 
@@ -278,15 +355,20 @@
                     金音 = new Howl({
                         src: ["../sound/yomimono/otoshidama_2024/100en.wav"],
                         loop: false,// 繰り返し再生をする/しない
-                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                        volume: 0.7,// 音量(0.0 ~ 1.0)
                     });
                     ぴょい音 = new Howl({
                         src: ["../sound/yomimono/otoshidama_2024/pyoi_003.wav"],
                         loop: false,// 繰り返し再生をする/しない
-                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                        volume: 0.7,// 音量(0.0 ~ 1.0)
                     });
                     おわり音 = new Howl({
                         src: ["../sound/yomimono/otoshidama_2024/seikai.wav"],
+                        loop: false,// 繰り返し再生をする/しない
+                        volume: 1.0,// 音量(0.0 ~ 1.0)
+                    });
+                    BGM音 = new Howl({
+                        src: ["../sound/yomimono/otoshidama_2024/20s_2024nen.mp3"],
                         loop: false,// 繰り返し再生をする/しない
                         volume: 1.0,// 音量(0.0 ~ 1.0)
                     });
@@ -323,10 +405,12 @@
                     //ここまで音声の定義ーーーーーーーーーーーーーーーー
                     画面黒くしようぜ_1.visible=false;
                     ゲームスタート_1=true;
-                    for(let i=0;i<コイン.length;i++){
-                        コイン[i].初期化(100);
+                    後半戦=false;
+                    for(let i=0;i<最初コイン数;i++){
+                        コイン[i].初期化(100,30);
                     }
                     ぴょい音.play();//初期化に含めると最初にクソうるさいからココね
+                    BGM音.play();
                 }   
                 スタートボタン.addEventListener("click", スタートボタン押し);
                 スタートボタン.style.width="6em";
@@ -338,7 +422,7 @@
                 let カウンター_1表示 = document.getElementById("counter_1_p");
 
                 let ゲームスタート_1=false;
-
+                let 後半戦=false;
                 app_1.ticker.add(loop_1);             
                 function loop_1(delta){//1/60[s]くらいで動く。引数は前フレームからの経過時間*60 …まあ大体1だ  app.ticker.speed = 3;で変えられるらしいっすよ     
                     if(ゲームスタート_1){
@@ -348,9 +432,23 @@
                         }else{
                             カウンター_1表示.innerText="残り："+Math.floor(200-time_1*10)/10+"秒";
                         }
-                        
+                        if(!後半戦){
+                            if(time_1>6.2){
+                                後半戦=true;
+                                console.log(time_1);
+                                for(let i=最初コイン数;i<コイン.length;i++){
+                                    コイン[i].初期化(ぽち.x,ぽち.y);
+                                }
+                                背景.filters= [背景_Filter];
+                            }
+                        }else{
+                            ぽち.y=30+(Math.sin((time_1-6.2)*15)*Math.PI)*2;
+                        }
+                        背景_Filter.uniforms.time=time_1-6.2;//これがいじれるのはフィルターを付与する処理あたりだけっぽい？
 
                         ぽち.x=(1+Math.sin(time_1))*100;
+                        背景_Filter.uniforms.poti_x=ぽち.x/200;//これがいじれるのはフィルターを付与する処理あたりだけっぽい？
+                        背景_Filter.uniforms.poti_y=ぽち.y/250;//これがいじれるのはフィルターを付与する処理あたりだけっぽい？
 
                         ねこっぴ移動=ねこっぴ移動/1.1;
                         if(Math.abs(ねこっぴ移動)<0.01){
@@ -435,7 +533,7 @@
                                 コイン[i].vy+=0.1;
                                 コイン[i].y+=コイン[i].vy*delta;
                                 if(コイン[i].y>220){
-                                    コイン[i].初期化(ぽち.x);
+                                    コイン[i].初期化(ぽち.x,ぽち.y);
                                     ぴょい音.play();//初期化に含めると最初にクソうるさいからココね
                                 }
                             }
@@ -852,9 +950,9 @@
                     <button id="start_button" style="font-size: 1.6em;">START(🔊)</button><!--すぐ消える-->
                     <canvas id="canvas_1"></canvas>
                 </div>
-                <div class="flex_div left_right_div" style="padding: 10px;">
-                    <p id="counter_1_p" style="font-size: 2em;">残り：20秒</p>
-                    <p id="coin_p" style="font-size: 2em;">金額：0円</p>
+                <div class="flex_div left_right_div" style="padding: 0.3em;">
+                    <p id="counter_1_p" style="font-size: 2em;margin: 0.2em;">残り：20秒</p>
+                    <p id="coin_p" style="font-size: 2em;margin: 0.2em;">金額：0円</p>
                 </div>
                 <hr>
 
