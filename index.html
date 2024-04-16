@@ -64,6 +64,16 @@
             }
             dl#links{
                 padding: 0em;
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .dl_div{
+                background: #FFFFFF00;
+                padding: 1em;
+                margin: 0.2em;
+                border-radius:1em;
+                box-shadow:0px 0px 0px 5px #003621 inset,0px 0px 0px 6px #ffffff inset;
+                display: inline-block;
             }
             dl#links div{
                 color: #ffffff;
@@ -376,6 +386,16 @@
                     }
                 };
 
+                if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//貴様！スマホで見ているな！？
+                }else{
+                    const dlDivElements = document.querySelectorAll('.dl_div');
+                    dlDivElements.forEach(element => {
+                        element.style.width = '45%';
+                    });
+                    
+                    //document.getElementById('links').style.justifyContent = 'center';
+                }
+
             }
         </script>
     </head>
@@ -421,7 +441,7 @@
             <p>過去の更新履歴が見たい人はGitHubのcommit履歴から見れます。<a href="https://github.com/junjiruw/DEYUTI/commits/master">ココ</a></p>
             
             <dl id="links">
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="https://pixiv.me/junjiruw">
                             <img src="images/site/pixiv.png" alt="ぴくしぶ" width="240" class="a_img">
@@ -433,7 +453,7 @@
                     </dt>
                     <dd>絵です。ｱﾆﾒｰｼｮﾝをダウンロードしたいときは緑のやつ。</dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="https://junjiruw.booth.pm/">
                             <img src="images/site/booth.png" alt="booth" width="240" class="a_img">
@@ -441,7 +461,7 @@
                     </dt>
                     <dd>JUN汁ｗ屋さんではグッズが買えます。買うより作ったほうが安いです。</dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="https://www.nicovideo.jp/user/18051408">
                             <img src="images/site/nikoniko.png" alt="niconico" width="240" class="a_img">
@@ -453,7 +473,7 @@
                     </dt>
                     <dd>動画はニコニコ。Sketchfabは3Dモデルが置いてあるよ。</dd>
                 </div>
-                <div>
+                <div class="dl_div">
                     <dt>
                         <a href="https://twitter.com/junjiruw">
                             <img src="images/site/twitter.png" alt="ついった" width="240" class="a_img">
@@ -464,6 +484,14 @@
                         </a>
                     </dt>
                     <dd>Twitterは💩みたいなことしか言ってないです。GitHubにはこのサイトがあります。</dd>
+                </div>
+                <div class="dl_div">
+                    <dt>
+                        <a href="https://store.steampowered.com/curator/44899069-junjiruw-fan-club">
+                            <img src="images/site/steam_link.png" alt="steam" width="240" class="a_img">
+                        </a>
+                    </dt>
+                    <dd>ブラウザゲーム以外にSteamにもゲームがあります。</dd>
                 </div>
             </dl>
             <dl id="session_dl">
