@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="でゆっち用お絵描きソフトウェア #deyukaki">                                                                 <!--ページ説明　入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/でゆ描き</title>                                                         <!--タイトル　入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/deyukaki">                                <!--タイトル　入力すること！-->
+        <meta property="og:title" content="でゆ描き">                                                               <!--タイトル　入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/deyukaki.html">                   <!--リンク　入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <meta name="viewport" content="width=device-width,initial-scale=1"><!--スマホで見てる人向けに表示領域の設定-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+            header{
+                position: static;/*fixedじゃなくするとpublic.js内の処理をスキップするよん*/
+                
+            }
+            #html_link_nav{
+                z-index: 20; /* 高い値を指定して上に表示 */
+            }
+            div#mannaka{
+                width: 100%;
+                margin: 0.5em 0px 0.5em 0px;
+                border: 2px solid #ffffff;
+                color: #ffffff;   
+                font-size: 16px;    
+            }
+            #三分割くん {
+                position: relative;
+                height: 100%; /* 親要素の高さに合わせる */
+            }
+
+            #真ん中分割 {
+                width: 100%;
+                height: 100%; /* 親要素の高さに合わせる */
+                text-align: center;
+                overflow: scroll;
+                
+            }
+
+            #スクロールサイズ調整 {
+                position: relative;
+                z-index: 1; /* 邪魔なので一番奥に。*/
+            }
+
+            canvas {
+                position: absolute;
+                transform-origin: top left; /* 拡大縮小の基準点を左上に設定 */
+                top:0;
+                left:0;
+                background: #fff;
+                background-clip: padding-box;/*背景色がborderまでいかないようになる*/
+            }
+
+            .浮かせる {
+                position: absolute;
+                top: 0;
+                background: #555;
+                color: #fff;
+                
+                display: flex;
+                justify-content: center;/* 2分割くんの中身を真ん中によせる */
+            }
+
+            #左分割 {
+                left: 0;
+                z-index: 10; /* 高い値を指定して上に表示 */
+            }
+
+            #右分割 {
+                right: 0;
+                z-index: 10; /* 高い値を指定して上に表示 */
+            }
+
+        </style>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1MB5XLN4LW');
+        </script>
+        <!-- Google tag (gtag.js) -->
+
+        <script src="../js/public.js"></script>
+        <script>
+            onload = function(){
+                onload_functions();
+
+                document.getElementById("左最小化").addEventListener("click", function() {
+                    var container = document.getElementById("左最小化領域");
+                    if (container.style.display === "none") {
+                        container.style.display = "block";//要検討
+                        this.textContent = "<";
+                    } else {
+                        container.style.display = "none";
+                        this.textContent = ">";
+                    }
+                });
+                document.getElementById("右最小化").addEventListener("click", function() {
+                    var container = document.getElementById("右最小化領域");
+                    if (container.style.display === "none") {
+                        container.style.display = "block";//要検討
+                        this.textContent = ">";
+                    } else {
+                        container.style.display = "none";
+                        this.textContent = "<";
+                    }
+                });
+
+                function 真ん中高さ調整() {
+                    var 上下padding= parseFloat(getComputedStyle(document.getElementById("mannaka")).marginTop)+parseFloat(getComputedStyle(document.getElementById("mannaka")).marginBottom);
+                    var mannaka_height = window.innerHeight-document.getElementById("header").offsetHeight -上下padding;
+                    document.getElementById("mannaka").style.height = mannaka_height + "px";
+                    document.getElementById("三分割くん").style.height = mannaka_height-document.querySelector("footer").offsetHeight+ "px";
+                    //document.getElementById("デバッグ用").textContent = 上下padding;
+                }
+                真ん中高さ調整();
+                window.addEventListener("resize", 真ん中高さ調整);
+
+                var canvas = document.getElementById("cnvs");
+                function キャンバスのデカさ変更() {
+                    //ここでなんかうまいこと計算してね
+                    canvas.width = 0;
+                    canvas.height = 0;
+                }
+                //キャンバスのデカさ変更()
+                //window.addEventListener("resize", キャンバスのデカさ変更);
+                //これ使うならキャンバス消え去らないようにしないとダメだと思うよ～ん
+
+                var canvas_border = document.getElementById("canvas_border");
+                var キャンバス拡大率 = 1;
+                var border_width = 0;
+                var border_height = 0;
+                
+                function キャンバスボーダー設定() {                    
+                    var 三分割くん=document.getElementById("三分割くん");
+                    var スクロールサイズ調整=document.getElementById("スクロールサイズ調整");
+
+                    スクロールサイズ調整.style.width = canvas.width*キャンバス拡大率 + "px";
+                    スクロールサイズ調整.style.height = canvas.height*キャンバス拡大率 + "px";
+                    スクロールサイズ調整.style.borderLeftWidth = 三分割くん.offsetWidth + "px";
+                    スクロールサイズ調整.style.borderRightWidth = 三分割くん.offsetWidth + "px";
+                    スクロールサイズ調整.style.borderTopWidth = 三分割くん.offsetHeight + "px"; 
+                    スクロールサイズ調整.style.borderBottomWidth = 三分割くん.offsetHeight + "px";
+                    スクロールサイズ調整.style.borderStyle = "solid";
+                    スクロールサイズ調整.style.borderColor = "rgba(0, 0, 0, 0)";//透明化
+                }
+                
+                キャンバスボーダー設定();
+                window.addEventListener("resize", キャンバスボーダー設定);
+
+                var 真ん中分割=document.getElementById("真ん中分割");
+                function キャンバススクロール中央() {
+                    真ん中分割.scrollLeft = (真ん中分割.scrollWidth-真ん中分割.clientWidth) / 2;
+                    真ん中分割.scrollTop = (真ん中分割.scrollHeight-真ん中分割.clientHeight) / 2;
+                }
+                キャンバススクロール中央();
+            
+                //ここからおえかき機能
+                var ctx = canvas.getContext("2d");
+                var drawing = false;
+                var スマホチョン押し保存;
+                var 撒き戻しやり直し判定=0;
+                var moveカウント=0;//n本指の即時タッチだったのかを判定するためにカウンターを用意したよ
+                var 撒き戻し=[];
+                var やりなおし=[];
+                var 履歴最大数=100;//やり直し最大数はなくてもいい。はず。
+                var 一次保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);//最初の状態を保存しておく
+                
+                function キャンバス比較(data1,data2){
+                    for (let i = 0; i < data1.length; i++) {
+                        if (data1[i] !== data2[i]) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                function キャンバス最新保持(){
+                    一次保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
+                }
+                function 履歴残し(){
+                    if(キャンバス比較(ctx.getImageData(0, 0, canvas.width, canvas.height).data,一次保存用キャンバス.data)){
+                        return;//履歴が変わってないから保存しない
+                    }
+                    if(撒き戻し.length>=履歴最大数){//はみ出るから消すね
+                        撒き戻し.shift();
+                    }
+                    撒き戻し.push(一次保存用キャンバス);
+                    やりなおし=[];//履歴が残ったってことは次のアクションが消えるべきってわけだ！
+                }
+                function 描き戻し(){
+                    if(撒き戻し.length==0){
+                        return;
+                    }
+                    やりなおし.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                    ctx.putImageData(撒き戻し.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
+                    キャンバス最新保持();
+
+                }
+                function やり直し(){
+                    if(やりなおし.length==0){
+                        document.getElementById("デバッグ用").textContent ="ないよ";
+                        return;
+                    }
+                    撒き戻し.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                    ctx.putImageData(やりなおし.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
+                    キャンバス最新保持();
+                }
+
+                function 描き始め(e) {
+                    drawing = true;
+
+                    スマホチョン押し保存=e;
+                    //描き初めで点を描くのをやめた（二本指指スクロールで暴発するので）
+                    //→でもそれだと点をちょん押しで描けないじゃん
+                    //→じゃあ移動じゃなかったと後から判断して後で描くか→描き終わり()                    
+                }
+
+                function 描き途中(e) {
+                    if (!drawing){//そんなことあるか？
+                        return;
+                    }
+                    if(スマホチョン押し保存){
+                        スマホチョン押し保存=null;//無効にしないと、描き終わりで暴発する。
+                    }
+
+                    ctx.lineWidth = 5;
+                    ctx.lineCap = "round";
+                    ctx.strokeStyle = "#000000";
+
+                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var x, y;
+
+                    if (e.touches) {//これ指じゃね？
+                        x = (e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率;
+                        y = (e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率;
+                    } else {//マウスだわ
+                        x = (e.clientX - キャンバス位置.left )/キャンバス拡大率;
+                        y = (e.clientY - キャンバス位置.top )/キャンバス拡大率;
+                    }
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                }
+
+                
+                function 描き終わり() {
+                    if(スマホチョン押し保存){//二本指タップ時にスマホチョン押し保存を破壊してる。
+                        描き途中(スマホチョン押し保存);
+                    }
+                    drawing = false;
+                    履歴残し();
+                    キャンバス最新保持();
+                    
+                    ctx.beginPath();//次のパスを生成することで前のパスを終了する
+                }
+
+                var 動かし前指間距離 = 0;
+                var 前回指間座標 = [0, 0];
+
+                function 指間距離計算(touches) {
+                    var dx = touches[0].clientX - touches[1].clientX;
+                    var dy = touches[0].clientY - touches[1].clientY;
+                    return Math.sqrt(dx * dx + dy * dy);
+                }
+
+                function 指間座標計算(e) {
+                    return [(e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2];
+                }
+
+                真ん中分割.addEventListener("mousedown", 描き始め);
+                真ん中分割.addEventListener("mousemove", 描き途中);
+                真ん中分割.addEventListener("mouseup", 描き終わり);
+
+                真ん中分割.addEventListener("wheel", function(e) {
+                    e.preventDefault();
+                    キャンバス拡大(e.deltaY > 0 ? -0.1 : 0.1, e.clientX, e.clientY);
+                }); 
+
+                function キャンバス拡大(拡大率, 中心x, 中心y){                    
+                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var 変動前位置x=(中心x - キャンバス位置.left )/キャンバス拡大率;
+                    var 変動前位置y=(中心y - キャンバス位置.top )/キャンバス拡大率;
+
+                    var 前拡大率 = キャンバス拡大率;
+                    キャンバス拡大率 += 拡大率;
+                    キャンバス拡大率 = Math.max(0.1, キャンバス拡大率);
+                    キャンバス拡大率 = Math.min(10, キャンバス拡大率);
+
+                    //キャンバスの位置を調整する
+                    真ん中分割.scrollLeft +=  (中心x - キャンバス位置.left )*(キャンバス拡大率/前拡大率-1);
+                    真ん中分割.scrollTop += (中心y - キャンバス位置.top )*(キャンバス拡大率/前拡大率-1);
+                 
+
+                    //キャンバスを拡大（ズラす→拡大の順番じゃないとどうやら非同期処理で計算狂うっぽい）
+                    canvas.style.transform = "scale("+キャンバス拡大率+")";
+                    キャンバスボーダー設定();
+                    //ま、それでもちょっとずれてるけどね
+
+                }
+
+                真ん中分割.addEventListener("touchstart", function(e) {
+                    if (e.touches.length === 2) {
+                        動かし前指間距離 = 指間距離計算(e.touches);
+                        e.preventDefault();
+                        前回指間座標 = 指間座標計算(e);
+                        撒き戻しやり直し判定=2;
+                        moveカウント=0;
+                    } else if (e.touches.length ===3) {
+                        e.preventDefault();
+                        撒き戻しやり直し判定=3;
+                        moveカウント=0;
+                    } else if (e.touches.length > 3) {
+                        // 指が4本以上の場合は反応しない
+                    }else{
+                        e.preventDefault();
+                        描き始め(e);
+                    }
+                });
+
+                真ん中分割.addEventListener("touchmove", function(e) {
+                    document.getElementById("デバッグ用").textContent =撒き戻しやり直し判定+"move"+moveカウント;
+                    if(moveカウント>10){
+                        撒き戻しやり直し判定=0;//まあちょっと動いたし無効化…って判定シビアじゃない？
+                    }else{
+                        moveカウント+=1;
+                    }
+                    
+                    if (e.touches.length === 2) {
+                        drawing=false;
+                        スマホチョン押し保存=null;//無効にしないと、描き終わりで暴発する。描き途中()の中でdrawing殺してるんだからわざわざやらんでもいいんだけどね
+                        e.preventDefault();
+                        //拡大操作
+                        var 指間距離 = 指間距離計算(e.touches);
+                        var 変動率 = 指間距離 / 動かし前指間距離;
+                        動かし前指間距離 = 指間距離;
+                        キャンバス拡大((変動率-1)*キャンバス拡大率,指間座標計算(e)[0] , 指間座標計算(e)[1]);
+                        //移動操作
+                        //合計移動量が少ないなら移動しない…は実装せんでええか
+                        真ん中分割.scrollLeft += (前回指間座標[0] - 指間座標計算(e)[0]);//拡大してても影響ないよ～～ん
+                        真ん中分割.scrollTop += (前回指間座標[1] - 指間座標計算(e)[1]);
+                        前回指間座標 = 指間座標計算(e);
+                    } else if (e.touches.length ===3) {
+                        drawing=false;
+                        スマホチョン押し保存=null;//無効にしないと、描き終わりで暴発する。描き途中()の中でdrawing殺してるんだからわざわざやらんでもいいんだけどね
+                        e.preventDefault();
+                    } else if (e.touches.length > 3) {
+                        // 指が4本以上の場合は反応しない
+                    }else{
+                        e.preventDefault();//画面スクロールとか無効にしちゃうよ～ん
+                        描き途中(e);
+                    }
+                });
+
+                真ん中分割.addEventListener("touchend", function(e) {
+                    e.preventDefault();//画面スクロールとか無効にしちゃうよ～ん
+                    描き終わり();
+
+                    if(撒き戻しやり直し判定===2){
+                        描き戻し();
+                    }else if(撒き戻しやり直し判定===3){
+                        やり直し();
+                    }
+                    撒き戻しやり直し判定=0;
+                });
+
+                document.addEventListener("keydown", function(e) {
+                    if (e.ctrlKey && e.key === "z") {
+                        e.preventDefault(); // デフォルトの動作を無効化
+                        描き戻し();
+                    } else if (e.ctrlKey && e.key === "y") {
+                        e.preventDefault(); // デフォルトの動作を無効化
+                        やり直し();
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+
+            <div id="三分割くん">
+                <div id="左分割" class="浮かせる">
+                    <div id="左最小化領域">
+                        Box 1
+                    </div>
+                    <button id="左最小化"><</button>
+                    <div id="デバッグ用">test</div>
+                </div>
+
+                <div id="真ん中分割">
+                    <div id="スクロールサイズ調整">         
+                        <canvas id="cnvs" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                        </canvas>               
+                    </div>
+
+                </div>
+                
+                <div id="右分割"class="浮かせる">
+                    <div id="デバッグ用2">test</div>
+                    <button id="右最小化">></button>
+                    <div id="右最小化領域">
+                        Box 1
+                    </div>
+
+                </div>
+            </div>
+
+            <footer>
+                <ul id="footul">
+                    <li id="foot_tweet_li">
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
