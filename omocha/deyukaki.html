@@ -55,7 +55,6 @@
                 transform-origin: top left; /* 拡大縮小の基準点を左上に設定 */
                 top:0;
                 left:0;
-                background: #fff;
                 background-clip: padding-box;/*背景色がborderまでいかないようになる*/
             }
 
@@ -77,6 +76,35 @@
             #右分割 {
                 right: 0;
                 z-index: 10; /* 高い値を指定して上に表示 */
+            }
+
+            #raido_0 {
+                display: flex; /* 子要素を横並びにする */
+            }
+            .radio_div{
+                display: flex;
+                flex-direction: column; /* ラジオボタンとラベルを縦に並べる */
+                align-items: center; /* 中央揃え */
+            }
+
+            .radio{
+                display: inline-block;
+                width: 1em;
+                height: 1em;
+                border: 2px solid #aaa;
+                background-color: #fff;
+                border-radius: 50%;
+            }
+            .radio:checked{
+                background-color: rgb(80, 160, 255);
+            }
+            .色箱{
+                display: inline-block;
+                width: 1.5em;
+                height: 1.5em;
+                border: 2px solid #000;
+                border-radius: 10%;
+                margin: 0.2em;
             }
 
         </style>
@@ -128,15 +156,6 @@
                 window.addEventListener("resize", 真ん中高さ調整);
 
                 var canvas = document.getElementById("cnvs");
-                function キャンバスのデカさ変更() {
-                    //ここでなんかうまいこと計算してね
-                    canvas.width = 0;
-                    canvas.height = 0;
-                }
-                //キャンバスのデカさ変更()
-                //window.addEventListener("resize", キャンバスのデカさ変更);
-                //これ使うならキャンバス消え去らないようにしないとダメだと思うよ～ん
-
                 var canvas_border = document.getElementById("canvas_border");
                 var キャンバス拡大率 = 1;
                 var border_width = 0;
@@ -175,8 +194,31 @@
                 var 撒き戻し=[];
                 var やりなおし=[];
                 var 履歴最大数=100;//やり直し最大数はなくてもいい。はず。
-                var 一次保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);//最初の状態を保存しておく
+                var 一次保存用キャンバス;//初期化はあとでね
                 
+                var 色 = document.getElementsByName('color');
+                function 選択された色の取得(){
+                    for (var i = 0; i < 色.length; i++) {
+                        if (色[i].checked) {
+                            return radio_色変換(色[i].value);
+                        }
+                    }
+                }
+                function radio_色変換(radio_id){
+                    if(radio_id=="0_0"){
+                        return "#FFFFFF";
+                    }else if(radio_id=="0_1"){
+                        return "#000000";   
+                    }
+                }
+                
+                function キャンバスを白で塗りつぶす() {
+                    ctx.fillStyle = radio_色変換("0_0"); // 塗りつぶしの色を0_0に設定
+                    ctx.fillRect(0, 0, canvas.width, canvas.height); // キャンバス全体を塗りつぶす
+                }
+                キャンバスを白で塗りつぶす();
+                一次保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
+
                 function キャンバス比較(data1,data2){
                     for (let i = 0; i < data1.length; i++) {
                         if (data1[i] !== data2[i]) {
@@ -236,7 +278,7 @@
 
                     ctx.lineWidth = 5;
                     ctx.lineCap = "round";
-                    ctx.strokeStyle = "#000000";
+                    ctx.strokeStyle = 選択された色の取得();
 
                     var キャンバス位置 = canvas.getBoundingClientRect();
                     var x, y;
@@ -406,7 +448,16 @@
             <div id="三分割くん">
                 <div id="左分割" class="浮かせる">
                     <div id="左最小化領域">
-                        Box 1
+                        <div id="raido_0">
+                            <div class="radio_div">
+                                <input type="radio" class="radio" id="color_0_0" name="color" value="0_0">
+                                <button class="色箱" style="background-color: #fff;"></button>
+                            </div>
+                            <div class="radio_div">
+                                <input type="radio" class="radio" id="color_0_1" name="color" value="0_1" checked>
+                                <button class="色箱" style="background-color: #000;"></button>
+                            </div>
+                        </div>
                     </div>
                     <button id="左最小化"><</button>
                     <div id="デバッグ用">test</div>
