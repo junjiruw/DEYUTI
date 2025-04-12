@@ -77,6 +77,9 @@
                 right: 0;
                 z-index: 10; /* 高い値を指定して上に表示 */
             }
+            #左最小化領域 {
+                display: flex; /* 子要素を横並びにする */
+            }
 
             #raido_0 {
                 display: flex; /* 子要素を横並びにする */
@@ -102,9 +105,16 @@
                 display: inline-block;
                 width: 1.5em;
                 height: 1.5em;
-                border: 2px solid #000;
+                border: 2px solid #c5c5c5;
                 border-radius: 10%;
                 margin: 0.2em;
+            }
+            #太さ{
+                width: 3em;
+                height: 1em;
+            }
+            #slider太さ{
+                width: 8em;
             }
 
         </style>
@@ -127,7 +137,7 @@
                 document.getElementById("左最小化").addEventListener("click", function() {
                     var container = document.getElementById("左最小化領域");
                     if (container.style.display === "none") {
-                        container.style.display = "block";//要検討
+                        container.style.display = "flex";//要検討
                         this.textContent = "<";
                     } else {
                         container.style.display = "none";
@@ -195,6 +205,8 @@
                 var やりなおし=[];
                 var 履歴最大数=100;//やり直し最大数はなくてもいい。はず。
                 var 一次保存用キャンバス;//初期化はあとでね
+                var slider太さ = document.getElementById("slider太さ");
+                var 太さ = document.getElementById("太さ");
                 
                 var 色 = document.getElementsByName('color');
                 function 選択された色の取得(){
@@ -259,6 +271,33 @@
                     キャンバス最新保持();
                 }
 
+                slider太さ.addEventListener("input", function() {
+                    //太さは1~10で調整しやすいようにして、10~はおおざっぱな選択にする
+                    var 本質太さ=1;
+                    if(this.value<=50){
+                        //1~50は1~20に変換する
+                        本質太さ= Math.round(this.value*20/50);
+                    }else{
+                        ////50~100は20~100に変換する
+                        本質太さ= Math.round(this.value*80/50)-60;
+                    }
+                    太さ.value = 本質太さ;
+                });
+                function 太さからスライダー位置調整(){
+                    //太さは1~10で調整しやすいようにして、10~はおおざっぱな選択にする
+                    var slider位置=1;
+                    if(太さ.value<=20){
+                        //1~20は1~50に変換する
+                        slider位置 = Math.floor(太さ.value*50/20);
+                    }else{
+                        //20~100は50~100に変換する
+                        slider位置 = Math.floor(太さ.value*50/80)+38;
+                    }
+                    slider太さ.value = slider位置;
+                }
+                太さ.addEventListener("input", 太さからスライダー位置調整);
+                太さからスライダー位置調整();//初期化。太さを保存するようにしたら使えるね！
+
                 function 描き始め(e) {
                     drawing = true;
 
@@ -276,7 +315,7 @@
                         スマホチョン押し保存=null;//無効にしないと、描き終わりで暴発する。
                     }
 
-                    ctx.lineWidth = 5;
+                    ctx.lineWidth = 太さ.value;
                     ctx.lineCap = "round";
                     ctx.strokeStyle = 選択された色の取得();
 
@@ -458,7 +497,16 @@
                                 <button class="色箱" style="background-color: #000;"></button>
                             </div>
                         </div>
+                        <div id="筆の太さ">
+                            <div>
+                                <label for="太さ">太さ：</label>
+                                <input type="number" id="太さ" min="1" max="100" value="5">
+                            </div>
+                            <input type="range" id="slider太さ" min="1" max="100" value="12" step="1">
+                            <!--デフォルトは12なんだけど計算すると5pxになる。まあここは初期化してるのでなんでもいいんですが…-->
+                        </div>
                     </div>
+                    
                     <button id="左最小化"><</button>
                     <div id="デバッグ用">test</div>
                 </div>
