@@ -299,6 +299,9 @@
                 太さからスライダー位置調整();//初期化。太さを保存するようにしたら使えるね！
 
                 function 描き始め(e) {
+                    if(e.button === 2){
+                        return;//右クリックは無視。たぶんスマホとかでもここは通るはず。
+                    }
                     drawing = true;
 
                     スマホチョン押し保存=e;
@@ -465,6 +468,20 @@
                         やり直し();
                     }
                 });
+
+                document.getElementById("コピーボタン").addEventListener("click", function() {
+                    //テキストもコピーできるかな～て思ったけど、できるけどできないみたい。
+                    canvas.toBlob(function(blob) {
+                        const item = new ClipboardItem({ "image/png": blob });//HTTPSかhttp://127.0.0.1/じゃないとうごかない、らしいね。
+                        navigator.clipboard.write([item]).then(function() {
+                        }).catch(function(err) {
+                            console.error("クリップボードへのコピーに失敗しました:", err);
+                        });
+                    });
+                });
+
+                //ページ下部のツイートボタンを上書き
+                document.getElementById("foot_tweet_a").href=URL_tweet_text="https://twitter.com/intent/tweet?hashtags=deyukaki";           
             }
         </script>
     </head>
@@ -520,10 +537,9 @@
                 </div>
                 
                 <div id="右分割"class="浮かせる">
-                    <div id="デバッグ用2">test</div>
                     <button id="右最小化">></button>
                     <div id="右最小化領域">
-                        Box 1
+                        <button id="コピーボタン">コピー</button>
                     </div>
 
                 </div>
