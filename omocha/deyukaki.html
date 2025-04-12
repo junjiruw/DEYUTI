@@ -116,6 +116,16 @@
             #slider太さ{
                 width: 8em;
             }
+            .保存系ボタン{
+                margin: 0.1em;
+                cursor: pointer;
+            }
+            .保存系ボタン:hover {
+                background-color: #ccc;
+            }
+            .保存系ボタン:active {
+                background-color: #aaa;
+            }
 
         </style>
 
@@ -480,8 +490,20 @@
                     });
                 });
 
+                document.getElementById("保存").addEventListener("click", function() {
+                    var link = document.createElement('a');
+                    link.href = canvas.toDataURL("image/png");
+                    const date = new Date();
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');  // 月は0から始まるので+1
+                    const day = String(date.getDate()).padStart(2, '0');
+                    link.download = year+""+month+""+day+"_deyukaki.png";//ファイル名決めてる
+                    link.click();//強制クリック
+                });
+
                 //ページ下部のツイートボタンを上書き
                 document.getElementById("foot_tweet_a").href=URL_tweet_text="https://twitter.com/intent/tweet?hashtags=deyukaki";           
+
             }
         </script>
     </head>
@@ -539,7 +561,8 @@
                 <div id="右分割"class="浮かせる">
                     <button id="右最小化">></button>
                     <div id="右最小化領域">
-                        <button id="コピーボタン">コピー</button>
+                        <button id="コピーボタン" class="保存系ボタン">コピー</button>
+                        <button id="保存" class="保存系ボタン">保存</button>
                     </div>
 
                 </div>
