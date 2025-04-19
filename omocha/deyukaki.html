@@ -542,13 +542,22 @@
                     return [(e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2];
                 }
 
-                真ん中分割.addEventListener("mousedown", 描き始め);
+                真ん中分割.addEventListener("mousedown", function(e) {
+                    // スクロールバー上でのクリックを無視
+                    if (e.target !== canvas) {
+                        return;
+                    }
+                    描き始め(e);
+                });
                 真ん中分割.addEventListener("mousemove", 描き途中);
                 真ん中分割.addEventListener("mouseup", 描き終わり);
 
                 真ん中分割.addEventListener("wheel", function(e) {
-                    e.preventDefault();
-                    キャンバス拡大(e.deltaY > 0 ? -0.1 : 0.1, e.clientX, e.clientY);
+                    //スクロールバーの上でのホイール操作を無視…横方向スクロールバーでも上下に動くのがきもいが。
+                    if(e.target ==canvas){
+                        e.preventDefault();
+                        キャンバス拡大(e.deltaY > 0 ? -0.1 : 0.1, e.clientX, e.clientY);
+                    }
                 }); 
 
                 function キャンバス拡大(拡大率, 中心x, 中心y){                    
