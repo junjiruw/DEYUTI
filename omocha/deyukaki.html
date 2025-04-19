@@ -269,14 +269,14 @@
                 var 撒き戻し=[];
                 var やりなおし=[];
                 var 履歴最大数=100;//やり直し最大数はなくてもいい。はず。
-                var 一次保存用キャンバス;//初期化はあとでね
+                var 一時保存用キャンバス;//初期化はあとでね
                 var 現在キャンバス = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 var 現在キャンバス_データ部分 = 現在キャンバス.data;
                 var 現在キャンバス_色番号=[];
                 var slider太さ = document.getElementById("slider太さ");
                 var 太さ = document.getElementById("太さ");
                 
-                var 現在の色={r:0,g:0,b:0,a:255,layer:0,num:1};
+                var 現在の色={r:0,g:0,b:0,a:255,layer:0,num:1,rgb:"#000000"};
 
                 function 色選択関数を適用(親要素名称){
                     var 親要素 = document.getElementById(親要素名称);
@@ -289,6 +289,7 @@
                             現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
                             現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
                             現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
+                            現在の色.rgb = input要素.value;
                             現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
                             現在の色.num = parseInt(親要素名称.split("_")[2], 10);
                         }
@@ -300,6 +301,7 @@
                         現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
                         現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
                         現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
+                        現在の色.rgb = input要素.value;
                         現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
                         現在の色.num = parseInt(親要素名称.split("_")[2], 10);
                     });
@@ -315,7 +317,7 @@
                     ctx.fillRect(0, 0, canvas.width, canvas.height); // キャンバス全体を塗りつぶす
                 }
                 キャンバスを白で塗りつぶす();
-                一次保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
+                一時保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
 
                 function キャンバス比較(data1,data2){
                     for (let i = 0; i < data1.length; i++) {
@@ -326,17 +328,17 @@
                     return true;
                 }
                 function キャンバス最新保持(){
-                    //次に履歴を残すために今を一次保存するやつ
-                    一次保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    //次に履歴を残すために今を一時保存するやつ
+                    一時保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
                 }
                 function 履歴残し(){
-                    if(キャンバス比較(ctx.getImageData(0, 0, canvas.width, canvas.height).data,一次保存用キャンバス.data)){
+                    if(キャンバス比較(ctx.getImageData(0, 0, canvas.width, canvas.height).data,一時保存用キャンバス.data)){
                         return;//履歴が変わってないから保存しない
                     }
                     if(撒き戻し.length>=履歴最大数){//はみ出るから消すね
                         撒き戻し.shift();
                     }
-                    撒き戻し.push(一次保存用キャンバス);
+                    撒き戻し.push(一時保存用キャンバス);
                     やりなおし=[];//履歴が残ったってことは次のアクションが消えるべきってわけだ！
                 }
                 function 描き戻し(){
@@ -345,7 +347,7 @@
                     }
                     やりなおし.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
                     ctx.putImageData(撒き戻し.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
-                    キャンバス最新保持();//次に履歴を残すために今を一次保存するやつ
+                    キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
 
                 }
                 function やり直し(){
@@ -355,7 +357,7 @@
                     }
                     撒き戻し.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
                     ctx.putImageData(やりなおし.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
-                    キャンバス最新保持();//次に履歴を残すために今を一次保存するやつ
+                    キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
                 }
 
                 var 円マスク=[];
@@ -464,9 +466,9 @@
                     }else{
                         var ループ回数 = Math.abs(dy)+1;
                     }
-                    ctx.lineWidth = 1;
-                    ctx.lineCap = "round";//まあこれはなんでもいいけど
-                    //ctx.fillStyle = 現在の色; // 塗りつぶしの色を設定
+                    //ctx.lineWidth = 1;
+                    //ctx.lineCap = "round";//まあこれはなんでもいいけど
+                    //ctx.fillStyle = 現在の色.rgb; // 塗りつぶしの色を設定
                     for (var i = 0; i < ループ回数; i++) {
                         var ループx = Math.floor(前回のマウス.x + (dx / ループ回数) * i);
                         var ループy = Math.floor(前回のマウス.y + (dy / ループ回数) * i);
@@ -474,6 +476,7 @@
                         円を描く(ループx, ループy, 太さ.value);
                     }
                     ctx.putImageData(現在キャンバス, 0, 0);//渡すのはデータ部ではない。
+
 
                     //次回の始点を更新更新！
                     if (e.touches) {//これ指じゃね？
@@ -487,6 +490,7 @@
 
 
                 function 円を描く(x, y, 直径) {
+                    
                     
                     //このやり方、筆圧に対応できないんだよね
                     for (const [i, j] of 円マスク) {
@@ -517,6 +521,33 @@
                     */
 
                     //ここで反映すると毎フレームになって激重なのでmoveで反映する。
+
+                    /*
+                    //fillRect()でも縦を1ピクセルずつ描くことができるので、fillRect()で描くのもありかも。
+                    var 半径 =Math.floor(直径/2);
+                    var 一列ごとの長さ=0;
+                    var 一列ごとのどこから=0;
+                    for (var i = -半径; i <= 半径; i++) {
+                        if(i+x<0 || i+x>=canvas.width){
+                            continue;//キャンバス外は無視
+                        }
+                        for (var j = -半径; j <= 半径; j++) {//正方形領域に対して
+                            if (i * i + j * j <= 直径*直径/4) {//半径に収まっていれば
+                                if(一列ごとのどこから==0){
+                                    一列ごとのどこから=j;
+                                }
+                                一列ごとの長さ+=1;
+                            }else if(一列ごとの長さ!=0){
+                                break;//一行ごとに描くのをやめる
+                            }
+                        }
+                        if(一列ごとの長さ!=0){
+                            ctx.fillRect(x + i, y+一列ごとのどこから, 1, 一列ごとの長さ);//一行ごとに描く
+                        }
+                        一列ごとのどこから=0;
+                        一列ごとの長さ=0;
+                    }
+                    */
                 }
                 
                 function 描き終わり() {
@@ -525,7 +556,7 @@
                     }
                     drawing = false;
                     履歴残し();
-                    キャンバス最新保持();//次に履歴を残すために今を一次保存するやつ
+                    キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
                     
                 }
 
@@ -544,7 +575,7 @@
 
                 真ん中分割.addEventListener("mousedown", function(e) {
                     // スクロールバー上でのクリックを無視
-                    if (e.target !== canvas) {
+                    if (e.offsetX > 真ん中分割.clientWidth || e.offsetY > 真ん中分割.clientHeight) {
                         return;
                     }
                     描き始め(e);
@@ -684,7 +715,7 @@
                 document.getElementById("白紙").addEventListener("click", function() {
                     キャンバスを白で塗りつぶす();
                     履歴残し();
-                    キャンバス最新保持();//次に履歴を残すために今を一次保存するやつ
+                    キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
                 });
 
                 //ページ下部のツイートボタンを上書き
