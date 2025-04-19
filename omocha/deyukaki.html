@@ -56,6 +56,7 @@
                 top:0;
                 left:0;
                 background-clip: padding-box;/*背景色がborderまでいかないようになる*/
+                image-rendering: pixelated;/* 画像の拡大縮小時にピクセルを強調する */
             }
 
             .浮かせる {
@@ -215,6 +216,7 @@
                 var やりなおし=[];
                 var 履歴最大数=100;//やり直し最大数はなくてもいい。はず。
                 var 一次保存用キャンバス;//初期化はあとでね
+                var 現在キャンバス=[];
                 var slider太さ = document.getElementById("slider太さ");
                 var 太さ = document.getElementById("太さ");
                 
@@ -308,12 +310,25 @@
                 太さ.addEventListener("input", 太さからスライダー位置調整);
                 太さからスライダー位置調整();//初期化。太さを保存するようにしたら使えるね！
 
+                var 前回のマウス = {
+                    x: 0,
+                    y: 0
+                };
                 function 描き始め(e) {
                     if(e.button === 2){
                         return;//右クリックは無視。たぶんスマホとかでもここは通るはず。
                     }
                     drawing = true;
 
+                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    if (e.touches) {//これ指じゃね？
+                        前回のマウス.x = Math.floor((e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率);
+                        前回のマウス.y = Math.floor((e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率);
+                    } else {//マウスだわ
+                        前回のマウス.x = Math.floor((e.clientX - キャンバス位置.left )/キャンバス拡大率);
+                        前回のマウス.y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
+                    }
+                    console.log("描き");
                     スマホチョン押し保存=e;
                     //描き初めで点を描くのをやめた（二本指指スクロールで暴発するので）
                     //→でもそれだと点をちょん押しで描けないじゃん
@@ -328,26 +343,57 @@
                         スマホチョン押し保存=null;//無効にしないと、描き終わりで暴発する。
                     }
 
-                    ctx.lineWidth = 太さ.value;
-                    ctx.lineCap = "round";
-                    ctx.strokeStyle = 選択された色の取得();
-
                     var キャンバス位置 = canvas.getBoundingClientRect();
                     var x, y;
 
                     if (e.touches) {//これ指じゃね？
-                        x = (e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率;
-                        y = (e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率;
+                        x = Math.floor((e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率);
+                        y = Math.floor((e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率);
                     } else {//マウスだわ
-                        x = (e.clientX - キャンバス位置.left )/キャンバス拡大率;
-                        y = (e.clientY - キャンバス位置.top )/キャンバス拡大率;
+                        x = Math.floor((e.clientX - キャンバス位置.left )/キャンバス拡大率);
+                        y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
                     }
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(x, y);
+                    
+                    //アンチエイリアスが嫌なので、1ピクセルずつ.fillRect()で描く
+                    //前回のマウスの座標から、現在のマスウの座標までの移動距離だけループする
+                    var dx = x - 前回のマウス.x;
+                    var dy = y - 前回のマウス.y;
+                    if(Math.abs(dx)>Math.abs(dy)){
+                        var ループ回数 = Math.abs(dx)+1;
+                    }else{
+                        var ループ回数 = Math.abs(dy)+1;
+                    }
+                    ctx.lineWidth = 1;
+                    ctx.lineCap = "round";//まあこれはなんでもいいけど
+                    ctx.fillStyle = 選択された色の取得(); // 塗りつぶしの色を設定
+                    for (var i = 0; i < ループ回数; i++) {
+                        var ループx = Math.floor(前回のマウス.x + (dx / ループ回数) * i);
+                        var ループy = Math.floor(前回のマウス.y + (dy / ループ回数) * i);
+                        //中心位置が決まったので、太さに合わせた円を描く
+                        円を描く(ループx, ループy, 太さ.value/2);
+                    }
+
+                    //次回の始点を更新更新！
+                    if (e.touches) {//これ指じゃね？
+                        前回のマウス.x = Math.floor((e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率);
+                        前回のマウス.y = Math.floor((e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率);
+                    } else {//マウスだわ
+                        前回のマウス.x = Math.floor((e.clientX - キャンバス位置.left )/キャンバス拡大率);
+                        前回のマウス.y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
+                    }
                 }
 
+                function 円を描く(x, y, 半径) {
+                    //半径が整0.5を含むと死ぬので、整える→左上にずれる方向になるよん
+                    半径 = Math.floor(半径);
+                    for (var i = -半径; i <= 半径; i++) {
+                        for (var j = -半径; j <= 半径; j++) {//正方形領域に対して
+                            if (i * i + j * j <= 半径 *2) {//半径に収まっていれば
+                                ctx.fillRect(x + i, y + j, 1, 1); 
+                            }
+                        }
+                    }
+                }
                 
                 function 描き終わり() {
                     if(スマホチョン押し保存){//二本指タップ時にスマホチョン押し保存を破壊してる。
@@ -357,7 +403,6 @@
                     履歴残し();
                     キャンバス最新保持();
                     
-                    ctx.beginPath();//次のパスを生成することで前のパスを終了する
                 }
 
                 var 動かし前指間距離 = 0;
