@@ -44,7 +44,22 @@
                 overflow: scroll;
                 
             }
-
+            /* スクロールバーの幅を指定 */
+            #真ん中分割::-webkit-scrollbar {
+                width: 1em; /* 垂直スクロールバーの幅 */
+                height: 1em; /* 水平スクロールバーの高さ */
+            }
+            #真ん中分割::-webkit-scrollbar-track {
+                background: #757575;
+            }
+            #真ん中分割::-webkit-scrollbar-thumb {
+                background: #dadada;
+                border-radius: 6px;
+            }
+            #真ん中分割::-webkit-scrollbar-thumb:hover {
+                background: #b4b4b4;
+            }
+            
             #スクロールサイズ調整 {
                 position: relative;
                 z-index: 1; /* 邪魔なので一番奥に。*/
@@ -75,13 +90,16 @@
             }
 
             #右分割 {
-                right: 0;
+                right: 1em;
                 z-index: 10; /* 高い値を指定して上に表示 */
             }
+
             #左最小化領域 {
                 display: flex; /* 子要素を横並びにする */
             }
-
+            .color_行{
+                display: flex; /* 子要素を横並びにする */
+            }
             #raido_0 {
                 display: flex; /* 子要素を横並びにする */
             }
@@ -103,12 +121,24 @@
                 background-color: rgb(80, 160, 255);
             }
             .色箱{
-                display: inline-block;
+                position: relative;
+                margin: 0.2em;
+            }
+            .色箱_input {
+                position: relative;
                 width: 1.5em;
                 height: 1.5em;
+            }
+            .色箱_cover{
+                position: absolute;
+                pointer-events: none; /* クリックイベントを無効化 */
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255 ); 
                 border: 2px solid #c5c5c5;
-                border-radius: 10%;
-                margin: 0.2em;
             }
             #太さ{
                 width: 3em;
@@ -126,6 +156,30 @@
             }
             .保存系ボタン:active {
                 background-color: #aaa;
+            }
+
+            /* 横幅が40em未満の場合 */
+            @media (max-width: 40em) {
+                #右分割 {
+                    bottom: 1em; /* 下に配置 */
+                    top: auto; /* 上の位置をリセット */
+                }
+                .radio{
+                    width: 2em;
+                    height: 2em;
+                }
+                .色箱_input {
+                    position: relative;
+                    width: 3em;
+                    height: 3em;
+                }
+                #太さ{
+                width: 3em;
+                height: 1.5em;
+                }
+                #slider太さ{
+                    width: 10em;
+                }
             }
 
         </style>
@@ -216,28 +270,48 @@
                 var やりなおし=[];
                 var 履歴最大数=100;//やり直し最大数はなくてもいい。はず。
                 var 一次保存用キャンバス;//初期化はあとでね
-                var 現在キャンバス=[];
+                var 現在キャンバス = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                var 現在キャンバス_データ部分 = 現在キャンバス.data;
+                var 現在キャンバス_色番号=[];
                 var slider太さ = document.getElementById("slider太さ");
                 var 太さ = document.getElementById("太さ");
                 
-                var 色 = document.getElementsByName('color');
-                function 選択された色の取得(){
-                    for (var i = 0; i < 色.length; i++) {
-                        if (色[i].checked) {
-                            return radio_色変換(色[i].value);
+                var 現在の色={r:0,g:0,b:0,a:255,layer:0,num:1};
+
+                function 色選択関数を適用(親要素名称){
+                    var 親要素 = document.getElementById(親要素名称);
+                    var radio要素 = 親要素.querySelector(".radio");
+                    var input要素 = 親要素.querySelector(".色箱_input");
+                    radio要素.addEventListener("change", function (e) {
+                        if(e.target.checked) {
+                            var 現在の色_文字列=input要素.value;
+                            現在の色_文字列=現在の色_文字列.replace("#", "");
+                            現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
+                            現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
+                            現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
+                            現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
+                            現在の色.num = parseInt(親要素名称.split("_")[2], 10);
                         }
-                    }
+                    });
+                    input要素.addEventListener("input", function () {
+                        親要素.querySelector(".色箱_cover").style.backgroundColor = this.value; // 色を適用
+                        var 現在の色_文字列=input要素.value;
+                        現在の色_文字列=現在の色_文字列.replace("#", "");
+                        現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
+                        現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
+                        現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
+                        現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
+                        現在の色.num = parseInt(親要素名称.split("_")[2], 10);
+                    });
+                    //ついでに背景色を初期化しておくか
+                    親要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
                 }
-                function radio_色変換(radio_id){
-                    if(radio_id=="0_0"){
-                        return "#FFFFFF";
-                    }else if(radio_id=="0_1"){
-                        return "#000000";   
-                    }
-                }
+                色選択関数を適用("color_0_0");
+                色選択関数を適用("color_0_1");
+
                 
                 function キャンバスを白で塗りつぶす() {
-                    ctx.fillStyle = radio_色変換("0_0"); // 塗りつぶしの色を0_0に設定
+                    ctx.fillStyle = document.getElementById("color_pick_"+"0_0").value; // 塗りつぶしの色を0_0に設定
                     ctx.fillRect(0, 0, canvas.width, canvas.height); // キャンバス全体を塗りつぶす
                 }
                 キャンバスを白で塗りつぶす();
@@ -252,6 +326,7 @@
                     return true;
                 }
                 function キャンバス最新保持(){
+                    //次に履歴を残すために今を一次保存するやつ
                     一次保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
                 }
                 function 履歴残し(){
@@ -270,17 +345,35 @@
                     }
                     やりなおし.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
                     ctx.putImageData(撒き戻し.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
-                    キャンバス最新保持();
+                    キャンバス最新保持();//次に履歴を残すために今を一次保存するやつ
 
                 }
                 function やり直し(){
                     if(やりなおし.length==0){
-                        document.getElementById("デバッグ用").textContent ="ないよ";
+                        //document.getElementById("デバッグ用").textContent ="ないよ";
                         return;
                     }
                     撒き戻し.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
                     ctx.putImageData(やりなおし.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
-                    キャンバス最新保持();
+                    キャンバス最新保持();//次に履歴を残すために今を一次保存するやつ
+                }
+
+                var 円マスク=[];
+                function 円マスク作成(直径){
+                    円マスク=[];
+                    if(直径>1000){
+                        //直径が大きすぎると…っていうかこれ設定してる奴が悪いんだけど、
+                        直径=1000;
+                        //小さくしておくね。いや、これでも馬鹿みたいに重いと思うけど
+                    }
+                    var 半径 =Math.floor(直径/2);
+                    for (var i = -半径; i <= 半径; i++) {
+                        for (var j = -半径; j <= 半径; j++) {//正方形領域に対して
+                            if (i * i + j * j <= 直径*直径/4) {//半径に収まっていれば
+                                円マスク.push([i, j]);
+                            }
+                        }
+                    }
                 }
 
                 slider太さ.addEventListener("input", function() {
@@ -294,6 +387,7 @@
                         本質太さ= Math.round(this.value*80/50)-60;
                     }
                     太さ.value = 本質太さ;
+                    円マスク作成(太さ.value);
                 });
                 function 太さからスライダー位置調整(){
                     //太さは1~10で調整しやすいようにして、10~はおおざっぱな選択にする
@@ -306,6 +400,7 @@
                         slider位置 = Math.floor(太さ.value*50/80)+38;
                     }
                     slider太さ.value = slider位置;
+                    円マスク作成(太さ.value);
                 }
                 太さ.addEventListener("input", 太さからスライダー位置調整);
                 太さからスライダー位置調整();//初期化。太さを保存するようにしたら使えるね！
@@ -320,6 +415,13 @@
                     }
                     drawing = true;
 
+                    //現在の画像を取得しておく。moveで取得するとクソ遅いからね
+                    現在キャンバス = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    現在キャンバス_データ部分 = 現在キャンバス.data;
+                    
+                    //太さ決定。ここなのか？まあここでいいか…
+                    円マスク作成(太さ.value);
+
                     var キャンバス位置 = canvas.getBoundingClientRect();
                     if (e.touches) {//これ指じゃね？
                         前回のマウス.x = Math.floor((e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率);
@@ -328,7 +430,6 @@
                         前回のマウス.x = Math.floor((e.clientX - キャンバス位置.left )/キャンバス拡大率);
                         前回のマウス.y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
                     }
-                    console.log("描き");
                     スマホチョン押し保存=e;
                     //描き初めで点を描くのをやめた（二本指指スクロールで暴発するので）
                     //→でもそれだと点をちょん押しで描けないじゃん
@@ -365,13 +466,14 @@
                     }
                     ctx.lineWidth = 1;
                     ctx.lineCap = "round";//まあこれはなんでもいいけど
-                    ctx.fillStyle = 選択された色の取得(); // 塗りつぶしの色を設定
+                    //ctx.fillStyle = 現在の色; // 塗りつぶしの色を設定
                     for (var i = 0; i < ループ回数; i++) {
                         var ループx = Math.floor(前回のマウス.x + (dx / ループ回数) * i);
                         var ループy = Math.floor(前回のマウス.y + (dy / ループ回数) * i);
                         //中心位置が決まったので、太さに合わせた円を描く
                         円を描く(ループx, ループy, 太さ.value);
                     }
+                    ctx.putImageData(現在キャンバス, 0, 0);//渡すのはデータ部ではない。
 
                     //次回の始点を更新更新！
                     if (e.touches) {//これ指じゃね？
@@ -383,17 +485,38 @@
                     }
                 }
 
+
                 function 円を描く(x, y, 直径) {
+                    
+                    //このやり方、筆圧に対応できないんだよね
+                    for (const [i, j] of 円マスク) {
+                        if(i+x<0 || i+x>=canvas.width || j+y<0 || j+y>=canvas.height){
+                            continue;//キャンバス外は無視
+                        }
+                        現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4] = 現在の色.r;//直接色変える
+                        現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4+1] = 現在の色.g;//直接色変える
+                        現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4+2] = 現在の色.b;//直接色変える
+                    }
+                    
+                   
+                    /*
+                    //こっちは筆圧対応とかできそうだけど、激重い。まあ上も重いっちゃ重いけど…
                     var 半径 =Math.floor(直径/2);
                     for (var i = -半径; i <= 半径; i++) {
                         for (var j = -半径; j <= 半径; j++) {//正方形領域に対して
+                            if(i+x<0 || i+x>=canvas.width || j+y<0 || j+y>=canvas.height){
+                                continue;//キャンバス外は無視
+                            }
                             if (i * i + j * j <= 直径*直径/4) {//半径に収まっていれば
-                                ctx.fillRect(x + i, y + j, 1, 1); 
+                                現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4] = 現在の色.r;//直接色変える
+                                現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4+1] = 現在の色.g;//直接色変える
+                                現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4+2] = 現在の色.b;//直接色変える
                             }
                         }
                     }
-     
+                    */
 
+                    //ここで反映すると毎フレームになって激重なのでmoveで反映する。
                 }
                 
                 function 描き終わり() {
@@ -402,7 +525,7 @@
                     }
                     drawing = false;
                     履歴残し();
-                    キャンバス最新保持();
+                    キャンバス最新保持();//次に履歴を残すために今を一次保存するやつ
                     
                 }
 
@@ -470,7 +593,6 @@
                 });
 
                 真ん中分割.addEventListener("touchmove", function(e) {
-                    document.getElementById("デバッグ用").textContent =撒き戻しやり直し判定+"move"+moveカウント;
                     if(moveカウント>10){
                         撒き戻しやり直し判定=0;//まあちょっと動いたし無効化…って判定シビアじゃない？
                     }else{
@@ -550,6 +672,12 @@
                     link.click();//強制クリック
                 });
 
+                document.getElementById("白紙").addEventListener("click", function() {
+                    キャンバスを白で塗りつぶす();
+                    履歴残し();
+                    キャンバス最新保持();//次に履歴を残すために今を一次保存するやつ
+                });
+
                 //ページ下部のツイートボタンを上書き
                 document.getElementById("foot_tweet_a").href=URL_tweet_text="https://twitter.com/intent/tweet?hashtags=deyukaki";           
 
@@ -575,15 +703,24 @@
             <div id="三分割くん">
                 <div id="左分割" class="浮かせる">
                     <div id="左最小化領域">
-                        <div id="raido_0">
-                            <div class="radio_div">
-                                <input type="radio" class="radio" id="color_0_0" name="color" value="0_0">
-                                <button class="色箱" style="background-color: #fff;"></button>
+                        <div id="color_0" class="color_行">
+
+                            <div class="radio_div" id="color_0_0">
+                                <input type="radio" class="radio" id="color_radio_0_0" name="color">
+                                <div class="色箱" id="color_div_0_0">
+                                    <input class="色箱_input" type="color" id="color_pick_0_0" value="#ffffff">
+                                    <div class="色箱_cover"></div>
+                                </div>
                             </div>
-                            <div class="radio_div">
-                                <input type="radio" class="radio" id="color_0_1" name="color" value="0_1" checked>
-                                <button class="色箱" style="background-color: #000;"></button>
+
+                            <div class="radio_div" id="color_0_1">
+                                <input type="radio" class="radio" id="color_radio_0_1" name="color" checked>
+                                <div class="色箱" id="color_div_0_1">
+                                    <input class="色箱_input" type="color" id="color_pick_0_1" value="#000000">
+                                    <div class="色箱_cover"></div>
+                                </div>
                             </div>
+                            
                         </div>
                         <div id="筆の太さ">
                             <div>
@@ -612,6 +749,7 @@
                     <div id="右最小化領域">
                         <button id="コピーボタン" class="保存系ボタン">コピー</button>
                         <button id="保存" class="保存系ボタン">保存</button>
+                        <button id="白紙" class="保存系ボタン">左色で埋める</button>
                     </div>
 
                 </div>
