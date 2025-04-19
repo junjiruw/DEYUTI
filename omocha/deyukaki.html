@@ -575,7 +575,7 @@
 
                 真ん中分割.addEventListener("mousedown", function(e) {
                     // スクロールバー上でのクリックを無視
-                    if (e.offsetX > 真ん中分割.clientWidth || e.offsetY > 真ん中分割.clientHeight) {
+                    if (e.clientX > 真ん中分割.clientWidth || e.clientY > 真ん中分割.clientHeight) {
                         return;
                     }
                     描き始め(e);
@@ -584,10 +584,15 @@
                 真ん中分割.addEventListener("mouseup", 描き終わり);
 
                 真ん中分割.addEventListener("wheel", function(e) {
-                    //スクロールバーの上でのホイール操作を無視…横方向スクロールバーでも上下に動くのがきもいが。
-                    if(e.target ==canvas){
+                    //スクロールバーの上でのホイール操作を無視
+                    console.log(e.clientX, e.clientY, 真ん中分割.clientWidth, 真ん中分割.clientHeight);
+                    if (e.clientX < 真ん中分割.clientWidth && e.clientY < 真ん中分割.clientHeight) {
                         e.preventDefault();
                         キャンバス拡大(e.deltaY > 0 ? -0.1 : 0.1, e.clientX, e.clientY);
+                    }else if(e.clientY > 真ん中分割.clientHeight){//なんか、ここバグってるんだけど意味わかんないんだよね
+                        e.preventDefault();
+                        //上下スクロールでキャンバスの横向きの位置を調整する.カクカクするけど、いいよね！
+                        真ん中分割.scrollLeft += e.deltaY/2;
                     }
                 }); 
 
