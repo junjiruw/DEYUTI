@@ -42,7 +42,7 @@
                 height: 100%; /* 親要素の高さに合わせる */
                 text-align: center;
                 overflow: scroll;
-                
+                cursor: url("../images/omocha/deyukaki/pen16.png"),default; /* カスタムカーソル画像 */
             }
             /* スクロールバーの幅を指定 */
             #真ん中分割::-webkit-scrollbar {
@@ -72,6 +72,7 @@
                 left:0;
                 background-clip: padding-box;/*背景色がborderまでいかないようになる*/
                 image-rendering: pixelated;/* 画像の拡大縮小時にピクセルを強調する */
+                
             }
 
             .浮かせる {
@@ -147,6 +148,36 @@
             #slider太さ{
                 width: 8em;
             }
+            #ツール選択 input{
+                display: none; /* デフォルトのラジオボタンを非表示 */
+            }
+            .ペンボタン {
+                display: inline-block;
+                width: 3em; /* ボタンの幅 */
+                height: 3em; /* ボタンの高さ */
+                background-size: cover; /* 画像をボタン全体にフィットさせる */
+                background-repeat: no-repeat; /* 画像を繰り返さない */
+                cursor: pointer; /* マウスカーソルをポインターに変更 */
+                image-rendering: pixelated; /* ピクセルを強調してぼやけを防ぐ */
+                filter: brightness(40%) saturate(20%); /* 色味調整 */
+            }
+            input[type="radio"]:checked + .ペンボタン {
+                background-color: #007bff; /* 選択時の背景色（青） */
+                filter: brightness(100%) saturate(100%); /* 色味調整 */
+            }
+
+            #ペン_ボタン {
+                border: 2px solid #aaa; /* ボタンの枠線 */
+                background-image: url("../images/omocha/deyukaki/pen16.png"); /* ペンの画像 */
+            }
+
+            #バケツ_ボタン {
+                border: 2px solid #aaa; /* ボタンの枠線 */
+                background-image: url("../images/omocha/deyukaki/baketu16.png"); /* バケツの画像 */
+            }
+
+
+
             .保存系ボタン{
                 margin: 0.1em;
                 cursor: pointer;
@@ -284,35 +315,44 @@
                     var input要素 = 親要素.querySelector(".色箱_input");
                     radio要素.addEventListener("change", function (e) {
                         if(e.target.checked) {
-                            var 現在の色_文字列=input要素.value;
-                            現在の色_文字列=現在の色_文字列.replace("#", "");
-                            現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
-                            現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
-                            現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
-                            現在の色.rgb = input要素.value;
-                            現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
-                            現在の色.num = parseInt(親要素名称.split("_")[2], 10);
+                            選択色変更(input要素.value,親要素名称);
                         }
                     });
                     input要素.addEventListener("input", function () {
                         親要素.querySelector(".色箱_cover").style.backgroundColor = this.value; // 色を適用
-                        var 現在の色_文字列=input要素.value;
-                        現在の色_文字列=現在の色_文字列.replace("#", "");
-                        現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
-                        現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
-                        現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
-                        現在の色.rgb = input要素.value;
-                        現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
-                        現在の色.num = parseInt(親要素名称.split("_")[2], 10);
+                        選択色変更(this.value,親要素名称);
                         radio要素.checked = true; 
                     });
                     //ついでに背景色を初期化しておくか
                     親要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
                 }
+                function 選択色変更(色文字列,親要素名称){
+                    var 現在の色_文字列=色文字列;
+                    現在の色_文字列=現在の色_文字列.replace("#", "");
+                    現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
+                    現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
+                    現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
+                    現在の色.rgb = 色文字列;
+                    現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
+                    現在の色.num = parseInt(親要素名称.split("_")[2], 10);
+                }
                 色選択関数を適用("color_0_0");
                 色選択関数を適用("color_0_1");
                 色選択関数を適用("color_0_2");
-
+                
+                var 現在のツール="pen";
+                function ペン選択関数を適用(親要素名称){
+                    var 親要素 = document.getElementById(親要素名称);
+                    var radio要素 = 親要素.querySelector(".tool_radio");
+                    radio要素.addEventListener("change", function (e) {
+                        if(e.target.checked) {
+                            現在のツール=親要素名称;
+                            真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+親要素名称+"16.png),default"; // カスタムカーソルを適用
+                        }
+                    });
+                }
+                ペン選択関数を適用("pen");
+                ペン選択関数を適用("baketu");
                 
                 function キャンバスを白で塗りつぶす() {
                     ctx.fillStyle = document.getElementById("color_pick_"+"0_0").value; // 塗りつぶしの色を0_0に設定
@@ -342,6 +382,7 @@
                     }
                     撒き戻し.push(一時保存用キャンバス);
                     やりなおし=[];//履歴が残ったってことは次のアクションが消えるべきってわけだ！
+                    キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
                 }
                 function 描き戻し(){
                     if(撒き戻し.length==0){
@@ -538,8 +579,53 @@
                     }
                     drawing = false;
                     履歴残し();
-                    キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
                     
+                }
+
+                function バケツ(e){
+
+                    現在キャンバス = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    現在キャンバス_データ部分 = 現在キャンバス.data;
+
+                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var x, y;
+
+                    if (e.touches) {//これ指じゃね？
+                        x = Math.floor((e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率);
+                        y = Math.floor((e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率);
+                    } else {//マウスだわ
+                        x = Math.floor((e.clientX - キャンバス位置.left )/キャンバス拡大率);
+                        y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
+                    }
+                    //マウス位置の色を取得
+                    var 塗られる色 = ctx.getImageData(x, y, 1, 1).data;
+                    var キュー = [[x, y]];
+
+                    //キューが無くなるまでループして、色を判定→周囲をキューに入れる→自分を塗って削除を繰り返す
+                    while (キュー.length > 0) {
+                        var [キューx, キューy] = キュー.shift();//キューの先頭を取り出す
+                        //キャンバス外は無視
+                        if (キューx < 0 || キューx >= canvas.width || キューy < 0 || キューy >= canvas.height) {
+                            continue;
+                        }
+                        //すでに塗られている色は無視
+                        if (現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4] === 塗られる色[0] && 現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4+1] === 塗られる色[1] && 現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4+2] === 塗られる色[2]) {
+                            //お前の色はバケツ対象だから、周囲をキューにぶち込む
+                            キュー.push([キューx + 1, キューy]);
+                            キュー.push([キューx - 1, キューy]);
+                            キュー.push([キューx, キューy + 1]);
+                            キュー.push([キューx, キューy - 1]);
+
+                            //塗る
+                            現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4] = 現在の色.r;//直接色変える
+                            現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4 + 1] = 現在の色.g;//直接色変える  
+                            現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4 + 2] = 現在の色.b;//直接色変える
+                        }
+                    }
+                    //画像をcanvasへ反映
+                    ctx.putImageData(現在キャンバス, 0, 0);//渡すのはデータ部ではない。
+
+                    履歴残し();
                 }
 
                 var 動かし前指間距離 = 0;
@@ -555,8 +641,6 @@
                     return [(e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2];
                 }
                 真ん中分割.addEventListener("pointerdown", function(e) {
-                    console.log(e.pointerType);
-                    console.log("pressure:", e);
                     //スマホは下のほうで実装してるからここでは無視。
                     if (e.pointerType==="touch"){
                         return;
@@ -570,14 +654,23 @@
                         return;
                     }
                     真ん中分割.setPointerCapture(e.pointerId);//ポインターを追跡する。どっか行ってもキャンセルを監視できる
-                    描き始め(e);
+                    if(現在のツール==="pen"){
+                        描き始め(e);
+                    }else if(現在のツール==="baketu"){
+                        バケツ(e);
+                    }
                 });
                 真ん中分割.addEventListener("pointermove", function(e) {
                     //スマホは下のほうで実装してるからここでは無視。
                     if (e.pointerType==="touch"){
                         return;
                     }
-                    描き途中(e);
+                    if(現在のツール==="pen"){
+                        描き途中(e);
+                    }else if(現在のツール==="baketu"){
+
+                    }
+                    
                 });
 
                 真ん中分割.addEventListener("pointerup", function(e) {
@@ -585,14 +678,23 @@
                     if (e.pointerType==="touch"){
                         return;
                     }
-                    描き終わり();
+                    if(現在のツール==="pen"){
+                        描き終わり();
+                    }else if(現在のツール==="baketu"){
+
+                    }
+                    
                 });
                 真ん中分割.addEventListener("pointercancel", function(e) {
                     //スマホは下のほうで実装してるからここでは無視。
                     if (e.pointerType==="touch"){
                         return;
                     }
-                    描き終わり();
+                    if(現在のツール==="pen"){
+                        描き終わり();
+                    }else if(現在のツール==="baketu"){
+
+                    }
                 });
 
                 真ん中分割.addEventListener("wheel", function(e) {
@@ -645,7 +747,11 @@
                         // 指が4本以上の場合は反応しない
                     }else{
                         e.preventDefault();
-                        描き始め(e);
+                        if(現在のツール==="pen"){
+                            描き始め(e);
+                        }else if(現在のツール==="baketu"){
+
+                        }
                     }
                 });
 
@@ -678,13 +784,22 @@
                         // 指が4本以上の場合は反応しない
                     }else{
                         e.preventDefault();//画面スクロールとか無効にしちゃうよ～ん
-                        描き途中(e);
+                        if(現在のツール==="pen"){
+                            描き途中(e);
+                        }else if(現在のツール==="baketu"){
+
+                        }
                     }
                 });
 
                 真ん中分割.addEventListener("touchend", function(e) {
                     e.preventDefault();//画面スクロールとか無効にしちゃうよ～ん
-                    描き終わり();
+                    if(現在のツール==="pen"){
+                        描き終わり();
+                    }else if(現在のツール==="baketu"){
+
+                    }
+                    
 
                     if(撒き戻しやり直し判定===2){
                         描き戻し();
@@ -732,7 +847,7 @@
                 document.getElementById("白紙").addEventListener("click", function() {
                     キャンバスを白で塗りつぶす();
                     履歴残し();
-                    キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
+                    
                 });
 
                 //ページ下部のツイートボタンを上書き
@@ -794,6 +909,16 @@
                             </div>
                             <input type="range" id="slider太さ" min="1" max="100" value="12" step="1">
                             <!--デフォルトは12なんだけど計算すると5pxになる。まあここは初期化してるのでなんでもいいんですが…-->
+                        </div>
+                        <div id="ツール選択">
+                            <label id="pen">
+                                <input type="radio" name="tool" class="tool_radio" id="ペン" value="pen" checked>
+                                <span class="ペンボタン" id="ペン_ボタン"></span>
+                            </label>
+                            <label id="baketu">
+                                <input type="radio" name="tool" class="tool_radio" id="バケツ" value="bucket">
+                                <span class="ペンボタン" id="バケツ_ボタン"></span>
+                            </label>
                         </div>
                     </div>
                     
