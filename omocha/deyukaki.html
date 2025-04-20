@@ -311,6 +311,7 @@
                 }
                 色選択関数を適用("color_0_0");
                 色選択関数を適用("color_0_1");
+                色選択関数を適用("color_0_2");
 
                 
                 function キャンバスを白で塗りつぶす() {
@@ -364,11 +365,6 @@
                 var 円周マスク=[];//半径をいれるとその辺の点がわかるやつ
                 var 前の直径=-1;
                 function 円マスク作成(直径){
-                    if(直径>1000){
-                        //直径が大きすぎると…っていうかこれ設定してる奴が悪いんだけど、
-                        直径=1000;
-                        //小さくしておくね。いや、これでも馬鹿みたいに重いと思うけど
-                    }
                     if(直径==前の直径){
                         return;//サボっておｋ
                     }
@@ -421,9 +417,6 @@
                     y: 0
                 };
                 function 描き始め(e) {
-                    if(e.button === 2){
-                        return;//右クリックは無視。たぶんスマホとかでもここは通るはず。
-                    }
                     drawing = true;
 
                     //現在の画像を取得しておく。moveで取得するとクソ遅いからね
@@ -473,12 +466,22 @@
                         var ループ回数 = Math.abs(dy)+1;
                     }
                     //太さ決定。ここでいいのか…？
-                    円マスク作成(太さ.value);
+                    /*
+                    //俺のペンタブ、ブラウザで筆圧検知できねえわ（笑）
+                    console.log(e.pressure);
+                    if(e.pressure){
+                        var 圧力直径=Math.floor(太さ.value*e.pressure);//筆圧で太さを変える
+                    }else{
+                        var 圧力直径=太さ.value;
+                    }
+                    */
+                    var 圧力直径=太さ.value;
+                    円マスク作成(圧力直径);
                     var 円データ = [];
                     for (var i = 0; i < ループ回数; i++) {
                         var ループx = Math.floor(前回のマウス.x + (dx / ループ回数) * i);
                         var ループy = Math.floor(前回のマウス.y + (dy / ループ回数) * i);
-                        円データ.push([ループx, ループy, 太さ.value]);
+                        円データ.push([ループx, ループy, 圧力直径]);
                     }
                     for (const [ループx, ループy, 直径] of 円データ) {
                         円を描く(ループx, ループy, 直径, true);//先に円周近くの点だけうめとこうね
@@ -487,7 +490,8 @@
                     for (const [ループx, ループy, 直径] of 円データ) {
                         円を描く(ループx, ループy, 直径, false);//中身ぬりつぶす
                     }
-
+                    //ここで塗ることで時短。筆圧で変化するようにしたらアレになるかも？
+                    ctx.fill();
 
                     //次回の始点を更新更新！
                     if (e.touches) {//これ指じゃね？
@@ -524,7 +528,7 @@
                         ctx.beginPath();
                         ctx.arc(x+0.5, y+0.5, Math.max(0,半径-1), 0, Math.PI * 2);//ちょっとちっちゃめにしとこうぜ
                         //+0.5は、円周の表示と比べて中心位置がちょいずれてるから入れた
-                        ctx.fill();
+                        //fillはmoveの終わりでやればいいよね。                        
                     }                  
                 }
                 
@@ -550,16 +554,46 @@
                 function 指間座標計算(e) {
                     return [(e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2];
                 }
-
-                真ん中分割.addEventListener("mousedown", function(e) {
+                真ん中分割.addEventListener("pointerdown", function(e) {
+                    console.log(e.pointerType);
+                    console.log("pressure:", e);
+                    //スマホは下のほうで実装してるからここでは無視。
+                    if (e.pointerType==="touch"){
+                        return;
+                    }
+                    // 右クリックは無視
+                    if (e.button === 2) {
+                        return;
+                    }
                     // スクロールバー上でのクリックを無視
                     if (e.clientX > 真ん中分割.clientWidth || e.clientY > 真ん中分割.clientHeight) {
                         return;
                     }
+                    真ん中分割.setPointerCapture(e.pointerId);//ポインターを追跡する。どっか行ってもキャンセルを監視できる
                     描き始め(e);
                 });
-                真ん中分割.addEventListener("mousemove", 描き途中);
-                真ん中分割.addEventListener("mouseup", 描き終わり);
+                真ん中分割.addEventListener("pointermove", function(e) {
+                    //スマホは下のほうで実装してるからここでは無視。
+                    if (e.pointerType==="touch"){
+                        return;
+                    }
+                    描き途中(e);
+                });
+
+                真ん中分割.addEventListener("pointerup", function(e) {
+                    //スマホは下のほうで実装してるからここでは無視。
+                    if (e.pointerType==="touch"){
+                        return;
+                    }
+                    描き終わり();
+                });
+                真ん中分割.addEventListener("pointercancel", function(e) {
+                    //スマホは下のほうで実装してるからここでは無視。
+                    if (e.pointerType==="touch"){
+                        return;
+                    }
+                    描き終わり();
+                });
 
                 真ん中分割.addEventListener("wheel", function(e) {
                     //スクロールバーの上でのホイール操作を無視
@@ -740,6 +774,14 @@
                                 <input type="radio" class="radio" id="color_radio_0_1" name="color" checked>
                                 <div class="色箱" id="color_div_0_1">
                                     <input class="色箱_input" type="color" id="color_pick_0_1" value="#000000">
+                                    <div class="色箱_cover"></div>
+                                </div>
+                            </div>
+
+                            <div class="radio_div" id="color_0_2">
+                                <input type="radio" class="radio" id="color_radio_0_2" name="color">
+                                <div class="色箱" id="color_div_0_2">
+                                    <input class="色箱_input" type="color" id="color_pick_0_2" value="#aaffaa">
                                     <div class="色箱_cover"></div>
                                 </div>
                             </div>
