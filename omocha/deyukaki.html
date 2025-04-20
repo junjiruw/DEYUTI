@@ -304,6 +304,7 @@
                         現在の色.rgb = input要素.value;
                         現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
                         現在の色.num = parseInt(親要素名称.split("_")[2], 10);
+                        radio要素.checked = true; 
                     });
                     //ついでに背景色を初期化しておくか
                     親要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
