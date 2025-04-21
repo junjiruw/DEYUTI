@@ -160,6 +160,7 @@
                 cursor: pointer; /* マウスカーソルをポインターに変更 */
                 image-rendering: pixelated; /* ピクセルを強調してぼやけを防ぐ */
                 filter: brightness(40%) saturate(20%); /* 色味調整 */
+                border: 2px solid #aaa; /* ボタンの枠線 */
             }
             input[type="radio"]:checked + .ペンボタン {
                 background-color: #007bff; /* 選択時の背景色（青） */
@@ -167,13 +168,15 @@
             }
 
             #ペン_ボタン {
-                border: 2px solid #aaa; /* ボタンの枠線 */
-                background-image: url("../images/omocha/deyukaki/pen16.png"); /* ペンの画像 */
+                background-image: url("../images/omocha/deyukaki/pen16.png"); 
             }
 
             #バケツ_ボタン {
-                border: 2px solid #aaa; /* ボタンの枠線 */
-                background-image: url("../images/omocha/deyukaki/baketu16.png"); /* バケツの画像 */
+                background-image: url("../images/omocha/deyukaki/baketu16.png"); 
+            }
+
+            #スポイト_ボタン {
+                background-image: url("../images/omocha/deyukaki/supoito16.png");
             }
 
 
@@ -295,6 +298,7 @@
                 var ctx = canvas.getContext("2d");
                 var drawing = false;
                 var スマホチョン押し保存;
+                var スポイト追従座標;
                 var 撒き戻しやり直し判定=0;
                 var moveカウント=0;//n本指の即時タッチだったのかを判定するためにカウンターを用意したよ
                 var バケツ判定=false;//上の奴と似たようなことをするよ
@@ -354,6 +358,7 @@
                 }
                 ペン選択関数を適用("pen");
                 ペン選択関数を適用("baketu");
+                ペン選択関数を適用("supoito");
                 
                 function キャンバスを白で塗りつぶす() {
                     ctx.fillStyle = document.getElementById("color_pick_"+"0_0").value; // 塗りつぶしの色を0_0に設定
@@ -630,8 +635,30 @@
                     }
                     //画像をcanvasへ反映
                     ctx.putImageData(現在キャンバス, 0, 0);//渡すのはデータ部ではない。
-                    document.getElementById("デバッグ用").textContent ="終";
+                    //document.getElementById("デバッグ用").textContent ="終";
                     履歴残し();
+                }
+
+
+                function スポイト反映(e){
+                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var x, y;
+                    
+                    if (e.touches) {//これ指じゃね？
+                        x = Math.floor((e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率);
+                        y = Math.floor((e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率);
+                    } else {//マウスだわ
+                        x = Math.floor((e.clientX - キャンバス位置.left )/キャンバス拡大率);
+                        y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
+                    }
+                    //マウス位置の色を取得
+                    var そこの色 = ctx.getImageData(x, y, 1, 1).data;
+                    //今選択されているradioの色をこいつに変える
+                    var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
+                    var input要素 = radio_div要素.querySelector(".色箱_input");
+                    input要素.value = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
+                    選択色変更(input要素.value,"color_" + 現在の色.layer + "_" + 現在の色.num);
+                    radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
                 }
 
                 var 動かし前指間距離 = 0;
@@ -664,6 +691,8 @@
                         描き始め(e);
                     }else if(現在のツール==="baketu"){
                         バケツ(e);
+                    }else if(現在のツール==="supoito"){
+                        スポイト追従座標=e;
                     }
                 });
                 真ん中分割.addEventListener("pointermove", function(e) {
@@ -675,6 +704,8 @@
                         描き途中(e);
                     }else if(現在のツール==="baketu"){
 
+                    }else if(現在のツール==="supoito"){
+                        スポイト追従座標=e;
                     }
                     
                 });
@@ -687,7 +718,9 @@
                     if(現在のツール==="pen"){
                         描き終わり();
                     }else if(現在のツール==="baketu"){
-
+                        
+                    }else if(現在のツール==="supoito"){
+                        スポイト反映(スポイト追従座標);
                     }
                     
                 });
@@ -700,6 +733,8 @@
                         描き終わり();
                     }else if(現在のツール==="baketu"){
 
+                    }else if(現在のツール==="supoito"){
+                        スポイト反映(スポイト追従座標);
                     }
                 });
 
@@ -758,6 +793,8 @@
                         }else if(現在のツール==="baketu"){
                             moveカウント=0;
                             スマホチョン押し保存=e;//ここで保存しないと、指を離したときにはどっかいってる。
+                        }else if(現在のツール==="supoito"){
+                            スポイト追従座標=e;
                         }
                     }
                 });
@@ -773,6 +810,7 @@
                     if (e.touches.length === 2) {
                         drawing=false;
                         スマホチョン押し保存=null;//無効にしないと、描き終わりで暴発する。描き途中()の中でdrawing殺してるんだからわざわざやらんでもいいんだけどね
+                        スポイト追従座標=null;
                         e.preventDefault();
                         //拡大操作
                         var 指間距離 = 指間距離計算(e.touches);
@@ -787,6 +825,7 @@
                     } else if (e.touches.length ===3) {
                         drawing=false;
                         スマホチョン押し保存=null;//無効にしないと、描き終わりで暴発する。描き途中()の中でdrawing殺してるんだからわざわざやらんでもいいんだけどね
+                        スポイト追従座標=null;
                         e.preventDefault();
                     } else if (e.touches.length > 3) {
                         // 指が4本以上の場合は反応しない
@@ -796,6 +835,8 @@
                             描き途中(e);
                         }else if(現在のツール==="baketu"){
                             //判定はこの関数の上のほうでやってるので。
+                        }else if(現在のツール==="supoito"){
+                            スポイト追従座標=e;
                         }
                     }
                 });
@@ -805,12 +846,15 @@
                     if(現在のツール==="pen"){
                         描き終わり();
                     }else if(現在のツール==="baketu"){
-                        document.getElementById("デバッグ用").textContent ="?";
                         if(スマホチョン押し保存){
-                            document.getElementById("デバッグ用").textContent ="中";
                             バケツ(スマホチョン押し保存);
+                            スマホチョン押し保存=null;
                         }
-                        スマホチョン押し保存=null;
+                    }else if(現在のツール==="supoito"){
+                        if(スポイト追従座標){
+                            スポイト反映(スポイト追従座標);
+                        }
+                        
                     }
                     
 
@@ -915,23 +959,29 @@
                             </div>
                             
                         </div>
-                        <div id="筆の太さ">
-                            <div>
-                                <label for="太さ">太さ：</label>
-                                <input type="number" id="太さ" min="1" max="100" value="5">
+                        <div id="ツール系">
+                            <div id="筆の太さ">
+                                <div>
+                                    <label for="太さ">太さ：</label>
+                                    <input type="number" id="太さ" min="1" max="100" value="5">
+                                </div>
+                                <input type="range" id="slider太さ" min="1" max="100" value="12" step="1">
+                                <!--デフォルトは12なんだけど計算すると5pxになる。まあここは初期化してるのでなんでもいいんですが…-->
                             </div>
-                            <input type="range" id="slider太さ" min="1" max="100" value="12" step="1">
-                            <!--デフォルトは12なんだけど計算すると5pxになる。まあここは初期化してるのでなんでもいいんですが…-->
-                        </div>
-                        <div id="ツール選択">
-                            <label id="pen">
-                                <input type="radio" name="tool" class="tool_radio" id="ペン" value="pen" checked>
-                                <span class="ペンボタン" id="ペン_ボタン"></span>
-                            </label>
-                            <label id="baketu">
-                                <input type="radio" name="tool" class="tool_radio" id="バケツ" value="bucket">
-                                <span class="ペンボタン" id="バケツ_ボタン"></span>
-                            </label>
+                            <div id="ツール選択">
+                                <label id="pen">
+                                    <input type="radio" name="tool" class="tool_radio" id="ペン" value="pen" checked>
+                                    <span class="ペンボタン" id="ペン_ボタン"></span>
+                                </label>
+                                <label id="baketu">
+                                    <input type="radio" name="tool" class="tool_radio" id="バケツ" value="bucket">
+                                    <span class="ペンボタン" id="バケツ_ボタン"></span>
+                                </label>
+                                <label id="supoito">
+                                    <input type="radio" name="tool" class="tool_radio" id="スポイト" value="supoito">
+                                    <span class="ペンボタン" id="スポイト_ボタン"></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     
