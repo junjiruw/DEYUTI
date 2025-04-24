@@ -191,6 +191,18 @@
             .保存系ボタン:active {
                 background-color: #aaa;
             }
+            #マウス追従{
+                display: none; /* デフォルトで非表示 */
+                position: absolute;
+                background-color: rgb(174, 238, 46);
+                border-radius: 50%;
+                border: #3b3b3b 2px solid;
+                box-shadow: inset 0 0 0 1px white;
+                width: 2em;
+                height: 2em;
+                pointer-events: none; /* マウスイベントを無効化 */
+                z-index: 5; /* canvasよりは、高い値を指定して上に表示 */
+            }
 
             /* 横幅が40em未満の場合 */
             @media (max-width: 40em) {
@@ -214,6 +226,10 @@
                 #slider太さ{
                     width: 10em;
                 }
+                #マウス追従{
+                width: 5em;
+                height: 5em;
+            }
             }
 
         </style>
@@ -349,12 +365,17 @@
                 function ペン選択関数を適用(親要素名称){
                     var 親要素 = document.getElementById(親要素名称);
                     var radio要素 = 親要素.querySelector(".tool_radio");
+
                     radio要素.addEventListener("change", function (e) {
                         if(e.target.checked) {
                             現在のツール=親要素名称;
                             真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+親要素名称+"16.png),default"; // カスタムカーソルを適用
+                            var マウス追従 = document.getElementById("マウス追従");
+                            マウス追従.style.display = "none"; // マウス追従を非表示…なくてもいいけどね
                         }
                     });
+                    
+
                 }
                 ペン選択関数を適用("pen");
                 ペン選択関数を適用("baketu");
@@ -606,10 +627,8 @@
                     var 塗られる色 = ctx.getImageData(x, y, 1, 1).data;
                     //塗られる色と、今から塗る色が同じだと意味ないし無限ループ入るから終了する。
                     if (塗られる色[0] === 現在の色.r && 塗られる色[1] === 現在の色.g && 塗られる色[2] === 現在の色.b) {
-                        document.getElementById("デバッグ用").textContent ="め";
                         return;
                     }
-                    document.getElementById("デバッグ用").textContent ="中2";
                     var キュー = [[x, y]];
 
                     //キューが無くなるまでループして、色を判定→周囲をキューに入れる→自分を塗って削除を繰り返す
@@ -639,6 +658,55 @@
                     履歴残し();
                 }
 
+                function スポイトの色表示(x,y){
+                    var マウス追従 = document.getElementById("マウス追従");
+                    マウス追従.style.left = x+10+"px";
+                    マウス追従.style.top =  y+10+"px";
+
+                    var canv_x, canv_y;
+                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    canv_x = Math.floor((x - キャンバス位置.left )/キャンバス拡大率);
+                    canv_y = Math.floor((y - キャンバス位置.top )/キャンバス拡大率);
+                    
+                    マウス追従.style.display = "block"; // マウス追従を表示
+
+                    //色縫っていく
+                    var そこの色 = ctx.getImageData(canv_x, canv_y, 1, 1).data;
+                    var 色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
+                    マウス追従.style.backgroundColor = 色文字列; // 色を適用
+                    
+                }
+
+                function スポイト端っこ表示(e){
+                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var x, y;
+                    
+                    if (e.touches) {//これ指じゃね？
+                        x = Math.floor((e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率);
+                        y = Math.floor((e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率);
+                    } else {//マウスだわ
+                        x = Math.floor((e.clientX - キャンバス位置.left )/キャンバス拡大率);
+                        y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
+                    }
+
+                    //範囲外なら無視
+                    if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+                        return;
+                    }
+
+                    var マウス追従 = document.getElementById("マウス追従");
+                    //ここでは画面の左下に表示
+                    マウス追従.style.left = 0 + "px";
+                    マウス追従.style.top =真ん中分割.clientHeight+"px";
+
+                    マウス追従.style.display = "block"; // マウス追従を表示
+                    
+                    //色縫っていく
+                    var そこの色 = ctx.getImageData(x,y, 1, 1).data;
+                    var 色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
+                    マウス追従.style.backgroundColor = 色文字列; // 色を適用
+
+                }
 
                 function スポイト反映(e){
                     var キャンバス位置 = canvas.getBoundingClientRect();
@@ -651,6 +719,22 @@
                         x = Math.floor((e.clientX - キャンバス位置.left )/キャンバス拡大率);
                         y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
                     }
+                    
+                    //範囲外なら無視
+                    if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+                        return;
+                    }
+
+                    var マウス追従 = document.getElementById("マウス追従");
+                    マウス追従.style.display = "none"; // マウス追従を非表示
+
+                    現在のツール="pen";//スポイトの後はペンに戻す
+                    真ん中分割.style.cursor = "url(../images/omocha/deyukaki/pen16.png),default"; // カスタムカーソルを適用
+                    //radioもペンにする
+                    var radio_div要素 = document.getElementById("pen");
+                    var radio要素 = radio_div要素.querySelector(".tool_radio");
+                    radio要素.checked = true; // ペンを選択
+
                     //マウス位置の色を取得
                     var そこの色 = ctx.getImageData(x, y, 1, 1).data;
                     //今選択されているradioの色をこいつに変える
@@ -659,6 +743,10 @@
                     input要素.value = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
                     選択色変更(input要素.value,"color_" + 現在の色.layer + "_" + 現在の色.num);
                     radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+                }
+                function スポイト非表示(){
+                    var マウス追従 = document.getElementById("マウス追従");
+                    マウス追従.style.display = "none"; // マウス追従を非表示
                 }
 
                 var 動かし前指間距離 = 0;
@@ -692,7 +780,7 @@
                     }else if(現在のツール==="baketu"){
                         バケツ(e);
                     }else if(現在のツール==="supoito"){
-                        スポイト追従座標=e;
+                        スポイト反映(e);
                     }
                 });
                 真ん中分割.addEventListener("pointermove", function(e) {
@@ -705,9 +793,34 @@
                     }else if(現在のツール==="baketu"){
 
                     }else if(現在のツール==="supoito"){
-                        スポイト追従座標=e;
                     }
                     
+                });
+                canvas.addEventListener("pointermove", function(e){
+                    //スマホは下のほうで実装してるからここでは無視。
+                    if (e.pointerType==="touch"){
+                        return;
+                    }
+                    if(現在のツール==="pen"){
+
+                    }else if(現在のツール==="baketu"){
+
+                    }else if(現在のツール==="supoito"){
+                        スポイトの色表示(e.x, e.y);
+                    }
+
+                });
+                canvas.addEventListener("pointerleave", function(e) {
+                    //スマホは下のほうで実装してるからここでは無視。
+                    if (e.pointerType==="touch"){
+                        return;
+                    }
+                    if(現在のツール==="pen"){
+                    }else if(現在のツール==="baketu"){
+
+                    }else if(現在のツール==="supoito"){
+                        スポイト非表示();
+                    }
                 });
 
                 真ん中分割.addEventListener("pointerup", function(e) {
@@ -720,7 +833,7 @@
                     }else if(現在のツール==="baketu"){
                         
                     }else if(現在のツール==="supoito"){
-                        スポイト反映(スポイト追従座標);
+
                     }
                     
                 });
@@ -734,7 +847,7 @@
                     }else if(現在のツール==="baketu"){
 
                     }else if(現在のツール==="supoito"){
-                        スポイト反映(スポイト追従座標);
+
                     }
                 });
 
@@ -800,11 +913,22 @@
                 });
 
                 真ん中分割.addEventListener("touchmove", function(e) {
-                    if(moveカウント>5){
+                    if(moveカウント>10){
                         撒き戻しやり直し判定=0;//まあちょっと動いたし無効化…って判定シビアじゃない？
                         スマホチョン押し保存=null;//無効にしないと、バケツで暴発する。
+                        document.getElementById("デバッグ用").textContent ="poe";
                     }else{
                         moveカウント+=1;
+                        
+                        if (e.touches.length === 2 & 撒き戻しやり直し判定!=3) {
+                            撒き戻しやり直し判定=2;
+                            スマホチョン押し保存=null;//なんか違うよね、君
+                        }else if (e.touches.length === 3) {
+                            撒き戻しやり直し判定=3;
+                            スマホチョン押し保存=null;//なんか違うよね、君
+                        }
+                        document.getElementById("デバッグ用").textContent =撒き戻しやり直し判定;
+                        return;//動いてないとする。1pxくらい動くと反応するかな
                     }
                     
                     if (e.touches.length === 2) {
@@ -833,10 +957,12 @@
                         e.preventDefault();//画面スクロールとか無効にしちゃうよ～ん
                         if(現在のツール==="pen"){
                             描き途中(e);
+                            
                         }else if(現在のツール==="baketu"){
                             //判定はこの関数の上のほうでやってるので。
                         }else if(現在のツール==="supoito"){
                             スポイト追従座標=e;
+                            スポイト端っこ表示(スポイト追従座標);
                         }
                     }
                 });
@@ -928,7 +1054,6 @@
             </h1>
         </header>
         <div id="mannaka">
-
             <div id="三分割くん">
                 <div id="左分割" class="浮かせる">
                     <div id="左最小化領域">
@@ -994,8 +1119,8 @@
                         <canvas id="cnvs" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                         </canvas>               
                     </div>
-
                 </div>
+                
                 
                 <div id="右分割"class="浮かせる">
                     <button id="右最小化">></button>
@@ -1022,6 +1147,7 @@
                     </li>
                 </ul>
             </footer>
+            <div id="マウス追従" calss="マウス追従"></div>
         </div>
     </body>
 </html>
