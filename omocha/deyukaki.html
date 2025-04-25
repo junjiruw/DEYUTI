@@ -737,10 +737,24 @@
 
                     //マウス位置の色を取得
                     var そこの色 = ctx.getImageData(x, y, 1, 1).data;
-                    //今選択されているradioの色をこいつに変える
+                    var 色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
+                    //radio_divに同じ色のやつがないか探す
+                    var 色箱一覧 = document.querySelectorAll(".色箱_input");
+
+                    for (var i = 0; i < 色箱一覧.length; i++) {
+                        var 色箱 = 色箱一覧[i];
+                        if (色箱.value.toLowerCase() === 色文字列.toLowerCase()) {//.toLowerCase()は小文字にするやつ
+                            // 同じ色が見つかった場合、その色を選択
+                            色箱.parentElement.parentElement.querySelector(".radio").checked = true;
+                            選択色変更(色箱.value, 色箱.parentElement.parentElement.id);
+                            return;
+                        }
+                    }
+                    console.log(色文字列);
+                    //同じ色がいなかったら今選択されているradioの色をこいつに変える
                     var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
                     var input要素 = radio_div要素.querySelector(".色箱_input");
-                    input要素.value = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
+                    input要素.value =色文字列;
                     選択色変更(input要素.value,"color_" + 現在の色.layer + "_" + 現在の色.num);
                     radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
                 }
