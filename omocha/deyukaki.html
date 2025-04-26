@@ -254,11 +254,13 @@
             ・プレビュー表示
             ・撒き戻しとかのUIボタン
             ・色選択をデフォルトのやつじゃなくて自作
+            　→透明度を選べるようにするか？それとも0_0カラーは固定にするだけでいいか？
             ・移動とか拡大縮小
             ・レイヤー２
             ・色ごとに筆の大きさかえる
             ・ブラウザ閉じてもいくらか覚えておく
             ・筆の大きさ、20~100はもっと離散的でいいんじゃね？
+            ・バケツの範囲は上のレイヤーも参照すべきである
             
             多すぎ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
             */
@@ -296,7 +298,8 @@
                 真ん中高さ調整();
                 window.addEventListener("resize", 真ん中高さ調整);
 
-                var canvas = document.getElementById("cnvs");
+                var canvas_0 = document.getElementById("cnvs_0");
+                var canvas_1 = document.getElementById("cnvs_1");
                 var canvas_border = document.getElementById("canvas_border");
                 var キャンバス拡大率 = 1;
                 var border_width = 0;
@@ -306,8 +309,8 @@
                     var 三分割くん=document.getElementById("三分割くん");
                     var スクロールサイズ調整=document.getElementById("スクロールサイズ調整");
 
-                    スクロールサイズ調整.style.width = canvas.width*キャンバス拡大率 + "px";
-                    スクロールサイズ調整.style.height = canvas.height*キャンバス拡大率 + "px";
+                    スクロールサイズ調整.style.width = canvas_0.width*キャンバス拡大率 + "px";
+                    スクロールサイズ調整.style.height = canvas_0.height*キャンバス拡大率 + "px";
                     スクロールサイズ調整.style.borderLeftWidth = 三分割くん.offsetWidth + "px";
                     スクロールサイズ調整.style.borderRightWidth = 三分割くん.offsetWidth + "px";
                     スクロールサイズ調整.style.borderTopWidth = 三分割くん.offsetHeight + "px"; 
@@ -327,20 +330,24 @@
                 キャンバススクロール中央();
             
                 //ここからおえかき機能
-                var ctx = canvas.getContext("2d");
+                var ctx_0 = canvas_0.getContext("2d");
+                var ctx_1 = canvas_1.getContext("2d");
                 var drawing = false;
                 var スマホチョン押し保存;
                 var スポイト追従座標;
                 var 撒き戻しやり直し判定=0;
                 var moveカウント=0;//n本指の即時タッチだったのかを判定するためにカウンターを用意したよ
                 var バケツ判定=false;//上の奴と似たようなことをするよ
-                var 撒き戻し=[];
-                var やりなおし=[];
+                var 撒き戻し_0=[];
+                var 撒き戻し_1=[];
+                var やりなおし_0=[];
+                var やりなおし_1=[];
                 var 履歴最大数=100;//やり直し最大数はなくてもいい。はず。
-                var 一時保存用キャンバス;//初期化はあとでね
-                var 現在キャンバス = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                var 現在キャンバス_データ部分 = 現在キャンバス.data;
-                var 現在キャンバス_色番号=[];
+                var 一時保存用キャンバス_0;//初期化はあとでね
+                var 一時保存用キャンバス_1;//初期化はあとでね
+                var 現在キャンバス_0 = ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height);
+                var 現在キャンバス_1 = ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height);
+                var 現在キャンバス_データ部分 = 現在キャンバス_0.data;//こっちは0も1も使う感じなので1つあればいいかな
                 var slider太さ = document.getElementById("slider太さ");
                 var 太さ = document.getElementById("太さ");
                 
@@ -369,6 +376,7 @@
                     現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
                     現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
                     現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
+                    現在の色.a = 255;//ひとまず…ね
                     現在の色.rgb = 色文字列;
                     現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
                     現在の色.num = parseInt(親要素名称.split("_")[2], 10);
@@ -376,6 +384,10 @@
                 色選択関数を適用("color_0_0");
                 色選択関数を適用("color_0_1");
                 色選択関数を適用("color_0_2");
+
+                色選択関数を適用("color_1_0");
+                色選択関数を適用("color_1_1");
+                色選択関数を適用("color_1_2");
                 
                 var 現在のツール="pen";
                 function ペン選択関数を適用(親要素名称){
@@ -398,11 +410,13 @@
                 ペン選択関数を適用("supoito");
                 
                 function キャンバスを白で塗りつぶす() {
-                    ctx.fillStyle = document.getElementById("color_pick_"+"0_0").value; // 塗りつぶしの色を0_0に設定
-                    ctx.fillRect(0, 0, canvas.width, canvas.height); // キャンバス全体を塗りつぶす
+                    ctx_0.clearRect(0, 0, canvas_0.width, canvas_0.height); // 上のキャンバスはクリア
+                    ctx_1.fillStyle = document.getElementById("color_pick_1_0").value; // 塗りつぶしの色を0_0に設定
+                    ctx_1.fillRect(0, 0, canvas_1.width, canvas_1.height); // キャンバス全体を塗りつぶす
                 }
                 キャンバスを白で塗りつぶす();
-                一時保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
+                一時保存用キャンバス_0=ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height);
+                一時保存用キャンバス_1=ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height);
 
                 function キャンバス比較(data1,data2){
                     for (let i = 0; i < data1.length; i++) {
@@ -414,35 +428,43 @@
                 }
                 function キャンバス最新保持(){
                     //次に履歴を残すために今を一時保存するやつ
-                    一時保存用キャンバス=ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    一時保存用キャンバス_0=ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height);
+                    一時保存用キャンバス_1=ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height);
                 }
                 function 履歴残し(){
-                    if(キャンバス比較(ctx.getImageData(0, 0, canvas.width, canvas.height).data,一時保存用キャンバス.data)){
+                    if(キャンバス比較(ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height).data,一時保存用キャンバス_0.data) &&
+                       キャンバス比較(ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height).data,一時保存用キャンバス_1.data)){
                         return;//履歴が変わってないから保存しない
                     }
-                    if(撒き戻し.length>=履歴最大数){//はみ出るから消すね
-                        撒き戻し.shift();
+                    if(撒き戻し_0.length>=履歴最大数){//はみ出るから消すね
+                        撒き戻し_0.shift();
+                        撒き戻し_1.shift();
                     }
-                    撒き戻し.push(一時保存用キャンバス);
-                    やりなおし=[];//履歴が残ったってことは次のアクションが消えるべきってわけだ！
+                    撒き戻し_0.push(一時保存用キャンバス_0);
+                    撒き戻し_1.push(一時保存用キャンバス_1);
+                    やりなおし_0=[];//履歴が残ったってことは次のアクションが消えるべきってわけだ！
+                    やりなおし_1=[];//履歴が残ったってことは次のアクションが消えるべきってわけだ！
                     キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
                 }
                 function 描き戻し(){
-                    if(撒き戻し.length==0){
+                    if(撒き戻し_0.length==0){
                         return;
                     }
-                    やりなおし.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-                    ctx.putImageData(撒き戻し.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
+                    やりなおし_0.push(ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height));
+                    やりなおし_1.push(ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height));
+                    ctx_0.putImageData(撒き戻し_0.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
+                    ctx_1.putImageData(撒き戻し_1.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
                     キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
 
                 }
                 function やり直し(){
-                    if(やりなおし.length==0){
-                        //document.getElementById("デバッグ用").textContent ="ないよ";
+                    if(やりなおし_0.length==0){
                         return;
                     }
-                    撒き戻し.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-                    ctx.putImageData(やりなおし.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
+                    撒き戻し_0.push(ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height));
+                    撒き戻し_1.push(ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height));
+                    ctx_0.putImageData(やりなおし_0.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
+                    ctx_1.putImageData(やりなおし_1.pop(), 0, 0);//popくんはもとの配列から削除もするので、これでOK
                     キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
                 }
 
@@ -504,10 +526,16 @@
                     drawing = true;
 
                     //現在の画像を取得しておく。moveで取得するとクソ遅いからね
-                    現在キャンバス = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    現在キャンバス_データ部分 = 現在キャンバス.data;
+                    現在キャンバス_0 = ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height);
+                    現在キャンバス_1 = ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height);
+                    if(現在の色.layer==0){
+                        現在キャンバス_データ部分 = 現在キャンバス_0.data;
+                    }else if(現在の色.layer==1){
+                        現在キャンバス_データ部分 = 現在キャンバス_1.data;
+                    }
+                    
 
-                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var キャンバス位置 = canvas_0.getBoundingClientRect();
                     if (e.touches) {//これ指じゃね？
                         前回のマウス.x = Math.floor((e.touches[0].clientX - キャンバス位置.left )/キャンバス拡大率);
                         前回のマウス.y = Math.floor((e.touches[0].clientY - キャンバス位置.top )/キャンバス拡大率);
@@ -529,7 +557,7 @@
                         スマホチョン押し保存=null;//無効にしないと、描き終わりで暴発する。
                     }
 
-                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var キャンバス位置 = canvas_0.getBoundingClientRect();
                     var x, y;
 
                     if (e.touches) {//これ指じゃね？
@@ -568,14 +596,30 @@
                         円データ.push([ループx, ループy, 圧力直径]);
                     }
                     for (const [ループx, ループy, 直径] of 円データ) {
-                        円を描く(ループx, ループy, 直径, true);//先に円周近くの点だけうめとこうね
+                        円を描く(ループx, ループy, 直径);
                     }
-                    ctx.putImageData(現在キャンバス, 0, 0);//渡すのはデータ部ではない。
-                    for (const [ループx, ループy, 直径] of 円データ) {
-                        円を描く(ループx, ループy, 直径, false);//中身ぬりつぶす
+
+                    
+                    if(現在の色.layer==0){
+                        ctx_0.putImageData(現在キャンバス_0, 0, 0);//渡すのはデータ部ではない。
+                        //ここで塗ることで時短。筆圧で変化するようにしたらアレになるかも？
+                        //残りはもう直接塗っちゃえばよくね？
+                        ctx_0.fillStyle = 現在の色.rgb;
+                        ctx_0.beginPath();
+                        ctx_0.arc(x+0.5, y+0.5, Math.max(0,Math.floor(圧力直径/2)-1), 0, Math.PI * 2);//ちょっとちっちゃめにしとこうぜ
+                        //+0.5は、円周の表示と比べて中心位置がちょいずれてるから入れた
+                        ctx_0.fill();
+                    }else if(現在の色.layer==1){
+                        ctx_1.putImageData(現在キャンバス_1, 0, 0);//渡すのはデータ部ではない。
+                        //ここで塗ることで時短。筆圧で変化するようにしたらアレになるかも？
+                        //残りはもう直接塗っちゃえばよくね？
+                        ctx_1.fillStyle = 現在の色.rgb;
+                        ctx_1.beginPath();
+                        ctx_1.arc(x+0.5, y+0.5, Math.max(0,Math.floor(圧力直径/2)-1), 0, Math.PI * 2);//ちょっとちっちゃめにしとこうぜ
+                        //+0.5は、円周の表示と比べて中心位置がちょいずれてるから入れた
+                        ctx_1.fill();
                     }
-                    //ここで塗ることで時短。筆圧で変化するようにしたらアレになるかも？
-                    ctx.fill();
+
 
                     //次回の始点を更新更新！
                     if (e.touches) {//これ指じゃね？
@@ -588,32 +632,27 @@
                 }
 
 
-                function 円を描く(x, y, 直径, 円周だけ) {
+                function 円を描く(x, y, 直径) {
                     //円周部分だけはしっかりと3ピクセルくらいだけ描いて、真ん中はまあ適当にって感じ
                     var 半径 =Math.floor(直径/2);
                     var 半径の二乗 = 直径*直径/4;
-                    if (円周だけ) {
-                        for(var r=Math.max(0, 半径-3); r<=半径; r++){//円周付近だけ点をおいてく
-                            for (const [i, j] of 円周マスク[r]) {
-                                if(i+x<0 || i+x>=canvas.width || j+y<0 || j+y>=canvas.height){
-                                    continue;//キャンバス外は無視
-                                }
-                                if (i * i + j * j <= 半径の二乗) {//半径に収まっていれば
-                                    現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4] = 現在の色.r;//直接色変える
-                                    現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4+1] = 現在の色.g;//直接色変える
-                                    現在キャンバス_データ部分[((y + j) * canvas.width + (x + i))*4+2] = 現在の色.b;//直接色変える
-                                }
+
+                    //レイヤー分けは不要だよね（だよねだよね）
+
+                    //まずは円周を描く
+                    for(var r=Math.max(0, 半径-3); r<=半径; r++){//円周付近だけ点をおいてく
+                        for (const [i, j] of 円周マスク[r]) {
+                            if(i+x<0 || i+x>=canvas_0.width || j+y<0 || j+y>=canvas_0.height){
+                                continue;//キャンバス外は無視
+                            }
+                            if (i * i + j * j <= 半径の二乗) {//半径に収まっていれば
+                                現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4] = 現在の色.r;//直接色変える
+                                現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+1] = 現在の色.g;//直接色変える
+                                現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+2] = 現在の色.b;//直接色変える
+                                現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+3] = 現在の色.a;//直接色変える
                             }
                         }
-                    } else {
-                        //残りはもう直接塗っちゃえばよくね？
-                        ctx.fillStyle = 現在の色.rgb;
-                        //ctx.fillStyle = "#FF0000";
-                        ctx.beginPath();
-                        ctx.arc(x+0.5, y+0.5, Math.max(0,半径-1), 0, Math.PI * 2);//ちょっとちっちゃめにしとこうぜ
-                        //+0.5は、円周の表示と比べて中心位置がちょいずれてるから入れた
-                        //fillはmoveの終わりでやればいいよね。                        
-                    }                  
+                    }                                  
                 }
                 
                 function 描き終わり() {
@@ -626,10 +665,15 @@
                 }
 
                 function バケツ(e){
-                    現在キャンバス = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    現在キャンバス_データ部分 = 現在キャンバス.data;
+                    現在キャンバス_0 = ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height);
+                    現在キャンバス_1 = ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height);
+                    if(現在の色.layer==0){
+                        現在キャンバス_データ部分 = 現在キャンバス_0.data;
+                    }else if(現在の色.layer==1){
+                        現在キャンバス_データ部分 = 現在キャンバス_1.data;
+                    }
 
-                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var キャンバス位置 = canvas_0.getBoundingClientRect();//まあこれはどっちでもいいよね
                     var x, y;
 
                     if (e.touches) {//これ指じゃね？
@@ -640,9 +684,13 @@
                         y = Math.floor((e.clientY - キャンバス位置.top )/キャンバス拡大率);
                     }
                     //マウス位置の色を取得
-                    var 塗られる色 = ctx.getImageData(x, y, 1, 1).data;
+                    if(現在の色.layer==0){
+                        var 塗られる色 = ctx_0.getImageData(x, y, 1, 1).data;
+                    }else if(現在の色.layer==1){    
+                        var 塗られる色 = ctx_1.getImageData(x, y, 1, 1).data;
+                    }
                     //塗られる色と、今から塗る色が同じだと意味ないし無限ループ入るから終了する。
-                    if (塗られる色[0] === 現在の色.r && 塗られる色[1] === 現在の色.g && 塗られる色[2] === 現在の色.b) {
+                    if (塗られる色[0] === 現在の色.r && 塗られる色[1] === 現在の色.g && 塗られる色[2] === 現在の色.b && 塗られる色[3] === 現在の色.a) {
                         return;
                     }
                     var キュー = [[x, y]];
@@ -651,11 +699,14 @@
                     while (キュー.length > 0) {
                         var [キューx, キューy] = キュー.pop();//キューの先頭を取り出す
                         //キャンバス外は無視
-                        if (キューx < 0 || キューx >= canvas.width || キューy < 0 || キューy >= canvas.height) {
+                        if (キューx < 0 || キューx >= canvas_0.width || キューy < 0 || キューy >= canvas_0.height) {
                             continue;
                         }
                         //すでに塗られている色は無視
-                        if (現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4] === 塗られる色[0] && 現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4+1] === 塗られる色[1] && 現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4+2] === 塗られる色[2]) {
+                        if (現在キャンバス_データ部分[(キューy * canvas_0.width + キューx) * 4] === 塗られる色[0] 
+                        && 現在キャンバス_データ部分[(キューy * canvas_0.width + キューx) * 4+1] === 塗られる色[1] 
+                        && 現在キャンバス_データ部分[(キューy * canvas_0.width + キューx) * 4+2] === 塗られる色[2] 
+                        && 現在キャンバス_データ部分[(キューy * canvas_0.width + キューx) * 4+3] === 塗られる色[3]) {
                             //お前の色はバケツ対象だから、周囲をキューにぶち込む
                             キュー.push([キューx + 1, キューy]);
                             キュー.push([キューx - 1, キューy]);
@@ -663,13 +714,18 @@
                             キュー.push([キューx, キューy - 1]);
 
                             //塗る
-                            現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4] = 現在の色.r;//直接色変える
-                            現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4 + 1] = 現在の色.g;//直接色変える  
-                            現在キャンバス_データ部分[(キューy * canvas.width + キューx) * 4 + 2] = 現在の色.b;//直接色変える
+                            現在キャンバス_データ部分[(キューy * canvas_0.width + キューx) * 4] = 現在の色.r;//直接色変える
+                            現在キャンバス_データ部分[(キューy * canvas_0.width + キューx) * 4 + 1] = 現在の色.g;//直接色変える  
+                            現在キャンバス_データ部分[(キューy * canvas_0.width + キューx) * 4 + 2] = 現在の色.b;//直接色変える
+                            現在キャンバス_データ部分[(キューy * canvas_0.width + キューx) * 4 + 3] = 現在の色.a;//直接色変える
                         }
                     }
                     //画像をcanvasへ反映
-                    ctx.putImageData(現在キャンバス, 0, 0);//渡すのはデータ部ではない。
+                    if(現在の色.layer==0){
+                        ctx_0.putImageData(現在キャンバス_0, 0, 0);//渡すのはデータ部ではない。
+                    }else if(現在の色.layer==1){
+                        ctx_1.putImageData(現在キャンバス_1, 0, 0);//渡すのはデータ部ではない。
+                    }
                     //document.getElementById("デバッグ用").textContent ="終";
                     履歴残し();
                 }
@@ -680,21 +736,25 @@
                     マウス追従.style.top =  y+10+"px";
 
                     var canv_x, canv_y;
-                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var キャンバス位置 = canvas_0.getBoundingClientRect();
                     canv_x = Math.floor((x - キャンバス位置.left )/キャンバス拡大率);
                     canv_y = Math.floor((y - キャンバス位置.top )/キャンバス拡大率);
                     
                     マウス追従.style.display = "block"; // マウス追従を表示
 
                     //色縫っていく
-                    var そこの色 = ctx.getImageData(canv_x, canv_y, 1, 1).data;
+                    var そこの色 = ctx_0.getImageData(canv_x, canv_y, 1, 1).data;
+                    //透明だったら
+                    if(そこの色[3]==0){
+                        そこの色=ctx_1.getImageData(canv_x, canv_y, 1, 1).data;
+                    }
                     var 色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
                     マウス追従.style.backgroundColor = 色文字列; // 色を適用
                     
                 }
 
                 function スポイト端っこ表示(e){
-                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var キャンバス位置 = canvas_0.getBoundingClientRect();
                     var x, y;
                     
                     if (e.touches) {//これ指じゃね？
@@ -706,7 +766,7 @@
                     }
 
                     //範囲外なら無視
-                    if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+                    if (x < 0 || x >= canvas_0.width || y < 0 || y >= canvas_0.height) {
                         return;
                     }
 
@@ -718,14 +778,18 @@
                     マウス追従.style.display = "block"; // マウス追従を表示
                     
                     //色縫っていく
-                    var そこの色 = ctx.getImageData(x,y, 1, 1).data;
+                    var そこの色 = ctx_0.getImageData(x,y, 1, 1).data;
+                    //透明だったら
+                    if(そこの色[3]==0){
+                        そこの色=ctx_1.getImageData(x, y, 1, 1).data;
+                    }
                     var 色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
                     マウス追従.style.backgroundColor = 色文字列; // 色を適用
 
                 }
 
                 function スポイト反映(e){
-                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var キャンバス位置 = canvas_0.getBoundingClientRect();
                     var x, y;
                     
                     if (e.touches) {//これ指じゃね？
@@ -737,7 +801,7 @@
                     }
                     
                     //範囲外なら無視
-                    if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+                    if (x < 0 || x >= canvas_0.width || y < 0 || y >= canvas_0.height) {
                         return;
                     }
 
@@ -752,7 +816,11 @@
                     radio要素.checked = true; // ペンを選択
 
                     //マウス位置の色を取得
-                    var そこの色 = ctx.getImageData(x, y, 1, 1).data;
+                    var そこの色 = ctx_0.getImageData(x, y, 1, 1).data;
+                    //透明だったら
+                    if(そこの色[3]==0){
+                        そこの色=ctx_1.getImageData(x, y, 1, 1).data;
+                    }
                     var 色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
                     //radio_divに同じ色のやつがないか探す
                     var 色箱一覧 = document.querySelectorAll(".色箱_input");
@@ -766,8 +834,8 @@
                             return;
                         }
                     }
-                    console.log(色文字列);
                     //同じ色がいなかったら今選択されているradioの色をこいつに変える
+                    //これ、場合によっては下のレイヤーの色を上のレイヤーとして取得しちゃうな…まあいいか！（まあいいかでゆっちであった。）
                     var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
                     var input要素 = radio_div要素.querySelector(".色箱_input");
                     input要素.value =色文字列;
@@ -826,7 +894,7 @@
                     }
                     
                 });
-                canvas.addEventListener("pointermove", function(e){
+                canvas_0.addEventListener("pointermove", function(e){
                     //スマホは下のほうで実装してるからここでは無視。
                     if (e.pointerType==="touch"){
                         return;
@@ -840,7 +908,7 @@
                     }
 
                 });
-                canvas.addEventListener("pointerleave", function(e) {
+                canvas_0.addEventListener("pointerleave", function(e) {
                     //スマホは下のほうで実装してるからここでは無視。
                     if (e.pointerType==="touch"){
                         return;
@@ -895,7 +963,7 @@
                 }); 
 
                 function キャンバス拡大(拡大率, 中心x, 中心y){                    
-                    var キャンバス位置 = canvas.getBoundingClientRect();
+                    var キャンバス位置 = canvas_0.getBoundingClientRect();
                     var 変動前位置x=(中心x - キャンバス位置.left )/キャンバス拡大率;
                     var 変動前位置y=(中心y - キャンバス位置.top )/キャンバス拡大率;
 
@@ -910,7 +978,8 @@
                  
 
                     //キャンバスを拡大（ズラす→拡大の順番じゃないとどうやら非同期処理で計算狂うっぽい）
-                    canvas.style.transform = "scale("+キャンバス拡大率+")";
+                    canvas_0.style.transform = "scale("+キャンバス拡大率+")";
+                    canvas_1.style.transform = "scale("+キャンバス拡大率+")";
                     キャンバスボーダー設定();
                     //ま、それでもちょっとずれてるけどね
 
@@ -1034,7 +1103,11 @@
 
                 document.getElementById("コピーボタン").addEventListener("click", function() {
                     //テキストもコピーできるかな～て思ったけど、できるけどできないみたい。
-                    canvas.toBlob(function(blob) {
+                    var 合成キャンバス=new OffscreenCanvas(canvas_0.width, canvas_0.height);
+                    var 合成結果=合成キャンバス.getContext("2d");
+                    合成結果.drawImage(canvas_1,0,0);
+                    合成結果.drawImage(canvas_0,0,0);
+                    合成キャンバス.convertToBlob().then(function(blob) {
                         const item = new ClipboardItem({ "image/png": blob });//HTTPSかhttp://127.0.0.1/じゃないとうごかない、らしいね。
                         navigator.clipboard.write([item]).then(function() {
                         }).catch(function(err) {
@@ -1044,17 +1117,23 @@
                 });
 
                 document.getElementById("保存").addEventListener("click", function() {
-                    var link = document.createElement('a');
-                    link.href = canvas.toDataURL("image/png");
-                    const date = new Date();
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');  // 月は0から始まるので+1
-                    const day = String(date.getDate()).padStart(2, '0');
-                    const hours = String(date.getHours()).padStart(2, '0');
-                    const minutes = String(date.getMinutes()).padStart(2, '0');
-                    const seconds = String(date.getSeconds()).padStart(2, '0');
-                    link.download = year+""+month+""+day+"_"+hours+""+minutes+""+seconds+"_deyukaki.png";//ファイル名決めてる
-                    link.click();//強制クリック
+                    var 合成キャンバス=new OffscreenCanvas(canvas_0.width, canvas_0.height);
+                    var 合成結果=合成キャンバス.getContext("2d");
+                    合成結果.drawImage(canvas_1,0,0);
+                    合成結果.drawImage(canvas_0,0,0);
+                    合成キャンバス.convertToBlob().then(function(blob) {
+                        var link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        const date = new Date();
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');  // 月は0から始まるので+1
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const hours = String(date.getHours()).padStart(2, '0');
+                        const minutes = String(date.getMinutes()).padStart(2, '0');
+                        const seconds = String(date.getSeconds()).padStart(2, '0');
+                        link.download = year+""+month+""+day+"_"+hours+""+minutes+""+seconds+"_deyukaki.png";//ファイル名決めてる
+                        link.click();//強制クリック
+                    });
                 });
 
                 document.getElementById("白紙").addEventListener("click", function() {
@@ -1087,32 +1166,61 @@
             <div id="三分割くん">
                 <div id="左分割" class="浮かせる">
                     <div id="左最小化領域">
-                        <div id="color_0" class="color_行">
+                        <div id="色選択div">
+                            <div id="color_0" class="color_行">
 
-                            <div class="radio_div" id="color_0_0">
-                                <input type="radio" class="radio" id="color_radio_0_0" name="color">
-                                <div class="色箱" id="color_div_0_0">
-                                    <input class="色箱_input" type="color" id="color_pick_0_0" value="#ffffff">
-                                    <div class="色箱_cover"></div>
+                                <div class="radio_div" id="color_0_0">
+                                    <input type="radio" class="radio" id="color_radio_0_0" name="color">
+                                    <div class="色箱" id="color_div_0_0">
+                                        <input class="色箱_input" type="color" id="color_pick_0_0" value="#ffffff">
+                                        <div class="色箱_cover"></div>
+                                    </div>
                                 </div>
+
+                                <div class="radio_div" id="color_0_1">
+                                    <input type="radio" class="radio" id="color_radio_0_1" name="color" checked>
+                                    <div class="色箱" id="color_div_0_1">
+                                        <input class="色箱_input" type="color" id="color_pick_0_1" value="#000000">
+                                        <div class="色箱_cover"></div>
+                                    </div>
+                                </div>
+
+                                <div class="radio_div" id="color_0_2">
+                                    <input type="radio" class="radio" id="color_radio_0_2" name="color">
+                                    <div class="色箱" id="color_div_0_2">
+                                        <input class="色箱_input" type="color" id="color_pick_0_2" value="#FFF6EF">
+                                        <div class="色箱_cover"></div>
+                                    </div>
+                                </div>
+                                
                             </div>
 
-                            <div class="radio_div" id="color_0_1">
-                                <input type="radio" class="radio" id="color_radio_0_1" name="color" checked>
-                                <div class="色箱" id="color_div_0_1">
-                                    <input class="色箱_input" type="color" id="color_pick_0_1" value="#000000">
-                                    <div class="色箱_cover"></div>
-                                </div>
-                            </div>
+                            <div id="color_1" class="color_行">
 
-                            <div class="radio_div" id="color_0_2">
-                                <input type="radio" class="radio" id="color_radio_0_2" name="color">
-                                <div class="色箱" id="color_div_0_2">
-                                    <input class="色箱_input" type="color" id="color_pick_0_2" value="#aaffaa">
-                                    <div class="色箱_cover"></div>
+                                <div class="radio_div" id="color_1_0">
+                                    <input type="radio" class="radio" id="color_radio_1_0" name="color">
+                                    <div class="色箱" id="color_div_1_0">
+                                        <input class="色箱_input" type="color" id="color_pick_1_0" value="#ffffff">
+                                        <div class="色箱_cover"></div>
+                                    </div>
+                                </div>
+
+                                <div class="radio_div" id="color_1_1">
+                                    <input type="radio" class="radio" id="color_radio_1_1" name="color">
+                                    <div class="色箱" id="color_div_1_1">
+                                        <input class="色箱_input" type="color" id="color_pick_1_1" value="#aaffaa">
+                                        <div class="色箱_cover"></div>
+                                    </div>
+                                </div>
+
+                                <div class="radio_div" id="color_1_2">
+                                    <input type="radio" class="radio" id="color_radio_1_2" name="color">
+                                    <div class="色箱" id="color_div_1_2">
+                                        <input class="色箱_input" type="color" id="color_pick_1_2" value="#FF5558">
+                                        <div class="色箱_cover"></div>
+                                    </div>
                                 </div>
                             </div>
-                            
                         </div>
                         <div id="ツール系">
                             <div id="筆の太さ">
@@ -1145,9 +1253,12 @@
                 </div>
 
                 <div id="真ん中分割">
-                    <div id="スクロールサイズ調整">         
-                        <canvas id="cnvs" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
-                        </canvas>               
+                    <div id="スクロールサイズ調整">    
+                        <canvas id="cnvs_1" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                        </canvas>      
+                        <canvas id="cnvs_0" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                        </canvas>          
+                              
                     </div>
                 </div>
                 
