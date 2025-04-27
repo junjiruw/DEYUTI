@@ -141,6 +141,15 @@
                 background-color: rgba(255, 255, 255 ); 
                 border: 2px solid #c5c5c5;
             }
+            .透明色だよ{
+                border-radius: 50%;
+                background: 
+                    linear-gradient(45deg, #aaa 25%, transparent 25%, transparent 75%, #aaa 75%),
+                    linear-gradient(45deg, #aaa 25%, transparent 25%, transparent 75%, #aaa 75%);
+                background-size: 0.5em 0.5em;
+                background-position: 0 0, 0.25em 0.25em;
+
+            }
             #太さ{
                 width: 3em;
                 height: 1em;
@@ -254,14 +263,13 @@
             ・プレビュー表示
             ・撒き戻しとかのUIボタン
             ・色選択をデフォルトのやつじゃなくて自作
-            　→透明度を選べるようにするか？それとも0_0カラーは固定にするだけでいいか？
             ・移動とか拡大縮小
-            ・レイヤー２
             ・色ごとに筆の大きさかえる
             ・ブラウザ閉じてもいくらか覚えておく
             ・筆の大きさ、20~100はもっと離散的でいいんじゃね？
             ・バケツの範囲は上のレイヤーも参照すべきである
-            
+            ・move判定をちょっと遅延させた影響でカクカクになってることを解消し忘れてるよねぇ！？
+     
             多すぎ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
             */
             onload = function(){
@@ -356,12 +364,12 @@
                 function 色選択関数を適用(親要素名称){
                     var 親要素 = document.getElementById(親要素名称);
                     var radio要素 = 親要素.querySelector(".radio");
-                    var input要素 = 親要素.querySelector(".色箱_input");
                     radio要素.addEventListener("change", function (e) {
                         if(e.target.checked) {
                             選択色変更(input要素.value,親要素名称);
                         }
                     });
+                    var input要素 = 親要素.querySelector(".色箱_input");
                     input要素.addEventListener("input", function () {
                         親要素.querySelector(".色箱_cover").style.backgroundColor = this.value; // 色を適用
                         選択色変更(this.value,親要素名称);
@@ -369,6 +377,7 @@
                     });
                     //ついでに背景色を初期化しておくか
                     親要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+
                 }
                 function 選択色変更(色文字列,親要素名称){
                     var 現在の色_文字列=色文字列;
@@ -376,7 +385,11 @@
                     現在の色.r = parseInt(現在の色_文字列.slice(0, 2), 16);
                     現在の色.g = parseInt(現在の色_文字列.slice(2, 4), 16);
                     現在の色.b = parseInt(現在の色_文字列.slice(4, 6), 16);
-                    現在の色.a = 255;//ひとまず…ね
+                    if(親要素名称=="color_0_0"){
+                        現在の色.a=0;//なんかすごい実装だけど、まあいいか…
+                    }else{
+                        現在の色.a=255;
+                    }
                     現在の色.rgb = 色文字列;
                     現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
                     現在の色.num = parseInt(親要素名称.split("_")[2], 10);
@@ -596,9 +609,9 @@
                         円データ.push([ループx, ループy, 圧力直径]);
                     }
                     for (const [ループx, ループy, 直径] of 円データ) {
-                        円を描く(ループx, ループy, 直径);
+                        円を描く(ループx, ループy, 直径,true);//ガワだけ描くよ
                     }
-
+                    円を描く(x,y,圧力直径,false);
                     
                     if(現在の色.layer==0){
                         ctx_0.putImageData(現在キャンバス_0, 0, 0);//渡すのはデータ部ではない。
@@ -608,7 +621,7 @@
                         ctx_0.beginPath();
                         ctx_0.arc(x+0.5, y+0.5, Math.max(0,Math.floor(圧力直径/2)-1), 0, Math.PI * 2);//ちょっとちっちゃめにしとこうぜ
                         //+0.5は、円周の表示と比べて中心位置がちょいずれてるから入れた
-                        ctx_0.fill();
+                        //ctx_0.fill();
                     }else if(現在の色.layer==1){
                         ctx_1.putImageData(現在キャンバス_1, 0, 0);//渡すのはデータ部ではない。
                         //ここで塗ることで時短。筆圧で変化するようにしたらアレになるかも？
@@ -617,7 +630,7 @@
                         ctx_1.beginPath();
                         ctx_1.arc(x+0.5, y+0.5, Math.max(0,Math.floor(圧力直径/2)-1), 0, Math.PI * 2);//ちょっとちっちゃめにしとこうぜ
                         //+0.5は、円周の表示と比べて中心位置がちょいずれてるから入れた
-                        ctx_1.fill();
+                        //ctx_1.fill();
                     }
 
 
@@ -632,15 +645,19 @@
                 }
 
 
-                function 円を描く(x, y, 直径) {
+                function 円を描く(x, y, 直径,ガワだけ) {
                     //円周部分だけはしっかりと3ピクセルくらいだけ描いて、真ん中はまあ適当にって感じ
                     var 半径 =Math.floor(直径/2);
                     var 半径の二乗 = 直径*直径/4;
 
                     //レイヤー分けは不要だよね（だよねだよね）
 
-                    //まずは円周を描く
-                    for(var r=Math.max(0, 半径-3); r<=半径; r++){//円周付近だけ点をおいてく
+                    if(ガワだけ){
+                        var 描き初め=Math.max(0, 半径-2); //マイナスの値ってなにが適切なんだろうね           
+                    }else{
+                        var 描き初め=0;    
+                    }
+                    for(var r=描き初め; r<=半径; r++){//ちゃんと描く。
                         for (const [i, j] of 円周マスク[r]) {
                             if(i+x<0 || i+x>=canvas_0.width || j+y<0 || j+y>=canvas_0.height){
                                 continue;//キャンバス外は無視
@@ -652,7 +669,8 @@
                                 現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+3] = 現在の色.a;//直接色変える
                             }
                         }
-                    }                                  
+                    }    
+                     
                 }
                 
                 function 描き終わり() {
@@ -1172,8 +1190,8 @@
                                 <div class="radio_div" id="color_0_0">
                                     <input type="radio" class="radio" id="color_radio_0_0" name="color">
                                     <div class="色箱" id="color_div_0_0">
-                                        <input class="色箱_input" type="color" id="color_pick_0_0" value="#ffffff">
-                                        <div class="色箱_cover"></div>
+                                        <input class="色箱_input" type="color" id="color_pick_0_0" value="#ffffff" disabled style="visibility: hidden;"><!--色変え拒否-->
+                                        <div class="色箱_cover 透明色だよ"></div>
                                     </div>
                                 </div>
 
