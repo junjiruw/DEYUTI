@@ -953,7 +953,7 @@
                         return;
                     }
                     // スクロールバー上でのクリックを無視
-                    if (e.clientX > 真ん中分割.clientWidth || e.clientY > 真ん中分割.clientHeight) {
+                    if (e.clientX > 真ん中分割.clientWidth+真ん中分割.getBoundingClientRect().left || e.clientY > 真ん中分割.clientHeight+真ん中分割.getBoundingClientRect().top) {
                         return;
                     }
                     真ん中分割.setPointerCapture(e.pointerId);//ポインターを追跡する。どっか行ってもキャンセルを監視できる
@@ -1035,10 +1035,11 @@
 
                 真ん中分割.addEventListener("wheel", function(e) {
                     //スクロールバーの上でのホイール操作を無視
-                    if (e.clientX < 真ん中分割.clientWidth && e.clientY < 真ん中分割.clientHeight) {
+
+                    if (e.clientX < 真ん中分割.clientWidth+真ん中分割.getBoundingClientRect().left && e.clientY < 真ん中分割.clientHeight+真ん中分割.getBoundingClientRect().top) {
                         e.preventDefault();
                         キャンバス拡大(e.deltaY > 0 ? -0.1 : 0.1, e.clientX, e.clientY);
-                    }else if(e.clientY > 真ん中分割.clientHeight){//なんか、ここバグってるんだけど意味わかんないんだよね
+                    }else if(e.clientY > 真ん中分割.clientHeight+真ん中分割.getBoundingClientRect().top){
                         e.preventDefault();
                         //上下スクロールでキャンバスの横向きの位置を調整する.カクカクするけど、いいよね！
                         真ん中分割.scrollLeft += e.deltaY/2;
