@@ -422,6 +422,16 @@
                 ペン選択関数を適用("pen");
                 ペン選択関数を適用("baketu");
                 ペン選択関数を適用("supoito");
+                function 自動ツール選択(ツール名){
+                    現在のツール=ツール名;
+                    真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+ツール名+"16.png),default"; // カスタムカーソルを適用
+                    //radioも変更にする
+                    var radio_div要素 = document.getElementById(ツール名);
+                    var radio要素 = radio_div要素.querySelector(".tool_radio");
+                    radio要素.checked = true; 
+                    var マウス追従 = document.getElementById("マウス追従");
+                    マウス追従.style.display = "none"; // マウス追従を非表示…なくてもいいけどね
+                }
                 
                 function キャンバスを白で塗りつぶす() {
                     ctx_0.clearRect(0, 0, canvas_0.width, canvas_0.height); // 上のキャンバスはクリア
@@ -889,15 +899,7 @@
                         return;
                     }
 
-                    var マウス追従 = document.getElementById("マウス追従");
-                    マウス追従.style.display = "none"; // マウス追従を非表示
-
-                    現在のツール="pen";//スポイトの後はペンに戻す
-                    真ん中分割.style.cursor = "url(../images/omocha/deyukaki/pen16.png),default"; // カスタムカーソルを適用
-                    //radioもペンにする
-                    var radio_div要素 = document.getElementById("pen");
-                    var radio要素 = radio_div要素.querySelector(".tool_radio");
-                    radio要素.checked = true; // ペンを選択
+                    自動ツール選択("pen");
 
                     //マウス位置の色を取得
                     var そこの色 = ctx_0.getImageData(x, y, 1, 1).data;
@@ -909,7 +911,7 @@
                     //radio_divに同じ色のやつがないか探す
                     var 色箱一覧 = document.querySelectorAll(".色箱_input");
 
-                    for (var i = 0; i < 色箱一覧.length; i++) {
+                    for (var i = 1; i < 色箱一覧.length; i++) {//i=0は消しゴムなので無視。
                         var 色箱 = 色箱一覧[i];
                         if (色箱.value.toLowerCase() === 色文字列.toLowerCase()) {//.toLowerCase()は小文字にするやつ
                             // 同じ色が見つかった場合、その色を選択
@@ -948,8 +950,10 @@
                     if (e.pointerType==="touch"){
                         return;
                     }
-                    // 右クリックは無視
+                    // 右クリックはスポイト
                     if (e.button === 2) {
+                        自動ツール選択("supoito");
+                        スポイトの色表示(e.x, e.y);
                         return;
                     }
                     // スクロールバー上でのクリックを無視
@@ -962,7 +966,7 @@
                     }else if(現在のツール==="baketu"){
                         バケツ(e);
                     }else if(現在のツール==="supoito"){
-                        スポイト反映(e);
+                        
                     }
                 });
                 真ん中分割.addEventListener("pointermove", function(e) {
@@ -977,6 +981,9 @@
                     }else if(現在のツール==="supoito"){
                     }
                     
+                });
+                canvas_0.addEventListener("contextmenu", function(e){
+                    e.preventDefault(); // 右クリックメニューを消す
                 });
                 canvas_0.addEventListener("pointermove", function(e){
                     //スマホは下のほうで実装してるからここでは無視。
@@ -1015,7 +1022,7 @@
                     }else if(現在のツール==="baketu"){
                         
                     }else if(現在のツール==="supoito"){
-
+                        スポイト反映(e);
                     }
                     
                 });
