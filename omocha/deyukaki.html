@@ -264,13 +264,14 @@
             /*
             作りたい機能リスト
             ・色置き換え
-            ・キーボードで色選択
             ・プレビュー表示
             ・色選択をデフォルトのやつじゃなくて自作
             ・移動とか拡大縮小
             ・ブラウザ閉じてもいくらか覚えておく
+            ・alert()のOK押さなくていいバージョンがあると、きもちいいよね。
             ・移動時のチョン押し暴発さ、暴発を防ぐんじゃなくて、暴発を巻き戻す方針のほうがいいんじゃない？
-     
+            ・説明書って必要じゃないんですか？！？！！？？
+
             多すぎ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
             */
             onload = function(){
@@ -362,6 +363,7 @@
                 var 筆ごとの太さ=[];
                 
                 var 現在の色={r:0,g:0,b:0,a:255,layer:0,num:1,rgb:"#000000"};
+                var 最後の色=JSON.parse(JSON.stringify(現在の色));//参照切りしながら渡す
 
                 function 色選択関数を適用(親要素名称){
                     var 親要素 = document.getElementById(親要素名称);
@@ -395,6 +397,11 @@
                     現在の色.rgb = 色文字列;
                     現在の色.layer = parseInt(親要素名称.split("_")[1], 10);
                     現在の色.num = parseInt(親要素名称.split("_")[2], 10);
+
+                    //消しゴムじゃないなら色更新
+                    if(現在の色.layer!=0 || 現在の色.num!=0){
+                        最後の色=JSON.parse(JSON.stringify(現在の色));//参照切りしながら渡す
+                    }
 
                     太さ.value=筆ごとの太さ[現在の色.layer][現在の色.num];
                     太さからスライダー位置調整()
@@ -903,7 +910,7 @@
                         return;
                     }
 
-                    自動ツール選択("pen");
+                    
 
                     //マウス位置の色を取得
                     var そこの色 = ctx_0.getImageData(x, y, 1, 1).data;
@@ -921,16 +928,23 @@
                             // 同じ色が見つかった場合、その色を選択
                             色箱.parentElement.parentElement.querySelector(".radio").checked = true;
                             選択色変更(色箱.value, 色箱.parentElement.parentElement.id);
+                            自動ツール選択("pen");
                             return;
                         }
                     }
                     //同じ色がいなかったら今選択されているradioの色をこいつに変える
+                    //まって！消しゴムレイヤーの色を変化させることは許されないわよ！
+                    if(現在の色.layer==0 && 現在の色.num==0){
+                        alert("消しゴムの色はかわらないよ～ん");//OK押すのがめんどくさいし、なんかちゃんとしたやつ作ったほうがいいのでは？と思いつつ…
+                        return;
+                    }
                     //これ、場合によっては下のレイヤーの色を上のレイヤーとして取得しちゃうな…まあいいか！（まあいいかでゆっちであった。）
                     var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
                     var input要素 = radio_div要素.querySelector(".色箱_input");
                     input要素.value =色文字列;
                     選択色変更(input要素.value,"color_" + 現在の色.layer + "_" + 現在の色.num);
                     radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+                    自動ツール選択("pen");
                 }
                 function スポイト非表示(){
                     var マウス追従 = document.getElementById("マウス追従");
@@ -1184,12 +1198,44 @@
                 });
 
                 document.addEventListener("keydown", function(e) {
+
                     if (e.ctrlKey && e.key === "z") {
                         e.preventDefault(); // デフォルトの動作を無効化
                         描き戻し();
                     } else if (e.ctrlKey && e.key === "y") {
                         e.preventDefault(); // デフォルトの動作を無効化
                         やり直し();
+                    } else if (e.key === "e") {
+                        e.preventDefault(); // デフォルトの動作を無効化
+                        //ツールをペンに変える…はしなくていいか
+                        if(現在の色.layer!=0 || 現在の色.num!=0){//消しゴムじゃないな…
+                            console.log("moge1");
+                            選択色変更("#FFFFFF","color_0_0");
+                            var radio要素 = document.getElementById("color_radio_0_0");
+                            radio要素.checked = true;
+                        }else{
+                            選択色変更(最後の色.rgb,"color_" + 最後の色.layer + "_" + 最後の色.num);
+                            var radio要素 = document.getElementById("color_radio_" + 現在の色.layer + "_" + 現在の色.num);
+                            radio要素.checked = true;
+                        }
+                    } else if (Number.isInteger(Number(e.key))) {
+                        var color_0_div = document.getElementById("color_0");
+                        var radio_0 = color_0_div.querySelectorAll(".radio_div");
+                        var キーボード入力値=Number(e.key)-1;
+                        console.log(キーボード入力値);
+           
+                        if(radio_0.length>キーボード入力値){
+                            var 色箱 = document.getElementById("color_pick_" + 0 + "_" + キーボード入力値);
+                            色箱.parentElement.parentElement.querySelector(".radio").checked = true;
+                            選択色変更(色箱.value,"color_" +0 + "_" +キーボード入力値);
+
+                        }else{
+                            キーボード入力値-=radio_0.length;
+                            var 色箱 = document.getElementById("color_pick_" + 1 + "_" + キーボード入力値);
+                            色箱.parentElement.parentElement.querySelector(".radio").checked = true;
+                            選択色変更(色箱.value,"color_" +1+ "_" +キーボード入力値);
+
+                        }
                     }
                 });
 
