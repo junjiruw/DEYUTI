@@ -100,9 +100,15 @@
             }
             .color_行{
                 display: flex; /* 子要素を横並びにする */
+                border: 2px solid #aaa;
+                padding: 2px;
+                margin: 2px;
             }
-            #raido_0 {
-                display: flex; /* 子要素を横並びにする */
+            .img_layer{
+                image-rendering: pixelated; /* ピクセルを強調してぼやけを防ぐ */
+                width: 1.5em; /* ボタンの幅 */
+                height: 1.5em; /* ボタンの高さ */
+
             }
             .radio_div{
                 display: flex;
@@ -225,8 +231,8 @@
                 }
                 .色箱_input {
                     position: relative;
-                    width: 3em;
-                    height: 3em;
+                    width: 2.5em;
+                    height: 2.5em;
                 }
                 #太さ{
                 width: 3em;
@@ -258,7 +264,6 @@
             /*
             作りたい機能リスト
             ・色置き換え
-            ・右クリックからスポイト
             ・キーボードで色選択
             ・プレビュー表示
             ・撒き戻しとかのUIボタン
@@ -1256,7 +1261,7 @@
                     <div id="左最小化領域">
                         <div id="色選択div">
                             <div id="color_0" class="color_行">
-
+                                <img src="../images/omocha/deyukaki/layer16_0.png" alt="ここはレイヤー0の色選択" class="img_layer">
                                 <div class="radio_div" id="color_0_0">
                                     <input type="radio" class="radio" id="color_radio_0_0" name="color">
                                     <div class="色箱" id="color_div_0_0">
@@ -1276,7 +1281,7 @@
                                 <div class="radio_div" id="color_0_2">
                                     <input type="radio" class="radio" id="color_radio_0_2" name="color">
                                     <div class="色箱" id="color_div_0_2">
-                                        <input class="色箱_input" type="color" id="color_pick_0_2" value="#FFF6EF">
+                                        <input class="色箱_input" type="color" id="color_pick_0_2" value="#00FFFF">
                                         <div class="色箱_cover"></div>
                                     </div>
                                 </div>
@@ -1284,7 +1289,7 @@
                             </div>
 
                             <div id="color_1" class="color_行">
-
+                                <img src="../images/omocha/deyukaki/layer16_1.png" alt="ここはレイヤー1の色選択" class="img_layer">
                                 <div class="radio_div" id="color_1_0">
                                     <input type="radio" class="radio" id="color_radio_1_0" name="color">
                                     <div class="色箱" id="color_div_1_0">
@@ -1296,7 +1301,7 @@
                                 <div class="radio_div" id="color_1_1">
                                     <input type="radio" class="radio" id="color_radio_1_1" name="color">
                                     <div class="色箱" id="color_div_1_1">
-                                        <input class="色箱_input" type="color" id="color_pick_1_1" value="#aaffaa">
+                                        <input class="色箱_input" type="color" id="color_pick_1_1" value="#FF5558">
                                         <div class="色箱_cover"></div>
                                     </div>
                                 </div>
@@ -1304,7 +1309,7 @@
                                 <div class="radio_div" id="color_1_2">
                                     <input type="radio" class="radio" id="color_radio_1_2" name="color">
                                     <div class="色箱" id="color_div_1_2">
-                                        <input class="色箱_input" type="color" id="color_pick_1_2" value="#FF5558">
+                                        <input class="色箱_input" type="color" id="color_pick_1_2" value="#FFF6EF">
                                         <div class="色箱_cover"></div>
                                     </div>
                                 </div>
@@ -1337,7 +1342,7 @@
                     </div>
                     
                     <button id="左最小化"><</button>
-                    <div id="デバッグ用">test</div>
+                    
                 </div>
 
                 <div id="真ん中分割">
@@ -1352,6 +1357,7 @@
                 
                 
                 <div id="右分割"class="浮かせる">
+                    <div id="デバッグ用">test</div>
                     <button id="右最小化">></button>
                     <div id="右最小化領域">
                         <button id="コピーボタン" class="保存系ボタン">コピー</button>
