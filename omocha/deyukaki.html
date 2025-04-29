@@ -266,7 +266,6 @@
             ・色置き換え
             ・キーボードで色選択
             ・プレビュー表示
-            ・撒き戻しとかのUIボタン
             ・色選択をデフォルトのやつじゃなくて自作
             ・移動とか拡大縮小
             ・ブラウザ閉じてもいくらか覚えておく
@@ -1194,6 +1193,16 @@
                     }
                 });
 
+                
+                document.getElementById("描き戻しボタン").addEventListener("click", function() {
+                    描き戻し();
+                });
+
+                document.getElementById("やり直しボタン").addEventListener("click", function() {
+                    やり直し();
+                });
+
+
                 document.getElementById("コピーボタン").addEventListener("click", function() {
                     //テキストもコピーできるかな～て思ったけど、できるけどできないみたい。
                     var 合成キャンバス=new OffscreenCanvas(canvas_0.width, canvas_0.height);
@@ -1360,6 +1369,8 @@
                     <div id="デバッグ用">test</div>
                     <button id="右最小化">></button>
                     <div id="右最小化領域">
+                        <button id="描き戻しボタン" class="保存系ボタン">↶</button>
+                        <button id="やり直しボタン" class="保存系ボタン">↷</button>
                         <button id="コピーボタン" class="保存系ボタン">コピー</button>
                         <button id="保存" class="保存系ボタン">保存</button>
                         <button id="白紙" class="保存系ボタン">左色で埋める</button>
