@@ -106,8 +106,8 @@
             }
             .img_layer{
                 image-rendering: pixelated; /* ピクセルを強調してぼやけを防ぐ */
-                width: 1.5em; /* ボタンの幅 */
-                height: 1.5em; /* ボタンの高さ */
+                width: 1.5em;
+                height: 1.5em;
 
             }
             .radio_div{
@@ -1221,8 +1221,15 @@
                     } else if (Number.isInteger(Number(e.key))) {
                         var color_0_div = document.getElementById("color_0");
                         var radio_0 = color_0_div.querySelectorAll(".radio_div");
+                        var color_1_div = document.getElementById("color_1");
+                        var radio_1 = color_1_div.querySelectorAll(".radio_div");
                         var キーボード入力値=Number(e.key)-1;
-                        console.log(キーボード入力値);
+                        //console.log(キーボード入力値);
+                        if(キーボード入力値<0){
+                            キーボード入力値=0;
+                        }else if(radio_0.length+radio_1.length<=キーボード入力値){
+                            キーボード入力値=radio_0.length+radio_1.length-1;
+                        }
            
                         if(radio_0.length>キーボード入力値){
                             var 色箱 = document.getElementById("color_pick_" + 0 + "_" + キーボード入力値);
@@ -1269,7 +1276,7 @@
                     var 合成結果=合成キャンバス.getContext("2d");
                     合成結果.drawImage(canvas_1,0,0);
                     合成結果.drawImage(canvas_0,0,0);
-                    合成キャンバス.convertToBlob().then(function(blob) {
+                    合成キャンバス.convertToBlob().then(function(blob) {//HTTPSかhttp://127.0.0.1/じゃないとうごかない、らしいね。
                         var link = document.createElement('a');
                         link.href = URL.createObjectURL(blob);
                         const date = new Date();
@@ -1279,7 +1286,7 @@
                         const hours = String(date.getHours()).padStart(2, '0');
                         const minutes = String(date.getMinutes()).padStart(2, '0');
                         const seconds = String(date.getSeconds()).padStart(2, '0');
-                        link.download = year+""+month+""+day+"_"+hours+""+minutes+""+seconds+"_deyukaki.png";//ファイル名決めてる
+                        link.download = year+month+day+hours+minutes+seconds+"_deyukaki.png";//ファイル名決めてる
                         link.click();//強制クリック
                     });
                 });
@@ -1433,9 +1440,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#top" id="totop"> 
-                            ページ上部に移動
-                        </a>
+                        <a href="./deyukaki_setumeisyo.html" target="_blank">このツールの説明書はここにあるよー！（別タブ）</a>
                     </li>
                 </ul>
             </footer>

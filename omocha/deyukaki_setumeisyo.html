@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="deyukakiの説明書">                                                                 <!--ページ説明　入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/deyukaki_setumeisyo</title>                                                         <!--タイトル　入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/deyukaki_setumeisyo">                                <!--タイトル　入力すること！-->
+        <meta property="og:title" content="でゆ描き説明書">                                                               <!--タイトル　入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/deyukaki_setumeisyo.html">                   <!--リンク　入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <meta name="viewport" content="width=device-width,initial-scale=1"><!--スマホで見てる人向けに表示領域の設定-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+            #mannaka{
+                padding: 0.5em;
+            }
+            h2, h3 {
+                color: #9cccff;
+            }
+            .img{
+                background-color: white;
+                image-rendering: pixelated; /* ピクセルを強調してぼやけを防ぐ */
+                padding: 2px;
+                width: 1.5em;
+                height: 1.5em;
+            }
+        </style>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1MB5XLN4LW');
+        </script>
+        <!-- Google tag (gtag.js) -->
+
+        <script src="../js/public.js"></script>
+        <script>
+            onload = function(){
+                onload_functions();
+            }
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+
+            
+                <h1>でゆ描き - 説明書</h1>
+            
+                <h2>概要</h2>
+                <p><a href="./deyukaki.html" target="_blank">でゆ描き</a>(#deyukaki)はJUN汁ｗがベッドで寝っ転がりながら絵を描いたり、作業に飽きて落書きをするときに使うカスのペイントツールです。</p>
+        
+                <h2>ツールの使い方</h2>
+                <ul>
+                    <li>
+                        <img src="../images/omocha/deyukaki/pen16.png" class="img">ペンツール：太さはスライダーとかで調整。アンチエイリアスはない。というか無効化した。
+                    </li>
+                    <li>
+                        <img src="../images/omocha/deyukaki/baketu16.png" class="img">バケツツール：アンチエイリアスがない前提なので完全一致の範囲だけ塗る。レイヤー1を塗るときは、レイヤー0が透明なときだけ塗る。
+                    </li>
+                    <li>
+                        <img src="../images/omocha/deyukaki/supoito16.png" class="img">スポイトツール：スマホで操作してるときは、長押しすると使いやすい。指を離した点の色をとるので、ガイド見よう。ちなみにマウスなら右クリックするとこれになる。
+                    </li>
+                </ul>
+                <h2>レイヤー機能</h2>
+                <p>レイヤー機能が一応あり、色選択するとそのレイヤーになる。</p>
+                <ul>
+                    <li><img src="../images/omocha/deyukaki/layer16_0.png" class="img">レイヤー0：上。一番左の色は消しゴムとして透明色になってる。</li>
+                    <li><img src="../images/omocha/deyukaki/layer16_1.png" class="img">レイヤー1：下。一番左の色を背景色とするとよいかも。</li>
+                </ul>
+        
+                <h2>保存、コピー、その他</h2>
+                <ul>
+                    <li>保存、コピー、まき戻しとか：みたまんま</li>
+                    <li>左色で埋める：レイヤー0とレイヤー1を一番左の色で塗る…つまり初期化ボタンです。背景色変えたときはこれ使うといいかも。</li>
+                </ul>
+        
+                <h2>ショートカットキー</h2>
+                <ul>
+                    <li>Ctrl + Z：まき戻し（Undo）</li>
+                    <li>Ctrl + Y：やり直し（Redo）</li>
+                    <li>E：消しゴム色を選択。もう一回押すと元の色に戻る。</li>
+                    <li>数字キー：色を切り替え。消しゴムを1として、そこから右に2,3。レイヤーをまたいで4,5,6が割り振られる。たぶん。</li>
+                </ul>
+                <h2>スマホ操作</h2>
+                <ul>
+                    <li>2本指移動：画面スクロールと、画面拡大</li>
+                    <li>2本指タップ：まき戻し（Undo）</li>
+                    <li>3本指タップ：やり直し（Redo）</li>
+                </ul>
+                <h2>注意事項</h2>
+                <p>ブラウザを閉じると、描画内容は保存されません。いや、保存しろよって感じなんですけど、実装まだしてない。</p>
+        
+                <h2>お問い合わせ</h2>
+                <p>不具合やご意見がありましたら、githubのアレで投げるのがたぶん一番いいです。Twitterとかでリプもらってもどっかいくので。</p>
+                <P>あとソースコード見るとなんか実装予定の機能とか既知のバグのメモがあったりする。そんなもんを見えるところに記載するなってね！</P>
+
+                <h2>左下にあるボタン</h2>
+                <p>このサイトはどのページも左下にツイートボタンがあるんですが、でゆ描きではここの仕様をいじって、ハッシュタグ #deyukaki だけを入力するようにしてます。何か描いたらここから投稿してねー☆</p>
+                <a href="https://twitter.com/hashtag/deyukaki?f=live" target="_blank">#deyukaki の検索結果を見る</a>
+            <footer>
+                <ul id="footul">
+                    <li id="foot_tweet_li">
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
