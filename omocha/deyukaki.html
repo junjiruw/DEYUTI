@@ -65,7 +65,7 @@
                 z-index: 1; /* 邪魔なので一番奥に。*/
             }
 
-            canvas {
+            .描画用 {
                 position: absolute;
                 transform-origin: top left; /* 拡大縮小の基準点を左上に設定 */
                 top:0;
@@ -138,7 +138,7 @@
             }
             .色箱_cover{
                 position: absolute;
-                pointer-events: none; /* クリックイベントを無効化 */
+                /*pointer-events: none; /* クリックイベントを無効化 してたのを無効化！！！！！*/
                 cursor: pointer;
                 top: 0;
                 left: 0;
@@ -219,6 +219,127 @@
                 z-index: 5; /* canvasよりは、高い値を指定して上に表示 */
             }
 
+            #カラーピッカー{
+                position : absolute;
+                top: 0;
+                left: 0;
+                width: 30%;
+                height: 50%;
+                background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒 */
+                border: 2px solid #ffffff;
+                z-index: 100;/*とにかく上へ*/
+                display : none;
+
+                flex-direction: column; /*縦に*/
+                align-items: center; /*左右中央に*/
+                justify-content: center;/*上下中央に*/
+            }
+
+            #カラピカ上段{
+                position: relative;
+                display: flex;
+                width: 95%;
+                height: 80%;
+            }
+
+            #今の色{
+                display : flex;
+                flex-direction: column; /*縦に*/
+                align-items: center; /*左右中央に*/
+                justify-content: space-evenly;/*余白をいい感じにする。*/
+                width: 15%;
+                height: 100%;
+            }
+
+            #今の色表示{
+                width: 80%;
+                aspect-ratio: 1 / 1; /* 幅 = 高さ */
+                border: 2px solid #ffffff;
+            }
+
+            #色参照スポイト{
+                width: 60%;
+                aspect-ratio: 1 / 1; /* 幅 = 高さ */
+                border: 2px solid #ffffff;
+                background-image: url("../images/omocha/deyukaki/supoito16.png");
+                
+                background-size: cover; /* 画像をボタン全体にフィットさせる */
+                background-repeat: no-repeat; /* 画像を繰り返さない */
+                cursor: pointer; /* マウスカーソルをポインターに変更 */
+                image-rendering: pixelated; /* ピクセルを強調してぼやけを防ぐ */
+            }
+
+            .色選択ボタン{
+                width: 3em;
+                padding: 0px;
+                background-color: rgb(255, 255, 255);
+            }
+
+            .色選択ボタン:hover {
+                filter: brightness(0.8);
+            }
+
+            .色選択ボタン:active {
+                filter: brightness(0.6);
+            }
+
+            #採用ボタン{
+                background-color: rgb(255, 202, 202);
+            }
+
+            #破棄ボタン{
+                background-color: rgb(200, 235, 255);
+            }
+
+
+            #彩度選択div{
+                position:relative;
+                height: 70%;
+                width: 95%;
+                margin : 0.3em
+            }
+
+            #彩度選択{
+                height: 100%;
+                width: 100%;
+                border: #FFF 2px solid;
+            }
+
+            #色相選択div{
+                position:relative;
+                height: 5%;
+                width: 85%;
+                margin: 0.3em;
+
+            }
+
+            #色相選択{
+                height: 100%;
+                width: 100%;
+                border: #FFF 3px solid;
+            }
+
+            .色選択ガイド{
+                position : absolute;
+                top: 0;
+                left: 0;
+                border-radius: 50%;
+                border: 3px solid #ffffff;
+                
+                aspect-ratio: 1 / 1; /* 幅 = 高さ */
+                pointer-events: none; /* マウスイベントを無効化 */
+            }
+
+            #今の彩度{
+                height: 5%;
+                transform: translateX(-50%) translateY(-50%);
+            }
+
+            #今の色相{
+                height: 100%;
+                transform: translateX(-50%);
+            }
+
             /* 横幅が40em未満の場合 */
             @media (max-width: 40em) {
                 #右分割 {
@@ -242,9 +363,31 @@
                     width: 10em;
                 }
                 #マウス追従{
-                width: 5em;
-                height: 5em;
-            }
+                    width: 5em;
+                    height: 5em;
+                }
+                #カラーピッカー{
+                    width: 60%;
+                }
+                #カラピカ上段{
+                    /*縦にならべるね*/
+                    flex-direction: column; /*縦に*/
+                    width: 100%;
+                    height: 70%;
+                }
+                #今の色{
+                    /*こっちは横に*/
+                    flex-direction: row; 
+                    width: 100%;
+                    height: 20%;
+                }
+                #今の色表示{
+                    height: 100%;
+                    width:auto;
+                }
+                #色参照スポイト{
+                    width:2em;
+                }
             }
 
         </style>
@@ -265,12 +408,10 @@
             作りたい機能リスト
             ・色置き換え
             ・プレビュー表示
-            ・色選択をデフォルトのやつじゃなくて自作
             ・移動とか拡大縮小
             ・ブラウザ閉じてもいくらか覚えておく
             ・alert()のOK押さなくていいバージョンがあると、きもちいいよね。
             ・移動時のチョン押し暴発さ、暴発を防ぐんじゃなくて、暴発を巻き戻す方針のほうがいいんじゃない？
-            ・説明書って必要じゃないんですか？！？！！？？
 
             多すぎ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
             */
@@ -364,6 +505,7 @@
                 
                 var 現在の色={r:0,g:0,b:0,a:255,layer:0,num:1,rgb:"#000000"};
                 var 最後の色=JSON.parse(JSON.stringify(現在の色));//参照切りしながら渡す
+                var 変更する色={layer:0,num:0}
 
                 function 色選択関数を適用(親要素名称){
                     var 親要素 = document.getElementById(親要素名称);
@@ -378,6 +520,15 @@
                         親要素.querySelector(".色箱_cover").style.backgroundColor = this.value; // 色を適用
                         選択色変更(this.value,親要素名称);
                         radio要素.checked = true; 
+                    });
+                    親要素.querySelector(".色箱_cover").addEventListener("click", function () {
+                        //自作カラーピッカーを表示したいと思いませんか？
+                        カラーピッカー.style.display = "flex";
+                        変更する色.layer = parseInt(親要素名称.split("_")[1], 10);
+                        変更する色.num = parseInt(親要素名称.split("_")[2], 10);
+
+                        色参照の色更新(parseInt(input要素.value.slice(1, 3), 16),parseInt(input要素.value.slice(3, 5), 16),parseInt(input要素.value.slice(5, 7), 16),input要素.value);
+                        
                     });
                     //ついでに背景色を初期化しておくか
                     親要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
@@ -415,6 +566,7 @@
                 色選択関数を適用("color_1_2");
                 
                 var 現在のツール="pen";
+                var 優先ツール="";
                 function ペン選択関数を適用(親要素名称){
                     var 親要素 = document.getElementById(親要素名称);
                     var radio要素 = 親要素.querySelector(".tool_radio");
@@ -422,9 +574,11 @@
                     radio要素.addEventListener("change", function (e) {
                         if(e.target.checked) {
                             現在のツール=親要素名称;
-                            真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+親要素名称+"16.png),default"; // カスタムカーソルを適用
-                            var マウス追従 = document.getElementById("マウス追従");
-                            マウス追従.style.display = "none"; // マウス追従を非表示…なくてもいいけどね
+                            if(優先ツール==""){
+                                真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+親要素名称+"16.png),default"; // カスタムカーソルを適用
+                                var マウス追従 = document.getElementById("マウス追従");
+                                マウス追従.style.display = "none"; // マウス追従を非表示…なくてもいいけどね
+                            }
                         }
                     });
                     
@@ -847,7 +1001,7 @@
                     
                     マウス追従.style.display = "block"; // マウス追従を表示
 
-                    //色縫っていく
+                    //色もっていく
                     var そこの色 = ctx_0.getImageData(canv_x, canv_y, 1, 1).data;
                     //透明だったら
                     if(そこの色[3]==0){
@@ -856,6 +1010,43 @@
                     var 色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
                     マウス追従.style.backgroundColor = 色文字列; // 色を適用
                     
+                }
+
+                function 色参照スポイトの色表示(x,y){
+
+                    var canv_x, canv_y;
+                    var キャンバス位置 = canvas_0.getBoundingClientRect();
+                    canv_x = Math.floor((x - キャンバス位置.left )/キャンバス拡大率);
+                    canv_y = Math.floor((y - キャンバス位置.top )/キャンバス拡大率);
+                    
+
+                    //色もっていく
+                    var そこの色 = ctx_0.getImageData(canv_x, canv_y, 1, 1).data;
+                    //透明だったら
+                    if(そこの色[3]==0){
+                        そこの色=ctx_1.getImageData(canv_x, canv_y, 1, 1).data;
+                    }
+                    選択色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
+                    //ここから色々やる
+                    色参照の色更新(そこの色[0],そこの色[1],そこの色[2],選択色文字列);
+                }
+
+                function 色参照の色更新(r,g,b,rgb){
+                    [選択された色相,選択された彩度,選択された明度]= rgbからhsv(r,g,b);
+
+                    var キャンバスでかさ_色相 = 色相バー.getBoundingClientRect();
+                    var キャンバスでかさ_彩度 = 彩度表示.getBoundingClientRect();
+                    var CSSでかさ_色相=getComputedStyle(色相バー);
+                    var CSSでかさ_彩度=getComputedStyle(彩度表示);
+                    var [r, g, b] = hsvからRgb(選択された色相, 1, 1);//色相以外無視した色作る
+                    var 選択色文字列_色相= "#"+[r, g, b].map(n => n.toString(16).padStart(2, '0')).join('');//各要素に対して、16進数にしたあとに2桁未満なら0を付けて、文字列結合する
+                    今の色相.style.backgroundColor=選択色文字列_色相;
+                    今の色相.style.left = 選択された色相*(キャンバスでかさ_色相.width-parseFloat(CSSでかさ_色相.borderLeftWidth)*2)+"px";//あってんの？まあいいけど
+                    彩度エリアの表示(選択された色相);
+                    今の彩度.style.backgroundColor=rgb;
+                    今の色表示.style.backgroundColor=rgb;
+                    今の彩度.style.top = (1-選択された明度)*(キャンバスでかさ_彩度.height-parseFloat(CSSでかさ_彩度.borderBottomWidth)*2)+"px";
+                    今の彩度.style.left = 選択された彩度*(キャンバスでかさ_彩度.width-parseFloat(CSSでかさ_彩度.borderLeftWidth)*2)+"px";
                 }
 
                 function スポイト端っこ表示(e){
@@ -946,6 +1137,18 @@
                     radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
                     自動ツール選択("pen");
                 }
+
+                function 色参照スポイト反映(e){
+                    if (e.touches) {//これ指じゃね？
+                        色参照スポイトの色表示(e.touches[0].clientX, e.touches[0].clientY);
+                    } else {//マウスだわ
+                        色参照スポイトの色表示(e.clientX, e.clientY);
+                    }
+                    優先ツール="";
+                    真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+現在のツール+"16.png),default"; // カスタムカーソルを適用
+                    //以上！…ほんとに？
+                }
+
                 function スポイト非表示(){
                     var マウス追従 = document.getElementById("マウス追従");
                     マウス追従.style.display = "none"; // マウス追従を非表示
@@ -968,17 +1171,24 @@
                     if (e.pointerType==="touch"){
                         return;
                     }
+
+                    // スクロールバー上でのクリックを無視
+                    if (e.clientX > 真ん中分割.clientWidth+真ん中分割.getBoundingClientRect().left || e.clientY > 真ん中分割.clientHeight+真ん中分割.getBoundingClientRect().top) {
+                        return;
+                    }
+                    真ん中分割.setPointerCapture(e.pointerId);//ポインターを追跡する。どっか行ってもキャンセルを監視できる
+                    
+                    if(優先ツール==="色参照スポイト"){
+                        return;
+                    }
+
                     // 右クリックはスポイト
                     if (e.button === 2) {
                         自動ツール選択("supoito");
                         スポイトの色表示(e.x, e.y);
                         return;
                     }
-                    // スクロールバー上でのクリックを無視
-                    if (e.clientX > 真ん中分割.clientWidth+真ん中分割.getBoundingClientRect().left || e.clientY > 真ん中分割.clientHeight+真ん中分割.getBoundingClientRect().top) {
-                        return;
-                    }
-                    真ん中分割.setPointerCapture(e.pointerId);//ポインターを追跡する。どっか行ってもキャンセルを監視できる
+
                     if(現在のツール==="pen"){
                         描き始め(e);
                     }else if(現在のツール==="baketu"){
@@ -992,6 +1202,11 @@
                     if (e.pointerType==="touch"){
                         return;
                     }
+
+                    if(優先ツール==="色参照スポイト"){
+                        return;
+                    }
+
                     if(現在のツール==="pen"){
                         描き途中(e);
                     }else if(現在のツール==="baketu"){
@@ -1008,6 +1223,12 @@
                     if (e.pointerType==="touch"){
                         return;
                     }
+
+                    if(優先ツール==="色参照スポイト"){
+                        色参照スポイトの色表示(e.x, e.y);
+                        return;
+                    }
+
                     if(現在のツール==="pen"){
 
                     }else if(現在のツール==="baketu"){
@@ -1022,6 +1243,11 @@
                     if (e.pointerType==="touch"){
                         return;
                     }
+
+                    if(優先ツール==="色参照スポイト"){
+                        return;
+                    }
+
                     if(現在のツール==="pen"){
                     }else if(現在のツール==="baketu"){
 
@@ -1035,6 +1261,12 @@
                     if (e.pointerType==="touch"){
                         return;
                     }
+
+                    if(優先ツール==="色参照スポイト"){
+                        色参照スポイト反映(e);
+                        return;
+                    }
+
                     if(現在のツール==="pen"){
                         描き終わり();
                     }else if(現在のツール==="baketu"){
@@ -1049,6 +1281,11 @@
                     if (e.pointerType==="touch"){
                         return;
                     }
+
+                    if(優先ツール==="色参照スポイト"){
+                        return;
+                    }
+
                     if(現在のツール==="pen"){
                         描き終わり();
                     }else if(現在のツール==="baketu"){
@@ -1107,6 +1344,10 @@
                         // 指が4本以上の場合は反応しない
                     }else{
                         e.preventDefault();
+                        if(優先ツール==="色参照スポイト"){
+                            スポイト追従座標=e;
+                            return;
+                        }
                         if(現在のツール==="pen"){
                             描き始め(e);
                         }else if(現在のツール==="baketu"){
@@ -1160,9 +1401,15 @@
                         // 指が4本以上の場合は反応しない
                     }else{
                         e.preventDefault();//画面スクロールとか無効にしちゃうよ～ん
+                        
+                        if(優先ツール==="色参照スポイト"){
+                            スポイト追従座標=e;
+                            色参照スポイトの色表示(e.touches[0].clientX, e.touches[0].clientY);
+                            return;
+                        }
+
                         if(現在のツール==="pen"){
                             描き途中(e);
-                            
                         }else if(現在のツール==="baketu"){
                             //判定はこの関数の上のほうでやってるので。
                         }else if(現在のツール==="supoito"){
@@ -1174,18 +1421,25 @@
 
                 真ん中分割.addEventListener("touchend", function(e) {
                     e.preventDefault();//画面スクロールとか無効にしちゃうよ～ん
-                    if(現在のツール==="pen"){
-                        描き終わり();
-                    }else if(現在のツール==="baketu"){
-                        if(スマホチョン押し保存){
-                            バケツ(スマホチョン押し保存);
-                            スマホチョン押し保存=null;
-                        }
-                    }else if(現在のツール==="supoito"){
+
+                    if(優先ツール==="色参照スポイト"){
                         if(スポイト追従座標){
-                            スポイト反映(スポイト追従座標);
+                            色参照スポイト反映(スポイト追従座標);
                         }
-                        
+                    }else{
+                        if(現在のツール==="pen"){
+                            描き終わり();
+                        }else if(現在のツール==="baketu"){
+                            if(スマホチョン押し保存){
+                                バケツ(スマホチョン押し保存);
+                                スマホチョン押し保存=null;
+                            }
+                        }else if(現在のツール==="supoito"){
+                            if(スポイト追従座標){
+                                スポイト反映(スポイト追従座標);
+                            }
+                            
+                        }
                     }
                     
 
@@ -1295,6 +1549,219 @@
                     キャンバスを白で塗りつぶす();
                     履歴残し();
                     
+                });
+
+                //ここからはカラーピッカーの実装ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+
+                function hsvからRgb(h, s, v) {//引数は0~1
+                    let r, g, b;
+                    const i = Math.floor(h * 6);//角度から、rgbのどの領域なのかを選択
+                    const f = h * 6 - i;
+                    const p = v * (1 - s);
+                    const q = v * (1 - f * s);
+                    const t = v * (1 - (1 - f) * s);
+
+                    switch (i % 6) {
+                        case 0: r = v; g = t; b = p; break;
+                        case 1: r = q; g = v; b = p; break;
+                        case 2: r = p; g = v; b = t; break;
+                        case 3: r = p; g = q; b = v; break;
+                        case 4: r = t; g = p; b = v; break;
+                        case 5: r = v; g = p; b = q; break;
+                    }
+                    return [
+                        Math.round(r * 255),
+                        Math.round(g * 255),
+                        Math.round(b * 255)
+                    ];
+                }
+
+                function rgbからhsv(r,g,b){
+                    r /= 255;
+                    g /= 255;
+                    b /= 255;
+                    const max = Math.max(r, g, b);
+                    const min = Math.min(r, g, b);
+                    let h, s, v = max;
+
+                    const d = max - min;
+                    s = max === 0 ? 0 : d / max;//最大値が0の場合は黒色なので彩度の計算ができないのをカバー
+
+                    if (max === min) {
+                        h = 0; // achromatic
+                    } else {
+                        switch (max) {
+                            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                            case g: h = (b - r) / d + 2; break;
+                            case b: h = (r - g) / d + 4; break;
+                        }
+                        h /= 6;
+                    }
+                    return [h,s,v];
+                }
+
+                var 今の色表示=document.getElementById("今の色表示");
+
+                var 色相バー=document.getElementById("色相選択");
+                var 色相選択=色相バー.getContext("2d");
+                var 色相選択の画像データ = 色相選択.createImageData(360, 1);
+                var 今の色相=document.getElementById("今の色相");
+                
+                var 彩度表示 = document.getElementById("彩度選択");
+                var 彩度選択 = 彩度表示.getContext("2d");
+                var 彩度選択の画像データ = 彩度選択.createImageData(256, 256);
+                var 今の彩度=document.getElementById("今の彩度");
+
+                var 色参照スポイト=document.getElementById("色参照スポイト");
+                var 採用ボタン=document.getElementById("採用ボタン");
+                var 破棄ボタン=document.getElementById("破棄ボタン");
+
+                var 選択色文字列="#000000";
+                var 選択された色相 = 0;
+                var 選択された彩度 = 0;
+                var 選択された明度 = 0;
+
+                for (let i = 0; i < 360; i++) {
+                    var [r, g, b] = hsvからRgb(i / 360, 1,1);
+                    色相選択の画像データ.data[i*4] = r;
+                    色相選択の画像データ.data[i*4 + 1] = g;
+                    色相選択の画像データ.data[i*4 + 2] = b;
+                    色相選択の画像データ.data[i*4 + 3] = 255;
+                }
+                色相選択.putImageData(色相選択の画像データ, 0, 0);
+
+
+
+                function 彩度エリアの表示(角度) {
+                    for (let y = 0; y < 256; y++) {
+                        for (let x = 0; x < 256; x++) {
+                            const s = x / 255;
+                            const v = 1 - y / 255;
+                            const [r, g, b] = hsvからRgb(角度, s, v);
+                            const index = (y * 256 + x) * 4;
+                            彩度選択の画像データ.data[index] = r;
+                            彩度選択の画像データ.data[index + 1] = g;
+                            彩度選択の画像データ.data[index + 2] = b;
+                            彩度選択の画像データ.data[index + 3] = 255;
+                        }
+                    }
+                    彩度選択.putImageData(彩度選択の画像データ, 0, 0);
+                    今の彩度.style.backgroundColor=選択色文字列;
+                    今の色表示.style.backgroundColor=選択色文字列;
+                    
+                }
+                彩度エリアの表示(0);
+
+                
+
+                function 色相変更(e){
+                    if(isNaN(e.offsetX)){//NaNだったら拒否
+                        return;
+                    }
+                    var キャンバスでかさ = 色相バー.getBoundingClientRect();
+                    var CSSでかさ=getComputedStyle(色相バー);
+                    //borderがクリック範囲に入ってやがるので計算で消す。
+                    選択された色相 = Math.floor(e.offsetX/(キャンバスでかさ.width-parseFloat(CSSでかさ.borderLeftWidth)*2)*360);
+                    選択された色相 =Math.min(Math.max(選択された色相 , 0), 359)/360;
+                    var [r, g, b] = hsvからRgb(選択された色相, 1, 1);
+                    var 選択色文字列_色相= "#"+[r, g, b].map(n => n.toString(16).padStart(2, '0')).join('');//各要素に対して、16進数にしたあとに2桁未満なら0を付けて、文字列結合する
+                    今の色相.style.backgroundColor=選択色文字列_色相;
+                    今の色相.style.left = 選択された色相*(キャンバスでかさ.width-parseFloat(CSSでかさ.borderLeftWidth)*2)+"px";//あってんの？まあいいけど
+
+                    [r, g, b] = hsvからRgb(選択された色相, 選択された彩度, 選択された明度);
+                    選択色文字列 = "#"+[r, g, b].map(n => n.toString(16).padStart(2, '0')).join('');//各要素に対して、16進数にしたあとに2桁未満なら0を付けて、文字列結合する
+                    彩度エリアの表示(選択された色相);
+                    
+                }
+                function 彩度変更(e){
+                    if(isNaN(e.offsetX) || isNaN(e.offsetY)){//NaNだったら拒否
+                        return;
+                    }
+                    var キャンバスでかさ = 彩度表示.getBoundingClientRect();
+                    var CSSでかさ=getComputedStyle(彩度表示);
+                    var x = Math.floor(e.offsetX/(キャンバスでかさ.width-parseFloat(CSSでかさ.borderLeftWidth)*2)*256);
+                    var y = Math.floor(e.offsetY/(キャンバスでかさ.height-parseFloat(CSSでかさ.borderBottomWidth)*2)*256);
+                    x=Math.min(Math.max(x , 0), 255);
+                    y=Math.min(Math.max(y , 0), 255);
+                    選択された彩度 = x / 255;
+                    選択された明度 = 1 - y / 255;
+                    var [r, g, b] = hsvからRgb(選択された色相, 選択された彩度, 選択された明度);
+                    選択色文字列 = "#"+[r, g, b].map(n => n.toString(16).padStart(2, '0')).join('');//各要素に対して、16進数にしたあとに2桁未満なら0を付けて、文字列結合する
+                    今の彩度.style.backgroundColor=選択色文字列;
+                    今の色表示.style.backgroundColor=選択色文字列;
+                    今の彩度.style.top = (1-選択された明度)*(キャンバスでかさ.height-parseFloat(CSSでかさ.borderBottomWidth)*2)+"px";
+                    今の彩度.style.left = 選択された彩度*(キャンバスでかさ.width-parseFloat(CSSでかさ.borderLeftWidth)*2)+"px";
+                }
+
+                色参照スポイト.addEventListener("click",function(){
+                    優先ツール="色参照スポイト";
+                    真ん中分割.style.cursor = "url(../images/omocha/deyukaki/supoito16.png),default"; // カスタムカーソルを適用
+                })
+
+                採用ボタン.addEventListener("click",function(){
+                    カラーピッカー.style.display="none";
+                    優先ツール="";
+                    真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+現在のツール+"16.png),default"; // カスタムカーソルを適用
+                    //作成した色に、変更する
+                    選択色変更(選択色文字列, "color_" + 変更する色.layer + "_" + 変更する色.num);
+                    //表示も合わせる
+                    var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
+                    radio_div要素.querySelector(".radio").checked = true;
+                    var input要素 = radio_div要素.querySelector(".色箱_input");
+                    input要素.value =選択色文字列;
+                    radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+                    
+                })
+
+                破棄ボタン.addEventListener("click",function(){
+                    カラーピッカー.style.display="none";
+                    優先ツール="";
+                    真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+現在のツール+"16.png),default"; // カスタムカーソルを適用
+                })
+
+                var カラーピッカー = document.getElementById("カラーピッカー");
+                var クリックされたよ=false;
+                カラーピッカー.addEventListener("pointerdown", function(e){
+                    e.preventDefault();
+                    クリックされたよ=true;
+                });
+                カラーピッカー.addEventListener("pointerup", function(e){
+                    e.preventDefault();
+                    クリックされたよ=false;
+                });
+                カラーピッカー.addEventListener("pointerleave", function(e){
+                    e.preventDefault();
+                    クリックされたよ=false;
+                });
+                
+                色相バー.addEventListener("pointerdown", function(e){
+                    e.preventDefault();
+                    色相変更(e);   
+                });
+                色相バー.addEventListener("pointermove", function(e){
+                    e.preventDefault();
+                    if(クリックされたよ){
+                        色相変更(e);
+                    }
+                });
+                色相バー.addEventListener("touchmove", function(e) {
+                    e.preventDefault();
+                    色相変更(e);
+                });
+
+                彩度表示.addEventListener("pointerdown", function(e){
+                    e.preventDefault();
+                    彩度変更(e);   
+                });
+                彩度表示.addEventListener("pointermove", function(e){
+                    e.preventDefault();
+                    if(クリックされたよ){
+                        彩度変更(e);
+                    }
+                });
+                彩度表示.addEventListener("touchmove", function(e) {
+                    e.preventDefault();
+                    彩度変更(e);
                 });
 
                 //ページ下部のツイートボタンを上書き
@@ -1409,9 +1876,9 @@
 
                 <div id="真ん中分割">
                     <div id="スクロールサイズ調整">    
-                        <canvas id="cnvs_1" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                        <canvas id="cnvs_1" class="描画用" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                         </canvas>      
-                        <canvas id="cnvs_0" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
+                        <canvas id="cnvs_0" class="描画用" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                         </canvas>          
                               
                     </div>
@@ -1430,7 +1897,28 @@
                     </div>
 
                 </div>
+
+                <div id="カラーピッカー">
+                    <div id="カラピカ上段">
+                        <div id="今の色">
+                            <div id="今の色表示"></div>
+                            <input id="色参照スポイト" class="色選択ボタン">
+                            <input id="採用ボタン" type="button" value="採用" class="色選択ボタン">
+                            <input id="破棄ボタン" type="button" value="破棄" class="色選択ボタン">
+                        </div>
+                        <div id="彩度選択div">
+                            <canvas id="彩度選択" width="256px" height="256px"></canvas>
+                            <div id="今の彩度" class="色選択ガイド"></div>
+                        </div>
+                    </div>
+                    <div id="色相選択div">
+                        <canvas id="色相選択" width="360px" height="1px"></canvas>
+                        <div id="今の色相" class="色選択ガイド"></div>
+                    </div>
+                </div>
             </div>
+
+
 
             <footer>
                 <ul id="footul">
