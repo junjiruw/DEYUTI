@@ -161,7 +161,7 @@
                 height: 1em;
             }
             #slider太さ{
-                width: 8em;
+                width: 10em;
             }
             #ツール選択 input{
                 display: none; /* デフォルトのラジオボタンを非表示 */
@@ -194,6 +194,10 @@
                 background-image: url("../images/omocha/deyukaki/supoito16.png");
             }
 
+            #スワップ_ボタン {
+                background-image: url("../images/omocha/deyukaki/swap16.png");
+                filter: brightness(80%) saturate(100%); /* 色味調整 */
+            }
 
 
             .保存系ボタン{
@@ -269,6 +273,10 @@
                 image-rendering: pixelated; /* ピクセルを強調してぼやけを防ぐ */
             }
 
+            .色参照スポイト_clicked{
+                background-color: #007bff !important;
+            }
+
             .色選択ボタン{
                 width: 3em;
                 padding: 0px;
@@ -283,11 +291,11 @@
                 filter: brightness(0.6);
             }
 
-            #採用ボタン{
+            .採用ボタン{
                 background-color: rgb(255, 202, 202);
             }
 
-            #破棄ボタン{
+            .破棄ボタン{
                 background-color: rgb(200, 235, 255);
             }
 
@@ -340,6 +348,40 @@
                 transform: translateX(-50%);
             }
 
+            
+            #スワップメニュー{
+                position : absolute;
+                top: 0;
+                left: 0;
+                width: 20em;
+                height: 30%;
+                background-color: rgba(0, 0, 0, 0.7); /* 半透明の黒 */
+                border: 2px solid #ffffff;
+                z-index: 90;/*それなりに上へ*/
+                display : none;
+
+                flex-direction: column; /*縦に*/
+                align-items: center; /*左右中央に*/
+                justify-content: center;/*上下中央に*/
+            }
+            #スワメニュ上段{
+                width: 15em;
+                display : flex;
+                align-items: center; /*左右中央に*/
+                justify-content: center;/*上下中央に*/
+                text-align: center;
+                margin: 1em;
+            }
+            #スワメニュ上段 div{
+                flex: 1; /* 幅を均等に */
+            }
+            #スワメニュ下段{
+                display : flex;
+                justify-content: space-evenly;
+                width: 50%;
+            }
+
+
             /* 横幅が40em未満の場合 */
             @media (max-width: 40em) {
                 #右分割 {
@@ -358,9 +400,6 @@
                 #太さ{
                 width: 3em;
                 height: 1.5em;
-                }
-                #slider太さ{
-                    width: 10em;
                 }
                 #マウス追従{
                     width: 5em;
@@ -406,7 +445,6 @@
         <script>
             /*
             作りたい機能リスト
-            ・色置き換え
             ・プレビュー表示
             ・移動とか拡大縮小
             ・ブラウザ閉じてもいくらか覚えておく
@@ -509,22 +547,31 @@
 
                 function 色選択関数を適用(親要素名称){
                     var 親要素 = document.getElementById(親要素名称);
-                    var radio要素 = 親要素.querySelector(".radio");
-                    radio要素.addEventListener("change", function (e) {
-                        if(e.target.checked) {
-                            選択色変更(input要素.value,親要素名称);
-                        }
-                    });
+                    var これ数字レイヤーか=!isNaN(親要素名称.split("_")[1]);
+                    if(これ数字レイヤーか){
+                        var radio要素 = 親要素.querySelector(".radio");
+                        radio要素.addEventListener("change", function (e) {
+                            if(e.target.checked) {
+                                選択色変更(input要素.value,親要素名称);
+                            }
+                        });
+                    }
                     var input要素 = 親要素.querySelector(".色箱_input");
                     input要素.addEventListener("input", function () {
                         親要素.querySelector(".色箱_cover").style.backgroundColor = this.value; // 色を適用
-                        選択色変更(this.value,親要素名称);
-                        radio要素.checked = true; 
+                        if(これ数字レイヤーか){
+                            選択色変更(this.value,親要素名称);
+                            radio要素.checked = true; 
+                        }
                     });
                     親要素.querySelector(".色箱_cover").addEventListener("click", function () {
                         //自作カラーピッカーを表示したいと思いませんか？
                         カラーピッカー.style.display = "flex";
-                        変更する色.layer = parseInt(親要素名称.split("_")[1], 10);
+                        if(これ数字レイヤーか){
+                            変更する色.layer = parseInt(親要素名称.split("_")[1], 10);
+                        }else{
+                            変更する色.layer = 親要素名称.split("_")[1];
+                        }
                         変更する色.num = parseInt(親要素名称.split("_")[2], 10);
 
                         色参照の色更新(parseInt(input要素.value.slice(1, 3), 16),parseInt(input要素.value.slice(3, 5), 16),parseInt(input要素.value.slice(5, 7), 16),input要素.value);
@@ -597,6 +644,15 @@
                     var マウス追従 = document.getElementById("マウス追従");
                     マウス追従.style.display = "none"; // マウス追従を非表示…なくてもいいけどね
                 }
+
+                function 色スワップ表示(){
+                    スワップメニュー.style.display = "flex";
+                }
+                var スワップボタン = document.getElementById("スワップ_ボタン");
+                スワップボタン.addEventListener("click",色スワップ表示);
+                色選択関数を適用("color_swap_0");
+                色選択関数を適用("color_swap_1");
+
                 
                 function キャンバスを白で塗りつぶす() {
                     ctx_0.clearRect(0, 0, canvas_0.width, canvas_0.height); // 上のキャンバスはクリア
@@ -1148,7 +1204,8 @@
                     } else {//マウスだわ
                         色参照スポイトの色表示(e.clientX, e.clientY);
                     }
-                    優先ツール="";
+                    優先ツール="";                    
+                    色参照スポイト.classList.remove("色参照スポイト_clicked");
                     真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+現在のツール+"16.png),default"; // カスタムカーソルを適用
                     //以上！…ほんとに？
                 }
@@ -1617,8 +1674,8 @@
                 var 今の彩度=document.getElementById("今の彩度");
 
                 var 色参照スポイト=document.getElementById("色参照スポイト");
-                var 採用ボタン=document.getElementById("採用ボタン");
-                var 破棄ボタン=document.getElementById("破棄ボタン");
+                var 採用ボタン_color=document.getElementById("採用ボタン_color");
+                var 破棄ボタン_color=document.getElementById("破棄ボタン_color");
 
                 var 選択色文字列="#000000";
                 var 選択された色相 = 0;
@@ -1699,27 +1756,39 @@
 
                 色参照スポイト.addEventListener("click",function(){
                     優先ツール="色参照スポイト";
+                    色参照スポイト.classList.add("色参照スポイト_clicked");
                     真ん中分割.style.cursor = "url(../images/omocha/deyukaki/supoito16.png),default"; // カスタムカーソルを適用
                 })
 
-                採用ボタン.addEventListener("click",function(){
+                採用ボタン_color.addEventListener("click",function(){
                     カラーピッカー.style.display="none";
                     優先ツール="";
+                    色参照スポイト.classList.remove("色参照スポイト_clicked");
                     真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+現在のツール+"16.png),default"; // カスタムカーソルを適用
-                    //作成した色に、変更する
-                    選択色変更(選択色文字列, "color_" + 変更する色.layer + "_" + 変更する色.num);
-                    //表示も合わせる
-                    var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
-                    radio_div要素.querySelector(".radio").checked = true;
-                    var input要素 = radio_div要素.querySelector(".色箱_input");
-                    input要素.value =選択色文字列;
-                    radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+                    //数字に変換できるレイヤーなら通常色変更として処理
+                    if(!isNaN(変更する色.layer)){
+                        //作成した色に、変更する
+                        選択色変更(選択色文字列, "color_" + 変更する色.layer + "_" + 変更する色.num);
+                        //表示も合わせる
+                        var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
+                        radio_div要素.querySelector(".radio").checked = true;
+                        var input要素 = radio_div要素.querySelector(".色箱_input");
+                        input要素.value =選択色文字列;
+                        radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+                    }else{
+                        //まあ特殊な箱を選択してるんだろう
+                        var div要素 = document.getElementById("color_" + 変更する色.layer + "_" + 変更する色.num);
+                        var input要素 = div要素.querySelector(".色箱_input");
+                        input要素.value =選択色文字列;
+                        div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+                    }
                     
                 })
 
-                破棄ボタン.addEventListener("click",function(){
+                破棄ボタン_color.addEventListener("click",function(){
                     カラーピッカー.style.display="none";
-                    優先ツール="";
+                    優先ツール="";                    
+                    色参照スポイト.classList.remove("色参照スポイト_clicked");
                     真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+現在のツール+"16.png),default"; // カスタムカーソルを適用
                 })
 
@@ -1767,6 +1836,58 @@
                     e.preventDefault();
                     彩度変更(e);
                 });
+
+                //ここから色置換の実装ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+                var スワップメニュー=document.getElementById("スワップメニュー");
+                var 採用ボタン_swap=document.getElementById("採用ボタン_swap");
+                var 破棄ボタン_swap=document.getElementById("破棄ボタン_swap");
+
+                var 置換される色_input=document.getElementById("color_pick_swap_0");
+                var 置換する色_input=document.getElementById("color_pick_swap_1");
+
+                採用ボタン_swap.addEventListener("click",function(){
+                    スワップメニュー.style.display="none";              
+                    var 置換する色={
+                        r:parseInt(置換する色_input.value.slice(1,3),16),
+                        g:parseInt(置換する色_input.value.slice(3,5),16),
+                        b:parseInt(置換する色_input.value.slice(5,7),16)
+                    };
+                    var 置換される色={
+                        r:parseInt(置換される色_input.value.slice(1,3),16),
+                        g:parseInt(置換される色_input.value.slice(3,5),16),
+                        b:parseInt(置換される色_input.value.slice(5,7),16)
+                    };
+                    //canvas_0とcanvas_1の色を置換する
+                    var canvas_0_imgData = ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height);
+                    var canvas_1_imgData = ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height);
+                    var data_0 = canvas_0_imgData.data;
+                    var data_1 = canvas_1_imgData.data;
+                    for (var i = 0; i < data_0.length; i += 4) {
+                        //レイヤー0は透明だったら無視
+                        if (data_0[i + 3] != 0) {
+                            if (data_0[i] === 置換される色.r && data_0[i + 1] === 置換される色.g && data_0[i + 2] === 置換される色.b) {
+                                data_0[i] = 置換する色.r;
+                                data_0[i + 1] = 置換する色.g;
+                                data_0[i + 2] = 置換する色.b;
+                                
+                            }
+                        }
+                        if (data_1[i] === 置換される色.r && data_1[i + 1] === 置換される色.g && data_1[i + 2] === 置換される色.b) {
+                            data_1[i] = 置換する色.r;
+                            data_1[i + 1] = 置換する色.g;
+                            data_1[i + 2] = 置換する色.b;
+                        }
+                    }
+                    ctx_0.putImageData(canvas_0_imgData, 0, 0);
+                    ctx_1.putImageData(canvas_1_imgData, 0, 0);
+                    履歴残し();
+                    //このあと同じ色の色箱も色を変えようか考えたけど、まあそれが嫌な時もあるしいいかとしました。
+                })
+
+                破棄ボタン_swap.addEventListener("click",function(){
+                    スワップメニュー.style.display="none";
+                })
+
 
                 //ページ下部のツイートボタンを上書き
                 document.getElementById("foot_tweet_a").href=URL_tweet_text="https://twitter.com/intent/tweet?hashtags=deyukaki";           
@@ -1871,6 +1992,9 @@
                                     <span class="ペンボタン" id="スポイト_ボタン"></span>
                                 </label>
                             </div>
+                            <label id="swap">
+                                <span class="ペンボタン" id="スワップ_ボタン"></span>
+                            </label>
                         </div>
                     </div>
                     
@@ -1907,8 +2031,8 @@
                         <div id="今の色">
                             <div id="今の色表示"></div>
                             <input id="色参照スポイト" class="色選択ボタン">
-                            <input id="採用ボタン" type="button" value="採用" class="色選択ボタン">
-                            <input id="破棄ボタン" type="button" value="破棄" class="色選択ボタン">
+                            <input id="採用ボタン_color" type="button" value="採用" class="色選択ボタン 採用ボタン">
+                            <input id="破棄ボタン_color" type="button" value="破棄" class="色選択ボタン 破棄ボタン">
                         </div>
                         <div id="彩度選択div">
                             <canvas id="彩度選択" width="256px" height="256px"></canvas>
@@ -1920,6 +2044,38 @@
                         <div id="今の色相" class="色選択ガイド"></div>
                     </div>
                 </div>
+
+                <div id="スワップメニュー">
+                    <div id="スワメニュ上段">
+                        <div>
+                            変更する色
+                            <div class="radio_div" id="color_swap_0">
+                                <div class="色箱" id="color_div_swap_0">
+                                    <input class="色箱_input" type="color" id="color_pick_swap_0" value="#ff0000">
+                                    <div class="色箱_cover"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            →→→
+                        </div>
+                        <div>
+                            置換先
+                            <div class="radio_div" id="color_swap_1">
+                                <div class="色箱" id="color_div_swap_1">
+                                    <input class="色箱_input" type="color" id="color_pick_swap_1" value="#00ff00">
+                                    <div class="色箱_cover"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="スワメニュ下段">
+                        <input id="採用ボタン_swap" type="button" value="置換" class="色選択ボタン 採用ボタン">
+                        <input id="破棄ボタン_swap" type="button" value="破棄" class="色選択ボタン 破棄ボタン">
+                    </div>
+                </div>
+                
+
             </div>
 
 
