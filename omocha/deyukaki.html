@@ -1961,38 +1961,52 @@
                 async function 読み込み() {
                     const db = await IndexedDBを開くぞ();
 
-                    var transaction = db.transaction("canvasData", "readonly");
-                    var store = transaction.objectStore("canvasData");
+                    const canvasTransaction = db.transaction("canvasData", "readonly");
+                    const canvasStore = canvasTransaction.objectStore("canvasData");
 
-                    const canvas0Request = store.get("canvas_0");
-                    const canvas1Request = store.get("canvas_1");
+                    const canvas0Promise = new Promise((resolve) => {
+                        const canvas0Request = canvasStore.get("canvas_0");
+                        canvas0Request.onsuccess = function () {
+                            if (canvas0Request.result) {
+                                const img = new Image();
+                                img.onload = function () {
+                                    ctx_0.drawImage(img, 0, 0);
+                                    resolve(); // ロード完了を通知
+                                };
+                                img.src = canvas0Request.result.data;
+                            } else {
+                                resolve(); // データがなくても完了を通知
+                            }
+                        };
+                    });
 
-                    canvas0Request.onsuccess = function () {
-                        if (canvas0Request.result) {
-                            const img = new Image();
-                            img.onload = function () {
-                                ctx_0.drawImage(img, 0, 0);
-                            };
-                            img.src = canvas0Request.result.data;
-                        }
-                    };
+                    const canvas1Promise = new Promise((resolve) => {
+                        const canvas1Request = canvasStore.get("canvas_1");
+                        canvas1Request.onsuccess = function () {
+                            if (canvas1Request.result) {
+                                const img = new Image();
+                                img.onload = function () {
+                                    ctx_1.drawImage(img, 0, 0);
+                                    resolve(); // ロード完了を通知
+                                };
+                                img.src = canvas1Request.result.data;
+                            } else {
+                                resolve(); // データがなくても完了を通知
+                            }
+                        };
+                    });
 
-                    canvas1Request.onsuccess = function () {
-                        if (canvas1Request.result) {
-                            const img = new Image();
-                            img.onload = function () {
-                                ctx_1.drawImage(img, 0, 0);
-                            };
-                            img.src = canvas1Request.result.data;
-                        }
-                    };
+                    // 両方のキャンバスがロード完了したら履歴を残す
+                    await Promise.all([canvas0Promise, canvas1Promise]);
+                    履歴残し();
 
-                    transaction = db.transaction("colorData", "readonly");
-                    store = transaction.objectStore("colorData");
+
+                    const colorTransaction = db.transaction("colorData", "readonly");
+                    const colorStore = colorTransaction.objectStore("colorData");
 
                     const colorInputs = document.querySelectorAll(".色箱_input");
-                    colorInputs.forEach((input, index) => {
-                        const request = store.get(input.parentElement.parentElement.id);
+                    colorInputs.forEach((input) => {
+                        const request = colorStore.get(input.parentElement.parentElement.id);
                         request.onsuccess = function () {
                             if (request.result) {
                                 input.value = request.result.value;
