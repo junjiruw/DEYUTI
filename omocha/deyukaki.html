@@ -908,6 +908,7 @@
                     //マウス位置の色を取得
                     //レイヤー0が透明だったらレイヤー1を参照
                     if(ctx_0.getImageData(x, y, 1, 1).data[3]!=0){
+                        //透明じゃねえな
                         if(現在の色.layer==1){
                             //そこ、レイヤー0に色があるのでレイヤー1の色塗ろうとすると死にます。
                             return;
@@ -915,6 +916,9 @@
                         var 塗られる色 = ctx_0.getImageData(x, y, 1, 1).data;
                         var 参照レイヤー=0;
                     }else{    
+                        if(現在の色.a==0){//いや、お前も透明色じゃねえか
+                            return;
+                        }
                         var 塗られる色 = ctx_1.getImageData(x, y, 1, 1).data;
                         var 参照レイヤー=1;
                     }
