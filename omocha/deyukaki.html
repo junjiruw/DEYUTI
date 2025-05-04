@@ -1093,6 +1093,7 @@
 
                 function 色参照の色更新(r,g,b,rgb){
                     [選択された色相,選択された彩度,選択された明度]= rgbからhsv(r,g,b);
+                    選択色文字列=rgb;
 
                     var キャンバスでかさ_色相 = 色相バー.getBoundingClientRect();
                     var キャンバスでかさ_彩度 = 彩度表示.getBoundingClientRect();
