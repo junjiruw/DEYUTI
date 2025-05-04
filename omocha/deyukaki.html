@@ -447,7 +447,6 @@
             作りたい機能リスト
             ・プレビュー表示
             ・移動とか拡大縮小
-            ・ブラウザ閉じてもいくらか覚えておく
             ・alert()のOK押さなくていいバージョンがあると、きもちいいよね。
             ・移動時のチョン押し暴発さ、暴発を防ぐんじゃなくて、暴発を巻き戻す方針のほうがいいんじゃない？
 
@@ -563,6 +562,7 @@
                             選択色変更(this.value,親要素名称);
                             radio要素.checked = true; 
                         }
+                        色箱保存(親要素名称);
                     });
                     親要素.querySelector(".色箱_cover").addEventListener("click", function () {
                         //自作カラーピッカーを表示したいと思いませんか？
@@ -675,6 +675,9 @@
                     //次に履歴を残すために今を一時保存するやつ
                     一時保存用キャンバス_0=ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height);
                     一時保存用キャンバス_1=ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height);
+                    
+                    //ここで保存しておけばいいか？
+                    Canvas保存タイマー開始();
                 }
                 function 履歴残し(){
                     if(キャンバス比較(ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height).data,一時保存用キャンバス_0.data) &&
@@ -1198,8 +1201,8 @@
                     var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
                     var input要素 = radio_div要素.querySelector(".色箱_input");
                     input要素.value =色文字列;
+                    input要素.dispatchEvent(new Event("input"));//inputが変更されたことにすることができる
                     選択色変更(input要素.value,"color_" + 現在の色.layer + "_" + 現在の色.num);
-                    radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
                     自動ツール選択("pen");
                 }
 
@@ -1588,6 +1591,7 @@
                         }).catch(function(err) {
                             console.error("クリップボードへのコピーに失敗しました:", err);
                         });
+                        Canvas保存();
                     });
                 });
 
@@ -1608,6 +1612,7 @@
                         const seconds = String(date.getSeconds()).padStart(2, '0');
                         link.download = year+month+day+hours+minutes+seconds+"_deyukaki.png";//ファイル名決めてる
                         link.click();//強制クリック
+                        Canvas保存();
                     });
                 });
 
@@ -1779,13 +1784,13 @@
                         radio_div要素.querySelector(".radio").checked = true;
                         var input要素 = radio_div要素.querySelector(".色箱_input");
                         input要素.value =選択色文字列;
-                        radio_div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+                        input要素.dispatchEvent(new Event("input"));//inputが変更されたことにすることができる
                     }else{
                         //まあ特殊な箱を選択してるんだろう
                         var div要素 = document.getElementById("color_" + 変更する色.layer + "_" + 変更する色.num);
                         var input要素 = div要素.querySelector(".色箱_input");
                         input要素.value =選択色文字列;
-                        div要素.querySelector(".色箱_cover").style.backgroundColor = input要素.value;
+                        input要素.dispatchEvent(new Event("input"));//inputが変更されたことにすることができる
                     }
                     
                 })
@@ -1897,6 +1902,123 @@
                 //ページ下部のツイートボタンを上書き
                 document.getElementById("foot_tweet_a").href=URL_tweet_text="https://twitter.com/intent/tweet?hashtags=deyukaki";           
 
+
+                //canvasとか色箱を保存しようぜ！！！！！！！！！！！
+
+                function IndexedDBを開くぞ() {
+                    return new Promise((resolve, reject) => { //非同期で動くので、awaitできるようにしておく
+                        const request = indexedDB.open("DeyukakiDB", 1);//バージョン1で開く、もしくは生成
+                        
+                        request.onupgradeneeded = function (event) {
+                            const db = event.target.result;
+                            if (!db.objectStoreNames.contains("canvasData")) {
+                                db.createObjectStore("canvasData", { keyPath: "id" });//canvas
+                            }
+                            if (!db.objectStoreNames.contains("colorData")) {
+                                db.createObjectStore("colorData", { keyPath: "id" });//色箱
+                            }
+                        };
+                        request.onsuccess = function (event) {
+                            resolve(event.target.result); // データベースを返す
+                        };
+
+                        request.onerror = function (event) {
+                            resolve(event.target.result); // データベースを返す…失敗してるけどな！
+                        };
+                    });
+                }
+
+                async function Canvas保存() {
+                    const db = await IndexedDBを開くぞ();
+                    const transaction = db.transaction("canvasData", "readwrite");
+                    const store = transaction.objectStore("canvasData");
+
+                    const canvas0Data = canvas_0.toDataURL();
+                    const canvas1Data = canvas_1.toDataURL();
+
+                    store.put({ id: "canvas_0", data: canvas0Data });
+                    store.put({ id: "canvas_1", data: canvas1Data });
+
+                    
+                    console.log("canvas保存するよ");
+                }
+
+                async function 色箱保存(保存要素名) {
+                    const db = await IndexedDBを開くぞ();
+                    const transaction = db.transaction("colorData", "readwrite");
+                    const store = transaction.objectStore("colorData");
+
+                    const colorInputs = document.querySelectorAll(".色箱_input");
+                    colorInputs.forEach((input, index) => {
+                        if(保存要素名==input.parentElement.parentElement.id){
+                            store.put({ id: 保存要素名, value: input.value });
+                            return;
+                        }
+                    });
+                    //なんか余計なものまで保存されてないかだって？ハッハッハ、そうだぜ。
+                }
+
+                async function 読み込み() {
+                    const db = await IndexedDBを開くぞ();
+
+                    var transaction = db.transaction("canvasData", "readonly");
+                    var store = transaction.objectStore("canvasData");
+
+                    const canvas0Request = store.get("canvas_0");
+                    const canvas1Request = store.get("canvas_1");
+
+                    canvas0Request.onsuccess = function () {
+                        if (canvas0Request.result) {
+                            const img = new Image();
+                            img.onload = function () {
+                                ctx_0.drawImage(img, 0, 0);
+                            };
+                            img.src = canvas0Request.result.data;
+                        }
+                    };
+
+                    canvas1Request.onsuccess = function () {
+                        if (canvas1Request.result) {
+                            const img = new Image();
+                            img.onload = function () {
+                                ctx_1.drawImage(img, 0, 0);
+                            };
+                            img.src = canvas1Request.result.data;
+                        }
+                    };
+
+                    transaction = db.transaction("colorData", "readonly");
+                    store = transaction.objectStore("colorData");
+
+                    const colorInputs = document.querySelectorAll(".色箱_input");
+                    colorInputs.forEach((input, index) => {
+                        const request = store.get(input.parentElement.parentElement.id);
+                        request.onsuccess = function () {
+                            if (request.result) {
+                                input.value = request.result.value;
+                                input.dispatchEvent(new Event("input")); // これでinputが変更されたことにできる
+                            }
+                        };
+                    });
+                }
+                読み込み();
+
+                /*
+                //ページを閉じるときに保存…と思いきや、非同期処理は間に合わないとのこと。とほほ
+                window.addEventListener("beforeunload", async function () {
+                    await Canvas保存();
+                    await 色箱保存();
+                });
+                */
+                var 保存タイマー;
+                function Canvas保存タイマー開始() {
+                    if (保存タイマー) {
+                        clearTimeout(保存タイマー); // タイマーがあればリセット
+                    }
+                    保存タイマー = setTimeout(() => {
+                        Canvas保存();
+                    }, 5000); // 最後の書き込みからn秒後に保存
+                }
             }
         </script>
     </head>
