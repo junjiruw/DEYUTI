@@ -1175,6 +1175,10 @@
 
                     for (var i = 1; i < 色箱一覧.length; i++) {//i=0は消しゴムなので無視。
                         var 色箱 = 色箱一覧[i];
+                        //idが数字じゃないやつは無視
+                        if (isNaN(色箱.id.split("_")[2])){
+                            continue;
+                        }
                         if (色箱.value.toLowerCase() === 色文字列.toLowerCase()) {//.toLowerCase()は小文字にするやつ
                             // 同じ色が見つかった場合、その色を選択
                             色箱.parentElement.parentElement.querySelector(".radio").checked = true;
