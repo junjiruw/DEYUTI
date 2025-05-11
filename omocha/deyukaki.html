@@ -447,10 +447,9 @@
             作りたい機能リスト
             ・プレビュー表示
             ・移動とか拡大縮小
-            ・alert()のOK押さなくていいバージョンがあると、きもちいいよね。
             ・移動時のチョン押し暴発さ、暴発を防ぐんじゃなくて、暴発を巻き戻す方針のほうがいいんじゃない？
-            ・スポイト、やっぱ下レイヤーを参照したときは下レイヤーの色にしたくない？
             ・カラーセットみたいなの用意してみる？
+            ・radioボタンのchangeイベントを発火させればいいだけのところに無駄な処理書いてない？
 
             多すぎ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
             */
@@ -1177,18 +1176,30 @@
                     }
 
                     
-
+                    var 対象色レイヤー=0;
                     //マウス位置の色を取得
                     var そこの色 = ctx_0.getImageData(x, y, 1, 1).data;
                     //透明だったら
                     if(そこの色[3]==0){
+                        対象色レイヤー=1;
                         そこの色=ctx_1.getImageData(x, y, 1, 1).data;
                     }
                     var 色文字列 = "#" + そこの色[0].toString(16).padStart(2, "0") + そこの色[1].toString(16).padStart(2, "0") + そこの色[2].toString(16).padStart(2, "0");
                     //radio_divに同じ色のやつがないか探す
                     var 色箱一覧 = document.querySelectorAll(".色箱_input");
 
-                    for (var i = 1; i < 色箱一覧.length; i++) {//i=0は消しゴムなので無視。
+                    
+                    var color_0_div = document.getElementById("color_0");
+                    var radio_0 = color_0_div.querySelectorAll(".radio_div");
+                    var 上段色数=radio_0.length;
+                    var 開始位置=1;
+                    var 終了位置=上段色数;
+                    if(対象色レイヤー==1){//レイヤー1の色は、レイヤー1用の箱でだけ処理しよう。
+                        開始位置=上段色数;
+                        終了位置=色箱一覧.length;
+                    }
+
+                    for (var i = 開始位置; i < 終了位置; i++) {//i=0は消しゴムなので無視。
                         var 色箱 = 色箱一覧[i];
                         //idが数字じゃないやつは無視
                         if (isNaN(色箱.id.split("_")[2])){
@@ -1202,18 +1213,16 @@
                             return;
                         }
                     }
-                    //同じ色がいなかったら今選択されているradioの色をこいつに変える
-                    //まって！消しゴムレイヤーの色を変化させることは許されないわよ！
-                    if(現在の色.layer==0 && 現在の色.num==0){
-                        alert("消しゴムの色はかわらないよ～ん");//OK押すのがめんどくさいし、なんかちゃんとしたやつ作ったほうがいいのでは？と思いつつ…
-                        return;
+                    //色を取ってきたレイヤーの、今選択してる色の縦列で色設定。え？上下で色の数が違ったら…？それは、そんな改造をしてるほうが悪いザンス。
+                    if(対象色レイヤー==0 && 現在の色.num==0){
+                        //まって、それ消しゴムだからずらすね
+                        var radio_div要素 = document.getElementById("color_0_1");
+                    }else{
+                        var radio_div要素 = document.getElementById("color_" + 対象色レイヤー + "_" + 現在の色.num);
                     }
-                    //これ、場合によっては下のレイヤーの色を上のレイヤーとして取得しちゃうな…まあいいか！（まあいいかでゆっちであった。）
-                    var radio_div要素 = document.getElementById("color_" + 現在の色.layer + "_" + 現在の色.num);
                     var input要素 = radio_div要素.querySelector(".色箱_input");
                     input要素.value =色文字列;
                     input要素.dispatchEvent(new Event("input"));//inputが変更されたことにすることができる
-                    選択色変更(input要素.value,"color_" + 現在の色.layer + "_" + 現在の色.num);
                     自動ツール選択(前のツール);
                 }
 
@@ -1548,7 +1557,6 @@
                         e.preventDefault(); // デフォルトの動作を無効化
                         //ツールをペンに変える…はしなくていいか
                         if(現在の色.layer!=0 || 現在の色.num!=0){//消しゴムじゃないな…
-                            console.log("moge1");
                             選択色変更("#FFFFFF","color_0_0");
                             var radio要素 = document.getElementById("color_radio_0_0");
                             radio要素.checked = true;
