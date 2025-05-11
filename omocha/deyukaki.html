@@ -451,7 +451,6 @@
             ・移動時のチョン押し暴発さ、暴発を防ぐんじゃなくて、暴発を巻き戻す方針のほうがいいんじゃない？
             ・スポイト、やっぱ下レイヤーを参照したときは下レイヤーの色にしたくない？
             ・カラーセットみたいなの用意してみる？
-            ・スポイト後はやっぱり最後のツールに戻りたい。
             ・右クリックでアレでなくね？
 
             多すぎ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
@@ -621,6 +620,7 @@
                 色選択関数を適用("color_1_2");
                 
                 var 現在のツール="pen";
+                var 前のツール="pen";
                 var 優先ツール="";
                 function ペン選択関数を適用(親要素名称){
                     var 親要素 = document.getElementById(親要素名称);
@@ -628,6 +628,9 @@
 
                     radio要素.addEventListener("change", function (e) {
                         if(e.target.checked) {
+                            if(前のツール!=親要素名称){
+                                前のツール=現在のツール;
+                            }
                             現在のツール=親要素名称;
                             if(優先ツール==""){
                                 真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+親要素名称+"16.png),default"; // カスタムカーソルを適用
@@ -643,6 +646,9 @@
                 ペン選択関数を適用("baketu");
                 ペン選択関数を適用("supoito");
                 function 自動ツール選択(ツール名){
+                    if(現在のツール!=ツール名){
+                        前のツール=現在のツール;
+                    }
                     現在のツール=ツール名;
                     真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+ツール名+"16.png),default"; // カスタムカーソルを適用
                     //radioも変更にする
@@ -1193,7 +1199,7 @@
                             // 同じ色が見つかった場合、その色を選択
                             色箱.parentElement.parentElement.querySelector(".radio").checked = true;
                             選択色変更(色箱.value, 色箱.parentElement.parentElement.id);
-                            自動ツール選択("pen");
+                            自動ツール選択(前のツール);
                             return;
                         }
                     }
@@ -1209,7 +1215,7 @@
                     input要素.value =色文字列;
                     input要素.dispatchEvent(new Event("input"));//inputが変更されたことにすることができる
                     選択色変更(input要素.value,"color_" + 現在の色.layer + "_" + 現在の色.num);
-                    自動ツール選択("pen");
+                    自動ツール選択(前のツール);
                 }
 
                 function 色参照スポイト反映(e){
