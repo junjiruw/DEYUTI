@@ -610,7 +610,7 @@
                     }else{
                         太さ.value=筆太さ;
                     }
-                    太さからスライダー位置調整()
+                    太さからスライダー位置調整();
                 }
                 色選択関数を適用("color_0_0");
                 色選択関数を適用("color_0_1");
@@ -763,6 +763,7 @@
                     }else{
                         筆太さ=太さ.value;
                     }
+                    太さ保存();
                 });
                 function 太さからスライダー位置調整(){
                     //太さは1~20で調整しやすいようにして、20~はおおざっぱな選択にする
@@ -780,6 +781,7 @@
                     }else{
                         筆太さ=太さ.value;
                     }
+                    太さ保存();
                 }
 
                 太さ.addEventListener("input", 太さからスライダー位置調整);
@@ -792,9 +794,6 @@
                     }
                 }
                 太さ.addEventListener("keydown", 改行来たから終わるね);
-
-
-                太さからスライダー位置調整();//初期化。太さを保存するようにしたら使いまわしてね！
 
                 var 前回のマウス = {
                     x: 0,
@@ -1914,7 +1913,7 @@
 
                 function IndexedDBを開くぞ() {
                     return new Promise((resolve, reject) => { //非同期で動くので、awaitできるようにしておく
-                        const request = indexedDB.open("DeyukakiDB", 1);//バージョン1で開く、もしくは生成
+                        const request = indexedDB.open("DeyukakiDB", 2);//バージョン2で開く、もしくは生成
                         
                         request.onupgradeneeded = function (event) {
                             const db = event.target.result;
@@ -1923,6 +1922,9 @@
                             }
                             if (!db.objectStoreNames.contains("colorData")) {
                                 db.createObjectStore("colorData", { keyPath: "id" });//色箱
+                            }
+                            if (!db.objectStoreNames.contains("hutosaData")) {
+                                db.createObjectStore("hutosaData", { keyPath: "id" });//太さ
                             }
                         };
                         request.onsuccess = function (event) {
@@ -1946,8 +1948,6 @@
                     store.put({ id: "canvas_0", data: canvas0Data });
                     store.put({ id: "canvas_1", data: canvas1Data });
 
-                    
-                    console.log("canvas保存するよ");
                 }
 
                 async function 色箱保存(保存要素名) {
@@ -1963,6 +1963,15 @@
                         }
                     });
                     //なんか余計なものまで保存されてないかだって？ハッハッハ、そうだぜ。
+                }
+
+                async function 太さ保存() {
+                    const db = await IndexedDBを開くぞ();
+                    const transaction = db.transaction("hutosaData", "readwrite");
+                    const store = transaction.objectStore("hutosaData");
+
+                    store.put({ id: "消しゴム太さ", data: 消しゴム太さ });
+                    store.put({ id: "筆太さ", data: 筆太さ });
                 }
 
                 async function 読み込み() {
@@ -2007,6 +2016,43 @@
                     await Promise.all([canvas0Promise, canvas1Promise]);
                     履歴残し();
 
+                    const hutosaTransaction = db.transaction("hutosaData", "readonly");
+                    const hutosaStore = hutosaTransaction.objectStore("hutosaData");
+
+                    console.log(消しゴム太さ,筆太さ);
+
+                    const 消しゴム太さPromise = new Promise((resolve) => {   
+                        const 消しゴム太さRequest=hutosaStore.get("消しゴム太さ");
+                        消しゴム太さRequest.onsuccess = function () {
+                            if (消しゴム太さRequest.result) {
+                                消しゴム太さ = 消しゴム太さRequest.result.data;
+                                resolve(); // ロード完了を通知
+                            } else {
+                                消しゴム太さ = 5; // デフォルト値
+                                resolve(); // データがなくても完了を通知
+                            }
+                        };
+                    });
+                    
+                    const 筆太さPromise = new Promise((resolve) => {   
+                        const 筆太さRequest=hutosaStore.get("筆太さ");
+                        筆太さRequest.onsuccess = function () {
+                            if (筆太さRequest.result) {
+                                筆太さ = 筆太さRequest.result.data;
+                                太さ.value = 筆太さ;//0_1が常に選ばれるのでこれでいい。
+                                resolve(); // ロード完了を通知
+                            } else {
+                                筆太さ = 5; // デフォルト値
+                                太さ.value = 筆太さ;//0_1が常に選ばれるのでこれでいい。
+                                resolve(); // データがなくても完了を通知
+                            }
+                        };
+                    });
+                    筆太さRequest=hutosaStore.get("筆太さ");
+
+                    await Promise.all([消しゴム太さPromise, 筆太さPromise]);
+                    太さからスライダー位置調整();//スライダー初期化。
+
 
                     const colorTransaction = db.transaction("colorData", "readonly");
                     const colorStore = colorTransaction.objectStore("colorData");
@@ -2021,6 +2067,8 @@
                             }
                         };
                     });
+
+                    
                 }
                 読み込み();
 
