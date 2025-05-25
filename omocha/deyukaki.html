@@ -147,6 +147,11 @@
                 background-color: rgba(255, 255, 255 ); 
                 border: 2px solid #c5c5c5;
             }
+            .中身のない色箱表示のための親{
+                position: relative;
+                width: 1.5em;
+                height: 1.5em;
+            }
             .透明色だよ{
                 border-radius: 50%;
                 background: 
@@ -196,6 +201,11 @@
 
             #スワップ_ボタン {
                 background-image: url("../images/omocha/deyukaki/swap16.png");
+                filter: brightness(80%) saturate(100%); /* 色味調整 */
+            }
+
+            #パレット_ボタン {
+                background-image: url("../images/omocha/deyukaki/paretto16.png");
                 filter: brightness(80%) saturate(100%); /* 色味調整 */
             }
 
@@ -382,6 +392,49 @@
             }
 
 
+            #パレットメニュー{
+                position : absolute;
+                top: 0;
+                left: 0;
+                width: 20em;
+                height: 20em;
+                background-color: rgba(0, 0, 0, 0.7); /* 半透明の黒 */
+                border: 2px solid #ffffff;
+                z-index: 90;/*それなりに上へ*/
+                display : none;
+
+                flex-direction: column; /*縦に*/
+                align-items: center; /*左右中央に*/
+                justify-content: center;/*上下中央に*/
+            }
+
+            .パレットエリア_上下{
+                display: flex;
+                flex-direction: row; /* 横並び（左右）にする */
+                justify-content: center;   /* 横方向中央寄せ */
+                width: 100%;
+                margin: 0.5em;
+            }
+
+            .パレットエリア{
+                padding: 0.2em;
+            }
+
+            .パレットエリア_段{
+                position: relative;
+                display: flex;
+                padding: 0.1em;
+                
+                justify-content: center;   /* 横方向中央寄せ */
+            }
+
+            .中身のない色箱表示のための親{
+                width: 2em;
+                height: 2em;
+                margin: 0.2em;
+            }
+
+
             /* 横幅が40em未満の場合 */
             @media (max-width: 40em) {
                 #右分割 {
@@ -445,11 +498,13 @@
         <script>
             /*
             作りたい機能リスト
-            ・プレビュー表示
+            ・小さく全体表示
+　            ・色置換にプレビューがあるといいね
             ・移動とか拡大縮小
             ・移動時のチョン押し暴発さ、暴発を防ぐんじゃなくて、暴発を巻き戻す方針のほうがいいんじゃない？
-            ・カラーセットみたいなの用意してみる？
+            ・ツールじゃないツールをホバーしたら明るくしたら？
             ・radioボタンのchangeイベントを発火させればいいだけのところに無駄な処理書いてない？
+
 
             多すぎ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
             */
@@ -662,9 +717,15 @@
                 }
                 var スワップボタン = document.getElementById("スワップ_ボタン");
                 スワップボタン.addEventListener("click",色スワップ表示);
+                //↓これべつにここじゃなくて、メニュー作ってるところでもいいんじゃね？と思ったけど、いいか
                 色選択関数を適用("color_swap_0");
                 色選択関数を適用("color_swap_1");
 
+                function パレットチェンジ表示(){
+                    パレットメニュー.style.display = "flex";
+                }
+                var パレットボタン = document.getElementById("パレット_ボタン");
+                パレットボタン.addEventListener("click",パレットチェンジ表示);
                 
                 function キャンバスを白で塗りつぶす() {
                     ctx_0.clearRect(0, 0, canvas_0.width, canvas_0.height); // 上のキャンバスはクリア
@@ -1922,6 +1983,88 @@
                     スワップメニュー.style.display="none";
                 })
 
+                //ここからパレットチェンジの実装ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+                var パレットメニュー=document.getElementById("パレットメニュー");
+                var 閉じる_paretto=document.getElementById("閉じる_paretto");
+
+                //パレットは4セットでいいか…
+                var パレットセット=[
+                    ["#ffffff","#000000","#00FFFF","#ffffff","#FF5558","#FFF6EF"],
+                    ["#ffffff","#4fafd0","#df4040","#c0ffff","#7fdfff","#ffcfcf"],
+                    ["#ffffff","#2e8b57","#8b4513" , "#c1f0d1","#66cdaa" , "#deb887"],
+                    ["#ffffff","#B22222","#228B22","#1E90FF","#FFD700","#DA70D6"]
+                ];
+
+                function パレット色反映(){
+                    for (let area = 0; area < 4; area++) {
+                        const colors = パレットセット[area];
+                        for (let row = 0; row < 2; row++) {
+                            for (let col = 0; col < 3; col++) {
+                                const box = document.getElementById(`paretto_${area}_${row}_${col}`);
+
+                                box.style.backgroundColor = colors[row * 3 + col];
+                                
+                            }
+                        }
+                    }
+                }
+                //いったん動かすけど、ロード時にも動かすよん
+                パレット色反映();
+                //パレットメニュー.style.display="flex";
+
+                var パレット採用=document.querySelectorAll('.パレット採用');
+                パレット採用.forEach(function(ボタン){
+                    ボタン.addEventListener('click', function() {
+                        const oldLayer = 現在の色.layer;
+                        const oldNum   = 現在の色.num;
+                        const area = Number(ボタン.getAttribute('エリア'));
+                        const colors = パレットセット[area];
+                        // レイヤー0
+                        for (let i = 0; i < 3; i++) {
+                            const input = document.getElementById(`color_pick_0_${i}`);
+                            input.value = colors[i];
+                            input.dispatchEvent(new Event("input"));
+                            
+                        }
+                        // レイヤー1
+                        for (let i = 0; i < 3; i++) {
+                            const input = document.getElementById(`color_pick_1_${i}`);
+                            input.value = colors[i + 3];
+                            input.dispatchEvent(new Event("input"));
+                        }
+                        //選択してた場所をもどすよ！え？雑？そういうこともあるさ
+                        document.getElementById(`color_pick_${oldLayer}_${oldNum}`).dispatchEvent(new Event("input"));
+                        パレットメニュー.style.display="none";
+                    });
+                })
+
+                var パレット保存=document.querySelectorAll('.パレット保存');
+                パレット保存.forEach(function(ボタン){
+                    ボタン.addEventListener('click', function() {
+                        const oldLayer = 現在の色.layer;
+                        const oldNum   = 現在の色.num;
+                        const area = Number(ボタン.getAttribute('エリア'));
+                        const colors = パレットセット[area];
+                        // レイヤー0
+                        for (let i = 0; i < 3; i++) {
+                            const input = document.getElementById(`color_pick_0_${i}`);
+                            colors[i]=input.value;
+                            
+                        }
+                        // レイヤー1
+                        for (let i = 0; i < 3; i++) {
+                            const input = document.getElementById(`color_pick_1_${i}`);
+                            colors[i + 3]=input.value;
+                        }
+                        パレット色反映();
+                        パレット全保存();
+                    });
+                })
+
+
+                閉じる_paretto.addEventListener("click",function(){
+                    パレットメニュー.style.display="none";
+                });
 
                 //ページ下部のツイートボタンを上書き
                 document.getElementById("foot_tweet_a").href=URL_tweet_text="https://twitter.com/intent/tweet?hashtags=deyukaki";           
@@ -1931,7 +2074,7 @@
 
                 function IndexedDBを開くぞ() {
                     return new Promise((resolve, reject) => { //非同期で動くので、awaitできるようにしておく
-                        const request = indexedDB.open("DeyukakiDB", 2);//バージョン2で開く、もしくは生成
+                        const request = indexedDB.open("DeyukakiDB", 3);//バージョンnで開く、もしくは生成
                         
                         request.onupgradeneeded = function (event) {
                             const db = event.target.result;
@@ -1943,6 +2086,9 @@
                             }
                             if (!db.objectStoreNames.contains("hutosaData")) {
                                 db.createObjectStore("hutosaData", { keyPath: "id" });//太さ
+                            }
+                            if (!db.objectStoreNames.contains("parettoData")) {
+                                db.createObjectStore("parettoData", { keyPath: "id" });//パレットセット
                             }
                         };
                         request.onsuccess = function (event) {
@@ -1990,6 +2136,16 @@
 
                     store.put({ id: "消しゴム太さ", data: 消しゴム太さ });
                     store.put({ id: "筆太さ", data: 筆太さ });
+                }
+
+                async function パレット全保存() {
+                    const db = await IndexedDBを開くぞ();
+                    const transaction = db.transaction("parettoData", "readwrite");
+                    const store = transaction.objectStore("parettoData");
+
+                    パレットセット.forEach((colors, area) => {
+                        store.put({ id: area, data: パレットセット[area] });                        
+                    });
                 }
 
                 async function 読み込み() {
@@ -2086,7 +2242,25 @@
                         };
                     });
 
-                    
+                    const parettoTransaction = db.transaction("parettoData", "readonly");
+                    const parettoStore = parettoTransaction.objectStore("parettoData");
+
+                    const parettoPromises = パレットセット.map((_, area) => {//読み込むものの数だけ非同期で動くので配列生成
+                        return new Promise((resolve) => {
+                            const request = parettoStore.get(area);
+                            request.onsuccess = function () {
+                                if (request.result && Array.isArray(request.result.data)) {
+                                    パレットセット[area] = request.result.data;
+                                }
+                                resolve();//ロード完了を通知
+                            };
+                            request.onerror = function () {
+                                resolve(); // エラーでも進める
+                            };
+                        });
+                    });
+                    await Promise.all(parettoPromises);
+                    パレット色反映();
                 }
                 読み込み();
 
@@ -2209,6 +2383,9 @@
                             <label id="swap">
                                 <span class="ペンボタン" id="スワップ_ボタン"></span>
                             </label>
+                            <label id="paretto">
+                                <span class="ペンボタン" id="パレット_ボタン"></span>
+                            </label>
                         </div>
                     </div>
                     
@@ -2288,7 +2465,133 @@
                         <input id="破棄ボタン_swap" type="button" value="破棄" class="色選択ボタン 破棄ボタン">
                     </div>
                 </div>
-                
+
+                <div id="パレットメニュー">
+                    <!--パレットを4セット、上下左右に配置-->
+                    <div class ="パレットエリア_上下">
+                        <div class="パレットエリア">
+                            <div class="パレットエリア_段">
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover 透明色だよ paretto色箱" id="paretto_0_0_0"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_0_0_1"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_0_0_2"></div>
+                                </div>
+                            </div>
+                            <div class="パレットエリア_段">
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_0_1_0"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_0_1_1"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_0_1_2"></div>
+                                </div>
+                            </div>
+                            <div class="パレットエリア_段">
+                                <input type="button" エリア=0 value="使う" class="色選択ボタン 採用ボタン パレット採用">
+                                <input type="button" エリア=0 value="保存" class="色選択ボタン 破棄ボタン パレット保存">
+                            </div>
+
+                        </div>
+                        <div class="パレットエリア">
+                            <div class="パレットエリア_段">
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover 透明色だよ paretto色箱" id="paretto_1_0_0"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_1_0_1"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_1_0_2"></div>
+                                </div>
+                            </div>
+                            <div class="パレットエリア_段">
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_1_1_0"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_1_1_1"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_1_1_2"></div>
+                                </div>
+                            </div>
+                            <div class="パレットエリア_段">
+                                <input type="button" エリア=1 value="使う" class="色選択ボタン 採用ボタン パレット採用">
+                                <input type="button" エリア=1 value="保存" class="色選択ボタン 破棄ボタン パレット保存">
+                            </div>
+                        </div>
+                    </div>
+                    <div class ="パレットエリア_上下">
+                        <div class="パレットエリア">
+                            <div class="パレットエリア_段">
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover 透明色だよ paretto色箱" id="paretto_2_0_0"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_2_0_1"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_2_0_2"></div>
+                                </div>
+                            </div>
+                            <div class="パレットエリア_段">
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_2_1_0"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_2_1_1"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_2_1_2"></div>
+                                </div>
+                            </div>
+                            <div class="パレットエリア_段">
+                                <input type="button" エリア=2 value="使う" class="色選択ボタン 採用ボタン パレット採用">
+                                <input type="button" エリア=2 value="保存" class="色選択ボタン 破棄ボタン パレット保存">
+                            </div>
+                        </div>
+                        <div class="パレットエリア">
+                            <div class="パレットエリア_段">
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover 透明色だよ paretto色箱" id="paretto_3_0_0"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_3_0_1"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_3_0_2"></div>
+                                </div>
+                            </div>
+                            <div class="パレットエリア_段">
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_3_1_0"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_3_1_1"></div>
+                                </div>
+                                <div class="中身のない色箱表示のための親">
+                                    <div class="色箱_cover paretto色箱" id="paretto_3_1_2"></div>
+                                </div>
+                            </div>
+
+                            <div class="パレットエリア_段">
+                                <input type="button" エリア=3 value="使う" class="色選択ボタン 採用ボタン パレット採用">
+                                <input type="button" エリア=3 value="保存" class="色選択ボタン 破棄ボタン パレット保存">
+                            </div>    
+                        </div> 
+                        
+                    </div>
+
+                    <div id="パレメニュ下段">
+                       <input id="閉じる_paretto" type="button" value="×" class="色選択ボタン 破棄ボタン">
+                    </div>
+                </div>
 
             </div>
 
