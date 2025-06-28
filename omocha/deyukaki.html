@@ -104,6 +104,11 @@
                 padding: 2px;
                 margin: 2px;
             }
+            .縦並べ{
+                display: flex;
+                flex-direction: column; /* 縦に並べる */
+                align-items: center; /* 中央揃え */
+            }
             .img_layer{
                 image-rendering: pixelated; /* ピクセルを強調してぼやけを防ぐ */
                 width: 1.5em;
@@ -207,6 +212,17 @@
             #パレット_ボタン {
                 background-image: url("../images/omocha/deyukaki/paretto16.png");
                 filter: brightness(80%) saturate(100%); /* 色味調整 */
+            }
+
+            .lockボタン {
+                background-image: url("../images/omocha/deyukaki/lock16.png"); 
+                
+                width: 2em; /* ボタンの幅 */
+                height: 2em; /* ボタンの高さ */
+            }
+            input[type="checkbox"]:checked {
+                filter: brightness(1.5) saturate(2);
+                background-color: #007bff;
             }
 
 
@@ -934,16 +950,20 @@
                     }else{
                         var 圧力直径= 筆太さ;
                     }
+                    //円の計算大変なので最初にやって保存する。
                     円マスク作成(圧力直径);
                     var 円データ = [];
+                    //線を分割
                     for (var i = 0; i < ループ回数; i++) {
                         var ループx = Math.floor(前回のマウス.x + (dx / ループ回数) * i);
                         var ループy = Math.floor(前回のマウス.y + (dy / ループ回数) * i);
                         円データ.push([ループx, ループy, 圧力直径]);
                     }
+                    //塗らずに円を描きまくっても線になるので、ガワだけ描いていく。
                     for (const [ループx, ループy, 直径] of 円データ) {
                         円を描く(ループx, ループy, 直径,true);//ガワだけ描くよ
                     }
+                    //チョン押しだった場合は真ん中が塗られないので、塗る。
                     円を描く(x,y,圧力直径,false);
                     
                     if(現在の色.layer==0){
@@ -989,6 +1009,21 @@
 
                     //レイヤー分けは不要だよね（だよねだよね）
 
+                    //色ロックをしてるときはフラグ立てるか
+                    var 色ロック=-1;
+                    if(現在の色.layer==0 && document.getElementById("lock_0").checked ){
+                        色ロック=0;
+                    }else if(現在の色.layer==1 && document.getElementById("lock_1").checked ){
+                        色ロック=1;
+                        
+                        var 背景色_文字列= document.getElementById("color_pick_1_0").value;
+                        背景色_文字列=背景色_文字列.replace("#", "");
+                        var 背景色={r:0,g:0,b:0};
+                        背景色.r = parseInt(背景色_文字列.slice(0, 2), 16);
+                        背景色.g = parseInt(背景色_文字列.slice(2, 4), 16);
+                        背景色.b = parseInt(背景色_文字列.slice(4, 6), 16);
+                    }
+
                     if(ガワだけ){
                         var 描き初め=Math.max(0, 半径-2); //マイナスの値ってなにが適切なんだろうね           
                     }else{
@@ -1000,6 +1035,17 @@
                                 continue;//キャンバス外は無視
                             }
                             if (i * i + j * j <= 半径の二乗) {//半径に収まっていれば
+                                //lockボタン判定
+                                if (色ロック==0 && 現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+3] === 0){
+                                    continue;//ここ透明だからスキップするね
+                                }else if (色ロック==1){
+                                    //レイヤー1はcolor_pick_1_0の色と比較
+                                    if (現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4] === 背景色.r &&
+                                        現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4+1] === 背景色.b &&
+                                        現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4+2] === 背景色.g ){
+                                        continue;//ここ背景色だからスキップするね
+                                    }
+                                }
                                 現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4] = 現在の色.r;//直接色変える
                                 現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+1] = 現在の色.g;//直接色変える
                                 現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+2] = 現在の色.b;//直接色変える
@@ -2303,7 +2349,11 @@
                     <div id="左最小化領域">
                         <div id="色選択div">
                             <div id="color_0" class="color_行">
-                                <img src="../images/omocha/deyukaki/layer16_0.png" alt="ここはレイヤー0の色選択" class="img_layer">
+                                <div class="縦並べ">
+                                    <img src="../images/omocha/deyukaki/layer16_0.png" alt="ここはレイヤー0の色選択" class="img_layer">
+                                    <input type="checkbox" class="radio lockボタン ペンボタン" id="lock_0">
+                                </div>
+                                
                                 <div class="radio_div" id="color_0_0">
                                     <input type="radio" class="radio" id="color_radio_0_0" name="color">
                                     <div class="色箱" id="color_div_0_0">
@@ -2327,11 +2377,14 @@
                                         <div class="色箱_cover"></div>
                                     </div>
                                 </div>
-                                
                             </div>
 
                             <div id="color_1" class="color_行">
-                                <img src="../images/omocha/deyukaki/layer16_1.png" alt="ここはレイヤー1の色選択" class="img_layer">
+                                
+                                <div class="縦並べ">
+                                    <img src="../images/omocha/deyukaki/layer16_1.png" alt="ここはレイヤー1の色選択" class="img_layer">
+                                    <input type="checkbox" class="radio lockボタン ペンボタン" id="lock_1">
+                                </div>
                                 <div class="radio_div" id="color_1_0">
                                     <input type="radio" class="radio" id="color_radio_1_0" name="color">
                                     <div class="色箱" id="color_div_1_0">
@@ -2355,6 +2408,7 @@
                                         <div class="色箱_cover"></div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                         <div id="ツール系">
