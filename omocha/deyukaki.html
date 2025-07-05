@@ -170,6 +170,11 @@
                 width: 3em;
                 height: 1em;
             }
+            .太さボタン{
+                width: 1.5em;
+                height: 1.5em;
+                border-radius: 50%;
+            }
             #slider太さ{
                 width: 10em;
             }
@@ -864,7 +869,19 @@
                 }
 
                 太さ.addEventListener("input", 太さからスライダー位置調整);
-                
+
+                document.getElementById("太さ減").addEventListener("click", function() {
+                    if (太さ.value > 1) {
+                        太さ.value =parseInt(太さ.value, 10) -1;
+                        太さ.dispatchEvent(new Event("input"));
+                    }
+                });
+                document.getElementById("太さ増").addEventListener("click", function() {
+                    if (太さ.value < 100) {
+                        太さ.value =parseInt(太さ.value, 10) +1;
+                        太さ.dispatchEvent(new Event("input"));
+                    }
+                });
 
                 function 改行来たから終わるね(e){
                     //改行が着たら、選択から外すという親切心
@@ -2431,9 +2448,11 @@
                                 <div>
                                     <label for="太さ">太さ：</label>
                                     <input type="number" id="太さ" min="1" max="100" value="5">
+                                    <button id="太さ減" class="太さボタン" type="button">-</button>
+                                    <button id="太さ増" class="太さボタン" type="button">+</button>
                                 </div>
                                 <input type="range" id="slider太さ" min="1" max="100" value="12" step="1">
-                                <!--デフォルトは12なんだけど計算すると5pxになる。まあここは初期化してるのでなんでもいいんですが…-->
+                                <!--12なんだけど計算すると5pxになる。まあここは初期化してるのでなんでもいいんですが…-->
                             </div>
                             <div id="ツール選択">
                                 <label id="pen">
