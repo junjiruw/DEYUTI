@@ -75,6 +75,54 @@
                 
             }
 
+
+            #移動UI{
+                display:none;
+                position:absolute;
+                transform-origin: top left; /* 拡大縮小の基準点を左上に設定 */
+                top:0;
+                left:0;
+                z-index:5; /* ちょい高い値を指定して上に表示 */
+            }
+
+            #移動UI_ボタン群 {
+                position: absolute;
+                top: -2.5em; /* 移動UI_大きさの上に配置（必要に応じて調整） */
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 15; /* ハンドルより上に */
+                display: flex;
+                gap: 0.5em;/*ボタンの隙間決定*/
+                
+            }
+
+            #移動UI_大きさ{
+                position: relative;
+                width: 100%;
+                height: 100%;
+                background:rgba(255,0,0,0.2);
+                transform: (50%,50%);
+                transform-origin: center; /* 中心を基準にスケーリング */
+                top: 0px;
+                left: 0px;
+            }
+            #移動UI_大きさ .resize-handle {
+                position: absolute;
+                width: 2em;
+                height: 2em;
+                transform-origin: center; /* 中心を基準にスケーリング */
+                background: #fff;
+                border: 2px solid #333;
+                border-radius: 50%;
+                z-index: 10;
+                pointer-events: auto;
+                user-select: none; /* テキスト選択を無効化 */
+            }
+            #移動UI_大きさ_左上 { left: -1em; top: -1em; cursor: nwse-resize; }
+            #移動UI_大きさ_右上 { right: -1em; top: -1em; cursor: nesw-resize; }
+            #移動UI_大きさ_左下 { left: -1em; bottom: -1em; cursor: nesw-resize; }
+            #移動UI_大きさ_右下 { right: -1em; bottom: -1em; cursor: nwse-resize; }
+
             .浮かせる {
                 position: absolute;
                 top: 0;
@@ -88,6 +136,7 @@
             #左分割 {
                 left: 0;
                 z-index: 10; /* 高い値を指定して上に表示 */
+                user-select: none; /* テキスト選択を無効化 */
             }
 
             #右分割 {
@@ -209,6 +258,10 @@
                 background-image: url("../images/omocha/deyukaki/supoito16.png");
             }
 
+            #移動_ボタン {
+                background-image: url("../images/omocha/deyukaki/move16.png");
+            }
+
             #スワップ_ボタン {
                 background-image: url("../images/omocha/deyukaki/swap16.png");
                 filter: brightness(80%) saturate(100%); /* 色味調整 */
@@ -218,7 +271,6 @@
                 background-image: url("../images/omocha/deyukaki/paretto16.png");
                 filter: brightness(80%) saturate(100%); /* 色味調整 */
             }
-
             .lockボタン {
                 background-image: url("../images/omocha/deyukaki/lock16.png"); 
                 
@@ -528,10 +580,12 @@
         <script>
             /*
             作りたい機能リスト
-            ・小さく全体表示
-            ・移動とか拡大縮小
+            ・反転表示
+            ・回転
+            　ー移動変形を使いまわせる気がするけどまあ需要ないし放置で…
             ・ツールじゃないツールをホバーしたら明るくしたら？
             ・radioボタンのchangeイベントを発火させればいいだけのところに無駄な処理書いてない？
+            　ー主に色かな。ツールもあるかも？
             ・画像読み込み？でもレイヤー分離できないし、独自保存ファイル形式？でもこんなツールで数日かけて絵描くべきじゃないと思うよ。俺は。
 
             多すぎ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
@@ -576,6 +630,7 @@
                 var キャンバス拡大率 = 1;
                 var border_width = 0;
                 var border_height = 0;
+                var 移動UI = document.getElementById("移動UI");
                 
                 function キャンバスボーダー設定() {                    
                     var 三分割くん=document.getElementById("三分割くん");
@@ -717,6 +772,37 @@
                                 var マウス追従 = document.getElementById("マウス追従");
                                 マウス追従.style.display = "none"; // マウス追従を非表示…なくてもいいけどね
                             }
+                            //ツールごとの固有処理
+                            if(親要素名称 === "move"){
+                                一時保存用キャンバス_0=ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height);
+                                一時保存用キャンバス_1=ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height);
+                                
+                                // 移動UIの準備
+                                var 移動UI = document.getElementById("移動UI");
+                                var キャンバス位置 = canvas_0.getBoundingClientRect();
+                                var 親位置 = 真ん中分割.getBoundingClientRect();
+
+                                移動UI.style.width = canvas_0.width + "px";
+                                移動UI.style.height = canvas_0.height + "px";
+                                移動UI.style.left = canvas_0.style.left  + "px";
+                                移動UI.style.top = canvas_0.style.top + "px";
+                                移動UI.style.display = "block";
+
+                                var 移動UI_大きさ = document.getElementById("移動UI_大きさ");
+                                移動UI_大きさ .style.width = canvas_0.width + "px";
+                                移動UI_大きさ .style.height = canvas_0.height + "px";
+                                移動UI_大きさ.style.left =0+"px";
+                                移動UI_大きさ.style.top =0+"px";
+                                
+                            }else{
+                                if(前のツール=="move"){
+                                    document.getElementById("移動UI").style.display = "none";
+                                    //絵も元に戻そう。
+                                    ctx_0.putImageData(一時保存用キャンバス_0, 0, 0);
+                                    ctx_1.putImageData(一時保存用キャンバス_1, 0, 0);
+                                }
+                            }
+                            
                         }
                     });
                     
@@ -725,16 +811,20 @@
                 ペン選択関数を適用("pen");
                 ペン選択関数を適用("baketu");
                 ペン選択関数を適用("supoito");
+                ペン選択関数を適用("move");
                 function 自動ツール選択(ツール名){
+                    /*
                     if(現在のツール!=ツール名){
                         前のツール=現在のツール;
                     }
                     現在のツール=ツール名;
                     真ん中分割.style.cursor = "url(../images/omocha/deyukaki/"+ツール名+"16.png),default"; // カスタムカーソルを適用
+                    */
                     //radioも変更にする
                     var radio_div要素 = document.getElementById(ツール名);
                     var radio要素 = radio_div要素.querySelector(".tool_radio");
                     radio要素.checked = true; 
+                    radio要素.dispatchEvent(new Event("change"));//changeされたことにすることができる
                     var マウス追従 = document.getElementById("マウス追従");
                     マウス追従.style.display = "none"; // マウス追従を非表示…なくてもいいけどね
                 }
@@ -782,7 +872,7 @@
                     //ここで保存しておけばいいか？
                     Canvas保存タイマー開始();
                 }
-                function 履歴残し(){
+                function 履歴残し(保存はいいです=false){
                     if(キャンバス比較(ctx_0.getImageData(0, 0, canvas_0.width, canvas_0.height).data,一時保存用キャンバス_0.data) &&
                        キャンバス比較(ctx_1.getImageData(0, 0, canvas_1.width, canvas_1.height).data,一時保存用キャンバス_1.data)){
                         return;//履歴が変わってないから保存しない
@@ -795,7 +885,9 @@
                     撒き戻し_1.push(一時保存用キャンバス_1);
                     やりなおし_0=[];//履歴が残ったってことは次のアクションが消えるべきってわけだ！
                     やりなおし_1=[];//履歴が残ったってことは次のアクションが消えるべきってわけだ！
-                    キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
+                    if(!保存はいいです){
+                        キャンバス最新保持();//次に履歴を残すために今を一時保存するやつ
+                    }
                 }
                 function 描き戻し(){
                     if(撒き戻し_0.length==0){
@@ -1441,6 +1533,8 @@
                     }else if(現在のツール==="baketu"){
 
                     }else if(現在のツール==="supoito"){
+                    }else if(現在のツール=="move"){
+                        四隅拡大縮小移動(e);
                     }
                     
                 });
@@ -1488,6 +1582,8 @@
 
                     }else if(現在のツール==="supoito"){
                         スポイト非表示();
+                    }else if(現在のツール=="move"){
+                        四隅拡大縮小終了();
                     }
                 });
 
@@ -1508,6 +1604,8 @@
                         
                     }else if(現在のツール==="supoito"){
                         スポイト反映(e);
+                    }else if(現在のツール=="move"){
+                        四隅拡大縮小終了();
                     }
                     
                 });
@@ -1527,6 +1625,8 @@
 
                     }else if(現在のツール==="supoito"){
 
+                    }else if(現在のツール=="move"){
+                        四隅拡大縮小終了();
                     }
                 });
 
@@ -1564,6 +1664,7 @@
                     キャンバスボーダー設定();
                     //ま、それでもちょっとずれてるけどね
 
+                    移動UI.style.transform = "scale("+キャンバス拡大率+")";
                 }
                 
                 var バケツ位置保存;
@@ -1593,10 +1694,10 @@
                             e.preventDefault();
                             撒き戻しやり直し判定=3;
                         }
-                        //さっきのちゃん押しって誤爆だから巻き戻すか。履歴にゴミのこるけど（笑）
+                        //さっきのちょん押しって誤爆だから巻き戻す。
                         if(スマホ誤動作判定結果フラグ){
                             スマホ誤動作判定結果フラグ=false;
-                            document.getElementById("デバッグ用").textContent =スマホ誤動作判定タイマー;
+                            //document.getElementById("デバッグ用").textContent =スマホ誤動作判定タイマー;
                             すみません今描いてるやつってなかったことにできませんか();
                         }
                     }
@@ -1653,6 +1754,8 @@
                         }else if(現在のツール==="supoito"){
                             スポイト追従座標=e;
                             スポイト端っこ表示(スポイト追従座標);
+                        }else if(現在のツール=="move"){
+                            四隅拡大縮小移動(e);
                         }
                     }
                 });
@@ -1676,6 +1779,8 @@
                                 スポイト反映(スポイト追従座標);
                             }
                             
+                        }else if(現在のツール=="move"){
+                            四隅拡大縮小終了();
                         }
                     }
                     
@@ -2164,6 +2269,176 @@
                     パレットメニュー.style.display="none";
                 });
 
+                //ここから絵の移動・拡大縮小ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+                let 四隅クリック中 = false;
+                let 移動クリック中 = false;
+                let 変形終わったらツール戻してください = false;
+                let corner = "";
+                let クリック開始位置_move = { x: 0, y: 0 };
+
+                // 大きさ変更できる四隅にイベントリスナーを追加
+                ["左上", "右上", "左下", "右下"].forEach(cornerName => {
+                    const handle = document.getElementById("移動UI_大きさ_"+cornerName );
+                    handle.addEventListener("pointerdown", function(e){
+                        e.preventDefault();
+                        四隅クリック中 = true;
+                        corner = cornerName;
+                    });
+                });
+
+                var 移動UI_大きさ = document.getElementById("移動UI_大きさ");
+                移動UI_大きさ.addEventListener("pointerdown", function(e) {
+                    e.preventDefault();
+                    移動クリック中 = true;
+                    if (e.touches) {//これ指じゃね？
+                        クリック開始位置_move = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    }else {//マウスだわ
+                        クリック開始位置_move = { x: e.clientX, y: e.clientY };
+                    }
+                    
+                });
+                
+
+
+                function 四隅拡大縮小移動(e){
+                    let rect_UI_大きさ = window.getComputedStyle(移動UI_大きさ);
+                    var mx,my,dx,dy;
+                    if (e.touches) {//これ指じゃね？
+                        mx = e.touches[0].clientX;
+                        my = e.touches[0].clientY;
+                    }else {//マウスだわ
+                        mx = e.clientX;
+                        my = e.clientY;
+                    }
+                    //document.getElementById("デバッグ用").textContent =[dx,dy];
+                
+                    if(四隅クリック中){                       
+                        let rect;
+                        if(corner === "左上") {
+                            rect = document.getElementById("移動UI_大きさ_左上").getBoundingClientRect();
+                        } else if(corner === "右上") {
+                            rect = document.getElementById("移動UI_大きさ_右上").getBoundingClientRect();
+                        } else if(corner === "左下") {
+                            rect = document.getElementById("移動UI_大きさ_左下").getBoundingClientRect();
+                        } else if(corner === "右下") {
+                            rect = document.getElementById("移動UI_大きさ_右下").getBoundingClientRect();
+                        }
+
+                        let 中心_x = rect.left + rect.width / 2;
+                        let 中心_y = rect.top + rect.height / 2;
+                        if(corner === "左上") {
+                            dx = mx-中心_x ;
+                            dy = my-中心_y ;
+                        } else if(corner === "右上") {
+                            dx = -mx+中心_x ;
+                            dy = my-中心_y ;
+                        } else if(corner === "左下") {
+                            dx = mx-中心_x ;
+                            dy = -my+中心_y ;
+                        } else if(corner === "右下") {
+                            dx = -mx+中心_x ;
+                            dy = -my+中心_y ;
+                        }
+                        //console.log("四隅拡大縮小移動", corner, dx,dy )
+                        
+                        //あんまり小さいときは小さくなり過ぎないようにする
+                        if (parseFloat(rect_UI_大きさ.width)- dx*2 < 50) {
+                            dx = parseFloat(rect_UI_大きさ.width) / 2 - 25; // 最小幅を50pxに設定
+                        }
+                        if (parseFloat(rect_UI_大きさ.height)- dy*2 < 50) {
+                            dy = parseFloat(rect_UI_大きさ.height) / 2 - 25; // 最小高さを50pxに設定
+                        }
+                        
+                        移動UI_大きさ.style.width =(parseFloat(rect_UI_大きさ.width)- dx*2)+ "px";
+                        移動UI_大きさ.style.height =(parseFloat(rect_UI_大きさ.height)- dy*2) + "px";
+
+                        移動UI_大きさ.style.left = (parseFloat(rect_UI_大きさ.left)+dx) + "px";
+                        移動UI_大きさ.style.top = (parseFloat(rect_UI_大きさ.top)+dy)  + "px";
+
+                    }else if(移動クリック中){
+                        dx=mx-クリック開始位置_move.x;
+                        dy=my-クリック開始位置_move.y;
+                        クリック開始位置_move = { x: mx, y: my };//クリック位置を更新
+                        移動UI_大きさ.style.left = (parseFloat(rect_UI_大きさ.left)+dx) + "px";
+                        移動UI_大きさ.style.top = (parseFloat(rect_UI_大きさ.top)+dy)  + "px";
+                    }
+                    rect_UI_大きさ = window.getComputedStyle(移動UI_大きさ);
+                    //console.log("四隅拡大縮小移動",rect_UI_大きさ.left, rect_UI_大きさ.top, rect_UI_大きさ.width, rect_UI_大きさ.height);
+                    キャンバス絵を変形({ dx:parseFloat(rect_UI_大きさ.left), dy: parseFloat(rect_UI_大きさ.top), width: parseFloat(rect_UI_大きさ.width), height: parseFloat(rect_UI_大きさ.height), rotate:0, layer: 0 });
+                    キャンバス絵を変形({ dx:parseFloat(rect_UI_大きさ.left), dy: parseFloat(rect_UI_大きさ.top), width: parseFloat(rect_UI_大きさ.width), height: parseFloat(rect_UI_大きさ.height), rotate:0, layer: 1 });
+                }
+
+                function キャンバス絵を変形({ dx = 0, dy = 0, width = 100,height=100, rotate = 0, layer = 0 }) {
+                    const canvas = (layer === 0) ? canvas_0 : canvas_1;
+                    const ctx = canvas.getContext("2d");
+                    ctx.imageSmoothingEnabled = false;//アンチ　アンチエイリアス
+
+                    // 一時保存用キャンバスから画像データを取得
+                    const imgData = (layer === 0) ? 一時保存用キャンバス_0 : 一時保存用キャンバス_1;
+
+                    // 一時キャンバスを作成し、imgDataを描画
+                    const tmpCanvas = document.createElement("canvas");
+                    tmpCanvas.width = canvas.width;
+                    tmpCanvas.height = canvas.height;
+                    const tmpCtx = tmpCanvas.getContext("2d");
+                    tmpCtx.imageSmoothingEnabled = false;//アンチ　アンチエイリアス
+                    tmpCtx.putImageData(imgData, 0, 0);
+
+                    // レイヤーごとにクリア方法を変える
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    if (layer === 1) {
+                        ctx.save();
+                        ctx.fillStyle = document.getElementById("color_pick_1_0").value;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.restore();
+                    }
+
+                    // 変形して描画
+                    ctx.save();//ペンの色とか保存する
+                    ctx.translate(canvas.width / 2, canvas.height / 2 );//操作をキャンパス中心に指定。…回転するし
+                    // 回転→拡大縮小→移動の順
+                    ctx.rotate(rotate); // ラジアン単位
+
+                    ctx.translate(-canvas.width / 2, -canvas.height / 2 );//操作をキャンパス左上に指定。…移動するし
+
+                    //もと画像から 0,0,tmpCanvas.width,tmpCanvas.height,　で切り出して
+                    //置く場所、置く大きさを指定。
+                    ctx.drawImage(
+                        tmpCanvas,  
+                        0,0,tmpCanvas.width,tmpCanvas.height,
+                        Math.floor( +dx),  Math.floor( +dy),
+                        Math.floor(width), Math.floor(height),
+                    );
+
+                    ctx.restore();//ペンの色とか呼び出す
+                }
+
+                function 四隅拡大縮小終了(){
+                    四隅クリック中 = false;
+                    移動クリック中 = false;
+                    if (変形終わったらツール戻してください) {
+                        変形終わったらツール戻してください = false;
+                        //ペンに切り替えればいいか
+                        自動ツール選択("pen");
+                    }
+                }
+
+                var 採用ボタン_move=document.getElementById("採用ボタン_move");
+                var 破棄ボタン_move=document.getElementById("破棄ボタン_move");
+
+                //"click"イベントだと動かない。理由は知らん。こんな意味不明なプログラムを解析したくねえしな！ドン
+                採用ボタン_move.addEventListener("pointerdown",function(){
+                    履歴残し();
+                    変形終わったらツール戻してください = true;
+                });
+
+                破棄ボタン_move.addEventListener("pointerdown",function(){
+                    変形終わったらツール戻してください=true;
+                    
+                });
+
+                //ここから保存とかーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+
                 //ページ下部のツイートボタンを上書き
                 document.getElementById("foot_tweet_a").href=URL_tweet_text="https://twitter.com/intent/tweet?hashtags=deyukaki";           
 
@@ -2209,7 +2484,7 @@
 
                     store.put({ id: "canvas_0", data: canvas0Data });
                     store.put({ id: "canvas_1", data: canvas1Data });
-
+                    console.log("キャンバス保存完了");
                 }
 
                 async function 色箱保存(保存要素名) {
@@ -2286,12 +2561,10 @@
 
                     // 両方のキャンバスがロード完了したら履歴を残す
                     await Promise.all([canvas0Promise, canvas1Promise]);
-                    履歴残し();
+                    履歴残し(true);//trueにしておけば保存までは動かない。
 
                     const hutosaTransaction = db.transaction("hutosaData", "readonly");
                     const hutosaStore = hutosaTransaction.objectStore("hutosaData");
-
-                    console.log(消しゴム太さ,筆太さ);
 
                     const 消しゴム太さPromise = new Promise((resolve) => {   
                         const 消しゴム太さRequest=hutosaStore.get("消しゴム太さ");
@@ -2360,7 +2633,6 @@
                     await Promise.all(parettoPromises);
                     パレット色反映();
 
-                    履歴残し();//ページを開いたときに履歴がまったくないので…
                 }
                 読み込み();
 
@@ -2489,6 +2761,10 @@
                                     <input type="radio" name="tool" class="tool_radio" id="スポイト" value="supoito">
                                     <span class="ペンボタン" id="スポイト_ボタン"></span>
                                 </label>
+                                <label id="move">
+                                    <input type="radio" name="tool" class="tool_radio" id="移動" value="move">
+                                    <span class="ペンボタン" id="移動_ボタン"></span>
+                                </label>
                             </div>
                             <label id="swap">
                                 <span class="ペンボタン" id="スワップ_ボタン"></span>
@@ -2496,6 +2772,7 @@
                             <label id="paretto">
                                 <span class="ペンボタン" id="パレット_ボタン"></span>
                             </label>
+                            
                         </div>
                     </div>
                     
@@ -2508,9 +2785,22 @@
                         <canvas id="cnvs_1" class="描画用" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
                         </canvas>      
                         <canvas id="cnvs_0" class="描画用" height="450px" width="600px"><!--styleのheigthは見た目の大きさを変えているにすぎない。表示領域はcssじゃない。-->
-                        </canvas>          
-                              
+                        </canvas>       
+                        <div id="移動UI">
+                            <div id="移動UI_ボタン群">
+                                <input id="採用ボタン_move" type="button" value="採用" class="色選択ボタン 採用ボタン">
+                                <input id="破棄ボタン_move" type="button" value="破棄" class="色選択ボタン 破棄ボタン">
+                            </div>
+                            <div id="移動UI_大きさ">
+                                <div class="resize-handle" id="移動UI_大きさ_左上"></div>
+                                <div class="resize-handle" id="移動UI_大きさ_右上"></div>
+                                <div class="resize-handle" id="移動UI_大きさ_左下"></div>
+                                <div class="resize-handle" id="移動UI_大きさ_右下"></div>
+                            </div>
+                            
+                        </div>   
                     </div>
+
                 </div>
                 
                 
