@@ -942,6 +942,10 @@
                     if(this.value<=80){
                         //1~80は1~20に変換する
                         本質太さ= Math.ceil(this.value*20/80);
+                        if (this.value > 4 && this.value < 8) {
+                            // 5〜7くらいを1.5にする
+                            本質太さ = 1.5;
+                        }
                     }else{
                         ////80~100は20~100に変換する
                         本質太さ= Math.ceil(Math.round((this.value-80)*80/20+20)/10)*10;
@@ -958,10 +962,10 @@
                     //太さは1~20で調整しやすいようにして、20~はおおざっぱな選択にする
                     var slider位置=1;
                     if(太さ.value<=20){
-                        //1~80は1~50に変換する
+                        //20~100は80~100に変換する
                         slider位置 = Math.floor(太さ.value*80/20);
                     }else{
-                        //20~100は80~100に変換する
+                        //1~80は1~50に変換する
                         slider位置 = Math.floor((太さ.value-20)*20/80)+80;
                     }
                     slider太さ.value = slider位置;
@@ -977,13 +981,25 @@
 
                 document.getElementById("太さ減").addEventListener("click", function() {
                     if (太さ.value > 1) {
-                        太さ.value =parseInt(太さ.value, 10) -1;
+                        if(太さ.value==2){
+                            太さ.value=1.5;
+                        }else if(太さ.value==1.5){
+                            太さ.value=1;
+                        }else{
+                            太さ.value =parseInt(太さ.value, 10) -1;
+                        }
                         太さ.dispatchEvent(new Event("input"));
                     }
                 });
                 document.getElementById("太さ増").addEventListener("click", function() {
                     if (太さ.value < 100) {
-                        太さ.value =parseInt(太さ.value, 10) +1;
+                        if(太さ.value==1){
+                            太さ.value=1.5;
+                        }else if(太さ.value==1.5){
+                            太さ.value=2;
+                        }else{
+                            太さ.value =parseInt(太さ.value, 10) +1;
+                        }
                         太さ.dispatchEvent(new Event("input"));
                     }
                 });
@@ -1161,31 +1177,42 @@
                     }else{
                         var 描き初め=0;    
                     }
+                    if(直径==1.5){
+                        //1.5は特別扱い。ちょっとだけ大きさを出す。
+                        一ピクセル塗る(x, y, 0, 0, 色ロック,背景色);
+                        一ピクセル塗る(x, y, 0, 1, 色ロック,背景色);
+                        //う～ん縦にながい。ほんとは一個前の座標とか使ったほうがいいんだろうけど、まあこんなツールだし…
+                        //一ピクセル塗る(x, y, 1, 0, 色ロック,背景色);
+                        return;
+                    }
                     for(var r=描き初め; r<=半径; r++){//ちゃんと描く。
                         for (const [i, j] of 円周マスク[r]) {
                             if(i+x<0 || i+x>=canvas_0.width || j+y<0 || j+y>=canvas_0.height){
                                 continue;//キャンバス外は無視
                             }
                             if (i * i + j * j <= 半径の二乗) {//半径に収まっていれば
-                                //lockボタン判定
-                                if (色ロック==0 && 現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+3] === 0){
-                                    continue;//ここ透明だからスキップするね
-                                }else if (色ロック==1){
-                                    //レイヤー1はcolor_pick_1_0の色と比較
-                                    if (現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4] === 背景色.r &&
-                                        現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4+1] === 背景色.b &&
-                                        現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4+2] === 背景色.g ){
-                                        continue;//ここ背景色だからスキップするね
-                                    }
-                                }
-                                現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4] = 現在の色.r;//直接色変える
-                                現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+1] = 現在の色.g;//直接色変える
-                                現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+2] = 現在の色.b;//直接色変える
-                                現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+3] = 現在の色.a;//直接色変える
+                                一ピクセル塗る(x, y, i, j, 色ロック,背景色);//ここで色を塗る
                             }
                         }
                     }    
                      
+                }
+                function 一ピクセル塗る(x,y,i,j,色ロック,背景色){
+                    //lockボタン判定
+                    if (色ロック==0 && 現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+3] === 0){
+                        return;//ここ透明だからスキップするね
+                    }else if (色ロック==1){
+                        //レイヤー1はcolor_pick_1_0の色と比較
+                        if (現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4] === 背景色.r &&
+                            現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4+1] === 背景色.b &&
+                            現在キャンバス_データ部分[((y + j) * canvas_1.width + (x + i))*4+2] === 背景色.g ){
+                            return;//ここ背景色だからスキップするね
+                        }
+                    }
+                    現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4] = 現在の色.r;//直接色変える
+                    現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+1] = 現在の色.g;//直接色変える
+                    現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+2] = 現在の色.b;//直接色変える
+                    現在キャンバス_データ部分[((y + j) * canvas_0.width + (x + i))*4+3] = 現在の色.a;//直接色変える
                 }
                 
                 function 描き終わり() {                      
