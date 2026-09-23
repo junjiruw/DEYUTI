@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="雑にフォントを作りたい">                                                                 <!--ページ説明　入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/おもちゃ/でゆフォント</title>                                                         <!--タイトル　入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/omocha/deyufont">                                <!--タイトル　入力すること！-->
+        <meta property="og:title" content="でゆフォント">                                                               <!--タイトル　入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/omocha/deyufont.html">                   <!--リンク　入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <meta name="viewport" content="width=device-width,initial-scale=1"><!--スマホで見てる人向けに表示領域の設定-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+        <style>
+            .svgcvs{
+                background-color: white;
+            }
+
+            button {
+                background: #ffffff;
+                cursor: pointer;
+            }
+
+            button.active {
+                background: #6d6d6d;
+                color: white;
+            }
+            #contentArea {
+                display: flex;
+                align-items: flex-start;
+                gap: 20px;
+                padding: 16px;
+                box-sizing: border-box;
+            }
+            #left {
+                flex: 0 0 auto;
+            }
+            #right {
+                flex: 1 1 auto;
+            }
+            .section {
+                border: 1px solid #d0d0d0;
+                margin: 2px;
+                padding: 2px;
+            }
+            #preview{
+                background: #ffffff;
+                color: #000000;
+            }
+            #preview svg * {
+                fill: currentColor !important;
+                stroke: currentColor !important;
+            }
+            #createdGlyphs {
+                display: flex;
+                flex-wrap: wrap;
+            }
+ 
+            .preview-preset-group {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 8px;
+            }
+            .preview-preset-group button {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            #menu {
+                position: absolute;
+                display: none;
+                background: white;
+                border: 1px solid #ccc;
+                padding: 4px;
+            }
+            .data-panel {
+                margin-top: 12px;
+                border: 1px solid #d0d0d0;
+                overflow: hidden;
+
+            }
+            .data-panel summary {
+                cursor: pointer;
+                padding: 8px;
+            }
+
+            .data-panel[open] summary { 
+                border-bottom: 1px solid #d0d0d0;
+            }
+
+
+        </style>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1MB5XLN4LW');
+        </script>
+        <!-- Google tag (gtag.js) -->
+
+        <script src="../js/public.js"></script>
+        <!-- SVGのライブラリ -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.18/paper-full.min.js"></script>
+        <!-- TTF出力用のライブラリ -->
+        <script src="https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js"></script>
+        <script>
+            onload = function(){
+                onload_functions();
+
+                const CANVAS_WIDTH = 500;
+                const CANVAS_HEIGHT = 500;
+                const FONT_UNITS_PER_EM = CANVAS_HEIGHT;
+                const FONT_ADVANCE_WIDTH = FONT_UNITS_PER_EM;
+                const GUIDE_START = 70;
+                const GUIDE_SIZE = CANVAS_HEIGHT - GUIDE_START * 2;
+                const FONT_BASELINE_Y = GUIDE_START + GUIDE_SIZE;
+                const FONT_ASCENDER = CANVAS_HEIGHT - GUIDE_START;
+                const FONT_DESCENDER = -GUIDE_START;
+                const FONT_X_HEIGHT = GUIDE_SIZE;
+                const PREVIEW_PADDING = 20;
+
+                // フォントのデータ本体。各文字ごとの軌跡を保存する
+                let font = createFont();
+
+                // フォント構造の初期値を作る
+                function createFont() {
+                    return {
+                        version: 1,
+                        metrics: {
+                            unitsPerEm: 1000,//仮、使ってない
+                        },
+                        glyphs: {}
+                    };
+                }
+
+                const FONT_DB_NAME = 'deyufont-db';
+                const FONT_STORE_NAME = 'fontStore';
+                const FONT_KEY = 'mainFont';
+                const previewPresets = {
+                    alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+                    numbers: '0123456789!?,._+-=()[]{}<>/\\|~@#$%^&*',
+                    hiragana: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽぁぃぅぇぉっゃゅょゎ',
+                    katakana: 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポァィゥェォッャュョヮ',
+                    kanji: '一右雨円王音下火花貝学気九休玉金空月犬見五口校左三山子四糸字耳七車手十出女小上森人水正生青夕石赤千川先早草足村大男竹中虫町天田土二日入年白八百文木本名目立力林六引羽雲園遠何科夏家歌回会海絵外角楽活間丸岩顔汽記帰弓牛魚京強教近兄形計元言原戶古午後語工公広交光考行高黄合谷国黑今才細作算止市矢姉思紙寺自時室社弱首秋週春書少場色食心新親図数西声星晴切雪船線前組走多太体台地池知茶昼長鳥朝直通弟店点電刀冬当東答頭同道読南馬万米毎買売麦父風分聞歩母方北妹明鳴毛門夜野友用曜来理里話',
+                };
+                let autoSaveTimer = null;
+                let hasUnsavedChanges = false;
+                const menu = document.getElementById('menu');
+
+                // --------------------
+                //　保存系機能
+                // --------------------
+                function openFontDB() {
+                    return new Promise((resolve, reject) => {
+                        const request = indexedDB.open(FONT_DB_NAME, 1);
+
+                        request.onupgradeneeded = (event) => {
+                            const db = event.target.result;
+                            if (!db.objectStoreNames.contains(FONT_STORE_NAME)) {
+                                db.createObjectStore(FONT_STORE_NAME);
+                            }
+                        };
+
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                }
+
+                function markDirty() {
+                    hasUnsavedChanges = true;
+
+                    if (autoSaveTimer) {
+                        clearTimeout(autoSaveTimer);
+                    }
+
+                    autoSaveTimer = setTimeout(async () => {
+                        if (hasUnsavedChanges) {
+                            await saveFontToIndexedDB();
+                        }
+                    }, 1500);
+                }
+
+                async function saveFontToIndexedDB() {
+                    try {
+                        const db = await openFontDB();
+                        const tx = db.transaction(FONT_STORE_NAME, 'readwrite');
+                        const store = tx.objectStore(FONT_STORE_NAME);
+
+                        store.put(JSON.stringify(font), FONT_KEY);
+
+                        await new Promise((resolve, reject) => {
+                            tx.oncomplete = resolve;
+                            tx.onerror = () => reject(tx.error);
+                            tx.onabort = () => reject(tx.error);
+                        });
+
+                        hasUnsavedChanges = false;
+                        console.log('font saved to IndexedDB');
+                    } catch (error) {
+                        console.error('saveFontToIndexedDB error:', error);
+                    }
+                }
+
+                async function loadFontFromIndexedDB() {
+                    try {
+                        const db = await openFontDB();
+                        const tx = db.transaction(FONT_STORE_NAME, 'readonly');
+                        const store = tx.objectStore(FONT_STORE_NAME);
+                        const request = store.get(FONT_KEY);
+
+                        const result = await new Promise((resolve, reject) => {
+                            request.onsuccess = () => resolve(request.result);
+                            request.onerror = () => reject(request.error);
+                        });
+
+                        if (!result) {
+                            console.log('saved font not found');
+                            return;
+                        }
+
+                        const saved = JSON.parse(result);
+                        if (!saved || !saved.glyphs) {
+                            console.log('saved font data is invalid');
+                            return;
+                        }
+
+                        font = saved;
+                        renderCurrentGlyph();
+                        rebuildTextPreview();
+                        updateCreatedGlyphs();
+                        console.log('font loaded from IndexedDB');
+                    } catch (error) {
+                        console.error('loadFontFromIndexedDB error:', error);
+                    }
+                }
+
+                function renderCurrentGlyph() {
+                    drawLayer.removeChildren();
+                    previewLayer.removeChildren();
+                    pointLayer.removeChildren();
+                    handleLayer.removeChildren();
+
+                    currentPath = null;
+                    selectedPath = null;
+                    selectedSegment = null;
+
+                    const glyph = font.glyphs[currentChar];
+                    if (glyph) {
+                        drawLayer.importJSON(glyph.centerPaths);
+                    }
+
+                    rebuildResult();
+                    //ついでにプレビューも全体更新しとけ！
+                    rebuildTextPreview();
+                }
+
+                function clearCurrentCanvas({ persist = true } = {}) {
+                    drawLayer.removeChildren();
+                    previewLayer.removeChildren();
+                    resultLayer.removeChildren();
+                    pointLayer.removeChildren();
+                    handleLayer.removeChildren();
+
+                    currentPath = null;
+                    selectedPath = null;
+                    selectedSegment = null;
+
+                    delete font.glyphs[currentChar];
+
+                    if (persist) {
+                        markDirty();
+                    }
+
+                    rebuildTextPreview(currentChar);
+                    updateCreatedGlyphs();
+                }
+
+                async function clearFontFromIndexedDB() {
+                    if (!window.confirm('ブラウザに保存したフォントデータを削除しますか？\n現在のキャンバスも消去されます。')) {
+                        return;
+                    }
+
+                    try {
+                        const db = await openFontDB();
+                        const tx = db.transaction(FONT_STORE_NAME, 'readwrite');
+                        const store = tx.objectStore(FONT_STORE_NAME);
+                        store.delete(FONT_KEY);
+
+                        await new Promise((resolve, reject) => {
+                            tx.oncomplete = resolve;
+                            tx.onerror = () => reject(tx.error);
+                            tx.onabort = () => reject(tx.error);
+                        });
+
+                        if (autoSaveTimer) {
+                            clearTimeout(autoSaveTimer);
+                            autoSaveTimer = null;
+                        }
+                        hasUnsavedChanges = false;
+
+                        font = createFont();
+                        clearCurrentCanvas({ persist: false });
+                        console.log('font deleted from IndexedDB');
+                    } catch (error) {
+                        console.error('clearFontFromIndexedDB error:', error);
+                    }
+                }
+
+                function exportFontToFile() {
+                    const payload = JSON.stringify(font, null, 2);
+                    const blob = new Blob([payload], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+                    link.href = url;
+                    link.download = `deyufont-${stamp}.json`;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    URL.revokeObjectURL(url);
+                }
+
+                //パスをopentype.jsのPathに変換する
+                function addPaperPathToFontPath(sourcePath, fontPath, originX) {
+                    const segments = sourcePath.segments;
+                    //線になってねえ
+                    if (segments.length < 2) {
+                        return;
+                    }
+
+                    // キャンバス座標をTTF用の座標へ変換する。Y軸は上下反転する
+                    const toFontPoint = (point) => ({
+                        x: (point.x - originX) ,
+                        y: (FONT_BASELINE_Y - point.y) 
+                    });
+
+                    // 最初の点を輪郭の開始位置にする
+                    const firstPoint = toFontPoint(segments[0].point);
+                    fontPath.moveTo(firstPoint.x, firstPoint.y);
+
+                    // 各セグメントを3次ベジェ曲線として追加する
+                    for (let index = 0; index < segments.length - 1; index++) {
+                        const from = segments[index];
+                        const to = segments[index + 1];
+                        const fromPoint = toFontPoint(from.point);
+                        const toPoint = toFontPoint(to.point);
+                        const control1 = toFontPoint(from.point.add(from.handleOut));
+                        const control2 = toFontPoint(to.point.add(to.handleIn));
+
+                        fontPath.curveTo(
+                            control1.x,
+                            control1.y,
+                            control2.x,
+                            control2.y,
+                            toPoint.x,
+                            toPoint.y
+                        );
+                    }
+
+                    // 最後のセグメントから最初の点へ戻して輪郭を閉じる
+                    const last = segments[segments.length - 1];
+                    const lastPoint = toFontPoint(last.point);
+                    const closingControl1 = toFontPoint(last.point.add(last.handleOut));
+                    const closingControl2 = toFontPoint(segments[0].point.add(segments[0].handleIn));
+
+                    fontPath.curveTo(
+                        closingControl1.x,
+                        closingControl1.y,
+                        closingControl2.x,
+                        closingControl2.y,
+                        firstPoint.x,
+                        firstPoint.y
+                    );
+                    fontPath.close();
+                }
+
+                //TrueTypeフォント(ttf)を作る
+                function createTrueTypeFont() {
+                    updateFont();
+
+                    // TrueTypeフォントには必ず未定義グリフを先頭に用意する　←そうなんだ
+                    const glyphs = [new opentype.Glyph({
+                        name: '.notdef',
+                        advanceWidth: FONT_ADVANCE_WIDTH,
+                        path: new opentype.Path()
+                    })];
+
+                    //各文字を変換していく
+                    Object.entries(font.glyphs).forEach(([char, glyphData]) => {
+                        // 線
+                        const sourceLayer = new paper.Layer();
+                        sourceLayer.importJSON(glyphData.centerPaths);
+
+                        // 太い輪郭へ変換(輪郭はデータにないので再生成が必要…激重かも)
+                        const outlineLayer = new paper.Layer();
+                        buildOutline(sourceLayer, outlineLayer);
+
+                        // プレビューと同じく、輪郭の左右に余白を持つ文字幅にする
+                        const bounds = outlineLayer.bounds;
+                        const originX = bounds.x - PREVIEW_PADDING;//x-20
+                        const glyphWidth = bounds.width + PREVIEW_PADDING * 2;//width+40
+
+                        // 輪郭をopentype.jsのパスへ変換する
+                        const fontPath = new opentype.Path();
+                        outlineLayer.children.forEach((path) => {
+                            addPaperPathToFontPath(path, fontPath, originX);
+                        });
+
+                        glyphs.push(new opentype.Glyph({
+                            name: `uni${char.codePointAt(0).toString(16).toUpperCase()}`,
+                            unicode: char.codePointAt(0),
+                            advanceWidth: glyphWidth,
+                            path: fontPath
+                        }));
+
+                        //不要なんで消す
+                        sourceLayer.remove();
+                        outlineLayer.remove();
+                    });
+
+                    // 作成されていない場合も、通常の空白文字を使えるようにする
+                    if (!font.glyphs[' ']) {
+                        glyphs.push(new opentype.Glyph({
+                            name: 'space',
+                            unicode: 32,
+                            advanceWidth: FONT_ADVANCE_WIDTH,
+                            path: new opentype.Path()
+                        }));
+                    }
+
+                    // 収集したグリフからTTFとして書き出せるフォントを作る
+                    return new opentype.Font({
+                        familyName: 'DeyuFont',
+                        styleName: 'Regular',
+                        unitsPerEm: FONT_UNITS_PER_EM,
+                        ascender: FONT_ASCENDER,
+                        descender: FONT_DESCENDER,
+                        xHeight: FONT_X_HEIGHT,
+                        glyphs
+                    });
+                }
+
+                function exportFontToTTF() {
+                    try {
+                        const opentypeFont = createTrueTypeFont();
+                        const blob = new Blob(
+                            [opentypeFont.toArrayBuffer()],
+                            { type: 'font/ttf' }
+                        );
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'deyufont.ttf';
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                        URL.revokeObjectURL(url);
+                    } catch (error) {
+                        console.error('exportFontToTTF error:', error);
+                        window.alert('TTF の出力に失敗しました。');
+                    }
+                }
+
+                async function importFontFromFile(file) {
+                    if (!file) {
+                        return;
+                    }
+
+                    try {
+                        const text = await file.text();
+                        const imported = JSON.parse(text);
+
+                        if (!imported || typeof imported !== 'object' || !imported.glyphs || typeof imported.glyphs !== 'object') {
+                            throw new Error('フォントデータの形式が不正です。');
+                        }
+
+                        font = imported;
+                        renderCurrentGlyph();
+                        await saveFontToIndexedDB();
+                        console.log('font imported from file');
+                    } catch (error) {
+                        console.error('importFontFromFile error:', error);
+                        window.alert('外部読み込みに失敗しました。\nJSON 形式のデータを選んでください。');
+                    }
+                }
+                
+                // ツールモード: pen=描画, hand=選択/移動
+                let toolMode = 'pen';
+                let dragTarget = null;
+
+                document.getElementById('penBtn').onclick = () => {
+                    toolMode = 'pen';
+                    pointLayer.removeChildren();
+                    handleLayer.removeChildren();
+                    selectedPath = null;
+                    updateUI();
+                };
+
+                document.getElementById('handBtn').onclick = () => {
+                    toolMode = 'hand';
+                    ペン右クリック();
+                    updateUI();
+                };
+
+                function updateUI() {
+                    document.getElementById('penBtn').classList.remove('active');
+                    document.getElementById('handBtn').classList.remove('active');
+
+                    if (toolMode === 'pen') {
+                        document.getElementById('penBtn').classList.add('active');
+                    }
+
+                    if (toolMode === 'hand') {
+                        document.getElementById('handBtn').classList.add('active');
+                    }
+                }
+
+                document.getElementById('undoBtn').onclick = () => {
+                    undo();
+                };
+
+                document.getElementById('redoBtn').onclick = () => {
+                    redo();
+                };
+
+
+                var svgcvs = document.getElementById("svgcvs");
+                var cvsdiv = document.getElementById("cvsdiv");
+                cvsdiv.addEventListener("contextmenu", function(e){
+                    e.preventDefault(); // 右クリックメニューを消す
+                });
+
+
+
+                // Paper.js の描画対象を canvas にセットする
+                paper.setup(document.getElementById('svgcvs'));
+
+                // --------------------
+                // レイヤー構成
+                // --------------------
+                // guideLayer: 補助線
+                // resultLayer: 太らせたアウトライン
+                // previewLayer: マウス中のプレビュー
+                // drawLayer: 実際に入力した本線
+                // handleLayer: ハンドル線
+                // pointLayer: 選択点や制御点
+                const guideLayer = new paper.Layer();   // ガイド線とかを引く用
+                const resultLayer = new paper.Layer(); // 太らせた線
+                const previewLayer = new paper.Layer(); // 予測線
+                const drawLayer = new paper.Layer();  // 本線
+                const handleLayer = new paper.Layer(); //ハンドルを表示する用
+                const pointLayer = new paper.Layer(); //点\を表示する用
+
+                //選択操作で邪魔になるので当たり判定消しちゃうよん
+                guideLayer.locked = true;
+                resultLayer.locked = true;
+                previewLayer.locked = true;
+                handleLayer.locked = true;
+
+                //ガイド線
+                let center = paper.view.center;
+                let size = paper.view.size;
+                const rect = new paper.Path.Rectangle({
+                    point: [GUIDE_START, GUIDE_START],
+                    size: [GUIDE_SIZE, GUIDE_SIZE],
+                    strokeColor: 'blue',
+                    dashArray: [6, 4]
+                });
+                // 横線
+                const hLine = new paper.Path.Line({
+                    from: [0, 250],
+                    to: [size.width, 250],
+                    strokeColor: '#00aaff',
+                    dashArray: [6, 4]
+                });
+
+                // 縦線
+                const vLine = new paper.Path.Line({
+                    from: [center.x, 0],
+                    to: [center.x, size.height],
+                    strokeColor: '#00aaff',
+                    dashArray: [6, 4]
+                });
+
+                guideLayer.addChild(rect);
+                guideLayer.addChild(hLine);
+                guideLayer.addChild(vLine);
+                // --------------------
+                // 編集状態
+                // --------------------
+                // currentPath: 現在描いている線
+                // previewPath: マウス追跡中のプレビュー線
+                // selectedPath: 選択中の線
+                // history / redoStack: Undo/Redo の履歴
+                let currentPath = null;
+                let previewPath = null;
+                let selectedPath = null;
+                let history = [];
+                let redoStack = [];
+
+                let dragPath = null;
+                let lastDragPoint = null;
+
+                let currentChar = "a";//今なんの文字書いてるの？
+
+                // --------------------
+                // Undo保存（drawLayerだけ）
+                // --------------------
+                // 現在の状態を Undo 用に保存する
+                function saveState(redo=false) {
+                    history.push({
+                        layer: drawLayer.exportJSON(),
+                        isDrawing: !!currentPath,
+                        EditingPathID: drawLayer.children.indexOf(selectedPath)
+                    });
+                    if(!redo) {
+                        redoStack = []; // 新しい操作をしたらRedoは消える
+                    }
+                }
+
+                // --------------------
+                // Redo保存
+                // --------------------
+                function saveRedo() {
+                    redoStack.push({
+                        layer: drawLayer.exportJSON(),
+                        isDrawing: !!currentPath,
+                        EditingPathID: drawLayer.children.indexOf(selectedPath)
+                    });
+                }
+
+                // --------------------
+                // Undo / Redo
+                // --------------------
+                // 履歴から前の状態または次の状態へ戻る
+                function undo() {
+                    if (history.length === 0) return;
+                    saveRedo(); // ★今の状態をRedoに保存
+
+                    const prev = history.pop();
+                    
+
+                    //console.log(prev);
+                    // 以前のは消す
+                    drawLayer.removeChildren();
+                    previewLayer.removeChildren();
+                    pointLayer.removeChildren();
+                    handleLayer.removeChildren();
+                    
+                    // 本線を復元
+                    drawLayer.importJSON(prev.layer);
+                    if (prev.isDrawing) {
+                        currentPath = drawLayer.children[drawLayer.children.length - 1];
+                        rebuildPreview();
+                        renderPoints(currentPath);
+                    }else{
+                        currentPath = null;
+                        renderPoints();
+                    }
+
+                    if(prev.EditingPathID!=-1){
+                        selectSegment(drawLayer.children[prev.EditingPathID]);
+                    }
+
+                    // 結果は作り直す
+                    rebuildResult();
+                }
+
+                // --------------------
+                // やりなおし
+                // --------------------
+                function redo() {
+                    if (redoStack.length === 0) {
+                        return;
+                    }
+                    saveState(true); // ★今の状態をUndoに保存
+
+                    const next = redoStack.pop();
+
+                    // 以前のは消す
+                    drawLayer.removeChildren();
+                    previewLayer.removeChildren();
+                    pointLayer.removeChildren();
+                    handleLayer.removeChildren();
+                    
+                    // 本線を復元
+                    drawLayer.importJSON(next.layer);
+                    if (next.isDrawing) {
+                        currentPath = drawLayer.children[drawLayer.children.length - 1];
+                        rebuildPreview();
+                        renderPoints(currentPath);
+                    }else{
+                        currentPath = null;
+                        renderPoints();
+                    }
+
+                    if(next.EditingPathID!=-1){
+                        selectSegment(drawLayer.children[next.EditingPathID]);
+                    }
+
+                    // 結果は作り直す
+                    rebuildResult();
+                }
+                // --------------------
+                // プレビュー再生成
+                // --------------------
+                // 現在のパスをドラッグ中の状態で薄い線として表示する
+                function rebuildPreview() {
+
+                    if (previewPath){ 
+                        previewPath.remove();
+                    }
+
+                    previewPath = currentPath.clone();
+                    previewLayer.addChild(previewPath);
+
+                    previewPath.add(lastMousePoint);
+                    previewPath.smooth({ type: 'continuous' });
+
+                    previewPath.strokeColor = 'gray';
+                    previewPath.dashArray = [4, 4];
+                }
+
+                // --------------------
+                // result再生成（太らせ処理）
+                // --------------------
+                // drawLayer から輪郭を生成して、文字のプレビュー/保存用に使う
+                function rebuildResult(移動中スキップ=false) {
+
+                    buildOutline(drawLayer, resultLayer);
+
+                    if(移動中スキップ==false){//移動中はfontの更新とか重い処理をしないようにする
+                        //データ構造更新
+                        updateFont();
+                        //テキスト反映
+                        rebuildTextPreview(currentChar);
+                    }
+
+                    //とおもったんだけど、太らせ処理が馬鹿重いから上のフラグ意味ねえかも（笑）
+                }
+
+                // 現在の文字の輪郭データを font.glyphs に保存する
+                function updateFont() {
+                    //console.log(drawLayer.children.length);
+                    //console.log(drawLayer.exportJSON());
+
+                    //と思ったらこれ文字ないじゃん！
+                    if (drawLayer.children.length === 0) {
+                        delete font.glyphs[currentChar];
+
+                    }else{
+                        //文字がちゃんとあるなら輪郭を生成
+
+                        font.glyphs[currentChar] = {
+
+                            advance: 100,
+
+                            centerPaths: drawLayer.exportJSON()
+                        };
+                    }
+
+                    markDirty();
+                    updateCreatedGlyphs();
+                }
+
+                // 中心線から太い輪郭を計算して、プレビューや出力用の塗りつぶし形状を作る
+                function buildOutline(sourceLayer, targetLayer) {
+
+                    targetLayer.removeChildren();
+
+                    sourceLayer.children.forEach(path => {
+
+                        const outline = createOutline(path, 40);
+
+                        if (outline) {
+                            targetLayer.addChild(outline);
+                        }
+                    });
+                }
+
+                // 1本の線から、左右に広がる輪郭を生成する…雑だけど
+                // width が太さ、step が計算粒度になる
+                function createOutline(path, width = 20, step = 4) {
+
+                    if (path.length < step) {
+                        return null;
+                    }
+
+                    const half = width / 2;
+
+                    const left = [];
+                    const right = [];
+
+                    for (let offset = 0; offset <= path.length; offset += step) {
+
+                        const point = path.getPointAt(offset);
+                        const tangent = path.getTangentAt(offset);
+
+                        if (!point || !tangent) continue;
+
+                        const normal = tangent
+                            .normalize()
+                            .rotate(90)
+                            .multiply(half);
+
+                        left.push(point.add(normal));
+                        right.push(point.subtract(normal));
+                    }
+
+                    // 終点を確実に追加
+                    const endPoint = path.getPointAt(path.length);
+                    const endTangent = path.getTangentAt(path.length);
+
+                    if (endPoint && endTangent) {
+
+                        const normal = endTangent
+                            .normalize()
+                            .rotate(90)
+                            .multiply(half);
+
+                        left.push(endPoint.add(normal));
+                        right.push(endPoint.subtract(normal));
+                    }
+
+                    const outline = new paper.Path();
+
+                    // 左側
+                    left.forEach(p => outline.add(p));
+
+                    // 終点キャップ
+                    {
+                        const center = path.getPointAt(path.length);
+                        const tangent = path.getTangentAt(path.length);
+
+                        if (center && tangent) {
+
+                            const angle = tangent.angle;
+
+                            for (let a = 90; a >= -90; a -= 15){
+
+                                outline.add(
+                                    center.add(
+                                        new paper.Point({
+                                            length: half,
+                                            angle: angle + a
+                                        })
+                                    )
+                                );
+                            }
+                        }
+                    }
+
+                    // 右側
+                    [...right]
+                        .reverse()
+                        .forEach(p => outline.add(p));
+
+                    // 始点キャップ
+                    {
+                        const center = path.getPointAt(0);
+                        const tangent = path.getTangentAt(0);
+
+                        if (center && tangent) {
+
+                            const angle = tangent.angle;
+
+                            for (let a = 270; a >= 90; a -= 15) {
+
+                                outline.add(
+                                    center.add(
+                                        new paper.Point({
+                                            length: half,
+                                            angle: angle + a
+                                        })
+                                    )
+                                );
+                            }
+                        }
+                    }
+
+                    outline.closed = true;
+
+                    outline.fillColor = '#ccc';
+                    outline.strokeColor = null;
+
+                    outline.simplify(2);
+
+                    return outline;
+                }
+
+                // --------------------
+                // マウス入力
+                // --------------------
+                // 左クリックで描画、右クリックでパスを区切る/編集メニューを出す
+                paper.view.onMouseDown = function(event) {
+
+                    if (toolMode === 'pen') {
+                        // 描画モード
+                        handlePenDown(event);
+                    }
+
+                    if (toolMode === 'hand') {
+                        // 選択モード
+                        handleSelectDown(event);
+                    }
+                };
+
+                // ペンモード時のマウス入力
+                function handlePenDown(event) {
+
+                    // 左クリック
+                    if (event.event.button === 0) {
+
+                        saveState(); // ★操作前に保存
+
+                        drawLayer.activate();
+
+                        if (!currentPath) {
+                            currentPath = new paper.Path();
+                            currentPath.strokeColor = 'black';
+                        }
+
+                        currentPath.add(event.point);
+
+                        if (currentPath.segments.length === 2) {//2点目ならハンドルを自動生成
+
+                            const s0 = currentPath.segments[0];
+                            const s1 = currentPath.segments[1];
+
+                            const v = s1.point.subtract(s0.point).divide(3);
+
+                            s0.handleOut = v;
+                            s1.handleIn = v.negate();
+                        }
+                        else if (currentPath.segments.length > 2) {//3点目以降ならハンドルを自動生成
+
+                            currentPath.smooth({ type: 'continuous' });
+                        }
+
+                        rebuildResult();
+                        renderPoints(currentPath);
+                    }
+
+                    // 右クリックで終了
+                    if (event.event.button === 2) {
+                        ペン右クリック();
+                    }
+                };
+
+                // ペンモードで右クリックしたときの処理
+                // 1点だけの線は破棄し、2点以上ならそのまま閉じて線を確定する
+                function ペン右クリック() {
+
+                    if (!currentPath) {
+                        return;
+                    }
+
+                    // 1点だけなら破棄
+                    if (currentPath.segments.length < 2) {
+                        currentPath.remove();
+                    } else {
+                        saveState();
+                    }
+
+                    currentPath = null;
+                    renderPoints();
+
+                    if (previewPath) {
+                        previewPath.remove();
+                        previewPath = null;
+                    }
+
+                    rebuildResult();
+                }
+
+                // --------------------
+                // 選択・移動
+                // --------------------
+                // 履歴保存したかフラグ: ドラッグ開始時の履歴保存を1回だけ行うためのフラグ
+                // 移動開始フラグ: ドラッグ中に再計算を抑制するためのフラグ
+                let 履歴保存したかフラグ=false;
+                let 移動開始フラグ=false;
+                let contextTarget = null; // 右クリックの対象
+                function handleSelectDown(event) {
+                    // 左クリック
+                    if (event.event.button === 0) {
+                            const hit = paper.project.hitTest(event.point, {
+                                segments: true,
+                                stroke: true,
+                                segments: false, //セグメントを無視。UI操作するのは点なので、fillかstorkeだけが判定になるはず。
+                                tolerance: 10
+                            });
+
+                        if (!hit) return;
+                        
+                        //console.log(hit.type);
+                        
+                        if (hit.item.layer == drawLayer) {
+                            //点か線をクリックした場合
+                            renderPoints(hit.item);
+                            selectSegment(hit.item);
+
+                            // 線をドラッグできるようにする
+                            履歴保存したかフラグ = false;
+                            移動開始フラグ=true;//移動中にfontの更新をしてると重すぎ
+
+                            dragTarget = {
+                                type: "path",
+                                path: hit.item,
+                                lastPoint: event.point
+                            };
+                        }else if(hit.item.layer==pointLayer){
+                            //console.log("l:point");
+                            if (hit.type === 'fill' || hit.type === 'stroke') {
+
+                                履歴保存したかフラグ=false;//ここではせーブしてないので、ドラッグ開始時にセーブするようにする
+                                移動開始フラグ=true;//移動中にfontの更新をしてると重すぎ
+
+                                const data = hit.item.data;
+
+                                dragTarget = {
+                                    type: data.type,
+                                    segment: data.segment
+                                };
+                                //console.log("今回：");
+                                //console.log(hit.item.data);
+                                //console.log(hit.item.layer?.name);
+                            }
+                        }else{
+                            console.log("l:"+hit.item.layer);
+                            console.log(hit);
+                        }
+                    }else if (event.event.button === 2) {
+                        // 右クリックでメニューだす
+                        const hit = paper.project.hitTest(event.point, {
+                            stroke: true,
+                            tolerance: 10
+                        });
+
+                        if (!hit) return;
+
+                        if (hit.item.layer === pointLayer && hit.item.data.type === 'segment') {//点だけだと、ハンドルも判定されちゃうので。
+
+                            const seg = hit.item.data.segment;
+
+                            const isEndPoint =
+                                seg === selectedPath.firstSegment ||
+                                seg === selectedPath.lastSegment;
+
+                            contextTarget = {
+                                type: hit.item.data.type,
+                                segment: seg,
+                                path: selectedPath
+                            };
+
+                            showMenu(
+                                event.event.pageX,
+                                event.event.pageY,
+                                {
+                                    deletePoint: true,
+                                    continuePath: isEndPoint
+                                }
+                            );
+                        }
+                        else if(hit.item.layer==drawLayer){
+
+                            contextTarget = {
+                                path: hit.item,
+                                location: hit.location
+                            };
+
+                            showMenu(
+                                event.event.pageX,
+                                event.event.pageY,
+                                {
+                                    addPoint: true,
+                                    deletePath: true
+                                }
+                            );
+                        }
+                    }
+                }
+
+                // 選択中パスの制御点とハンドルを描画する
+                function selectSegment(path) {
+                    selectedPath = path;
+
+                    pointLayer.removeChildren();
+                    handleLayer.removeChildren();
+
+                    path.segments.forEach(seg => {
+                        drawPoint(seg, 'segment', seg.point);
+                        if (seg.handleIn.length > 0) {
+                            drawPoint(seg, 'handleIn', seg.point.add(seg.handleIn), 'red',3);//ハンドルは相対座標なので足す
+                        }
+
+                        if (seg.handleOut.length > 0) {
+                            drawPoint(seg, 'handleOut', seg.point.add(seg.handleOut), 'red',3);//ハンドルは相対座標なので足す
+                        }
+
+                        drawHandle(seg);
+                    });
+                }
+
+                // 制御点を円として描画する
+                function drawPoint(seg,type,point, color='white',size=4) {
+                    const circle = new paper.Path.Circle({
+                        center: point,
+                        radius: size,
+                        fillColor: color,
+                        strokeColor: 'black'
+                    });
+                    circle.data = {
+                        type: type,
+                        segment: seg
+                    };
+
+                    //console.log(circle.data);
+                    pointLayer.addChild(circle);
+                }
+
+                // ハンドル線を描いて、カーブの角度を視覚化する
+                function drawHandle(seg) {
+
+                    if (seg.handleIn.length > 0) {
+                        const inLine = new paper.Path.Line({
+                            from: seg.point,
+                            to: seg.point.add(seg.handleIn),//ハンドルは相対座標なので足す
+                            strokeColor: 'gray'
+                        });
+
+                        handleLayer.addChild(inLine);
+                    }
+
+                    if (seg.handleOut.length > 0) {
+                        const outLine = new paper.Path.Line({
+                            from: seg.point,
+                            to: seg.point.add(seg.handleOut),//ハンドルは相対座標なので足す
+                            strokeColor: 'gray'
+                        });
+
+                        handleLayer.addChild(outLine);
+                    }
+                }
+
+                document.addEventListener('mouseup', () => {
+                    dragTarget = null;
+                    if(移動開始フラグ==true){
+                        rebuildResult(false);
+                        移動開始フラグ=false;
+                    }
+                });
+                document.addEventListener('mouseleave', () => {
+                    dragTarget = null;
+                    if(移動開始フラグ==true){
+                        rebuildResult(false);
+                        移動開始フラグ=false;
+                    }
+                });
+
+               
+                let hoverPoint = null;
+
+                function resetHoverPoint() {
+                    if (!hoverPoint) return;
+
+                    if (hoverPoint.layer === pointLayer) {
+                        const type = hoverPoint.data && hoverPoint.data.type;
+                        hoverPoint.fillColor = type === 'segment' ? 'white' : 'red';
+                        hoverPoint.strokeColor = 'black';
+                    } else if (hoverPoint.layer === drawLayer) {
+                        hoverPoint.strokeColor = 'black';
+                    }
+
+                    hoverPoint = null;
+                }
+
+                // 選択ツールでホバーしたら色変えたり
+                function updateHoverPoint(item) {
+
+                    //ひとまずリセット
+                    resetHoverPoint();
+
+
+                    const isPoint = item && item.layer === pointLayer && item.data && item.data.type;
+                    const isStroke = item && item.layer === drawLayer;
+
+                    if (!isPoint && !isStroke) {
+                        // hitがない、または編集対象ではない…とか
+                        return;
+                    }
+
+                    if (hoverPoint === item) {
+                        return;
+                    }
+                    //console.log(item.data);
+
+                    hoverPoint = item;
+
+                    if (isPoint) {
+                        hoverPoint.fillColor = '#0000ff';
+                        hoverPoint.strokeColor = '#3030ff';
+                    } else if (isStroke) {
+                        hoverPoint.strokeColor = '#0000ff';
+                    }
+                }
+
+                // 選択点の表示を更新する
+                function renderPoints(path) {
+                    pointLayer.removeChildren();
+
+                    if (!path) return;
+
+                    path.segments.forEach(seg => drawPoint(seg, 'segment', seg.point));
+                }
+
+                // 右クリックメニューを表示し、使える操作だけを出す
+                function showMenu(x, y, options = {}) {
+
+                    options = {
+                        //初期値
+                        addPoint: false,
+                        deletePoint: false,
+                        continuePath: false,
+                        deletePath: false,
+                        ...options//引数で上書き
+                    };
+                    const menu = document.getElementById('menu');
+
+                    document.getElementById('addPoint').style.display =
+                        options.addPoint ? 'block' : 'none';
+
+                    document.getElementById('deletePoint').style.display =
+                        options.deletePoint ? 'block' : 'none';
+
+                    document.getElementById('continuePath').style.display =
+                        options.continuePath ? 'block' : 'none';
+                    
+                    document.getElementById('deletePath').style.display =
+                        options.deletePath ? 'block' : 'none';
+
+                    menu.style.left = x + 'px';
+                    menu.style.top = y + 'px';
+                    menu.style.display = 'block';
+                }
+
+                // 右クリックメニューを閉じる
+                function hideMenu() {
+                    const menu = document.getElementById('menu');
+                    menu.style.display = 'none';
+                }
+
+                // 右クリックメニューから点を削除する
+                function deletePointFromContext() {
+
+                    if (!contextTarget) return;
+
+                    saveState();
+
+                    const seg = contextTarget.segment;
+
+                    seg.remove();
+
+                    // 端点になった点の不要ハンドルを消す
+                    const segs = selectedPath.segments;
+
+                    if (segs.length > 0) {
+                        segs[0].handleIn = new paper.Point(0, 0);
+                        segs[segs.length - 1].handleOut = new paper.Point(0, 0);
+                    }
+
+                    selectSegment(selectedPath);
+                    rebuildResult();
+
+                    contextTarget = null;
+                    hideMenu();
+                }
+
+                // パスの途中に点を増やして、線の編集を可能にする
+                function addPointFromContext() {
+                    if (!contextTarget) return;
+
+                    // ★ Undo用に保存（変更前）
+                    saveState();
+
+                    const path = contextTarget.path;
+                    if (!path) return;
+
+                    // ★ カーブを保ったまま分割
+                    const newSeg = path.divideAt(contextTarget.location);
+
+                    // ★ 選択更新
+                    selectedPath = path;
+                    selectedSegment = newSeg;
+
+                    // ★ UI更新
+                    selectSegment(selectedPath);
+                    rebuildResult(); 
+
+                    // 後処理
+                    contextTarget = null;
+                    hideMenu();
+                }
+
+                // 右端/左端の点から連続して描画できるように、現在の線を続きを描く状態へ戻す
+                function continuePathFromContext() {
+
+                    if (!contextTarget) return;
+
+                    saveState();
+
+                    const path = contextTarget.path;
+                    const seg = contextTarget.segment;
+
+                    // 始点なら反転
+                    if (seg === path.firstSegment) {
+                        path.reverse();
+                    }
+
+                    currentPath = path;
+
+                    selectedPath = null;
+
+                    pointLayer.removeChildren();
+                    handleLayer.removeChildren();
+
+                    toolMode = 'pen';
+                    updateUI();
+
+                    hideMenu();
+                }
+
+                // 1本の線を削除し、選択状態も解除する
+                function deletePath(path) {
+
+                    if (!path) {
+                        return;
+                    }
+
+                    // 選択中なら解除
+                    if (selectedPath === path) {
+                        selectedPath = null;
+                        selectedSegment = null;
+
+                        pointLayer.removeChildren();
+                        handleLayer.removeChildren();
+                    }
+
+                    path.remove();
+
+                    rebuildResult();
+                }
+                function deletePathFromContext() {
+
+                    if (!contextTarget) return;
+
+                    saveState();
+
+                    deletePath(contextTarget.path);
+
+                    contextTarget = null;
+                    hideMenu();
+                }
+
+                // 文字入力欄の値に対応するグリフを読み込み、編集画面へ戻す
+                function loadGlyph() {
+
+                    updateFont();//一応保存
+
+                    currentChar = document.getElementById("charInput").value;
+                    document.getElementById("currentChar").textContent = currentChar;
+
+                    drawLayer.removeChildren();
+                    previewLayer.removeChildren();
+                    pointLayer.removeChildren();
+                    handleLayer.removeChildren();
+
+                    currentPath = null;
+                    selectedPath = null;
+                    selectedSegment = null;
+
+                    const glyph = font.glyphs[currentChar];
+
+                    if (glyph) {
+                        drawLayer.importJSON(glyph.centerPaths);
+                    }
+
+                    rebuildResult();
+                }
+
+                function updateCreatedGlyphs() {
+                    const list = document.getElementById('createdGlyphs');
+                    list.replaceChildren();
+
+                    Object.keys(font.glyphs).sort().forEach((char) => {
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.textContent = char;
+                        button.title = `${char} を編集`;
+                        button.classList.toggle('active', char === currentChar);
+                        button.addEventListener('click', () => {
+                            document.getElementById('charInput').value = char;
+                            loadGlyph();
+                        });
+                        list.appendChild(button);
+                    });
+                }
+
+                document.getElementById('deletePoint').onclick =  deletePointFromContext;
+                document.getElementById('addPoint').onclick = addPointFromContext;
+                document.getElementById('continuePath').onclick = continuePathFromContext;
+                document.getElementById('deletePath').onclick = deletePathFromContext;
+                document.getElementById("loadGlyph").onclick = loadGlyph;
+                document.getElementById("saveFontBtn").onclick = saveFontToIndexedDB;
+                document.getElementById("exportFontBtn").onclick = exportFontToFile;
+                document.getElementById("exportTTFBtn").onclick = exportFontToTTF;
+                document.getElementById("importFontBtn").onclick = () => {
+                    document.getElementById('importFontFile').click();
+                };
+                document.getElementById("importFontFile").addEventListener('change', async (event) => {
+                    const file = event.target.files && event.target.files[0];
+                    if (file) {
+                        await importFontFromFile(file);
+                    }
+                    event.target.value = '';
+                });
+                document.getElementById("clearCanvasBtn").onclick = () => {
+                    if (!window.confirm('キャンバスを消去しますか？')) {
+                        return;
+                    }
+                    clearCurrentCanvas();
+                };
+                document.getElementById("clearFontBtn").onclick = clearFontFromIndexedDB;
+
+                document.querySelectorAll('[data-preview-preset]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        const key = button.dataset.previewPreset;
+                        const text = previewPresets[key] || '';
+                        document.getElementById('previewTextInput').value = text;
+                        rebuildTextPreview();
+                    });
+                });
+
+                document.getElementById("previewTextInput").addEventListener("input", () => {
+                    rebuildTextPreview();
+                });
+
+                document.addEventListener('beforeunload', () => {
+                    if (hasUnsavedChanges) {
+                        saveFontToIndexedDB();
+                    }
+                });
+
+                //menu外クリックでメニューを消す
+                document.addEventListener("pointerdown", (e) => {
+
+                    if (!menu.contains(e.target)) {
+                        hideMenu();
+                    }
+
+                });
+
+                // --------------------
+                // マウス移動
+                // --------------------
+                // 描画中やドラッグ中に、現在の位置を追跡してプレビューと編集を更新する
+                let lastMousePoint = null;
+                paper.view.onMouseMove = function(event) {
+
+                    if (toolMode === 'hand') {
+
+                        const hit = paper.project.hitTest(event.point, {
+                            segments: true,
+                            stroke: true,
+                            segments: false, // クリック判定と同じく、UI操作対象は fill/stroke だけを拾う
+                            tolerance: 10
+                        });
+
+                        //console.log(hit);
+                        updateHoverPoint(hit ? hit.item : null);
+                    } else {
+                        resetHoverPoint();
+                    }
+
+                    if (currentPath && currentPath.segments.length != 0){  //なんか書いてる途中ならプレビュー更新
+                        lastMousePoint = event.point;
+                        rebuildPreview();
+
+                    }else if(dragTarget && selectedPath){ //ドラッグしてるなら位置更新
+                        //console.log(dragTarget);
+                        if(!履歴保存したかフラグ){
+                            saveState();
+                            履歴保存したかフラグ=true;
+                        }
+                        
+                        const seg = dragTarget.segment;
+                        const type = dragTarget.type;
+
+                        if (type === "path") {
+
+                            const delta = event.point.subtract(dragTarget.lastPoint);
+
+                            dragTarget.path.translate(delta);
+
+                            dragTarget.lastPoint = event.point;
+
+                        } else if (type === 'segment') {
+                            seg.point = event.point;
+                        } else if (type === 'handleIn') {
+                            seg.handleIn = event.point.subtract(seg.point);//ハンドルは相対座標なので引く
+                        } else if (type === 'handleOut') {
+                            seg.handleOut = event.point.subtract(seg.point);//ハンドルは相対座標なので引く
+                        }
+                        
+                        //rebuildResult(移動中スキップ=true);//移動中はfontの更新とか重い処理をしないようにする
+                        //とおもったんだけど、太らせ処理が馬鹿重いから無効化するね
+                        selectSegment(selectedPath);
+                    }
+                };
+
+                // --------------------
+                // Ctrl+Z
+                // --------------------
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                        undo();
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+                        redo();
+                    }
+                });
+
+                // --------------------
+                // 文字プレビュー生成
+                // --------------------
+                // フォントとして保存されたグリフを SVG で並べて表示する
+                function rebuildTextPreview(更新対象 = null) {
+
+                    const preview = document.getElementById("preview");
+                    const text = document.getElementById("previewTextInput").value;
+
+                    // --------------------
+                    // 全体更新
+                    // --------------------
+                    if (更新対象 == null) {
+
+                        preview.innerHTML = "";
+
+                        for (const ch of text) {
+
+                            const cell = document.createElement("span");
+                            cell.dataset.char = ch;
+
+                            updatePreviewCell(cell, ch);
+
+                            preview.appendChild(cell);
+                        }
+
+                        return;
+                    }
+
+                    // --------------------
+                    // 1文字だけ更新
+                    // --------------------
+                    const cell = preview.querySelector(`[data-char="${更新対象}"]`);
+
+                    if (!cell) return;
+
+                    updatePreviewCell(cell, 更新対象);
+                }
+
+                function updatePreviewCell(cell, ch) {
+                    //プレビュー用のSVG生成
+
+                    cell.replaceChildren();
+
+                    const glyph = font.glyphs[ch];
+
+                    // 未作成文字ならそのまま文字表示
+                    if (!glyph) {
+                        cell.textContent = ch;
+                        return;
+                    }
+
+                    const src = new paper.Layer();
+                    src.importJSON(glyph.centerPaths);
+
+                    const dst = new paper.Layer();
+                    buildOutline(src, dst);
+
+                    //SVG作成
+                    const group = dst.exportSVG({ asString: false });
+
+                    const svg = document.createElementNS(
+                        "http://www.w3.org/2000/svg",
+                        "svg"
+                    );
+                    //表示幅決定
+                    const bounds = dst.bounds;
+                    const pad = PREVIEW_PADDING;
+
+                    svg.setAttribute(
+                        "viewBox",
+                        `${bounds.x - pad} 0 ${bounds.width + pad * 2} ${CANVAS_HEIGHT}`
+                    );
+
+                    // CSS スタイル適用
+                    svg.style.cssText = `
+                        width: auto;
+                        height: 1em;
+                        vertical-align: middle;
+                        display: inline-block; /* ブロックレベル要素ではなく行内ブロック要素にする */
+                    `;
+
+                    svg.style.width = "auto";
+                    svg.style.height = "1em";
+                    svg.style.verticalAlign = "middle";
+
+                    svg.appendChild(group);
+
+                    cell.appendChild(svg);
+
+                    src.remove();
+                    dst.remove();
+                }
+
+                    // --------------------
+                    //  TTFフォントのプレビュー
+                    // --------------------
+                document.getElementById('fontUpload').addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    // TTFファイルをBlobとして読み込む
+                    const reader = new FileReader();
+                    reader.onload = function () {
+                        const blob = new Blob([reader.result], { type: 'font/ttf' });
+                        const url = URL.createObjectURL(blob);
+
+                        // @font-faceでローカルのTTFを読み込む
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            @font-face {
+                                font-family: 'CustomFont';
+                                src: url('${url}');
+                                format: 'truetype';
+                            }
+                        `;
+                        document.head.appendChild(style);
+
+                        // プレビューテキストを更新
+                        updatePreview();
+                    };
+                    reader.readAsArrayBuffer(file);
+                });
+
+                function updatePreview() {
+                    const text = document.getElementById('ttf_textInput').value;
+                    document.getElementById('ttf_fontPreview').textContent = text;
+                }
+
+                // テキスト入力要素とプレビューディバイスを取得
+                const textInput = document.getElementById('ttf_textInput');
+
+                // テキスト変更時にプレビューを更新
+                textInput.addEventListener('input', updatePreview);
+
+
+                //いちおうしょきか
+                rebuildTextPreview();
+                updateCreatedGlyphs();
+                loadFontFromIndexedDB();
+            }
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+            <div id="contentArea">
+                <div id="left">
+                    <div>
+                        <button id="penBtn" class="active">🖊</button>
+                        <button id="handBtn">☝</button>
+                        <button id="undoBtn">↶</button>
+                        <button id="redoBtn">↷</button>
+                        <span id="currentCharDisplay">現在の文字: <span id="currentChar">a</span></span>
+                        <input id="charInput" value="a" maxlength="2">
+                        <button id="loadGlyph">文字切り替え</button>
+                    </div>
+                    <div id="cvsdiv">
+                        <canvas id="svgcvs" class="svgcvs" height="500px" width="500px"></canvas>
+                        <div id="menu">
+                            <button id="addPoint">点を追加(add)</button>
+                            <button id="deletePoint">点を削除(delete)</button>
+                            <button id="continuePath">続きを描く</button>
+                            <button id="deletePath">線を削除</button>
+                        </div>
+                    </div>
+                    <button id="clearCanvasBtn" type="button">キャンバス消去</button>
+                    <details class="data-panel">
+                        <summary>データ関連</summary>
+                        <div class="data-buttons">
+                            <button id="saveFontBtn" type="button">ブラウザ保存</button>
+                            <button id="exportFontBtn" type="button">外部保存</button>
+                            <button id="exportTTFBtn" type="button">TTF出力</button>
+                            <button id="importFontBtn" type="button">外部読み込み</button>
+                            <input id="importFontFile" type="file" accept=".json,application/json" hidden><!--ボタン要素にできないから隠しておいて、ボタンから呼び出す-->
+                            <button id="clearFontBtn" type="button">データ削除</button>
+                            
+                        </div>
+                    </details>
+                </div>
+                <div id="right">
+
+                    <div class="section">
+                        <label for="previewTextInput">プレビュー表示文字：</label>
+                        <input id="previewTextInput" value="abcdrfg">
+                        <div class="preview-preset-group">
+                            <button type="button" data-preview-preset="alphabet">英字</button>
+                            <button type="button" data-preview-preset="numbers">数字記号</button>
+                            <button type="button" data-preview-preset="hiragana">ひらがな</button>
+                            <button type="button" data-preview-preset="katakana">カタカナ</button>
+                            <button type="button" data-preview-preset="kanji">12年生漢字</button>
+                        </div>
+                        <div id="preview">
+                            <!-- プレビュー文字がここに入る -->
+                        </div>
+                    </div>
+    
+                    <div class="section">
+                        作成済み文字一覧
+                        <div id="createdGlyphs" aria-label="作成済み文字">
+                            <!-- 作成済みグリフのボタンがここに入る -->
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        TTFフォントプレビュー：
+                        <input type="file" id="fontUpload" accept=".ttf,.otf" />
+                        <input id="ttf_textInput" placeholder="ここにテキストを入力">
+                        <div id="ttf_fontPreview" style="font-family: 'CustomFont', sans-serif; ">
+                            プレビューテキスト
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <p>PC専用。マウス刺せばスマホでも動くかも。右クリックでパスをちぎる</p>
+
+            <footer>
+                <ul id="footul">
+                    <li id="foot_tweet_li">
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
