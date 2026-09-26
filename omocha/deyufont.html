@@ -52,10 +52,26 @@
             #preview{
                 background: #ffffff;
                 color: #000000;
+                font-size: 32px;
+                line-height: 1.2;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+                max-width: 100%;
             }
             #preview svg * {
                 fill: currentColor !important;
                 stroke: currentColor !important;
+                transform: translateY(-20px);/*なぜかわからないが、これくらいずれて表示されるっぽいので、気合で戻す*/
+            }
+            #preview svg {
+                overflow: visible;
+            }
+            #previewTextInput {
+                width: 100%;
+                box-sizing: border-box;
+                resize: vertical;
+                min-height: 2.5em;
             }
             #createdGlyphs {
                 display: flex;
@@ -128,18 +144,59 @@
                 const FONT_X_HEIGHT = GUIDE_SIZE;
                 const PREVIEW_PADDING = 20;
 
-                // フォントのデータ本体。各文字ごとの軌跡を保存する
+                // ============================================================
+                // 1. フォントの基礎設定とデータモデル
+                //    - 文字ごとの軌跡を保存する
+                //    - フォント名やメトリクスも一緒に管理する
+                // ============================================================
                 let font = createFont();
 
                 // フォント構造の初期値を作る
                 function createFont() {
                     return {
                         version: 1,
+                        familyName: 'DeyuFont',
                         metrics: {
                             unitsPerEm: 1000,//仮、使ってない
                         },
                         glyphs: {}
                     };
+                }
+
+                function normalizeFontData(data) {
+                    // 保存済みデータが壊れている場合でも最低限のフォント構造を返す
+                    const base = createFont();
+                    if (!data || typeof data !== 'object') {
+                        return base;
+                    }
+
+                    // フォント名が空文字や不正な値なら初期値を使う
+                    const familyName = typeof data.familyName === 'string' && data.familyName.trim()
+                        ? data.familyName.trim()
+                        : base.familyName;
+
+                    // 既存データを壊さずに、必要なプロパティだけを正規化して返す
+                    return {
+                        ...base,
+                        ...data,
+                        familyName,
+                        metrics: {
+                            ...base.metrics,
+                            ...(data.metrics || {})
+                        },
+                        glyphs: data.glyphs && typeof data.glyphs === 'object' ? data.glyphs : {}
+                    };
+                }
+
+                function syncFontFamilyInput() {
+                    // 入力欄がまだ存在しない場合は何もしない
+                    const input = document.getElementById('familyNameInput');
+                    if (!input) {
+                        return;
+                    }
+
+                    // 現在の font.familyName を入力欄に反映し、未設定時は初期名へ戻す
+                    input.value = font.familyName || 'DeyuFont';
                 }
 
                 const FONT_DB_NAME = 'deyufont-db';
@@ -156,9 +213,11 @@
                 let hasUnsavedChanges = false;
                 const menu = document.getElementById('menu');
 
-                // --------------------
-                //　保存系機能
-                // --------------------
+                // ============================================================
+                // 2. IndexedDB による保存と復元
+                //    - ローカル保存で作業内容を残す
+                //    - 再読み込み時にフォントデータを復元する
+                // ============================================================
                 function openFontDB() {
                     return new Promise((resolve, reject) => {
                         const request = indexedDB.open(FONT_DB_NAME, 1);
@@ -233,7 +292,8 @@
                             return;
                         }
 
-                        font = saved;
+                        font = normalizeFontData(saved);
+                        syncFontFamilyInput();
                         renderCurrentGlyph();
                         rebuildTextPreview();
                         updateCreatedGlyphs();
@@ -309,28 +369,64 @@
 
                         font = createFont();
                         clearCurrentCanvas({ persist: false });
+                        rebuildTextPreview();//上のヤツは一文字しか消さないので
                         console.log('font deleted from IndexedDB');
                     } catch (error) {
                         console.error('clearFontFromIndexedDB error:', error);
                     }
                 }
 
+                // ============================================================
+                // 3. 外部ファイルへの保存
+                //    - JSON 形式のデータをダウンロードする
+                //    - 日付付きファイル名で管理しやすくする
+                // ============================================================
+                function getSafeFontFileBaseName() {
+                    // フォント名をファイル名として使える形に整える
+                    // - Windows で使えない記号を除去
+                    // - 空白はアンダースコア化し、連続したアンダースコアも整理する
+                    const raw = (font.familyName || 'DeyuFont').trim() || 'DeyuFont';
+                    return raw
+                        .replace(/[\\/:*?"<>|]/g, '')
+                        .replace(/\s+/g, '_')
+                        .replace(/_+/g, '_')
+                        || 'DeyuFont';
+                }
+
+                function getFontDownloadName(extension) {
+                    // 日付を巻き込んだ一意なファイル名を生成する
+                    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+                    return `${getSafeFontFileBaseName()}-${stamp}.${extension}`;
+                }
+
                 function exportFontToFile() {
+                    // JSON の保存データを作成して、ファイルとしてダウンロードする
                     const payload = JSON.stringify(font, null, 2);
                     const blob = new Blob([payload], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
-                    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
                     link.href = url;
-                    link.download = `deyufont-${stamp}.json`;
+                    link.download = getFontDownloadName('json');
                     document.body.appendChild(link);
                     link.click();
                     link.remove();
                     URL.revokeObjectURL(url);
                 }
 
+                // ============================================================
+                // 4. TTF 変換の中核
+                //    - Paper.js のパスを OpenType.js の Path に変換する
+                //    - 文字ごとの輪郭をまとめて TTF を生成する
+                // ============================================================
                 //パスをopentype.jsのPathに変換する
                 function addPaperPathToFontPath(sourcePath, fontPath, originX) {
+                    if (sourcePath.children) {
+                        sourcePath.children.forEach((child) => {
+                            addPaperPathToFontPath(child, fontPath, originX);
+                        });
+                        return;
+                    }
+
                     const segments = sourcePath.segments;
                     //線になってねえ
                     if (segments.length < 2) {
@@ -402,7 +498,8 @@
 
                         // 太い輪郭へ変換(輪郭はデータにないので再生成が必要…激重かも)
                         const outlineLayer = new paper.Layer();
-                        buildOutline(sourceLayer, outlineLayer);
+                        buildOutline(sourceLayer, outlineLayer, true);
+                        uniteOutlines(outlineLayer);
 
                         // プレビューと同じく、輪郭の左右に余白を持つ文字幅にする
                         const bounds = outlineLayer.bounds;
@@ -437,9 +534,11 @@
                         }));
                     }
 
+                    const familyName = (font.familyName || 'DeyuFont').trim() || 'DeyuFont';
+
                     // 収集したグリフからTTFとして書き出せるフォントを作る
                     return new opentype.Font({
-                        familyName: 'DeyuFont',
+                        familyName,
                         styleName: 'Regular',
                         unitsPerEm: FONT_UNITS_PER_EM,
                         ascender: FONT_ASCENDER,
@@ -450,6 +549,10 @@
                 }
 
                 function exportFontToTTF() {
+                    // TTF を生成し、ブラウザからダウンロードさせる
+                    const startedAt = performance.now();
+                    console.debug(`[TTF] export start: ${new Date().toISOString()}`);
+
                     try {
                         const opentypeFont = createTrueTypeFont();
                         const blob = new Blob(
@@ -459,7 +562,7 @@
                         const url = URL.createObjectURL(blob);
                         const link = document.createElement('a');
                         link.href = url;
-                        link.download = 'deyufont.ttf';
+                        link.download = getFontDownloadName('ttf');
                         document.body.appendChild(link);
                         link.click();
                         link.remove();
@@ -467,6 +570,11 @@
                     } catch (error) {
                         console.error('exportFontToTTF error:', error);
                         window.alert('TTF の出力に失敗しました。');
+                    } finally {
+                        console.debug(
+                            `[TTF] export end: ${new Date().toISOString()} ` +
+                            `(elapsed ${Math.round(performance.now() - startedAt)} ms)`
+                        );
                     }
                 }
 
@@ -483,7 +591,8 @@
                             throw new Error('フォントデータの形式が不正です。');
                         }
 
-                        font = imported;
+                        font = normalizeFontData(imported);
+                        syncFontFamilyInput();
                         renderCurrentGlyph();
                         await saveFontToIndexedDB();
                         console.log('font imported from file');
@@ -612,9 +721,12 @@
 
                 let currentChar = "a";//今なんの文字書いてるの？
 
-                // --------------------
+                // ============================================================
+                // 5. 編集履歴とアンドゥ／リドゥ
+                //    - drawLayer の状態を履歴に残す
+                //    - パス改変時の取り消し・やり直しを可能にする
+                // ============================================================
                 // Undo保存（drawLayerだけ）
-                // --------------------
                 // 現在の状態を Undo 用に保存する
                 function saveState(redo=false) {
                     history.push({
@@ -710,9 +822,11 @@
                     // 結果は作り直す
                     rebuildResult();
                 }
-                // --------------------
-                // プレビュー再生成
-                // --------------------
+                // ============================================================
+                // 6. 文字プレビューと描画結果の再生成
+                //    - 入力中のパスをプレビューとして表示する
+                //    - 太らせたアウトラインを文字一覧と保存用に反映する
+                // ============================================================
                 // 現在のパスをドラッグ中の状態で薄い線として表示する
                 function rebuildPreview() {
 
@@ -773,25 +887,140 @@
                 }
 
                 // 中心線から太い輪郭を計算して、プレビューや出力用の塗りつぶし形状を作る
-                function buildOutline(sourceLayer, targetLayer) {
+                function buildOutline(sourceLayer, targetLayer, normalizeWinding = false) {
 
                     targetLayer.removeChildren();
+                    let winding = null;
 
-                    sourceLayer.children.forEach(path => {
+                    function addOutline(path) {
+                        if (typeof path.getPointAt !== 'function') {
+                            if (path.children) {
+                                path.children.forEach(addOutline);
+                            }
+                            return;
+                        }
 
                         const outline = createOutline(path, 40);
 
                         if (outline) {
+                            if (normalizeWinding) {
+                                if (winding === null) {
+                                    winding = outline.clockwise;
+                                } else if (outline.clockwise !== winding) {
+                                    outline.reverse();
+                                }
+                            }
                             targetLayer.addChild(outline);
                         }
-                    });
+                    }
+
+                    sourceLayer.children.forEach(addOutline);
+                }
+
+                function uniteOutlines(outlineLayer) {
+                    let changed = true;
+
+                    while (changed) {
+                        changed = false;
+
+                        for (let firstIndex = 0; firstIndex < outlineLayer.children.length - 1 && !changed; firstIndex++) {
+                            for (let secondIndex = firstIndex + 1; secondIndex < outlineLayer.children.length; secondIndex++) {
+                                const first = outlineLayer.children[firstIndex];
+                                const second = outlineLayer.children[secondIndex];
+
+                                if (!first.bounds.intersects(second.bounds)) {
+                                    continue;
+                                }
+
+                                const united = first.unite(second);
+
+                                if (!united) {
+                                    continue;
+                                }
+
+                                first.remove();
+                                second.remove();
+
+                                if (united.parent !== outlineLayer) {
+                                    outlineLayer.addChild(united);
+                                }
+
+                                changed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                function removeSelfCrossingLoops(points, maxLoopLength) {
+                    const getIntersection = (a, b, c, d) => {
+                        const abX = b.x - a.x;
+                        const abY = b.y - a.y;
+                        const cdX = d.x - c.x;
+                        const cdY = d.y - c.y;
+                        const denominator = abX * cdY - abY * cdX;
+
+                        if (Math.abs(denominator) < 0.000001) {
+                            return null;
+                        }
+
+                        const acX = c.x - a.x;
+                        const acY = c.y - a.y;
+                        const firstRatio = (acX * cdY - acY * cdX) / denominator;
+                        const secondRatio = (acX * abY - acY * abX) / denominator;
+
+                        if (firstRatio <= 0 || firstRatio >= 1 || secondRatio <= 0 || secondRatio >= 1) {
+                            return null;
+                        }
+
+                        return new paper.Point(
+                            a.x + abX * firstRatio,
+                            a.y + abY * firstRatio
+                        );
+                    };
+
+                    let changed = true;
+                    while (changed && points.length > 3) {
+                        changed = false;
+
+                        for (let first = 0; first < points.length - 2 && !changed; first++) {
+                            for (let second = first + 2; second < points.length - 1; second++) {
+                                const intersection = getIntersection(
+                                    points[first],
+                                    points[first + 1],
+                                    points[second],
+                                    points[second + 1]
+                                );
+
+                                if (!intersection) {
+                                    continue;
+                                }
+
+                                let loopLength = intersection.getDistance(points[first + 1]);
+                                for (let index = first + 1; index < second; index++) {
+                                    loopLength += points[index].getDistance(points[index + 1]);
+                                }
+                                loopLength += points[second].getDistance(intersection);
+
+                                if (loopLength > maxLoopLength) {
+                                    continue;
+                                }
+
+                                points.splice(second + 1, 0, intersection);
+                                points.splice(first + 1, 0, intersection.clone());
+                                points.splice(first + 2, second - first + 1);
+                                changed = true;
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 // 1本の線から、左右に広がる輪郭を生成する…雑だけど
                 // width が太さ、step が計算粒度になる
                 function createOutline(path, width = 20, step = 4) {
 
-                    if (path.length < step) {
+                    if (!path || typeof path.getPointAt !== 'function' || path.length < step) {
                         return null;
                     }
 
@@ -830,6 +1059,10 @@
                         left.push(endPoint.add(normal));
                         right.push(endPoint.subtract(normal));
                     }
+
+                    const maxAccidentalLoopLength = width * 1;//長さのn倍以下のループは消す
+                    removeSelfCrossingLoops(left, maxAccidentalLoopLength);
+                    removeSelfCrossingLoops(right, maxAccidentalLoopLength);
 
                     const outline = new paper.Path();
 
@@ -1419,6 +1652,12 @@
                 document.getElementById('addPoint').onclick = addPointFromContext;
                 document.getElementById('continuePath').onclick = continuePathFromContext;
                 document.getElementById('deletePath').onclick = deletePathFromContext;
+                document.getElementById('familyNameInput').addEventListener('input', () => {
+                    const value = document.getElementById('familyNameInput').value.trim();
+                    font.familyName = value || 'DeyuFont';
+                    markDirty();
+                });
+                document.getElementById("charInput").addEventListener("input", loadGlyph);
                 document.getElementById("loadGlyph").onclick = loadGlyph;
                 document.getElementById("saveFontBtn").onclick = saveFontToIndexedDB;
                 document.getElementById("exportFontBtn").onclick = exportFontToFile;
@@ -1452,6 +1691,17 @@
 
                 document.getElementById("previewTextInput").addEventListener("input", () => {
                     rebuildTextPreview();
+                });
+
+                const previewSizeInput = document.getElementById("previewSizeInput");
+                const previewSizeValue = document.getElementById("previewSizeValue");
+                const preview = document.getElementById("preview");
+
+                previewSizeInput.addEventListener("input", () => {
+                    const size = `${previewSizeInput.value}px`;
+                    preview.style.fontSize = size;
+                    previewSizeValue.value = size;
+                    previewSizeValue.textContent = size;
                 });
 
                 document.addEventListener('beforeunload', () => {
@@ -1531,17 +1781,25 @@
                 // Ctrl+Z
                 // --------------------
                 document.addEventListener('keydown', (e) => {
+                    if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable="true"]')) {
+                        return;
+                    }
+
                     if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                        e.preventDefault();
                         undo();
                     }
                     if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+                        e.preventDefault();
                         redo();
                     }
                 });
 
-                // --------------------
-                // 文字プレビュー生成
-                // --------------------
+                // ============================================================
+                // 7. 文字一覧とプレビュー表示
+                //    - 描かれたグリフを SVG で再現して見せる
+                //    - 文字ごとに編集対象を切り替えられるようにする
+                // ============================================================
                 // フォントとして保存されたグリフを SVG で並べて表示する
                 function rebuildTextPreview(更新対象 = null) {
 
@@ -1633,9 +1891,11 @@
                     dst.remove();
                 }
 
-                    // --------------------
-                    //  TTFフォントのプレビュー
-                    // --------------------
+                // ============================================================
+                // 8. TTF プレビュー周りの UI
+                //    - ローカルの TTF を読み込んでテキストに適用する
+                //    - フォントプレビューをブラウザ上で見られるようにする
+                // ============================================================
                 document.getElementById('fontUpload').addEventListener('change', function (e) {
                     const file = e.target.files[0];
                     if (!file) return;
@@ -1676,6 +1936,7 @@
 
 
                 //いちおうしょきか
+                previewSizeInput.dispatchEvent(new Event("input"));
                 rebuildTextPreview();
                 updateCreatedGlyphs();
                 loadFontFromIndexedDB();
@@ -1705,7 +1966,7 @@
                         <button id="undoBtn">↶</button>
                         <button id="redoBtn">↷</button>
                         <span id="currentCharDisplay">現在の文字: <span id="currentChar">a</span></span>
-                        <input id="charInput" value="a" maxlength="2">
+                        <input id="charInput" value="a">
                         <button id="loadGlyph">文字切り替え</button>
                     </div>
                     <div id="cvsdiv">
@@ -1718,9 +1979,47 @@
                         </div>
                     </div>
                     <button id="clearCanvasBtn" type="button">キャンバス消去</button>
-                    <details class="data-panel">
+                </div>
+                <div id="right">
+
+                    <div class="section">
+                        <div>
+                            <label for="previewTextInput">プレビュー表示文字：</label>
+                            <textarea id="previewTextInput" rows="2">abcdrfg</textarea>
+                        </div>
+                        <div class="preview-preset-group">
+                            <button type="button" data-preview-preset="alphabet">英字</button>
+                            <button type="button" data-preview-preset="numbers">数字記号</button>
+                            <button type="button" data-preview-preset="hiragana">ひらがな</button>
+                            <button type="button" data-preview-preset="katakana">カタカナ</button>
+                            <button type="button" data-preview-preset="kanji">12年生漢字</button>
+                        </div>
+                        <div>
+                            <label for="previewSizeInput">表示サイズ：</label>
+                            <input id="previewSizeInput" type="range" min="12" max="120" value="32" step="1">
+                            <output id="previewSizeValue" for="previewSizeInput">32px</output>
+                        </div>
+
+                        <div>
+
+                            <div id="preview">
+                                <!-- プレビュー文字がここに入る -->
+                            </div>
+                        </div>
+
+                    </div>
+    
+                    <div class="section">
+                        作成済み文字一覧
+                        <div id="createdGlyphs" aria-label="作成済み文字">
+                            <!-- 作成済みグリフのボタンがここに入る -->
+                        </div>
+                    </div>
+                    <details class="data-pane0l section">
                         <summary>データ関連</summary>
-                        <div class="data-buttons">
+                        <div class="section">
+                            <label for="familyNameInput">フォント名：</label>
+                            <input id="familyNameInput" value="DeyuFont" maxlength="80" placeholder="DeyuFont">
                             <button id="saveFontBtn" type="button">ブラウザ保存</button>
                             <button id="exportFontBtn" type="button">外部保存</button>
                             <button id="exportTTFBtn" type="button">TTF出力</button>
@@ -1730,39 +2029,16 @@
                             
                         </div>
                     </details>
-                </div>
-                <div id="right">
-
-                    <div class="section">
-                        <label for="previewTextInput">プレビュー表示文字：</label>
-                        <input id="previewTextInput" value="abcdrfg">
-                        <div class="preview-preset-group">
-                            <button type="button" data-preview-preset="alphabet">英字</button>
-                            <button type="button" data-preview-preset="numbers">数字記号</button>
-                            <button type="button" data-preview-preset="hiragana">ひらがな</button>
-                            <button type="button" data-preview-preset="katakana">カタカナ</button>
-                            <button type="button" data-preview-preset="kanji">12年生漢字</button>
-                        </div>
-                        <div id="preview">
-                            <!-- プレビュー文字がここに入る -->
-                        </div>
-                    </div>
-    
-                    <div class="section">
-                        作成済み文字一覧
-                        <div id="createdGlyphs" aria-label="作成済み文字">
-                            <!-- 作成済みグリフのボタンがここに入る -->
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        TTFフォントプレビュー：
-                        <input type="file" id="fontUpload" accept=".ttf,.otf" />
-                        <input id="ttf_textInput" placeholder="ここにテキストを入力">
-                        <div id="ttf_fontPreview" style="font-family: 'CustomFont', sans-serif; ">
-                            プレビューテキスト
-                        </div>
-                    </div>
+                    <details class="data-pane0l section">
+                        <summary>フォントテスト</summary>
+                        <div class="section">
+                            TTFフォントプレビュー：
+                            <input type="file" id="fontUpload" accept=".ttf,.otf" />
+                            <input id="ttf_textInput" placeholder="ここにテキストを入力">
+                            <div id="ttf_fontPreview" style="font-family: 'CustomFont', sans-serif; ">
+                                プレビューテキスト
+                            </div>
+                    </details>
 
                 </div>
             </div>
