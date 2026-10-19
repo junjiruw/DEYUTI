@@ -483,11 +483,36 @@
                 function createTrueTypeFont() {
                     updateFont();
 
-                    // TrueTypeフォントには必ず未定義グリフを先頭に用意する　←そうなんだ
+                    //未定義お豆腐ちゃん
+                    const notdefPath = new opentype.Path();
+                    notdefPath.moveTo(50, -20);
+                    notdefPath.lineTo(450, -20);
+                    notdefPath.lineTo(450, 380);
+                    notdefPath.lineTo(50, 380);
+                    notdefPath.close();
+
+                    notdefPath.moveTo(90, 20);
+                    notdefPath.lineTo(90, 340);
+                    notdefPath.lineTo(410, 340);
+                    notdefPath.lineTo(410, 20);
+                    notdefPath.close();
+
+                    notdefPath.moveTo(106, 54);
+                    notdefPath.lineTo(124, 36);
+                    notdefPath.lineTo(394, 306);
+                    notdefPath.lineTo(376, 324);
+                    notdefPath.close();
+
+                    notdefPath.moveTo(376, 36);
+                    notdefPath.lineTo(394, 54);
+                    notdefPath.lineTo(124, 324);
+                    notdefPath.lineTo(106, 306);
+                    notdefPath.close();
+
                     const glyphs = [new opentype.Glyph({
                         name: '.notdef',
                         advanceWidth: FONT_ADVANCE_WIDTH,
-                        path: new opentype.Path()
+                        path: notdefPath
                     })];
 
                     //各文字を変換していく
