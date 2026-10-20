@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head prefix="og: http://ogp.me/ns# website: http://ogp.me/ns/website#">
+        <meta charset="UTF-8">
+        <!--文字コードは上のほうにないとすべておしまいになるらしい-->
+        <meta name="description" content="鏡の反転について考えたい">                                                                 <!--入力すること！-->
+        <title>JUN汁ｗおもちゃばこ。/読み物/鏡の反転</title>                                                         <!--入力すること！-->
+        <!--OGPとかいうの-->
+        <meta property="og:site_name" content="JUN汁ｗおもちゃばこ。/yomimono/kagaminohanten">                                <!--入力すること！-->
+        <meta property="og:title" content="鏡の反転">                                                               <!--入力すること！-->
+        <meta property="og:type" content="article"> <!--websiteはトップページ、articleが記事だってさ-->
+        <meta property="og:url" content="https://junjiruw.github.io/DEYUTI/yomimono/kagaminohanten.html">                   <!--入力すること！-->
+        <meta property="og:image" content="https://github.com/junjiruw/DEYUTI/blob/master/images/site/junjiruw_bako.png?raw=true">
+        <meta name="twitter:card" content="summary"><!--なにを表示するか-->
+        <meta name="twitter:site" content="@junjiruw"><!--フッターに表示されるらしい…どこ？-->
+        <meta name="viewport" content="width=device-width,initial-scale=1"><!--スマホで見てる人向けに表示領域の設定-->
+        <link rel="stylesheet" href="../css/style.css">
+        
+        <link rel="icon" href="../images/site/favicon32.png">
+
+        <link rel="stylesheet" href="../css/読み物.css"><!--まあ必要ならこれ入れといて-->
+        <style>
+            h2{
+                text-align: center 
+            }
+            .red{
+                color: #f55959;
+            }
+            .blue{
+                color: rgb(74, 153, 255);
+            }
+            .green{
+                color: rgb(68, 255, 68);
+            }
+            .大き目の絵 img{
+                height: 10em;
+            }
+            .turned{
+                /* 縦書き */
+                writing-mode: vertical-lr;
+
+                rotate: 90deg;
+                /*気合の調整*/
+                 margin-top: 0.5em;
+                margin-bottom: 0.5em;
+
+            }
+
+            .turned_left{
+                /* 縦書き */
+                writing-mode: vertical-lr;
+
+                rotate: 270deg;
+                /*気合の調整*/
+                margin-top: 0.5em;
+                margin-bottom: 0.5em;
+
+            }
+
+            .turned_180{
+                rotate: 180deg;
+            }
+
+            .ゆれる {
+                display: inline-block;
+                animation-name: random-shake;
+                animation-iteration-count: infinite;
+                animation-timing-function: ease-in-out;
+            }
+
+            .ゆれる2 {
+                display: inline-block;
+                animation-name: random-shake;
+                animation-iteration-count: infinite;
+                animation-timing-function: ease-in-out;
+            }
+
+            /* 揺れ動きのパターン（上下左右のズレとわずかな回転） */
+            @keyframes random-shake {
+                0%   { transform: translate(0px, 0px) rotate(0deg); }
+                20%  { transform: translate(var(--rx1, -2px), var(--ry1, 1px)) rotate(var(--rt1, -1deg)); }
+                40%  { transform: translate(var(--rx2, 1px), var(--ry2, -1px)) rotate(var(--rt2, 1deg)); }
+                60%  { transform: translate(var(--rx3, -1px), var(--ry3, 2px)) rotate(var(--rt3, 0deg)); }
+                80%  { transform: translate(var(--rx4, 2px), var(--ry4, 1px)) rotate(var(--rt4, 1deg)); }
+                100% { transform: translate(0px, 0px) rotate(0deg); }
+            }
+
+        </style>
+        <script src="../js/public.js"></script>
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1MB5XLN4LW"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-1MB5XLN4LW');
+        </script>
+        
+        <script>
+            onload = function(){
+                onload_functions();
+                読み物調整();//まあ必要なら入れておいて
+
+                //AIくんへ、ランダムにゆらして。
+                const elements = document.querySelectorAll('.ゆれる');
+
+                elements.forEach(el => {
+                    // 1. 揺れる速度（アニメーション周期）をランダムに設定 (0.1秒〜0.3秒)
+                    const randomDuration = (Math.random() * 0.2 + 0.1).toFixed(2);
+                    el.style.animationDuration = `${randomDuration}s`;
+
+                    // 2. CSS変数を使って、カスタムの揺れ幅（位置と角度）をランダムに注入
+                    // 以下の関数で -3px 〜 +3px、-2deg 〜 +2deg のランダムな値を生成
+                    const randPx = () => `${(Math.random() * 6 - 3).toFixed(1)}px`;
+                    const randDeg = () => `${(Math.random() * 4 - 2).toFixed(1)}deg`;
+
+                    el.style.setProperty('--rx1', randPx()); el.style.setProperty('--ry1', randPx()); el.style.setProperty('--rt1', randDeg());
+                    el.style.setProperty('--rx2', randPx()); el.style.setProperty('--ry2', randPx()); el.style.setProperty('--rt2', randDeg());
+                    el.style.setProperty('--rx3', randPx()); el.style.setProperty('--ry3', randPx()); el.style.setProperty('--rt3', randDeg());
+                    el.style.setProperty('--rx4', randPx()); el.style.setProperty('--ry4', randPx()); el.style.setProperty('--rt4', randDeg());
+                });
+
+                const elements2 = document.querySelectorAll('.ゆれる2');
+
+                elements2.forEach(el => {
+                    // 1. 揺れる速度（アニメーション周期）をランダムに設定 (0.1秒〜0.3秒)
+                    const randomDuration = (0.05);
+                    el.style.animationDuration = `${randomDuration}s`;
+
+                    // 2. CSS変数を使って、カスタムの揺れ幅（位置と角度）をランダムに注入
+                    // 以下の関数で -3px 〜 +3px、-2deg 〜 +2deg のランダムな値を生成
+                    const randPx = () => `${(Math.random() * 6 - 3).toFixed(1)}px`;
+                    const randDeg = () => `${(Math.random() * 4 - 2).toFixed(1)}deg`;
+
+                    el.style.setProperty('--rx1', randPx()); el.style.setProperty('--ry1', randPx()); el.style.setProperty('--rt1', randDeg());
+                    el.style.setProperty('--rx2', randPx()); el.style.setProperty('--ry2', randPx()); el.style.setProperty('--rt2', randDeg());
+                    el.style.setProperty('--rx3', randPx()); el.style.setProperty('--ry3', randPx()); el.style.setProperty('--rt3', randDeg());
+                    el.style.setProperty('--rx4', randPx()); el.style.setProperty('--ry4', randPx()); el.style.setProperty('--rt4', randDeg());
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <div id="top"></div>
+        <header id="header">
+            <button onclick="html_link_btn()" id="html_link_btn"></button>
+            <nav id="html_link_nav">
+                <ul id="html_link_ul"></ul>
+            </nav>
+            <a href="../index.html">
+                <img id="go_home" src="../images/site/omotyabako_deka.png" alt="トップページへ" height="1px"><!--ここで高さを入れておかないと、クソでかい画像が一瞬読み込まれてボタンの大きさが暴走する-->
+            </a>
+            <h1 id="title_h1">
+                JUN汁ｗおもちゃばこ。
+            </h1>
+        </header>
+        <div id="mannaka">
+
+            <div class="right_div flex_div">
+                <div class="left_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>んくうゅし</figcaption>
+                    </figure>                   
+                </div>
+                <div>
+                    <p>鏡っておもしれ～</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+
+            <hr>
+
+            <div class="left_right_div flex_div">
+                <div class="left_div flex_div">
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/mikupon_kihon.png">
+                        <figcaption>みくぽん</figcaption>
+                    </figure>  
+                    <div>
+                        <p>そうでしょうか…？</p>
+                    </div>                  
+                </div>
+
+                <div class="right_div flex_div" style="align-items: flex-end; ">
+                    <div>
+                        <p>そうです。</p>
+                    </div>
+                    <figure class="figure_icon">
+                        <img src="../images/yomimono/syuukun_kihon.png">
+                        <figcaption>しゅうくん</figcaption>
+                    </figure>
+                </div>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>でも左右反転しててキモいですよ？</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>上下は反転してねえし</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>それがおもしろいのでは…？</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <h2>なんで鏡は反転したりしなかったりしてるのか？</h2>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>あ、べつに作者は理由を理解してないので</p>
+                    <p>このページ見てもそういう知見は得られませんよ</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>わかったら帰れ！散れ！散れ！</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>で、どこから考察していくんです？</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>こういう感覚的なやつは</p>
+                    <p>いじくりやすい環境を用意するのが</p>
+                    <p>よいとされている(要出典)</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_junbi.png">
+                </figure>
+                <div>
+                    <p>鏡の代わりに枠を用意しました。</p>
+                    <p>こっちから見たら鏡で、そっちから見たら普通です</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>？？？？？？？？</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/kagaminohanten/kagami_akabou.png">
+                    <figcaption class="red">赤い棒</figcaption>
+                </figure>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/kagaminohanten/kagami_aobou.png">
+                    <figcaption class="blue">青い棒</figcaption>
+                </figure>
+                <div>
+                    <p>二本の棒を用意し</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_bouteigi.png">
+                </figure>
+                <div>
+                    <p>枠の中に置く。</p>
+                    <p><span class="blue">青が上</span>で、<span class="red">赤が右</span></p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>ああ、なるほど。こちらから見ると<span class="blue">青が上</span>で、<span class="red">赤が左</span>ですね</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>この<span class="blue">青</span>をどうにかこうにか逆にしてやりたいですな</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_neyou.png">
+                </figure>
+                <div>
+                    <p>寝れば<span class="blue">青</span>がお互いの認識で逆になるのだ</p>
+                </div>
+                <figure class="figure_icon turned">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon turned">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>いや、</p>
+                    <p>これ<span class="red">上下が赤</span>になって<span class="blue">左右が青</span>になっただけじゃないですか？</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>そ…そんな…</p>
+                    <p>上下とは重力方向ではなく肉体方向によって定義されるってこと！？</p>
+                    
+                </div>
+                <figure class="figure_icon turned">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>ということは鏡に垂直な軸で回転しても意味ねえな</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_nesoberi.png">
+                </figure>
+                <div>
+                    <p>これでどーよ！？</p>
+                    <p class="blue">青が上！</p>
+                </div>
+                <figure class="figure_icon turned">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon turned_left">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>お、<span class="blue">青が下</span>ですね。<span class="red">赤も左</span>いっちゃってますが</p>
+                    <p>次は<span class="red">赤</span>を合わせますか</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_yokomuki.png">
+                </figure>
+                <div>
+                    <p>残るはこっち向きだな</p>
+                    <p><span class="red">赤が右</span>…あれ？これ上下もあってる？</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>これ確かに<span class="red">赤が右</span>ですけど…こっちから見ると<span class="green">”手前”</span>ですね</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p><span class="green">”手前”</span>…？</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>そっちから見たら<span class="green">”奥”</span>なんじゃないですか？</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p><span class="green">”奥”</span>…？</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p style="font-size: 2em;">もしかしてこの枠-棒モデル間違ってる！？</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>そうなります（笑）</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p><span class="ゆれる">あ</span><span class="ゆれる">ば</span><span class="ゆれる">ば</span><span class="ゆれる">ば</span><span class="ゆれる">ば</span><span class="ゆれる">ば</span><span class="ゆれる">ば</span><span class="ゆれる">ｂ</span></p>
+                </div>
+                <figure class="figure_icon ゆれる">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>だいたい、<span class="green">”手前”</span>と<span class="green">”奥”</span>ってなんだよ</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_okutoha.png">
+                </figure>
+                <div>
+                    <p><span class="green">緑くん</span>は鏡にくっついた向きなのか？</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>鏡にくっついてるなら、こいつってどういう見かたをしても常に逆ですね</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>なんだよ常に同じ挙動なら興味ねーよ、消えろ！</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_okuiran.png">
+                </figure>
+                <div>
+                    <p>やっぱこれだね</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>しかし、実際に鏡を見てみるとやっぱ左右だけ逆でキモいですね</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>もはやアレだな、左右逆じゃないんじゃないか？という気持ちにさえなってきたな。目の錯覚なんだろ？</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>逆ですけど</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>騙されません。しゅうくんがガキだからってだませると思ったら大間違いです</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>じゃあ鏡の裏側にまわってみて、比べてくださいよ</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>…</p>
+                </div>
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>…</p>
+                </div>
+                <figure class="figure_icon ゆれる">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p><span class="ゆれる">ド</span><span class="ゆれる">ド</span><span class="ゆれる">ド</span><span class="ゆれる">ド</span></p>
+                </div>
+                <figure class="figure_icon ゆれる">
+                    <div style="display: flex;flex-direction: column;align-items: center;">
+                        <img src="../images/yomimono/syuukun_kihon.png" class="ゆれる2">
+                        <img src="../images/yomimono/kagaminohanten/kagami_fire.png" class="ゆれる2" style="width:3em;">
+                    </div>
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>！！？！？</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="flex_div" style="justify-content: center;">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_tonda1.png">
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>飛んだ…</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="flex_div" style="justify-content: center;">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_tonda2.png">
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>まわりこんだけど…ね？（笑）</p>
+                </div>
+                <figure class="figure_icon  turned_180">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+            
+
+            <div class="flex_div" style="justify-content: center;">
+                <figure class="大き目の絵">
+                    <img src="../images/yomimono/kagaminohanten/kagami_tonda3.png">
+                </figure>
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>あれ？これ本当に左右逆じゃなくね？</p>
+                </div>
+                <figure class="figure_icon  turned_180">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>もしかして横から回り込んで想像すると左右逆になって、</p>
+                    <p>上下から回り込んだ想像をすると上下が逆になるんですかね？</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <div class="right_div flex_div">
+                <div>
+                    <p>じゃあ、解決ってことで…</p>
+                </div>
+                <figure class="figure_icon  turned_180">
+                    <img src="../images/yomimono/syuukun_kihon.png">
+                    <figcaption>しゅうくん</figcaption>
+                </figure>
+            </div>
+            <hr>
+
+            <div class="left_div flex_div">
+                <figure class="figure_icon">
+                    <img src="../images/yomimono/mikupon_kihon.png">
+                    <figcaption>みくぽん</figcaption>
+                </figure>  
+                <div>
+                    <p>…はい。</p>
+                </div>                  
+            </div>
+            <hr>
+
+            <footer>
+                <ul id="footul">
+                    <li id="foot_tweet_li">
+                        <a href=""  target="_blank" rel="noopener noreferrer" id="foot_tweet_a"><!--onload_functions()でhrefを書き込んでるで！-->
+                            <img src="../images/site/twitterbutton.gif" alt="ツイートボタン" id="tweet_img">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#top" id="totop"> 
+                            ページ上部に移動
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </body>
+</html>
